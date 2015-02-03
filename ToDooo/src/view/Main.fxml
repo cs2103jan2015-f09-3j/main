@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.effect.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.text.*?>
+<?import javafx.scene.control.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.layout.AnchorPane?>
+
+<AnchorPane prefHeight="521.0" prefWidth="735.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.MainController">
+   <children>
+      <Pane prefHeight="55.0" prefWidth="735.0">
+         <children>
+            <TextField fx:id="txtCmd" layoutX="14.0" layoutY="15.0" onKeyPressed="#enterText" prefHeight="25.0" prefWidth="707.0" promptText="Type your command here">
+               <font>
+                  <Font name="Segoe UI" size="12.0" />
+               </font>
+            </TextField>
+         </children>
+      </Pane>
+      <TabPane layoutY="55.0" prefHeight="468.0" prefWidth="735.0" side="BOTTOM" tabClosingPolicy="UNAVAILABLE">
+        <tabs>
+          <Tab text="All">
+            <content>
+              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="305.0" prefWidth="269.0">
+                     <children>
+                        <Label fx:id="lblAll" layoutX="14.0" layoutY="14.0" prefHeight="17.0" prefWidth="707.0" />
+                     </children>
+                  </AnchorPane>
+            </content>
+          </Tab>
+          <Tab text="Categories">
+            <content>
+              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                        <Label fx:id="lblCat" layoutX="14.0" layoutY="14.0" prefHeight="17.0" prefWidth="707.0" />
+                     </children>
+                  </AnchorPane>
+            </content>
+          </Tab>
+            <Tab text="Priorities">
+               <content>
+                  <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="305.0" prefWidth="269.0">
+                     <children>
+                        <Label fx:id="lblPri" layoutX="14.0" layoutY="14.0" prefHeight="17.0" prefWidth="707.0" />
+                     </children>
+                  </AnchorPane>
+               </content>
+            </Tab>
+        </tabs>
+      </TabPane>
+   </children>
+</AnchorPane>
