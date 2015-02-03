@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.shape.*?>
 <?import javafx.scene.effect.*?>
 <?import javafx.scene.*?>
 <?import javafx.scene.text.*?>
@@ -8,24 +9,35 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<AnchorPane prefHeight="521.0" prefWidth="735.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.MainController">
+
+<AnchorPane minHeight="-Infinity" minWidth="-Infinity" prefHeight="556.0" prefWidth="755.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.MainController">
    <children>
-      <Pane prefHeight="55.0" prefWidth="735.0">
+      <Pane prefHeight="112.0" prefWidth="755.0" style="-fx-background-color: #9C959E;">
          <children>
-            <TextField fx:id="txtCmd" layoutX="14.0" layoutY="15.0" onKeyPressed="#enterText" prefHeight="25.0" prefWidth="707.0" promptText="Type your command here">
+            <TextField fx:id="txtCmd" layoutX="14.0" layoutY="73.0" onKeyPressed="#enterText" prefHeight="25.0" prefWidth="725.0" promptText="Type your command here">
                <font>
                   <Font name="Segoe UI" size="12.0" />
                </font>
             </TextField>
+            <Label layoutX="14.0" layoutY="14.0" text="ToDooo" textFill="WHITE">
+               <font>
+                  <Font name="Century Gothic" size="36.0" />
+               </font>
+            </Label>
          </children>
       </Pane>
-      <TabPane layoutY="55.0" prefHeight="468.0" prefWidth="735.0" side="BOTTOM" tabClosingPolicy="UNAVAILABLE">
+      <TabPane layoutY="112.0" prefHeight="445.0" prefWidth="755.0" side="BOTTOM" style="-fx-background-color: #E8D8EC;" tabClosingPolicy="UNAVAILABLE">
         <tabs>
           <Tab text="All">
             <content>
-              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="305.0" prefWidth="269.0">
+              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="439.0" prefWidth="800.0" style="-fx-background-color: #E8D8EC;">
                      <children>
-                        <Label fx:id="lblAll" layoutX="14.0" layoutY="14.0" prefHeight="17.0" prefWidth="707.0" />
+                        <Label fx:id="lblAll" layoutX="14.0" layoutY="41.0" prefHeight="17.0" prefWidth="707.0" />
+                        <Label layoutX="337.0" layoutY="14.0" text="TODAY" textFill="#5e5e5e">
+                           <font>
+                              <Font name="System Bold" size="18.0" />
+                           </font>
+                        </Label>
                      </children>
                   </AnchorPane>
             </content>
