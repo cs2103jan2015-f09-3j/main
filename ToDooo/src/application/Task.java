@@ -28,8 +28,7 @@ public class Task {
 		
 		switch(taskType) {
 			case EVENT :
-				// remove /event
-				// remove the slash in /on OR /from & /to 
+				// remove the slash in /on
 				break;
 			case TIMED : 
 				// remove the slash in /from & /to
