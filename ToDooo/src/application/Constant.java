@@ -11,4 +11,6 @@ public final class Constant {
 	
 	public static final Command[] CRUD_COMMANDS = { Command.ADD, Command.DELETE, 
 													Command.UPDATE, Command.SEARCH };
+	
+	public static final String PATH_DEFAULT_LIST_FILE = "listFile.xml";
 }

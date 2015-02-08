@@ -23,18 +23,22 @@ import org.w3c.dom.Text;
 import org.xml.sax.SAXException;
 
 public class List {
-	private static final String PATH_LIST_FILE = "listFile.xml";
-
 	private Document _listFile;
 	private XPath _xPath;
+	private String _listFilePath;
 
 	public List() {
-		createListFileIfNotExist();		
+		/*
+		 * Need to retrieve the save path indicated
+		 * in the settings page.
+		 */
+		
+		//createListFileIfNotExist();		
 		_xPath = getNewXPath();
 	}
 
 	private void createListFileIfNotExist() {
-		File file = new File(List.PATH_LIST_FILE);
+		File file = new File(Constant.PATH_DEFAULT_LIST_FILE);
 		
 		boolean shouldCreate = !(file.exists());
 		if (shouldCreate) {
@@ -55,7 +59,7 @@ public class List {
 			if (toCreateNewXML) {
 				return documentBuilder.newDocument(); 
 			} else {
-				return documentBuilder.parse(List.PATH_LIST_FILE);
+				return documentBuilder.parse(Constant.PATH_DEFAULT_LIST_FILE);
 			}
 		} catch (ParserConfigurationException | 
 				 SAXException | IOException exception) {
@@ -103,7 +107,7 @@ public class List {
 			Transformer transformer = transformerFactory.newTransformer();
 			DOMSource domSource = new DOMSource(document);
 			StreamResult streamResult = 
-					new StreamResult(new File(List.PATH_LIST_FILE));
+					new StreamResult(new File(Constant.PATH_DEFAULT_LIST_FILE));
 			transformer.transform(domSource, streamResult);
 			
 		} catch (TransformerException tfe) {
