@@ -21,8 +21,8 @@ public enum TaskType {
 	}
 	
 	public static boolean isEvent(String commandLine) {
-		return (commandLine.contains(Command.EVENT.getBasicCommand()) ||
-				commandLine.contains(Command.EVENT.getAdvancedCommand()));
+		return (commandLine.contains(Command.ON.getBasicCommand()) ||
+				commandLine.contains(Command.ON.getAdvancedCommand()));
 	}
 
 	public static boolean isTimedTask(String commandLine) {
@@ -33,8 +33,8 @@ public enum TaskType {
 	}
 	
 	public static boolean isDatedTask(String commandLine) {
-		return (commandLine.contains(Command.ON.getBasicCommand()) ||
-				commandLine.contains(Command.ON.getAdvancedCommand()));
+		return (commandLine.contains(Command.BY.getBasicCommand()) ||
+				commandLine.contains(Command.BY.getAdvancedCommand()));
 	}
 	
 	public static boolean isFloatingTask(String commandLine) {

@@ -9,9 +9,7 @@ public enum Command {
 	FROM("/from", "/from"),
 	TO("/to", "/t"),
 	ON("/on", "/o"),
-	BY("/by", "/b"),
-	AT("/at", "/@"),
-	EVENT("/event", "/e");
+	BY("/by", "/b");
 	
 	private final String _COMMAND_BASIC;
 	private final String _COMMAND_ADVANCED;
