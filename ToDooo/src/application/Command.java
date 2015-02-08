@@ -9,7 +9,14 @@ public enum Command {
 	FROM("/from", "/from"),
 	TO("/to", "/t"),
 	ON("/on", "/o"),
-	BY("/by", "/b");
+	BY("/by", "/b"),
+	CATEGORY("#", "#"),
+	PRIORITY_HIGH("#high", "#***"),
+	PRIORITY_MEDIUM("#medium", "#**"),
+	PRIORITY_LOW("#low", "#*"),
+	RECURRING_WEEKLY("/weekly", "/w"),
+	RECURRING_MONTHLY("/monthly", "/m"),
+	RECURRING_YEARLY("/yearly", "/y");
 	
 	private final String _COMMAND_BASIC;
 	private final String _COMMAND_ADVANCED;
@@ -54,5 +61,23 @@ public enum Command {
 		}
 		
 		return Command.ADD;
+	}
+
+	public static boolean isPrioritised(String commandLine) {
+		return (commandLine.contains(Command.PRIORITY_HIGH.getBasicCommand()) ||
+			    commandLine.contains(Command.PRIORITY_HIGH.getAdvancedCommand()) ||
+			    commandLine.contains(Command.PRIORITY_MEDIUM.getBasicCommand()) ||
+			    commandLine.contains(Command.PRIORITY_MEDIUM.getAdvancedCommand()) ||
+			    commandLine.contains(Command.PRIORITY_LOW.getBasicCommand()) ||
+			    commandLine.contains(Command.PRIORITY_LOW.getAdvancedCommand()));
+	}
+
+	public static boolean isRecurred(String commandLine) {
+		return (commandLine.contains(Command.RECURRING_WEEKLY.getBasicCommand()) ||
+			    commandLine.contains(Command.RECURRING_WEEKLY.getAdvancedCommand()) ||
+			    commandLine.contains(Command.RECURRING_MONTHLY.getBasicCommand()) ||
+			    commandLine.contains(Command.RECURRING_MONTHLY.getAdvancedCommand()) ||
+			    commandLine.contains(Command.RECURRING_YEARLY.getBasicCommand()) ||
+			    commandLine.contains(Command.RECURRING_YEARLY.getAdvancedCommand()));
 	}
 }
