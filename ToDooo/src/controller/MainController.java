@@ -1,33 +1,26 @@
 package controller;
 
-import java.net.URL;
-import java.util.ResourceBundle;
-
 import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
+import controller.HeaderController;
+import controller.BodyController;
 
-public class MainController implements Initializable {
+public class MainController{
+	
+	@FXML HeaderController headerController;
+	@FXML BodyController bodyController;
+	
+	@FXML public void initialize() {
+		headerController.init(this);
+		bodyController.init(this);
+	}
 
-	@Override
-	public void initialize(URL arg0, ResourceBundle arg1) {
+	public void sendToPaneAll(String text) {
+		//bodyController.lblAll.setText(text);
+	}
+
+	public void showInTabAll(String text) {
+		bodyController.anPaneAll.getChildren().add(new Label(text));
 		
 	}
-	
-	@FXML private TextField txtCmd;
-	@FXML private Label lblAll;
-	@FXML private Label lblCat;
-	@FXML private Label lblPri;
-	
-	@FXML public void enterText(KeyEvent e){
-		if(e.getCode() == KeyCode.ENTER){
-			lblAll.setText("All: " + txtCmd.getText());
-			lblCat.setText("Categories: " + txtCmd.getText());
-			lblPri.setText("Priorities: " + txtCmd.getText());
-		}
-	}
-
 }

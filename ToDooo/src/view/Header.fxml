@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.paint.*?>
+<?import javafx.scene.shape.*?>
+<?import javafx.scene.text.*?>
+<?import javafx.scene.control.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.layout.AnchorPane?>
+
+<AnchorPane fx:id="anPaneHeader" prefHeight="100.0" prefWidth="750.0" style="-fx-background-color: #34302D;" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.HeaderController">
+   <children>
+      <Label fx:id="lblLogo" layoutX="14.0" layoutY="4.0" text="ToDooo" textFill="#edeae3">
+         <font>
+            <Font name="Ebrima" size="36.0" />
+         </font></Label>
+      <TextField fx:id="txtCmd" layoutX="14.0" layoutY="61.0" onKeyPressed="#processCmd" prefHeight="25.0" prefWidth="686.0" promptText="Type your command here" style="-fx-background-color: #EDEAE3;" />
+      <Text fill="#edeae3" layoutX="124.0" layoutY="37.0" strokeType="OUTSIDE" strokeWidth="0.0" text="✓">
+         <font>
+            <Font size="27.0" />
+         </font>
+      </Text>
+      <Button layoutX="711.0" layoutY="60.0" mnemonicParsing="false" style="-fx-background-color: #EDEAE3;" text="&gt;">
+         <font>
+            <Font name="Ebrima" size="12.0" />
+         </font>
+      </Button>
+   </children>
+</AnchorPane>
