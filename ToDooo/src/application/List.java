@@ -23,116 +23,75 @@ import org.w3c.dom.Text;
 import org.xml.sax.SAXException;
 
 public class List {
-	private Document _listFile;
 	private XPath _xPath;
 	private String _listFilePath;
 
-	public List() {
-		/*
-		 * Need to retrieve the save path indicated
-		 * in the settings page.
-		 */
-		
-		//createListFileIfNotExist();		
+	public List() {		
+		_listFilePath = Main.storage.readSavePath();		
+		createListFileIfNotExist();		
 		_xPath = getNewXPath();
+	}
+	
+	public String get_listFilePath() {
+		return _listFilePath;
+	}
+
+	public void set_listFilePath(String listFilePath) {
+		_listFilePath = listFilePath;
 	}
 
 	private void createListFileIfNotExist() {
-		File file = new File(Constant.PATH_DEFAULT_LIST_FILE);
+		File file = new File(_listFilePath);
+		String result = Constant.MSG_SAVE_SUCCESS;
 		
 		boolean shouldCreate = !(file.exists());
 		if (shouldCreate) {
-			prepareNewList();
+			result = prepareNewList();
 		}
-		
-		boolean toCreateNewXML = false;
-		_listFile = getXMLDocument(toCreateNewXML);
 	}
 	
-	private Document getXMLDocument(boolean toCreateNewXML) {
-		try {
-			DocumentBuilderFactory documentFactory = 
-					DocumentBuilderFactory.newInstance();
-			DocumentBuilder documentBuilder = 
-					documentFactory.newDocumentBuilder();
-			
-			if (toCreateNewXML) {
-				return documentBuilder.newDocument(); 
-			} else {
-				return documentBuilder.parse(Constant.PATH_DEFAULT_LIST_FILE);
-			}
-		} catch (ParserConfigurationException | 
-				 SAXException | IOException exception) {
-			exception.printStackTrace();
-		}		
-		
-		return null;
-	}
-
 	private XPath getNewXPath() {
         XPathFactory xpathFactory = XPathFactory.newInstance();
 
         return xpathFactory.newXPath();
 	}
 
-	private void prepareNewList() {
-		try {
-			boolean toCreateNewXML = true;
-			Document document = getXMLDocument(toCreateNewXML);
-									
-			Element root = document.createElement(Constant.TAG_FILE);
-			document.appendChild(root);
-			
-			Element nextId = document.createElement(Constant.TAG_NEXT_ID);
-			Text nextIdText = document.createTextNode("1");
-			nextId.appendChild(nextIdText);
-			root.appendChild(nextId);
-			
-			Element categories = document.
-								 createElement(Constant.TAG_CATEGORIES);
-			root.appendChild(categories);
-			
-			Element category = document.createElement(Constant.TAG_CATEGORY);
-			Text categoryText = document.
-								createTextNode(Constant.CATEGORY_UNCATEGORISED);
-			category.appendChild(categoryText);
-			categories.appendChild(category);
-			
-			Element tasks = document.createElement(Constant.TAG_TASKS);
-			root.appendChild(tasks);			
-
-			// Create XML file
-			TransformerFactory transformerFactory = 
-					TransformerFactory.newInstance();
-			Transformer transformer = transformerFactory.newTransformer();
-			DOMSource domSource = new DOMSource(document);
-			StreamResult streamResult = 
-					new StreamResult(new File(Constant.PATH_DEFAULT_LIST_FILE));
-			transformer.transform(domSource, streamResult);
-			
-		} catch (TransformerException tfe) {
-			tfe.printStackTrace();
-		}
-
-	}
-	
-	public int readNextId() {
-		int nextId = 0;
+	private String prepareNewList() {
+		Document document = createXMLDocument();
+								
+		Element root = document.createElement(Constant.TAG_FILE);
+		document.appendChild(root);
 		
+		Element categories = document.
+							 createElement(Constant.TAG_CATEGORIES);
+		root.appendChild(categories);
+		
+		Element category = document.createElement(Constant.TAG_CATEGORY);
+		Text categoryText = document.
+							createTextNode(Constant.CATEGORY_UNCATEGORISED);
+		category.appendChild(categoryText);
+		categories.appendChild(category);
+		
+		Element tasks = document.createElement(Constant.TAG_TASKS);
+		root.appendChild(tasks);
+		
+		String result = Main.storage.writeFile(document, _listFilePath);
+		return result;
+	}
+		
+	private Document createXMLDocument() {
 		try {
-			XPathExpression expression = 
-					_xPath.compile("/" + Constant.TAG_FILE + "/" +
-								   Constant.TAG_NEXT_ID);
+			DocumentBuilderFactory documentFactory = 
+					DocumentBuilderFactory.newInstance();
+			DocumentBuilder documentBuilder = 
+					documentFactory.newDocumentBuilder();
 			
-			Double value = (Double)expression.
-						   evaluate(_listFile, XPathConstants.NUMBER);
+			return documentBuilder.newDocument(); 
 			
-			nextId = value.intValue();
-		} catch (XPathExpressionException exception) {
+		} catch (ParserConfigurationException exception) {
 			exception.printStackTrace();
-		}
+		}		
 		
-		return nextId;
+		return null;
 	}
-
 }
