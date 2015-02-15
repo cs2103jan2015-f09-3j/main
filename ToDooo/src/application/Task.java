@@ -2,7 +2,7 @@ package application;
 import java.util.Date;
 
 public class Task {
-	private int _id;
+	private String _id;
 	private TaskType _taskType;
 	private String _toDo;
 	private String _originalText;
@@ -16,10 +16,7 @@ public class Task {
 	private Priority _priority;
 	
 	public Task(String userInput, TaskType taskType) {
-		// -id = list.readNextId() (use the list object to call)
-		// to be done after writing the method to read setting file
-		// append D, E, F or T to id 
-		
+		_id = generateId(taskType);		
 		_taskType = taskType;
 		_toDo = generateToDoString(userInput, taskType); // incomplete
 		_originalText = userInput;
@@ -35,36 +32,58 @@ public class Task {
 		_priority = Parser.getPriorityFromString(userInput);
 	}
 	
+	private String generateId(TaskType taskType) {
+		int nextId = Main.storage.readNextId();
+		String id = null;
+		
+		switch (taskType) {
+		case EVENT :
+			id = "E" + nextId;
+			break;
+		case TIMED :
+			id = "T" + nextId;
+			break;
+		case DATED :
+			id = "D" + nextId;
+			break;
+		case FLOATING :
+			id = "F" + nextId;
+			break;
+		default :
+			// invalid task
+			// return null
+			break;
+		}
+		
+		return id;
+	}
+	
 	private String generateToDoString(String userInput, TaskType taskType) {
-		// remove /add or /a (remember to check if exist because can add
-		// without using the 2 keywords.
-		String toDoString = userInput;
 		int lengthOfBasicAddCommand = Command.ADD.getBasicCommand().length();
 		int lengthOfAdvancedAddCommand = Command.ADD.getAdvancedCommand().length();
+		String toDoString = null;
 		String on = "on";
 		String from = "from";
 		String to = "to";
 		String by = "by";
 		
-		if (toDoString.contains(Command.ADD.getBasicCommand())){
-			toDoString = toDoString.substring(lengthOfBasicAddCommand, toDoString.length());
-			toDoString = toDoString.trim();
-		} else if (toDoString.contains(Command.ADD.getAdvancedCommand())) {	
-			toDoString = toDoString.substring(lengthOfAdvancedAddCommand, toDoString.length());
-			toDoString = toDoString.trim();
+		if (userInput.contains(Command.ADD.getBasicCommand())){
+			toDoString = userInput.substring(lengthOfBasicAddCommand, 
+						 userInput.length()).trim();
+		} else if (userInput.contains(Command.ADD.getAdvancedCommand())) {	
+			toDoString = userInput.substring(lengthOfAdvancedAddCommand, 
+						 userInput.length()).trim();
 		}
 		
 		switch(taskType) {
 			case EVENT :
-				// remove the slash in /on
 				if (toDoString.contains(Command.ON.getBasicCommand())) {
 					toDoString.replaceFirst(Command.ON.getBasicCommand(), on);
-				} else if (userInput.contains(Command.ON.getAdvancedCommand())) {
+				} else if (toDoString.contains(Command.ON.getAdvancedCommand())) {
 					toDoString.replaceFirst(Command.ON.getAdvancedCommand(), on);
 				}
 				break;
 			case TIMED : 
-				// remove the slash in /from & /to
 				if (toDoString.contains(Command.FROM.getBasicCommand())) {
 					toDoString.replaceFirst(Command.FROM.getBasicCommand(), from);
 				} else if (toDoString.contains(Command.FROM.getAdvancedCommand())) {
@@ -77,7 +96,6 @@ public class Task {
 				}
 				break;
 			case DATED :
-				// remove the slash in /by
 				if (toDoString.contains(Command.BY.getBasicCommand())) {
 					toDoString.replaceFirst(Command.BY.getBasicCommand(), by);
 				} else if (toDoString.contains(Command.BY.getAdvancedCommand())) {
@@ -85,12 +103,11 @@ public class Task {
 				} 
 				break;
 			default :
-				// refactoring advice is to always have default
-				// but I dont want to do anything if it's not these 3 cases.
+				// floating task
 				break;
 		}
 		
-		return toDoString; // return the processed string.
+		return toDoString; 
 	}
 
 	private void setDatesForTaskType(Date[] dates, TaskType taskType) {
