@@ -8,6 +8,9 @@ import javafx.scene.Scene;
 
 
 public class Main extends Application {
+	public static Storage storage;
+	public static List list;
+	
 	@Override
 	public void start(Stage primaryStage) {
 		try {
@@ -22,6 +25,12 @@ public class Main extends Application {
 	}
 	
 	public static void main(String[] args) {
+		initialise();
 		launch(args);
+	}
+	
+	public static void initialise() {
+		Main.storage = new Storage();
+		Main.list = new List();
 	}
 }
