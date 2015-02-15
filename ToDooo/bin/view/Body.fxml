@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.layout.AnchorPane?>
+
+<AnchorPane fx:id="anPaneMain" prefHeight="500.0" prefWidth="750.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.BodyController">
+   <children>
+      <TabPane fx:id="tPaneMain" layoutY="100.0" prefHeight="324.0" prefWidth="471.0" side="BOTTOM" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+        <tabs>
+          <Tab fx:id="tabAll" text="All">
+            <content>
+                  <ScrollPane fx:id="sPaneAll" prefHeight="472.0" prefWidth="750.0">
+                    <content>
+                      <AnchorPane fx:id="anPaneAll" minHeight="0.0" minWidth="0.0" prefHeight="471.0" prefWidth="750.0" />
+                    </content>
+                  </ScrollPane>
+            </content>
+          </Tab>
+          <Tab fx:id="tabCat" text="Categories">
+               <content>
+                  <ScrollPane fx:id="sPaneCat" prefHeight="200.0" prefWidth="200.0">
+                    <content>
+                      <AnchorPane fx:id="anPaneCat" minHeight="0.0" minWidth="0.0" prefHeight="471.0" prefWidth="750.0" />
+                    </content>
+                  </ScrollPane>
+               </content>
+          </Tab>
+            <Tab fx:id="tabPri" text="Priorities">
+               <content>
+                  <ScrollPane fx:id="sPanePri" prefHeight="200.0" prefWidth="200.0">
+                    <content>
+                      <AnchorPane fx:id="anPanePri" minHeight="0.0" minWidth="0.0" prefHeight="470.0" prefWidth="749.0" />
+                    </content>
+                  </ScrollPane>
+               </content>
+            </Tab>
+        </tabs>
+      </TabPane>
+   </children>
+</AnchorPane>
