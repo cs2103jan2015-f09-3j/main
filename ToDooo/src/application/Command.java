@@ -16,7 +16,10 @@ public enum Command {
 	PRIORITY_LOW("#low", "#*"),
 	RECURRING_WEEKLY("/weekly", "/w"),
 	RECURRING_MONTHLY("/monthly", "/m"),
-	RECURRING_YEARLY("/yearly", "/y");
+	RECURRING_YEARLY("/yearly", "/y"),
+	SETTING("/setting", "/setting"),
+	TODAY("today", "td"),
+	TOMORROW("tomorrow", "tml");
 	
 	private final String _COMMAND_BASIC;
 	private final String _COMMAND_ADVANCED;
