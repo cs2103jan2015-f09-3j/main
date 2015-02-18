@@ -43,7 +43,7 @@ public class Storage {
 	}
 	
 	public String writeFile(Document document) {
-		return writeFile(document, Main.list.get_listFilePath());
+		return writeFile(document, Main.list.getListFilePath());
 	}
 	
 	public String writeFile(Document document, String savePath) {
@@ -104,7 +104,7 @@ public class Storage {
 			DocumentBuilder documentBuilder = 
 					documentFactory.newDocumentBuilder();
 			
-			return documentBuilder.parse(Main.list.get_listFilePath()); 
+			return documentBuilder.parse(Main.list.getListFilePath()); 
 			
 		} catch (ParserConfigurationException |
 				SAXException | IOException exception) {

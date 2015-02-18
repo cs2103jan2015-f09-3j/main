@@ -32,11 +32,11 @@ public class ToDoList {
 		_xPath = getNewXPath();
 	}
 	
-	public String get_listFilePath() {
+	public String getListFilePath() {
 		return _listFilePath;
 	}
 
-	public void set_listFilePath(String listFilePath) {
+	public void setListFilePath(String listFilePath) {
 		_listFilePath = listFilePath;
 	}
 
