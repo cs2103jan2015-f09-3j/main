@@ -22,11 +22,11 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Text;
 import org.xml.sax.SAXException;
 
-public class List {
+public class ToDoList {
 	private XPath _xPath;
 	private String _listFilePath;
 
-	public List() {		
+	public ToDoList() {		
 		_listFilePath = Main.storage.readSavePath();		
 		createListFileIfNotExist();		
 		_xPath = getNewXPath();

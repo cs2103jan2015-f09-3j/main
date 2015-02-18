@@ -9,7 +9,7 @@ import javafx.scene.Scene;
 
 public class Main extends Application {
 	public static Storage storage;
-	public static List list;
+	public static ToDoList list;
 	
 	@Override
 	public void start(Stage primaryStage) {
@@ -31,6 +31,6 @@ public class Main extends Application {
 	
 	public static void initialise() {
 		Main.storage = new Storage();
-		Main.list = new List();
+		Main.list = new ToDoList();
 	}
 }
