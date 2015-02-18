@@ -16,7 +16,11 @@ public class Task {
 	private Priority _priority;
 	
 	public Task(String userInput, TaskType taskType) {
-		_id = generateId(taskType);		
+		this(userInput, taskType, generateId(taskType));
+	}
+	
+	public Task(String userInput, TaskType taskType, String id) {
+		_id = id;		
 		_taskType = taskType;
 		_toDo = generateToDoString(userInput, taskType); // incomplete
 		_originalText = userInput;
@@ -32,7 +36,7 @@ public class Task {
 		_priority = Parser.getPriorityFromString(userInput);
 	}
 	
-	private String generateId(TaskType taskType) {
+	private static String generateId(TaskType taskType) {
 		int nextId = Main.storage.readNextId();
 		String id = null;
 		
