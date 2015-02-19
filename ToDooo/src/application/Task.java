@@ -1,5 +1,6 @@
 package application;
 import java.util.Date;
+import java.util.List;
 
 public class Task {
 	private String _id;
@@ -25,15 +26,15 @@ public class Task {
 		_toDo = generateToDoString(userInput, taskType); // incomplete
 		_originalText = userInput;
 		
-		Date[] dates = Parser.getDatesFromString(userInput, taskType); // incomplete
+		List<Date> dates = Main.inputParser.getDatesFromString(userInput); // incomplete
 		setDatesForTaskType(dates, taskType);
 		
-		_category = Parser.getCategoryFromString(userInput);
+		_category = InputParser.getCategoryFromString(userInput);
 		
 		_isRecurring = Command.isRecurred(userInput);
-		_repeat = Parser.getFrequencyFromString(userInput);
+		_repeat = InputParser.getFrequencyFromString(userInput);
 		
-		_priority = Parser.getPriorityFromString(userInput);
+		_priority = InputParser.getPriorityFromString(userInput);
 	}
 	
 	private static String generateId(TaskType taskType) {
@@ -114,7 +115,7 @@ public class Task {
 		return toDoString; 
 	}
 
-	private void setDatesForTaskType(Date[] dates, TaskType taskType) {
+	private void setDatesForTaskType(List<Date> dates, TaskType taskType) {
 		_date = null;
 		_from = null;
 		_to = null;
@@ -122,14 +123,14 @@ public class Task {
 		
 		switch(taskType) {
 			case EVENT :
-				_date = dates[0];
+				_date = dates.get(0);
 				break;
 			case TIMED : 
-				_from = dates[0];
-				_to = dates[1];
+				_from = dates.get(0);
+				_to = dates.get(1);
 				break;
 			case DATED :
-				_by = dates[0];
+				_by = dates.get(0);
 				break;
 			default :
 				// floating task

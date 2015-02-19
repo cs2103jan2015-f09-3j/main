@@ -2,103 +2,28 @@ package application;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.List;
 import java.util.Date;
 
-public class Parser {
+import com.joestelmach.natty.DateGroup;
+import com.joestelmach.natty.Parser;
+
+public class InputParser {
+	private Parser _parser;
+	
+	public InputParser() {
+		_parser = new Parser();
+	}
+	
 	// Public Methods	
 	public static Command getActionFromString(String commandLine) {
 		return Command.extractCrudCommands(commandLine);
 	}
 	
-	public static Date[] getDatesFromString(String userInput, TaskType taskType) {
-		Date[] dates = new Date[2];
-		String basicCommand = null; 
-		String advancedCommand = null;
-		String dateInfo = null;
-		int beginIndex = 0;
-		int nextIndex = 1;
-		boolean isValidDate;
+	public List<Date> getDatesFromString(String userInput) {
+		List<DateGroup> groups = _parser.parse(userInput);
+		List<Date> dates = groups.get(0).getDates();
 		
-		switch(taskType) {
-			case EVENT :
-				// get the parameter after /on
-				// time is after comma<whitespace> behind date
-				basicCommand = Command.ON.getBasicCommand();
-				advancedCommand = Command.ON.getAdvancedCommand();
-				
-				if (userInput.contains(basicCommand)) {
-					dateInfo = getDateInfo(userInput, basicCommand);
-				} else if (userInput.contains(advancedCommand)) {
-					dateInfo = getDateInfo(userInput, advancedCommand);
-				}
-				
-				isValidDate = isValidDate(dateInfo);					
-				if (isValidDate) {
-					dates[beginIndex] = convertToDate(dateInfo);
-				}
-				break;
-			case TIMED : 
-				// get the parameter after /from
-				// time is after comma<whitespace> behind date
-				basicCommand = Command.FROM.getBasicCommand();
-				advancedCommand = Command.FROM.getAdvancedCommand();
-				String basicToCommand = Command.TO.getBasicCommand();
-				String advancedToCommand = Command.TO.getAdvancedCommand();
-				
-				if (userInput.contains(basicCommand)) {
-					dateInfo = getDateInfo(userInput, basicCommand);
-					isValidDate = isValidDate(dateInfo);
-					if (isValidDate) {
-						dates[beginIndex] = convertToDate(dateInfo);
-					}
-				} else if (userInput.contains(advancedCommand)) {
-					dateInfo = getDateInfo(userInput, advancedCommand);
-					isValidDate = isValidDate(dateInfo);
-					if (isValidDate) {
-						dates[beginIndex] = convertToDate(dateInfo);
-					}
-				}
-				// get the parameter after /to
-				// time is after comma<whitespace> behind date
-				if (userInput.contains(basicToCommand)) {
-					dateInfo = getDateInfo(userInput, basicCommand);
-					isValidDate = isValidDate(dateInfo);
-					if (isValidDate) {
-						dates[nextIndex] = convertToDate(dateInfo);
-					}
-				} else if (userInput.contains(advancedToCommand)) {
-					dateInfo = getDateInfo(userInput, advancedCommand);
-					isValidDate = isValidDate(dateInfo);
-					if (isValidDate) {
-						dates[nextIndex] = convertToDate(dateInfo);
-					}
-				}
-				break;
-			case DATED :
-				// get the parameter after /by
-				// time is after comma<whitespace> behind date
-				basicCommand = Command.BY.getBasicCommand();
-				advancedCommand = Command.BY.getAdvancedCommand();
-				
-				if (userInput.contains(basicCommand)) {
-					dateInfo = getDateInfo(userInput, basicCommand);
-					isValidDate = isValidDate(dateInfo);
-					if (isValidDate) {
-						dates[beginIndex] = convertToDate(dateInfo);
-					}
-				} else if (userInput.contains(advancedCommand)) {
-					dateInfo = getDateInfo(userInput, advancedCommand);
-					isValidDate = isValidDate(dateInfo);
-					if (isValidDate) {
-						dates[beginIndex] = convertToDate(dateInfo);
-					}
-				}
-				break;		
-			default :
-				// floating task
-				// does not require action since no date in array
-				break;
-		}
 		return dates;
 	}
 	
