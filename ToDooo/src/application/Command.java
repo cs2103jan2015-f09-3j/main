@@ -1,25 +1,22 @@
 package application;
 
 public enum Command {
-	ADD("/add", "/a"),
-	DELETE("/delete", "/d"),
-	UPDATE("/update", "/u"),
-	SEARCH("/search", "/s"),
-	FIND("/find", "/f"),
-	FROM("/from", "/from"),
-	TO("/to", "/t"),
-	ON("/on", "/o"),
-	BY("/by", "/b"),
-	CATEGORY("#", "#"),
-	PRIORITY_HIGH("#high", "#***"),
-	PRIORITY_MEDIUM("#medium", "#**"),
-	PRIORITY_LOW("#low", "#*"),
-	RECURRING_WEEKLY("/weekly", "/w"),
-	RECURRING_MONTHLY("/monthly", "/m"),
-	RECURRING_YEARLY("/yearly", "/y"),
-	SETTING("/setting", "/setting"),
-	TODAY("today", "td"),
-	TOMORROW("tomorrow", "tml");
+	ADD("add", "-a"),
+	DELETE("delete", "-d"),
+	UPDATE("update", "-u"),
+	SEARCH("search", "-s"),
+	FROM("from", "-f"),
+	TO("to", "-t"),
+	ON("on", "-o"),
+	BY("by", "-b"),
+	CATEGORY("/", "/"),
+	PRIORITY_HIGH("/high", "/***"),
+	PRIORITY_MEDIUM("/medium", "/**"),
+	PRIORITY_LOW("/low", "/*"),
+	RECURRING_WEEKLY("/weekly", "-w"),
+	RECURRING_MONTHLY("/monthly", "-m"),
+	RECURRING_YEARLY("/yearly", "-y"),
+	SETTING("/setting", "/setting");
 	
 	private final String _COMMAND_BASIC;
 	private final String _COMMAND_ADVANCED;
@@ -48,7 +45,7 @@ public enum Command {
 		return _COMMAND_ADVANCED;
 	}
 	
-	public static Command extractCrudCommands(String commandLine) {
+	public static Command verifyCrudCommands(String commandLine) {
 		String basicCommand = "";
 		String advancedCommand = "";
 		
@@ -56,8 +53,8 @@ public enum Command {
 			basicCommand = command.getBasicCommand();
 			advancedCommand = command.getAdvancedCommand();
 			
-			if (commandLine.contains(basicCommand) ||
-				commandLine.contains(advancedCommand)) {
+			if (commandLine.indexOf(basicCommand) == Constant.START_INDEX ||
+					commandLine.indexOf(advancedCommand) == Constant.START_INDEX) {
 				
 				return command;
 			}
