@@ -2,9 +2,11 @@ package application;
 
 import java.io.File;
 import java.io.IOException;
+
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
@@ -29,6 +31,8 @@ public class Storage {
 			TransformerFactory transformerFactory = 
 					TransformerFactory.newInstance();
 			_transformer = transformerFactory.newTransformer();
+			_transformer.setOutputProperty(OutputKeys.INDENT, 
+										   Constant.XML_INDENT_YES);
 			
 			_xPath = getNewXPath();
 		} catch (TransformerConfigurationException exception) {
@@ -61,15 +65,15 @@ public class Storage {
 
 	public int readNextId() {
 		int nextId = 0;
-		Document settingDoc = getSettingDocument();	
+		Document fileDoc = getFileDocument();	
 		
 		try {
 			XPathExpression expression = 
-					_xPath.compile("/" + Constant.TAG_SETTING + "/" +
-								   Constant.TAG_SETTING_NEXT_ID);
+					_xPath.compile("/" + Constant.TAG_FILE + "/" +
+								   Constant.TAG_NEXT_ID);
 			
 			Double value = (Double)expression.
-						   evaluate(settingDoc, XPathConstants.NUMBER);
+						   evaluate(fileDoc, XPathConstants.NUMBER);
 			
 			nextId = value.intValue();
 		} catch (XPathExpressionException exception) {

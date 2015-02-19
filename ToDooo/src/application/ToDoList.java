@@ -59,24 +59,96 @@ public class ToDoList {
 	private String prepareNewList() {
 		Document document = createXMLDocument();
 								
-		Element root = document.createElement(Constant.TAG_FILE);
-		document.appendChild(root);
+		Element rootTag = document.createElement(Constant.TAG_FILE);
+		document.appendChild(rootTag);
 		
-		Element categories = document.
+		Element nextIdTag = document.
+						 createElement(Constant.TAG_NEXT_ID);
+		Text nextIdText = document.
+						  createTextNode(String.valueOf(Constant.START_ID));
+		nextIdTag.appendChild(nextIdText);
+		rootTag.appendChild(nextIdTag);
+		
+		Element categoriesTag = document.
 							 createElement(Constant.TAG_CATEGORIES);
-		root.appendChild(categories);
+		rootTag.appendChild(categoriesTag);
 		
-		Element category = document.createElement(Constant.TAG_CATEGORY);
+		Element categoryTag = document.createElement(Constant.TAG_CATEGORY);
 		Text categoryText = document.
 							createTextNode(Constant.CATEGORY_UNCATEGORISED);
-		category.appendChild(categoryText);
-		categories.appendChild(category);
+		categoryTag.appendChild(categoryText);
+		categoriesTag.appendChild(categoryTag);
 		
-		Element tasks = document.createElement(Constant.TAG_TASKS);
-		root.appendChild(tasks);
+		Element tasksTag = document.createElement(Constant.TAG_TASKS);
+		rootTag.appendChild(tasksTag);
 		
 		String result = Main.storage.writeFile(document, _listFilePath);
 		return result;
+	}
+	
+	public String addTaskToFileDocument(Task task) {
+		Document document = Main.storage.getFileDocument();
+		
+		Element rootTag = document.getDocumentElement();
+		
+		Element nextIdTag = (Element) rootTag.
+									  getElementsByTagName(Constant.TAG_NEXT_ID).
+									  item(Constant.START_INDEX);
+		int nextId = Main.storage.readNextId() + 1;
+		nextIdTag.setTextContent(String.valueOf(nextId));
+		
+		Element tasksTag = (Element) rootTag.
+									 getElementsByTagName(Constant.TAG_TASKS).
+									 item(Constant.START_INDEX);	
+		
+		Element taskTag = document.createElement(Constant.TAG_TASK);
+		taskTag.setAttribute(Constant.TAG_ATTRIBUTE_ID, task.getId());
+		
+		createAndAppendChildElement(document, taskTag, Constant.TAG_TYPE, 
+									task.getTaskType().toString());
+		
+		createAndAppendChildElement(document, taskTag, Constant.TAG_TODO, 
+									task.getToDo());
+		
+		createAndAppendChildElement(document, taskTag, Constant.TAG_ORIGINAL, 
+									task.getOriginalText());				
+		
+		createAndAppendChildElement(document, taskTag, Constant.TAG_ON, 
+									InputParser.getDateString(task.getOn()));	
+		
+		createAndAppendChildElement(document, taskTag, Constant.TAG_FROM, 
+									InputParser.getDateString(task.getFrom()));
+		
+		createAndAppendChildElement(document, taskTag, Constant.TAG_TO, 
+									InputParser.getDateString(task.getTo()));
+		
+		createAndAppendChildElement(document, taskTag, Constant.TAG_BY, 
+									InputParser.getDateString(task.getBy()));	
+		
+		createAndAppendChildElement(document, taskTag, Constant.TAG_CATEGORY, 
+									task.getCategory().toString());
+		
+		createAndAppendChildElement(document, taskTag, Constant.TAG_RECURRING, 
+									String.valueOf(task.getIsRecurring()));
+		
+		createAndAppendChildElement(document, taskTag, Constant.TAG_REPEAT, 
+									task.getRepeat().toString());
+		
+		createAndAppendChildElement(document, taskTag, Constant.TAG_PRIORITY, 
+									task.getPriority().toString());
+		
+		tasksTag.appendChild(taskTag);		
+		
+		String result = Main.storage.writeFile(document);
+		return result;
+	}
+	
+	private void createAndAppendChildElement(Document document, Element parentElement,
+										String tag, String content) {
+		Element element = document.createElement(tag);
+		Text text = document.createTextNode(content);
+		element.appendChild(text);
+		parentElement.appendChild(element);
 	}
 		
 	private Document createXMLDocument() {

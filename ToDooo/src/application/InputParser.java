@@ -16,8 +16,12 @@ public class InputParser {
 	}
 	
 	// Public Methods	
-	public static Command getActionFromString(String commandLine) {
-		return Command.extractCrudCommands(commandLine);
+	public static Command getActionFromString(String userInput) {
+		return Command.verifyCrudCommands(userInput);
+	}
+	
+	public static TaskType getTaskTypeFromString(String userInput) {
+		return TaskType.verifyTaskType(userInput);
 	}
 	
 	public List<Date> getDatesFromString(String userInput) {
@@ -64,74 +68,14 @@ public class InputParser {
 			return Priority.NEUTRAL;
 		}
 	}
-		
-	// Private Methods
-	private static String getDateInfo(String userInput, String taskCommand) {
-		int startIndexOfCommand = userInput.indexOf(taskCommand);
-		int lengthOfCommand = taskCommand.length();
-		int beginIndex = 0;
-		
-		String inputStartsWithWord = userInput.substring(startIndexOfCommand);
-		String wordRemovedFromInput = inputStartsWithWord.substring(lengthOfCommand, inputStartsWithWord.length());
-		String hashtag = "#";
-		String dateInfo = wordRemovedFromInput.trim();
 	
-		if (dateInfo.contains(hashtag)) {
-			int hashTagIndex = wordRemovedFromInput.indexOf(hashtag);
-			dateInfo = wordRemovedFromInput.substring(beginIndex, hashTagIndex);
-			return dateInfo = dateInfo.trim();
-		} else {
-			return dateInfo;
-		}
-	}
-	
-	private static boolean isValidDate(String dateInfo) {
-		Date date = convertToDate(dateInfo);
-		if (date.equals("null")) {
-			return false;
-		}
-		return true;
-	}
-	
-	private static Date convertToDate(String inputDate) {
-		SimpleDateFormat numericDateFormat = new SimpleDateFormat ("dd/MM/yyyy");
-		SimpleDateFormat alphaDateFormat = new SimpleDateFormat ("dd MMMM yyyy");
-		SimpleDateFormat numericDateAndTimeFormat = new SimpleDateFormat ("dd/MM/yyyy HH:mm");
-		SimpleDateFormat alphaDateAndTimeFormat = new SimpleDateFormat ("dd MMMM yyyy HH:mm");
-		String slash = "/";
-		String colon = ":";
-		String space = " ";
-		Date date = null;
+	public static String getDateString(Date date) {
+		String dateString = Constant.XML_TEXT_NIL;
 		
-		if (inputDate.contains(slash) && inputDate.contains(colon)) {
-			try {
-				date = numericDateAndTimeFormat.parse(inputDate);
-			} catch (ParseException e) {
-				e.printStackTrace();
-			}
-			return date;
-		} else if (inputDate.contains(slash)) {
-			try {
-				date = numericDateFormat.parse(inputDate);
-			} catch (ParseException e) {
-				e.printStackTrace();
-			}
-			return date;
-		} else if (inputDate.contains(space) && inputDate.contains(colon)) {
-			try {
-				date = alphaDateAndTimeFormat.parse(inputDate);
-			} catch (ParseException e) {
-				e.printStackTrace();
-			}
-			return date;
-		} else if (inputDate.contains(space)){
-			try {
-				date = alphaDateFormat.parse(inputDate);
-			} catch (ParseException e) {
-				e.printStackTrace();
-			}
-			return date;
+		if (date != null) {
+			dateString = date.toString();
 		}
-		return date;
+		
+		return dateString;
 	}
 }

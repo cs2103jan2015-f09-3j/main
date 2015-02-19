@@ -20,7 +20,6 @@ public class MainController{
 	}
 
 	public void showInTabAll(String text) {
-		bodyController.anPaneAll.getChildren().add(new Label(text));
-		
+		bodyController.anPaneAll.getChildren().add(new Label(text));		
 	}
 }

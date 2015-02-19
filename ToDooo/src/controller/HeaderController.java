@@ -1,5 +1,10 @@
 package controller;
 
+import application.Command;
+import application.InputParser;
+import application.Main;
+import application.Task;
+import application.TaskType;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
@@ -16,8 +21,11 @@ public class HeaderController{
 	
 	@FXML
 	public void processCmd(KeyEvent e){
-		if(e.getCode() == KeyCode.ENTER){
-			main.showInTabAll(txtCmd.getText());
+		if(e.getCode() == KeyCode.ENTER){	
+			String userInput = txtCmd.getText();		
+			String systemMsg = executeCommand(userInput);
+			
+			main.showInTabAll(systemMsg);
 		}
 	}
 
@@ -25,5 +33,37 @@ public class HeaderController{
 		main = mainController;
 		
 	}
+	
+	private String executeCommand(String userInput) {
+		String systemMsg = null;
+		Command commandType = InputParser.getActionFromString(userInput);
+		TaskType taskType = InputParser.getTaskTypeFromString(userInput);
+		
+		switch (commandType) {
+		case ADD :
+			systemMsg = executeAdd(userInput, taskType);
+			break;
+		case UPDATE :
+			// update
+			break;
+		case DELETE :
+			// delete
+			break;
+		case SEARCH :
+			// search
+			break;
+		default :
+			// invalid command
+			break;
+		}
+		
+		return systemMsg;
+	}
 
+	private String executeAdd(String userInput, TaskType taskType) {
+		Task task = new Task(userInput, taskType);
+		String systemMsg = Main.list.addTaskToFileDocument(task);
+		
+		return systemMsg;
+	}
 }
