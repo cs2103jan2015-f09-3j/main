@@ -44,5 +44,7 @@ public class Main extends Application {
 		Main.storage = new Storage();
 		Main.inputParser = new InputParser();
 		Main.list = new ToDoList();
+		
+		storage.initUndoDocument();
 	}
 }

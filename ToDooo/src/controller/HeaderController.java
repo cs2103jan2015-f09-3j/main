@@ -5,6 +5,7 @@ import application.InputParser;
 import application.Main;
 import application.Task;
 import application.TaskType;
+import application.Undo;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
@@ -61,7 +62,9 @@ public class HeaderController{
 	}
 
 	private String executeAdd(String userInput, TaskType taskType) {
-		Task task = new Task(userInput, taskType);
+		Task task = new Task(userInput, taskType);	
+		
+		Main.storage.writeUndoToFile(Undo.ADD, task.getId());
 		String systemMsg = Main.list.addTaskToFileDocument(task);
 		
 		return systemMsg;

@@ -27,6 +27,8 @@ public final class Constant {
 	public static final String TAG_SETTING = "setting";	
 	public static final String TAG_SETTING_SAVE = "save";
 	
+	public static final String TAG_UNDO_COMMANDS = "commands";
+	
 	public static final String XML_TEXT_NIL = "NIL";
 	public static final String XML_INDENT_YES = "yes";
 	
@@ -34,6 +36,7 @@ public final class Constant {
 													Command.UPDATE, Command.SEARCH };
 	
 	public static final String PATH_SETTING = "setting.xml";
+	public static final String PATH_UNDO = "undo.xml";
 	
 	public static final String MSG_SAVE_FAIL = "File not saved.";
 	public static final String MSG_SAVE_SUCCESS = "File saved.";

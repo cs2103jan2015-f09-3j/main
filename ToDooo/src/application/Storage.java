@@ -20,6 +20,9 @@ import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 public class Storage {
@@ -131,5 +134,50 @@ public class Storage {
 			exception.printStackTrace();
 		}			
 		return null;
+	}
+	
+	public Document getUndoDocument() {
+		try {
+			DocumentBuilderFactory documentFactory = 
+					DocumentBuilderFactory.newInstance();
+			DocumentBuilder documentBuilder = 
+					documentFactory.newDocumentBuilder();
+			
+			return documentBuilder.parse(Constant.PATH_UNDO); 
+			
+		} catch (ParserConfigurationException |
+				SAXException | IOException exception) {
+			exception.printStackTrace();
+		}			
+		return null;
+	}
+	
+	public void initUndoDocument() {
+		Document undoDoc = getUndoDocument();
+		
+		Node commandsTag = undoDoc.
+						   getElementsByTagName(Constant.TAG_UNDO_COMMANDS).
+						   item(Constant.START_INDEX);
+		NodeList commands = commandsTag.getChildNodes();
+		
+		Node node = null;
+		while (commands.getLength() > 0) {
+			node = commands.item(Constant.START_INDEX);
+			node.getParentNode().removeChild(node);
+		}
+		
+		writeFile(undoDoc, Constant.PATH_UNDO);
+	}
+	
+	public void writeUndoToFile(Undo undo, String details) {
+		Document undoDoc = getUndoDocument();
+		Element commandsTag = undoDoc.getDocumentElement();
+		Command undoCommand = undo.getUndoCommand();
+		String tagName = undoCommand.getBasicCommand();
+		
+		XmlManager.createAndAppendChildElement(undoDoc, commandsTag, 
+											   tagName, details);
+	
+		writeFile(undoDoc, Constant.PATH_UNDO);
 	}
 }

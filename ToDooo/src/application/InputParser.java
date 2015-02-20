@@ -46,7 +46,12 @@ public class InputParser {
 								  Command.CATEGORY.getBasicCommand().length(), 
 								  userInput.length());
 			
-			return concatString.substring(0, concatString.indexOf(" "));
+			boolean noWhiteSpace = (concatString.indexOf(" ") == -1);
+			if (noWhiteSpace) {
+				return concatString;
+			} else {
+				return concatString.substring(0, concatString.indexOf(" "));				
+			}
 		}
 		
 		return Constant.CATEGORY_UNCATEGORISED;

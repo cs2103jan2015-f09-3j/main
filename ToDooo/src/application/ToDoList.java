@@ -57,23 +57,23 @@ public class ToDoList {
 	}
 
 	private String prepareNewList() {
-		Document document = createXMLDocument();
+		Document document = XmlManager.createXMLDocument();
 								
 		Element rootTag = document.createElement(Constant.TAG_FILE);
 		document.appendChild(rootTag);
 		
-		createAndAppendChildElement(document, rootTag, 
+		XmlManager.createAndAppendChildElement(document, rootTag, 
 									Constant.TAG_NEXT_ID, 
 									String.valueOf(Constant.START_ID));
 		
-		Element categoriesTag = createAndAppendWrapper(document, rootTag,
+		Element categoriesTag = XmlManager.createAndAppendWrapper(document, rootTag,
 							    Constant.TAG_CATEGORIES);
 		
-		createAndAppendChildElement(document, categoriesTag, 
+		XmlManager.createAndAppendChildElement(document, categoriesTag, 
 									Constant.TAG_CATEGORY, 
 									String.valueOf(Constant.CATEGORY_UNCATEGORISED));
 		
-		createAndAppendWrapper(document, rootTag, 
+		XmlManager.createAndAppendWrapper(document, rootTag, 
 							   String.valueOf(Constant.TAG_TASKS));
 		
 		String result = Main.storage.writeFile(document, _listFilePath);
@@ -99,7 +99,7 @@ public class ToDoList {
 											  getElementsByTagName(Constant.TAG_CATEGORIES).
 											  item(Constant.START_INDEX);
 
-			createAndAppendChildElement(document, categoriesTag, Constant.TAG_CATEGORY,
+			XmlManager.createAndAppendChildElement(document, categoriesTag, Constant.TAG_CATEGORY,
 										task.getCategory().toString());
 		}
 		
@@ -109,76 +109,42 @@ public class ToDoList {
 		Element taskTag = document.createElement(Constant.TAG_TASK);
 		taskTag.setAttribute(Constant.TAG_ATTRIBUTE_ID, task.getId());
 		
-		createAndAppendChildElement(document, taskTag, Constant.TAG_TYPE, 
+		XmlManager.createAndAppendChildElement(document, taskTag, Constant.TAG_TYPE, 
 									task.getTaskType().toString());
 		
-		createAndAppendChildElement(document, taskTag, Constant.TAG_TODO, 
+		XmlManager.createAndAppendChildElement(document, taskTag, Constant.TAG_TODO, 
 									task.getToDo());
 		
-		createAndAppendChildElement(document, taskTag, Constant.TAG_ORIGINAL, 
+		XmlManager.createAndAppendChildElement(document, taskTag, Constant.TAG_ORIGINAL, 
 									task.getOriginalText());				
 		
-		createAndAppendChildElement(document, taskTag, Constant.TAG_ON, 
+		XmlManager.createAndAppendChildElement(document, taskTag, Constant.TAG_ON, 
 									InputParser.getDateString(task.getOn()));	
 		
-		createAndAppendChildElement(document, taskTag, Constant.TAG_FROM, 
+		XmlManager.createAndAppendChildElement(document, taskTag, Constant.TAG_FROM, 
 									InputParser.getDateString(task.getFrom()));
 		
-		createAndAppendChildElement(document, taskTag, Constant.TAG_TO, 
+		XmlManager.createAndAppendChildElement(document, taskTag, Constant.TAG_TO, 
 									InputParser.getDateString(task.getTo()));
 		
-		createAndAppendChildElement(document, taskTag, Constant.TAG_BY, 
+		XmlManager.createAndAppendChildElement(document, taskTag, Constant.TAG_BY, 
 									InputParser.getDateString(task.getBy()));	
 		
-		createAndAppendChildElement(document, taskTag, Constant.TAG_CATEGORY, 
+		XmlManager.createAndAppendChildElement(document, taskTag, Constant.TAG_CATEGORY, 
 									task.getCategory().toString());
 		
-		createAndAppendChildElement(document, taskTag, Constant.TAG_RECURRING, 
+		XmlManager.createAndAppendChildElement(document, taskTag, Constant.TAG_RECURRING, 
 									String.valueOf(task.getIsRecurring()));
 		
-		createAndAppendChildElement(document, taskTag, Constant.TAG_REPEAT, 
+		XmlManager.createAndAppendChildElement(document, taskTag, Constant.TAG_REPEAT, 
 									task.getRepeat().toString());
 		
-		createAndAppendChildElement(document, taskTag, Constant.TAG_PRIORITY, 
+		XmlManager.createAndAppendChildElement(document, taskTag, Constant.TAG_PRIORITY, 
 									task.getPriority().toString());
 		
 		tasksTag.appendChild(taskTag);		
 		
 		String result = Main.storage.writeFile(document);
 		return result;
-	}
-	
-	private Element createAndAppendChildElement(Document document, Element parentElement,
-										String tag, String content) {
-		Element element = document.createElement(tag);
-		Text text = document.createTextNode(content);
-		element.appendChild(text);
-		parentElement.appendChild(element);
-		
-		return element;
-	}
-	
-	private Element createAndAppendWrapper(Document document, Element parentElement,
-										String tag) {
-		Element element = document.createElement(tag);
-		parentElement.appendChild(element);
-		
-		return element;
-	}
-			
-	private Document createXMLDocument() {
-		try {
-			DocumentBuilderFactory documentFactory = 
-					DocumentBuilderFactory.newInstance();
-			DocumentBuilder documentBuilder = 
-					documentFactory.newDocumentBuilder();
-			
-			return documentBuilder.newDocument(); 
-			
-		} catch (ParserConfigurationException exception) {
-			exception.printStackTrace();
-		}		
-		
-		return null;
 	}
 }

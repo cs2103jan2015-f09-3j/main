@@ -138,22 +138,22 @@ public class Task {
 		String id = null;
 		
 		switch (taskType) {
-		case EVENT :
-			id = "E" + nextId;
-			break;
-		case TIMED :
-			id = "T" + nextId;
-			break;
-		case DATED :
-			id = "D" + nextId;
-			break;
-		case FLOATING :
-			id = "F" + nextId;
-			break;
-		default :
-			// invalid task
-			// return null
-			break;
+			case EVENT :
+				id = "E" + nextId;
+				break;
+			case TIMED :
+				id = "T" + nextId;
+				break;
+			case DATED :
+				id = "D" + nextId;
+				break;
+			case FLOATING :
+				id = "F" + nextId;
+				break;
+			default :
+				// invalid task
+				// return null
+				break;
 		}
 		
 		return id;
