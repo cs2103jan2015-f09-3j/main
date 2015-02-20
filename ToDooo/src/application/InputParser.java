@@ -26,18 +26,25 @@ public class InputParser {
 	
 	public List<Date> getDatesFromString(String userInput) {
 		List<DateGroup> groups = _parser.parse(userInput);
-		List<Date> dates = groups.get(0).getDates();
 		
-		return dates;
+		if (groups.isEmpty()) {
+			return null;
+		}			
+		else {
+			List<Date> dates = groups.get(0).getDates();
+			
+			return dates;
+		}
 	}
 	
 	public static String getCategoryFromString(String userInput) {
-		boolean isCategorised = userInput.contains(Command.CATEGORY.getBasicCommand()) &&
-								!Command.isPrioritised(userInput);
+		boolean isCategorised = Command.isCategorised(userInput);
 		
 		if (isCategorised) {
 			int commandIndex = userInput.indexOf(Command.CATEGORY.getBasicCommand());
-			String concatString = userInput.substring(commandIndex + 1, userInput.length());
+			String concatString = userInput.substring(commandIndex + 
+								  Command.CATEGORY.getBasicCommand().length(), 
+								  userInput.length());
 			
 			return concatString.substring(0, concatString.indexOf(" "));
 		}
@@ -62,8 +69,8 @@ public class InputParser {
 			return Priority.HIGH;
 		} else if (Priority.isMedium(userInput)) {
 			return Priority.MEDIUM;
-		} else if (Priority.isHigh(userInput)) {
-			return Priority.HIGH;
+		} else if (Priority.isLow(userInput)) {
+			return Priority.LOW;
 		} else {
 			return Priority.NEUTRAL;
 		}

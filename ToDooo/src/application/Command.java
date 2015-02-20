@@ -9,7 +9,7 @@ public enum Command {
 	TO("to", "-t"),
 	ON("on", "-o"),
 	BY("by", "-b"),
-	CATEGORY("/", "/"),
+	CATEGORY("//", "//"),
 	PRIORITY_HIGH("/high", "/***"),
 	PRIORITY_MEDIUM("/medium", "/**"),
 	PRIORITY_LOW("/low", "/*"),
@@ -79,5 +79,9 @@ public enum Command {
 			    commandLine.contains(Command.RECURRING_MONTHLY.getAdvancedCommand()) ||
 			    commandLine.contains(Command.RECURRING_YEARLY.getBasicCommand()) ||
 			    commandLine.contains(Command.RECURRING_YEARLY.getAdvancedCommand()));
+	}
+	
+	public static boolean isCategorised(String commandLine) {
+		return (commandLine.contains(Command.CATEGORY.getBasicCommand()));
 	}
 }

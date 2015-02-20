@@ -39,10 +39,6 @@ public enum TaskType {
 	
 	public static boolean isFloatingTask(String commandLine) {
 		return (!(isEvent(commandLine) && isTimedTask(commandLine) &&
-				 isDatedTask(commandLine)) && 
-				(commandLine.contains(Command.FROM.getBasicCommand()) ||
-				 commandLine.contains(Command.FROM.getAdvancedCommand()) ||
-				 commandLine.contains(Command.TO.getBasicCommand()) ||
-				 commandLine.contains(Command.TO.getAdvancedCommand())));
+				 isDatedTask(commandLine)));
 	}
 }

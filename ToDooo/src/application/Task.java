@@ -23,7 +23,6 @@ public class Task {
 	public Task(String userInput, TaskType taskType, String id) {
 		_id = id;		
 		_taskType = taskType;
-		_toDo = generateToDoString(userInput, taskType); // incomplete
 		_originalText = userInput;
 		
 		List<Date> dates = Main.inputParser.getDatesFromString(userInput);
@@ -31,10 +30,11 @@ public class Task {
 		
 		_category = InputParser.getCategoryFromString(userInput);
 		
-		_isRecurring = Command.isRecurred(userInput);
-		_repeat = InputParser.getFrequencyFromString(userInput);
+		setRepeatFrequency(dates, userInput);
 		
 		_priority = InputParser.getPriorityFromString(userInput);
+		
+		_toDo = generateToDoString(userInput, taskType);
 	}
 	
 	public String getId() {
@@ -179,21 +179,21 @@ public class Task {
 		switch(taskType) {
 			case EVENT :
 				if (toDoString.contains(Command.ON.getAdvancedCommand())) {
-					toDoString.replaceFirst(Command.ON.getAdvancedCommand(), on);
+					toDoString.replace(Command.ON.getAdvancedCommand(), on);
 				}
 				break;
 			case TIMED : 
 				if (toDoString.contains(Command.FROM.getAdvancedCommand())) {
-					toDoString.replaceFirst(Command.FROM.getAdvancedCommand(), from);
+					toDoString.replace(Command.FROM.getAdvancedCommand(), from);
 				}
 				
 				if (toDoString.contains(Command.TO.getAdvancedCommand())) {
-					toDoString.replaceFirst(Command.TO.getAdvancedCommand(), to);
+					toDoString.replace(Command.TO.getAdvancedCommand(), to);
 				}
 				break;
 			case DATED :
 				if (toDoString.contains(Command.BY.getAdvancedCommand())) {
-					toDoString.replaceFirst(Command.BY.getAdvancedCommand(), by);
+					toDoString.replace(Command.BY.getAdvancedCommand(), by);
 				} 
 				break;
 			default :
@@ -201,7 +201,34 @@ public class Task {
 				break;
 		}
 		
-		return toDoString; 
+		boolean isCategorised = (!_category.equals(Constant.CATEGORY_UNCATEGORISED));
+		if (isCategorised) {
+			toDoString = toDoString.replace(Command.CATEGORY.getBasicCommand() + 
+												 _category, "");
+		}
+		
+		boolean isPrioritised = (!_priority.equals(Priority.NEUTRAL));
+		if (isPrioritised) {
+			Command priorityCommand = _priority.getCommand();
+			
+			if (toDoString.contains(priorityCommand.getBasicCommand())) {
+				toDoString = toDoString.replace(priorityCommand.getBasicCommand(), "");
+			} else if (toDoString.contains(priorityCommand.getAdvancedCommand())) {
+				toDoString = toDoString.replace(priorityCommand.getAdvancedCommand(), "");
+			} 
+		}
+		
+		if (_isRecurring) {
+			Command recurringCommand = _repeat.getCommand();
+			
+			if (toDoString.contains(recurringCommand.getBasicCommand())) {
+				toDoString = toDoString.replace(recurringCommand.getBasicCommand(), "");
+			} else if (toDoString.contains(recurringCommand.getAdvancedCommand())) {
+				toDoString = toDoString.replace(recurringCommand.getAdvancedCommand(), "");
+			}
+		}
+		
+		return toDoString.trim(); 
 	}
 
 	private void setDatesForTaskType(List<Date> dates, TaskType taskType) {
@@ -225,6 +252,16 @@ public class Task {
 				// floating task
 				// does not require action since no date in array
 				break;
+		}
+	}
+	
+	private void setRepeatFrequency(List<Date> dates, String userInput) {
+		if (dates != null) {
+			_isRecurring = Command.isRecurred(userInput);
+			_repeat = InputParser.getFrequencyFromString(userInput);
+		} else {
+			_isRecurring = false;
+			_repeat = Frequency.NIL;
 		}
 	}
 }

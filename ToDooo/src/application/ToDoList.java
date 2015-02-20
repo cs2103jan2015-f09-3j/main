@@ -62,25 +62,19 @@ public class ToDoList {
 		Element rootTag = document.createElement(Constant.TAG_FILE);
 		document.appendChild(rootTag);
 		
-		Element nextIdTag = document.
-						 createElement(Constant.TAG_NEXT_ID);
-		Text nextIdText = document.
-						  createTextNode(String.valueOf(Constant.START_ID));
-		nextIdTag.appendChild(nextIdText);
-		rootTag.appendChild(nextIdTag);
+		createAndAppendChildElement(document, rootTag, 
+									Constant.TAG_NEXT_ID, 
+									String.valueOf(Constant.START_ID));
 		
-		Element categoriesTag = document.
-							 createElement(Constant.TAG_CATEGORIES);
-		rootTag.appendChild(categoriesTag);
+		Element categoriesTag = createAndAppendWrapper(document, rootTag,
+							    Constant.TAG_CATEGORIES);
 		
-		Element categoryTag = document.createElement(Constant.TAG_CATEGORY);
-		Text categoryText = document.
-							createTextNode(Constant.CATEGORY_UNCATEGORISED);
-		categoryTag.appendChild(categoryText);
-		categoriesTag.appendChild(categoryTag);
+		createAndAppendChildElement(document, categoriesTag, 
+									Constant.TAG_CATEGORY, 
+									String.valueOf(Constant.CATEGORY_UNCATEGORISED));
 		
-		Element tasksTag = document.createElement(Constant.TAG_TASKS);
-		rootTag.appendChild(tasksTag);
+		createAndAppendWrapper(document, rootTag, 
+							   String.valueOf(Constant.TAG_TASKS));
 		
 		String result = Main.storage.writeFile(document, _listFilePath);
 		return result;
@@ -94,12 +88,23 @@ public class ToDoList {
 		Element nextIdTag = (Element) rootTag.
 									  getElementsByTagName(Constant.TAG_NEXT_ID).
 									  item(Constant.START_INDEX);
-		int nextId = Main.storage.readNextId() + 1;
-		nextIdTag.setTextContent(String.valueOf(nextId));
 		
 		Element tasksTag = (Element) rootTag.
 									 getElementsByTagName(Constant.TAG_TASKS).
-									 item(Constant.START_INDEX);	
+									 item(Constant.START_INDEX);
+		
+		boolean isCategorised = !(task.getCategory().equals(Constant.CATEGORY_UNCATEGORISED));
+		if (isCategorised) {
+			Element categoriesTag = (Element) rootTag.
+											  getElementsByTagName(Constant.TAG_CATEGORIES).
+											  item(Constant.START_INDEX);
+
+			createAndAppendChildElement(document, categoriesTag, Constant.TAG_CATEGORY,
+										task.getCategory().toString());
+		}
+		
+		int nextId = Main.storage.readNextId() + 1;
+		nextIdTag.setTextContent(String.valueOf(nextId));				
 		
 		Element taskTag = document.createElement(Constant.TAG_TASK);
 		taskTag.setAttribute(Constant.TAG_ATTRIBUTE_ID, task.getId());
@@ -143,14 +148,24 @@ public class ToDoList {
 		return result;
 	}
 	
-	private void createAndAppendChildElement(Document document, Element parentElement,
+	private Element createAndAppendChildElement(Document document, Element parentElement,
 										String tag, String content) {
 		Element element = document.createElement(tag);
 		Text text = document.createTextNode(content);
 		element.appendChild(text);
 		parentElement.appendChild(element);
-	}
 		
+		return element;
+	}
+	
+	private Element createAndAppendWrapper(Document document, Element parentElement,
+										String tag) {
+		Element element = document.createElement(tag);
+		parentElement.appendChild(element);
+		
+		return element;
+	}
+			
 	private Document createXMLDocument() {
 		try {
 			DocumentBuilderFactory documentFactory = 
