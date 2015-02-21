@@ -24,6 +24,16 @@ public class InputParser {
 		return TaskType.verifyTaskType(userInput);
 	}
 	
+	public Date getDateFromString(String dateString) {
+		List<Date> dates = getDatesFromString(dateString);
+		
+		if (dates != null) {
+			return dates.get(Constant.START_INDEX);
+		} else {
+			return null;
+		}
+	}
+	
 	public List<Date> getDatesFromString(String userInput) {
 		List<DateGroup> groups = _parser.parse(userInput);
 		
@@ -55,6 +65,20 @@ public class InputParser {
 		}
 		
 		return Constant.CATEGORY_UNCATEGORISED;
+	}
+	
+	public static String getDeleteTargetIdFromString(String userInput) {
+		String targetId = null;
+		String basicCommand = Command.DELETE.getBasicCommand();
+		String advancedCommand = Command.DELETE.getAdvancedCommand();
+		
+		if (userInput.contains(basicCommand)) {
+			targetId = userInput.substring(basicCommand.length() + 1, userInput.length());
+		} else if (userInput.contains(advancedCommand)) {
+			targetId = userInput.substring(advancedCommand.length() + 1, userInput.length());
+		}
+		
+		return targetId.toUpperCase();
 	}
 	
 	public static Frequency getFrequencyFromString(String userInput) {

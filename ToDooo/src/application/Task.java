@@ -16,6 +16,10 @@ public class Task {
 	private Frequency _repeat;
 	private Priority _priority;
 	
+	public Task() {
+		// convert from node
+	}
+	
 	public Task(String userInput, TaskType taskType) {
 		this(userInput, taskType, generateId(taskType));
 	}

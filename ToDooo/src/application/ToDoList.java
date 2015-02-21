@@ -19,17 +19,16 @@ import javax.xml.xpath.XPathFactory;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 import org.w3c.dom.Text;
 import org.xml.sax.SAXException;
 
 public class ToDoList {
-	private XPath _xPath;
 	private String _listFilePath;
 
 	public ToDoList() {		
 		_listFilePath = Main.storage.readSavePath();		
 		createListFileIfNotExist();		
-		_xPath = getNewXPath();
 	}
 	
 	public String getListFilePath() {
@@ -80,7 +79,7 @@ public class ToDoList {
 		return result;
 	}
 	
-	public String addTaskToFileDocument(Task task) {
+	public String addTaskToList(Task task) {
 		Document document = Main.storage.getFileDocument();
 		
 		Element rootTag = document.getDocumentElement();
@@ -146,5 +145,13 @@ public class ToDoList {
 		
 		String result = Main.storage.writeFile(document);
 		return result;
+	}
+
+	public Task deleteTaskFromList(String userInput) {
+		String targetId = InputParser.getDeleteTargetIdFromString(userInput);
+		
+		Task removedTask = Main.storage.deleteTaskFromFileById(targetId);
+		
+		return removedTask;
 	}
 }

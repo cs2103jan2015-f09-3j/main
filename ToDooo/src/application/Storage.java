@@ -28,19 +28,40 @@ import org.xml.sax.SAXException;
 public class Storage {
 	private static Transformer _transformer;
 	private static XPath _xPath;
+	private static DocumentBuilder _documentBuilder;
 	
 	public Storage() {		
+		initTransformer();			
+		_xPath = getNewXPath();
+		_documentBuilder = getNewDocBuilder();
+	}
+	
+	private void initTransformer() {
 		try {
 			TransformerFactory transformerFactory = 
 					TransformerFactory.newInstance();
+			
 			_transformer = transformerFactory.newTransformer();
 			_transformer.setOutputProperty(OutputKeys.INDENT, 
-										   Constant.XML_INDENT_YES);
-			
-			_xPath = getNewXPath();
+					   					   Constant.XML_OUTPUT_INDENT);
+			_transformer.setOutputProperty(Constant.XML_OUTPUT_INDENT_PROPERTY, 
+										   Constant.XML_OUTPUT_INDENT_AMOUNT);
 		} catch (TransformerConfigurationException exception) {
 			exception.printStackTrace();
 		}
+	}
+	
+	private DocumentBuilder getNewDocBuilder() {		
+		try {
+			DocumentBuilderFactory documentFactory = 
+					DocumentBuilderFactory.newInstance();
+			
+			return documentFactory.newDocumentBuilder();
+		} catch (ParserConfigurationException exception) {
+			exception.printStackTrace();
+		}
+		
+		return null;
 	}
 	
 	private XPath getNewXPath() {
@@ -106,78 +127,68 @@ public class Storage {
 
 	public Document getFileDocument() {
 		try {
-			DocumentBuilderFactory documentFactory = 
-					DocumentBuilderFactory.newInstance();
-			DocumentBuilder documentBuilder = 
-					documentFactory.newDocumentBuilder();
-			
-			return documentBuilder.parse(Main.list.getListFilePath()); 
-			
-		} catch (ParserConfigurationException |
-				SAXException | IOException exception) {
+			return _documentBuilder.parse(Main.list.getListFilePath()); 			
+		} catch (SAXException | IOException exception) {
 			exception.printStackTrace();
 		}			
 		return null;
 	}
 	
 	public Document getSettingDocument() {
-		try {
-			DocumentBuilderFactory documentFactory = 
-					DocumentBuilderFactory.newInstance();
-			DocumentBuilder documentBuilder = 
-					documentFactory.newDocumentBuilder();
-			
-			return documentBuilder.parse(Constant.PATH_SETTING); 
-			
-		} catch (ParserConfigurationException |
-				SAXException | IOException exception) {
+		try {			
+			return _documentBuilder.parse(Constant.PATH_SETTING); 			
+		} catch (SAXException | IOException exception) {
 			exception.printStackTrace();
 		}			
 		return null;
 	}
-	
-	public Document getUndoDocument() {
+
+	public Task deleteTaskFromFileById(String targetId) {
+		Document fileDoc = getFileDocument();	
+		Task removedTask = null;
+		
 		try {
-			DocumentBuilderFactory documentFactory = 
-					DocumentBuilderFactory.newInstance();
-			DocumentBuilder documentBuilder = 
-					documentFactory.newDocumentBuilder();
+			XPathExpression expression = 
+					_xPath.compile("/" + Constant.TAG_FILE + "/" +
+								   Constant.TAG_TASKS + "/" +
+								   Constant.TAG_TASK + "[@" +
+								   Constant.TAG_ATTRIBUTE_ID + "='" + 
+								   targetId + "']");
 			
-			return documentBuilder.parse(Constant.PATH_UNDO); 
-			
-		} catch (ParserConfigurationException |
-				SAXException | IOException exception) {
+			NodeList nodes = (NodeList)expression.evaluate(fileDoc, XPathConstants.NODESET);
+			if (nodes.getLength() > 0) {
+				Node targetNode = nodes.item(Constant.START_INDEX);
+				removedTask = XmlManager.transformNodeToTask(targetNode);
+				
+				targetNode.getParentNode().removeChild(targetNode);
+				
+				cleanAndWriteFile(fileDoc);
+			} 
+		} catch (XPathExpressionException exception) {
 			exception.printStackTrace();
-		}			
-		return null;
-	}
-	
-	public void initUndoDocument() {
-		Document undoDoc = getUndoDocument();
-		
-		Node commandsTag = undoDoc.
-						   getElementsByTagName(Constant.TAG_UNDO_COMMANDS).
-						   item(Constant.START_INDEX);
-		NodeList commands = commandsTag.getChildNodes();
-		
-		Node node = null;
-		while (commands.getLength() > 0) {
-			node = commands.item(Constant.START_INDEX);
-			node.getParentNode().removeChild(node);
 		}
 		
-		writeFile(undoDoc, Constant.PATH_UNDO);
+		return removedTask;
 	}
-	
-	public void writeUndoToFile(Undo undo, String details) {
-		Document undoDoc = getUndoDocument();
-		Element commandsTag = undoDoc.getDocumentElement();
-		Command undoCommand = undo.getUndoCommand();
-		String tagName = undoCommand.getBasicCommand();
-		
-		XmlManager.createAndAppendChildElement(undoDoc, commandsTag, 
-											   tagName, details);
-	
-		writeFile(undoDoc, Constant.PATH_UNDO);
+
+	public void cleanAndWriteFile() {
+		Document document = getFileDocument();
+		cleanAndWriteFile(document);
+	}
+
+	public void cleanAndWriteFile(Document document) {
+		try {
+			NodeList nodes = (NodeList) _xPath.evaluate(Constant.XML_WHITESPACE_NODE_XPATH, 
+														document, XPathConstants.NODESET);
+			
+			for (int i = 0; i < nodes.getLength(); i++) {
+			    Node node = nodes.item(i);
+			    node.getParentNode().removeChild(node);
+			}
+			
+			writeFile(document);
+		} catch (XPathExpressionException exception) {
+			exception.printStackTrace();
+		}
 	}
 }

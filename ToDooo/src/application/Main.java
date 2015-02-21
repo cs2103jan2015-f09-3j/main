@@ -1,7 +1,7 @@
 package application;
-	
-import java.util.Date;
-import java.util.List;
+
+import java.util.ArrayList;
+import java.util.Stack;
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -14,6 +14,7 @@ public class Main extends Application {
 	public static Storage storage;
 	public static ToDoList list;
 	public static InputParser inputParser;
+	public static Stack<Undo> undos;
 	
 	@Override
 	public void start(Stage primaryStage) {
@@ -29,22 +30,14 @@ public class Main extends Application {
 	}
 	
 	public static void main(String[] args) {
-		initialise();
-		
-		testing();
-				
+		initialise();				
 		launch(args);
-	}
-	
-	public static void testing() {
-
 	}
 	
 	public static void initialise() {
 		Main.storage = new Storage();
 		Main.inputParser = new InputParser();
 		Main.list = new ToDoList();
-		
-		storage.initUndoDocument();
+		Main.undos = new Stack<Undo>();
 	}
 }

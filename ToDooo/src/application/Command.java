@@ -26,17 +26,6 @@ public enum Command {
 		_COMMAND_ADVANCED = commandAdvanced;
 	}
 	
-	public boolean isEqual(String otherCommand) {
-		boolean isEqual = false;
-		
-		if (_COMMAND_BASIC.equalsIgnoreCase(otherCommand) ||  
-			_COMMAND_ADVANCED.equalsIgnoreCase(otherCommand)) {
-			isEqual = true;
-		}
-		
-		return isEqual;
-	}
-	
 	public String getBasicCommand() {
 		return _COMMAND_BASIC;
 	}
@@ -49,7 +38,7 @@ public enum Command {
 		String basicCommand = "";
 		String advancedCommand = "";
 		
-		for (Command command : Constant.CRUD_COMMANDS) {
+		for (Command command : Constant.ACTION_COMMANDS) {
 			basicCommand = command.getBasicCommand();
 			advancedCommand = command.getAdvancedCommand();
 			

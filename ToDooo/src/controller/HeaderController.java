@@ -1,6 +1,9 @@
 package controller;
 
+import org.w3c.dom.Node;
+
 import application.Command;
+import application.Constant;
 import application.InputParser;
 import application.Main;
 import application.Task;
@@ -26,6 +29,7 @@ public class HeaderController{
 			String userInput = txtCmd.getText();		
 			String systemMsg = executeCommand(userInput);
 			
+			txtCmd.clear();
 			main.showInTabAll(systemMsg);
 		}
 	}
@@ -48,10 +52,14 @@ public class HeaderController{
 			// update
 			break;
 		case DELETE :
-			// delete
+			systemMsg = executeDelete(userInput);
 			break;
 		case SEARCH :
 			// search
+			break;
+		case SETTING :
+			// setting
+			executeSetting();
 			break;
 		default :
 			// invalid command
@@ -64,9 +72,30 @@ public class HeaderController{
 	private String executeAdd(String userInput, TaskType taskType) {
 		Task task = new Task(userInput, taskType);	
 		
-		Main.storage.writeUndoToFile(Undo.ADD, task.getId());
-		String systemMsg = Main.list.addTaskToFileDocument(task);
+		Undo undo = new Undo(Command.ADD, task.getId());
+		Main.undos.push(undo);
+		
+		String systemMsg = Main.list.addTaskToList(task);
 		
 		return systemMsg;
+	}
+	
+	private String executeDelete(String userInput) {
+		String systemMsg= null;
+		Task removedTask = Main.list.deleteTaskFromList(userInput);		
+		if (removedTask != null) {
+			Undo undo = new Undo(Command.DELETE, removedTask);
+			Main.undos.push(undo);
+			
+			systemMsg = Constant.MSG_DELETE_SUCCESS;
+		} else {
+			systemMsg = Constant.MSG_ITEM_NOT_FOUND;
+		}
+		
+		return systemMsg;
+	}
+	
+	private void executeSetting() {
+		// incomplete
 	}
 }
