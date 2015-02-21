@@ -1,0 +1,52 @@
+package controller;
+
+import java.io.File;
+import java.io.IOException;
+
+import javafx.fxml.FXML;
+import javafx.scene.control.Button;
+import javafx.scene.control.TextField;
+import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.AnchorPane;
+import javafx.stage.DirectoryChooser;
+
+public class SettingController {
+	
+	private MainController main;
+	@FXML AnchorPane anPaneSetting;
+	@FXML TextField txtPath;
+	@FXML Button btnBrowse;
+	@FXML ImageView backIcon;
+	
+	@FXML 
+	public void openFileDialogKey(KeyEvent e) {
+		if(e.getCode() == KeyCode.F10) {
+			openFileDialog();
+		}
+	}
+	
+	@FXML 
+	public void openFileDialogMouse(MouseEvent e) {
+		openFileDialog();
+	}
+	
+	@FXML
+	public void goBackToMainMouse(MouseEvent e) throws IOException {
+		//main.showPageInBody("/view/Body.fxml");
+	}
+	
+	public void init(MainController mainController) {
+		main = mainController;
+	}
+	
+	private void openFileDialog(){
+		DirectoryChooser dirChooser = new DirectoryChooser();
+		dirChooser.setTitle("Choose Storage Path");
+		File selectedDir = dirChooser.showDialog(anPaneSetting.getScene().getWindow());
+		txtPath.setText(selectedDir.getAbsolutePath());
+	}
+
+}

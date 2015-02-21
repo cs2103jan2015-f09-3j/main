@@ -1,5 +1,7 @@
 package controller;
 
+import java.io.IOException;
+
 import org.w3c.dom.Node;
 
 import application.Command;
@@ -12,8 +14,10 @@ import application.Undo;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 
 public class HeaderController{
@@ -22,6 +26,7 @@ public class HeaderController{
 	@FXML public TextField txtCmd;
 	@FXML private Label lblLogo;
 	@FXML private AnchorPane paneHead;
+	@FXML private ImageView settingIcon;
 	
 	@FXML
 	public void processCmd(KeyEvent e){
@@ -32,6 +37,11 @@ public class HeaderController{
 			txtCmd.clear();
 			main.showInTabAll(systemMsg);
 		}
+	}
+	
+	@FXML
+	public void loadSetting(MouseEvent e) throws IOException {
+		main.showPageInBody("/view/Setting.fxml");
 	}
 
 	public void init(MainController mainController) {
