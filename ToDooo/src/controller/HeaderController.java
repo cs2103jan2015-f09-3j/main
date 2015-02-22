@@ -27,6 +27,7 @@ public class HeaderController{
 	@FXML private Label lblLogo;
 	@FXML private AnchorPane paneHead;
 	@FXML private ImageView settingIcon;
+	@FXML private ImageView backIcon;
 	
 	@FXML
 	public void processCmd(KeyEvent e){
@@ -58,8 +59,17 @@ public class HeaderController{
 	}
 	
 	@FXML
-	public void loadSetting(MouseEvent e) throws IOException {
+	public void loadSettingMouse(MouseEvent e) throws IOException {
+		settingIcon.setVisible(false);
+		backIcon.setVisible(true);
 		mainCon.showPageInBody("/view/Setting.fxml");
+	}
+	
+	@FXML
+	public void goBackToMainMouse(MouseEvent e) throws IOException {
+		settingIcon.setVisible(true);
+		backIcon.setVisible(false);
+		mainCon.showPageInBody("/view/Body.fxml");
 	}
 	
 	@FXML

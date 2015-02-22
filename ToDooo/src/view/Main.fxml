@@ -16,10 +16,5 @@
             <fx:include fx:id="body" source="Body.fxml" />
          </children>
       </AnchorPane>
-      <AnchorPane fx:id="anPaneSetting" prefHeight="200.0" prefWidth="200.0" visible="false">
-         <children>
-            <fx:include fx:id="setting" source="Setting.fxml" />
-         </children>
-      </AnchorPane>
    </children>
 </AnchorPane>
