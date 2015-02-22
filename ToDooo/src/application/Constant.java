@@ -1,4 +1,5 @@
 package application;
+
 public final class Constant {
 	public static final int START_INDEX = 0;
 	public static final int START_ID = 1;
@@ -52,8 +53,8 @@ public final class Constant {
 	public static final String MSG_ITEM_NOT_FOUND = "Item not found.";
 	public static final String MSG_ORIGINAL_RETRIEVED = "Original input retrieved.";
 	public static final String MSG_ORIGINAL_NOT_RETRIEVED = "Original input cannot be retrieved.";
-	public static final String MSG_UPDATE_FAIL = "Update successful.";
-	public static final String MSG_UPDATE_SUCCESS = "Update failed.";
+	public static final String MSG_UPDATE_FAIL = "Update failed.";
+	public static final String MSG_UPDATE_SUCCESS = "Update successful.";
 	
 	public static final String MSG_UNDO_ADD_SUCCESS = "Undo add successful.";
 	public static final String MSG_UNDO_ADD_FAIL = "Undo add failed.";
@@ -63,4 +64,8 @@ public final class Constant {
 	public static final String MSG_UNDO_UPDATE_FAIL = "Undo update failed.";
 	
 	public static final String COMMAND_DELIMETER = ":";
+
+	public static final String COLOUR_ERROR = "#FF0033";
+	public static final String COLOUR_FEEDBACK = "#4771FF";
+	public static final String COLOUR_SUCCESS = "#9ACC77";
 }

@@ -25,6 +25,7 @@ public class HeaderController{
 	private MainController mainCon;
 	@FXML public TextField txtCmd;
 	@FXML private Label lblLogo;
+	@FXML private Label lblSysMsg;
 	@FXML private AnchorPane paneHead;
 	@FXML private ImageView settingIcon;
 	@FXML private ImageView backIcon;
@@ -33,21 +34,23 @@ public class HeaderController{
 	public void processCmd(KeyEvent e){
 		if (e.getCode() == KeyCode.ENTER) {
 			String userInput = txtCmd.getText();	
-			String systemMsg = null;
-
-			Command commandType = InputParser.getActionFromString(userInput);
+			if (userInput.equals("")) {
+				return;
+			}
 			
-			txtCmd.clear();
-			mainCon.showInTabAll(systemMsg);
+			String systemMsg = null;
+			Command commandType = InputParser.getActionFromString(userInput);	
 
 			if (Main.toUpdate && commandType.equals(Command.UPDATE)) {
 				systemMsg = executeUpdate(userInput);
+				
 				Main.toUpdate = false;
+				txtCmd.clear();
 			} else {
 				systemMsg = executeCommand(userInput, commandType);
 			}
 			
-			mainCon.showInTabAll(systemMsg);			
+			lblSysMsg.setText(systemMsg);			
 		}
 	}
 	
@@ -156,7 +159,7 @@ public class HeaderController{
 	
 	private String executeUpdate(String userInput) {
 		String systemMsg = null;
-		String targetId = InputParser.getTargetIdFromString(userInput);
+		String targetId = InputParser.getTargetIdFromUpdateString(userInput);
 		Task originalTask = Main.list.updateTaskOnList(userInput);
 		
 		if (originalTask != null) {

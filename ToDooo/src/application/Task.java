@@ -181,6 +181,12 @@ public class Task {
 						 userInput.length()).trim();
 		} 
 		
+		if (userInput.contains(Command.UPDATE.getBasicCommand()) ||
+			userInput.contains(Command.UPDATE.getAdvancedCommand())) {
+			toDoString = userInput.substring(userInput.indexOf(Constant.COMMAND_DELIMETER) + 1, 
+						 userInput.length());
+		}
+		
 		switch(taskType) {
 			case EVENT :
 				if (toDoString.contains(Command.ON.getAdvancedCommand())) {
