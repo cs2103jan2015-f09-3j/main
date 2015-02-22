@@ -36,10 +36,9 @@ public class HeaderController{
 
 			Command commandType = InputParser.getActionFromString(userInput);
 			
-<<<<<<< HEAD
 			txtCmd.clear();
 			mainCon.showInTabAll(systemMsg);
-=======
+
 			if (Main.toUpdate && commandType.equals(Command.UPDATE)) {
 				systemMsg = executeUpdate(userInput);
 				Main.toUpdate = false;
@@ -47,7 +46,7 @@ public class HeaderController{
 				systemMsg = executeCommand(userInput, commandType);
 			}
 			
-			mainC.showInTabAll(systemMsg);			
+			mainCon.showInTabAll(systemMsg);			
 		}
 	}
 	
@@ -55,7 +54,6 @@ public class HeaderController{
 	public void onKeyTyped(KeyEvent e) {
 		if (txtCmd.getText().equals("")) {
 			Main.toUpdate = false;
->>>>>>> 76b9964fb5784ec187b528abaf65cfcabf13b4f2
 		}
 	}
 	
