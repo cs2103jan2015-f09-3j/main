@@ -7,7 +7,7 @@
 
 <AnchorPane fx:id="anPaneMain" prefHeight="500.0" prefWidth="750.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.BodyController">
    <children>
-      <TabPane fx:id="tPaneMain" layoutY="100.0" prefHeight="324.0" prefWidth="471.0" side="BOTTOM" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+      <TabPane fx:id="tPaneMain" layoutY="100.0" prefHeight="324.0" prefWidth="471.0" side="BOTTOM" stylesheets="@../application/application.css" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
         <tabs>
           <Tab fx:id="tabAll" text="All">
             <content>

@@ -9,7 +9,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<AnchorPane fx:id="anPaneHeader" prefHeight="100.0" prefWidth="750.0" style="-fx-background-color: #34302D;" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.HeaderController">
+<AnchorPane fx:id="anPaneHeader" prefHeight="100.0" prefWidth="750.0" style="-fx-background-color: #7ABF66;" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.HeaderController">
    <children>
       <Label fx:id="lblLogo" layoutX="14.0" layoutY="4.0" text="ToDooo" textFill="#edeae3">
          <font>

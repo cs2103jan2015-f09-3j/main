@@ -16,7 +16,7 @@ import javafx.stage.DirectoryChooser;
 
 public class SettingController {
 	
-	private MainController mainC;
+	private MainController mainCon;
 	@FXML AnchorPane anPaneSetting;
 	@FXML TextField txtPath;
 	@FXML Button btnBrowse;
@@ -36,11 +36,11 @@ public class SettingController {
 	
 	@FXML
 	public void goBackToMainMouse(MouseEvent e) throws IOException {
-		mainC.showPageInBody("/view/Body.fxml");
+		mainCon.showPageInBody("/view/Body.fxml");
 	}
 	
 	public void init(MainController mainController) {
-		mainC = mainController;
+		mainCon = mainController;
 	}
 	
 	private void openFileDialog() {

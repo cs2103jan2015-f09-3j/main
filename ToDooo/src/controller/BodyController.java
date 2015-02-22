@@ -9,13 +9,13 @@ import javafx.scene.layout.AnchorPane;
 
 public class BodyController{
 
-	private MainController mainC;
+	private MainController mainCon;
 	@FXML AnchorPane anPaneAll;
 	@FXML AnchorPane anPaneCat;
 	@FXML AnchorPane anPanePri;
 
 	public void init(MainController mainController) {
-		mainC = mainController;
+		mainCon = mainController;
 	}
 
 }
