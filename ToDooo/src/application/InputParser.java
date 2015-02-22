@@ -67,15 +67,33 @@ public class InputParser {
 		return Constant.CATEGORY_UNCATEGORISED;
 	}
 	
-	public static String getDeleteTargetIdFromString(String userInput) {
+	public static String getTargetIdFromString(String userInput) {
+		int endIndex = userInput.length();
+		String targetId = getTargetId(userInput, endIndex);
+
+		return targetId.toUpperCase();
+	}
+	
+	public static String getTargetIdFromUpdateString(String userInput) {
+		int endIndex = userInput.indexOf(Constant.COMMAND_DELIMETER);
+		String targetId = getTargetId(userInput, endIndex);
+		
+		return targetId.toUpperCase();
+	}
+	
+	private static String getTargetId(String userInput, int endIndex) {
 		String targetId = null;
-		String basicCommand = Command.DELETE.getBasicCommand();
-		String advancedCommand = Command.DELETE.getAdvancedCommand();
+		
+		Command command = getActionFromString(userInput);
+		String basicCommand = command.getBasicCommand();
+		String advancedCommand = command.getAdvancedCommand();
 		
 		if (userInput.contains(basicCommand)) {
-			targetId = userInput.substring(basicCommand.length() + 1, userInput.length());
+			targetId = userInput.substring(basicCommand.length() + 1, 
+										   endIndex);
 		} else if (userInput.contains(advancedCommand)) {
-			targetId = userInput.substring(advancedCommand.length() + 1, userInput.length());
+			targetId = userInput.substring(advancedCommand.length() + 1, 
+										   endIndex);
 		}
 		
 		return targetId.toUpperCase();

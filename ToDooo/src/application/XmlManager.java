@@ -89,6 +89,13 @@ public class XmlManager {
 		return task;
 	}
 	
+	public static void setText(Element parentElement, String tagName, String text) {
+		Element element = (Element) parentElement.
+									  getElementsByTagName(tagName).
+									  item(Constant.START_INDEX);
+		element.setTextContent(text);
+	}
+	
 	public static String getTextByTagName(Element parentElement, String tagName) {
 		return parentElement.getElementsByTagName(tagName).
 			   item(Constant.START_INDEX).

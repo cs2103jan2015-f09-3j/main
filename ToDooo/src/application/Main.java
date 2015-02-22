@@ -15,6 +15,7 @@ public class Main extends Application {
 	public static ToDoList list;
 	public static InputParser inputParser;
 	public static Stack<Undo> undos;
+	public static boolean toUpdate;
 	
 	@Override
 	public void start(Stage primaryStage) {
@@ -39,5 +40,7 @@ public class Main extends Application {
 		Main.inputParser = new InputParser();
 		Main.list = new ToDoList();
 		Main.undos = new Stack<Undo>();
+		
+		toUpdate = false;
 	}
 }

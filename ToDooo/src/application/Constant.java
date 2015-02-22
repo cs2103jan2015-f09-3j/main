@@ -50,6 +50,10 @@ public final class Constant {
 	public static final String MSG_DELETE_SUCCESS = "Delete successful.";
 	public static final String MSG_DELETE_FAIL = "Delete failed.";
 	public static final String MSG_ITEM_NOT_FOUND = "Item not found.";
+	public static final String MSG_ORIGINAL_RETRIEVED = "Original input retrieved.";
+	public static final String MSG_ORIGINAL_NOT_RETRIEVED = "Original input cannot be retrieved.";
+	public static final String MSG_UPDATE_FAIL = "Update successful.";
+	public static final String MSG_UPDATE_SUCCESS = "Update failed.";
 	
 	public static final String MSG_UNDO_ADD_SUCCESS = "Undo add successful.";
 	public static final String MSG_UNDO_ADD_FAIL = "Undo add failed.";
@@ -57,4 +61,6 @@ public final class Constant {
 	public static final String MSG_UNDO_DELETE_FAIL = "Undo delete failed.";
 	public static final String MSG_UNDO_UPDATE_SUCCESS = "Undo update successful.";
 	public static final String MSG_UNDO_UPDATE_FAIL = "Undo update failed.";
+	
+	public static final String COMMAND_DELIMETER = ":";
 }
