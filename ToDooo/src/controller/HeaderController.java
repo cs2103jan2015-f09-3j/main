@@ -59,7 +59,7 @@ public class HeaderController{
 	
 	@FXML
 	public void loadSetting(MouseEvent e) throws IOException {
-		mainCon.showPageInBody("/view/SearchResult.fxml");
+		mainCon.showPageInBody("/view/Setting.fxml");
 	}
 	
 	@FXML
