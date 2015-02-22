@@ -33,8 +33,7 @@ public class HeaderController{
 		if (e.getCode() == KeyCode.ENTER) {
 			String userInput = txtCmd.getText();	
 			String systemMsg = null;
-			
-<<<<<<< HEAD
+
 			Command commandType = InputParser.getActionFromString(userInput);
 			
 			if (Main.toUpdate && commandType.equals(Command.UPDATE)) {
@@ -44,7 +43,7 @@ public class HeaderController{
 				systemMsg = executeCommand(userInput, commandType);
 			}
 			
-			main.showInTabAll(systemMsg);			
+			mainC.showInTabAll(systemMsg);			
 		}
 	}
 	
@@ -52,10 +51,6 @@ public class HeaderController{
 	public void onKeyTyped(KeyEvent e) {
 		if (txtCmd.getText().equals("")) {
 			Main.toUpdate = false;
-=======
-			txtCmd.clear();
-			mainC.showInTabAll(systemMsg);
->>>>>>> origin/master
 		}
 	}
 	
