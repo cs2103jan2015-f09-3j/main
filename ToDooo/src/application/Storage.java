@@ -206,7 +206,8 @@ public class Storage {
 		try {
 			XPathExpression expression = 
 					_xPath.compile("/" + Constant.TAG_FILE + "/" +
-								   Constant.TAG_CATEGORIES);
+								   Constant.TAG_CATEGORIES + "/" +
+								   Constant.TAG_CATEGORY);
 			
 			NodeList nodes = (NodeList)expression.evaluate(document, XPathConstants.NODESET);
 			

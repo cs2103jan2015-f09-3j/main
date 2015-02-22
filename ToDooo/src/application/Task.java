@@ -28,7 +28,7 @@ public class Task {
 	public Task(String userInput, String id) {
 		_id = id;		
 		_taskType = InputParser.getTaskTypeFromString(userInput);
-		_originalText = userInput;
+		_originalText = removeActionFromString(userInput);
 		
 		List<Date> dates = Main.inputParser.getDatesFromString(userInput);
 		setDatesForTaskType(dates, _taskType);
@@ -165,13 +165,88 @@ public class Task {
 	}
 	
 	private String generateToDoString(String userInput, TaskType taskType) {
-		int lengthOfBasicAddCommand = Command.ADD.getBasicCommand().length();
-		int lengthOfAdvancedAddCommand = Command.ADD.getAdvancedCommand().length();
 		String toDoString = userInput;
 		String on = "on";
 		String from = "from";
 		String to = "to";
 		String by = "by";
+		
+		toDoString = removeActionFromString(userInput);
+		
+		switch(taskType) {
+			case EVENT :
+				if (toDoString.contains(Command.ON.getAdvancedCommand())) {
+					toDoString = toDoString.replace(Command.ON.getAdvancedCommand(), on);
+				}
+				break;
+			case TIMED : 
+				if (toDoString.contains(Command.FROM.getAdvancedCommand())) {
+					toDoString = toDoString.replace(Command.FROM.getAdvancedCommand(), from);
+				}
+				
+				if (toDoString.contains(Command.TO.getAdvancedCommand())) {
+					toDoString = toDoString.replace(Command.TO.getAdvancedCommand(), to);
+				}
+				break;
+			case DATED :
+				if (toDoString.contains(Command.BY.getAdvancedCommand())) {
+					toDoString = toDoString.replace(Command.BY.getAdvancedCommand(), by);
+				} 
+				break;
+			default :
+				// floating task
+				break;
+		}
+		
+		toDoString = removeCategoryFromString(toDoString);		
+		toDoString = removePriorityFromString(toDoString);		
+		toDoString = removeRecurringFromString(toDoString);
+		
+		return toDoString.trim(); 
+	}
+
+	private String removeRecurringFromString(String toDoString) {
+		if (_isRecurring) {
+			Command recurringCommand = _repeat.getCommand();
+			
+			if (toDoString.contains(recurringCommand.getBasicCommand())) {
+				toDoString = toDoString.replace(recurringCommand.getBasicCommand(), "");
+			} else if (toDoString.contains(recurringCommand.getAdvancedCommand())) {
+				toDoString = toDoString.replace(recurringCommand.getAdvancedCommand(), "");
+			}
+		}
+		return toDoString;
+	}
+
+	private String removePriorityFromString(String toDoString) {
+		boolean isPrioritised = (!_priority.equals(Priority.NEUTRAL));
+		
+		if (isPrioritised) {
+			Command priorityCommand = _priority.getCommand();
+			
+			if (toDoString.contains(priorityCommand.getBasicCommand())) {
+				toDoString = toDoString.replace(priorityCommand.getBasicCommand(), "");
+			} else if (toDoString.contains(priorityCommand.getAdvancedCommand())) {
+				toDoString = toDoString.replace(priorityCommand.getAdvancedCommand(), "");
+			} 
+		}
+		return toDoString;
+	}
+
+	private String removeCategoryFromString(String toDoString) {
+		boolean isCategorised = (!_category.equals(Constant.CATEGORY_UNCATEGORISED));
+		
+		if (isCategorised) {
+			toDoString = toDoString.replace(Command.CATEGORY.getBasicCommand() + 
+											_category, "");
+		}
+		return toDoString;
+	}
+	
+	public String removeActionFromString(String userInput) {
+		int lengthOfBasicAddCommand = Command.ADD.getBasicCommand().length();
+		int lengthOfAdvancedAddCommand = Command.ADD.getAdvancedCommand().length();
+		String toDoString = userInput;
 		
 		if (userInput.contains(Command.ADD.getBasicCommand())){
 			toDoString = userInput.substring(lengthOfBasicAddCommand, 
@@ -183,63 +258,14 @@ public class Task {
 		
 		if (userInput.contains(Command.UPDATE.getBasicCommand()) ||
 			userInput.contains(Command.UPDATE.getAdvancedCommand())) {
-			toDoString = userInput.substring(userInput.indexOf(Constant.COMMAND_DELIMETER) + 1, 
-						 userInput.length());
-		}
-		
-		switch(taskType) {
-			case EVENT :
-				if (toDoString.contains(Command.ON.getAdvancedCommand())) {
-					toDoString.replace(Command.ON.getAdvancedCommand(), on);
-				}
-				break;
-			case TIMED : 
-				if (toDoString.contains(Command.FROM.getAdvancedCommand())) {
-					toDoString.replace(Command.FROM.getAdvancedCommand(), from);
-				}
-				
-				if (toDoString.contains(Command.TO.getAdvancedCommand())) {
-					toDoString.replace(Command.TO.getAdvancedCommand(), to);
-				}
-				break;
-			case DATED :
-				if (toDoString.contains(Command.BY.getAdvancedCommand())) {
-					toDoString.replace(Command.BY.getAdvancedCommand(), by);
-				} 
-				break;
-			default :
-				// floating task
-				break;
-		}
-		
-		boolean isCategorised = (!_category.equals(Constant.CATEGORY_UNCATEGORISED));
-		if (isCategorised) {
-			toDoString = toDoString.replace(Command.CATEGORY.getBasicCommand() + 
-												 _category, "");
-		}
-		
-		boolean isPrioritised = (!_priority.equals(Priority.NEUTRAL));
-		if (isPrioritised) {
-			Command priorityCommand = _priority.getCommand();
 			
-			if (toDoString.contains(priorityCommand.getBasicCommand())) {
-				toDoString = toDoString.replace(priorityCommand.getBasicCommand(), "");
-			} else if (toDoString.contains(priorityCommand.getAdvancedCommand())) {
-				toDoString = toDoString.replace(priorityCommand.getAdvancedCommand(), "");
-			} 
-		}
-		
-		if (_isRecurring) {
-			Command recurringCommand = _repeat.getCommand();
-			
-			if (toDoString.contains(recurringCommand.getBasicCommand())) {
-				toDoString = toDoString.replace(recurringCommand.getBasicCommand(), "");
-			} else if (toDoString.contains(recurringCommand.getAdvancedCommand())) {
-				toDoString = toDoString.replace(recurringCommand.getAdvancedCommand(), "");
+			if (userInput.toLowerCase().contains(_id.toLowerCase())) {
+				toDoString = userInput.substring(userInput.indexOf(Constant.COMMAND_DELIMETER) + 2, 
+						 	 userInput.length());
 			}
 		}
 		
-		return toDoString.trim(); 
+		return toDoString;
 	}
 
 	
@@ -276,4 +302,6 @@ public class Task {
 			_repeat = Frequency.NIL;
 		}
 	}
+	
+	
 }
