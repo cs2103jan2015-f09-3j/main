@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.image.*?>
 <?import javafx.scene.paint.*?>
 <?import javafx.scene.shape.*?>
 <?import javafx.scene.text.*?>
@@ -14,16 +15,28 @@
          <font>
             <Font name="Ebrima" size="36.0" />
          </font></Label>
+<<<<<<< HEAD
       <TextField fx:id="txtCmd" layoutX="14.0" layoutY="61.0" onKeyPressed="#processCmd" onKeyTyped="#onKeyTyped" prefHeight="25.0" prefWidth="686.0" promptText="Type your command here" style="-fx-background-color: #EDEAE3;" />
+=======
+      <TextField fx:id="txtCmd" layoutX="14.0" layoutY="61.0" onKeyPressed="#processCmd" prefHeight="25.0" prefWidth="686.0" promptText="Type your command here" style="-fx-background-color: #EDEAE3;">
+         <font>
+            <Font name="Segoe UI" size="12.0" />
+         </font></TextField>
+>>>>>>> origin/master
       <Text fill="#edeae3" layoutX="124.0" layoutY="37.0" strokeType="OUTSIDE" strokeWidth="0.0" text="✓">
          <font>
             <Font size="27.0" />
          </font>
       </Text>
-      <Button layoutX="711.0" layoutY="60.0" mnemonicParsing="false" style="-fx-background-color: #EDEAE3;" text="&gt;">
+      <Button layoutX="711.0" layoutY="61.0" mnemonicParsing="false" style="-fx-background-color: #EDEAE3;" text="&gt;">
          <font>
-            <Font name="Ebrima" size="12.0" />
+            <Font name="Segoe UI" size="12.0" />
          </font>
       </Button>
+      <ImageView fx:id="settingIcon" fitHeight="44.0" fitWidth="43.0" layoutX="702.0" layoutY="5.0" onMouseClicked="#loadSetting" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@../images/settingIcon.png" />
+         </image>
+      </ImageView>
    </children>
 </AnchorPane>

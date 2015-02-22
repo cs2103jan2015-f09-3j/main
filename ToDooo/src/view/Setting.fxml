@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.effect.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.text.*?>
+<?import javafx.scene.control.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.layout.AnchorPane?>
+
+<AnchorPane fx:id="anPaneSetting" prefHeight="500.0" prefWidth="750.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.SettingController">
+   <children>
+      <TextField fx:id="txtPath" layoutX="14.0" layoutY="75.0" onKeyPressed="#openFileDialogKey" prefHeight="25.0" prefWidth="659.0" />
+      <Label layoutX="14.0" layoutY="14.0" prefHeight="23.0" prefWidth="97.0" text="Settings">
+         <font>
+            <Font name="Segoe UI Bold" size="18.0" />
+         </font></Label>
+      <Label layoutX="14.0" layoutY="50.0" text="Press F10 or click &quot;Browse&quot; button to open file dialog.">
+         <font>
+            <Font name="Segoe UI" size="12.0" />
+         </font>
+      </Label>
+      <Button fx:id="btnBrowse" layoutX="682.0" layoutY="75.0" mnemonicParsing="false" onMouseClicked="#openFileDialogMouse" style="-fx-background-color: #586164;" text="Browse" textFill="WHITE">
+         <font>
+            <Font name="Segoe UI" size="12.0" />
+         </font>
+      </Button>
+      <ImageView fx:id="backIcon" fitHeight="37.0" fitWidth="33.0" layoutX="703.0" layoutY="16.0" onMouseClicked="#goBackToMainMouse" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@../images/backIcon.png" />
+         </image>
+      </ImageView>
+   </children>
+</AnchorPane>

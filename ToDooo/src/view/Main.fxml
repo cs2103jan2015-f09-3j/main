@@ -6,14 +6,19 @@
 
 <AnchorPane prefHeight="600.0" prefWidth="750.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.MainController">
    <children>
-      <AnchorPane prefHeight="100.0" prefWidth="750.0">
+      <AnchorPane fx:id="anPaneHeader" prefHeight="100.0" prefWidth="750.0">
          <children>
             <fx:include fx:id="header" source="Header.fxml" />
          </children>
       </AnchorPane>
-      <AnchorPane layoutY="100.0" prefHeight="500.0" prefWidth="750.0">
+      <AnchorPane fx:id="anPaneBody" layoutY="100.0" prefHeight="500.0" prefWidth="750.0">
          <children>
             <fx:include fx:id="body" source="Body.fxml" />
+         </children>
+      </AnchorPane>
+      <AnchorPane fx:id="anPaneSetting" prefHeight="200.0" prefWidth="200.0" visible="false">
+         <children>
+            <fx:include fx:id="setting" source="Setting.fxml" />
          </children>
       </AnchorPane>
    </children>

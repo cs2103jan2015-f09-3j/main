@@ -1,5 +1,7 @@
 package controller;
 
+import java.io.IOException;
+
 import org.w3c.dom.Node;
 
 import application.Command;
@@ -12,16 +14,19 @@ import application.Undo;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 
 public class HeaderController{
 	
-	private MainController main;
+	private MainController mainC;
 	@FXML public TextField txtCmd;
 	@FXML private Label lblLogo;
 	@FXML private AnchorPane paneHead;
+	@FXML private ImageView settingIcon;
 	
 	@FXML
 	public void processCmd(KeyEvent e){
@@ -29,6 +34,7 @@ public class HeaderController{
 			String userInput = txtCmd.getText();	
 			String systemMsg = null;
 			
+<<<<<<< HEAD
 			Command commandType = InputParser.getActionFromString(userInput);
 			
 			if (Main.toUpdate && commandType.equals(Command.UPDATE)) {
@@ -46,12 +52,20 @@ public class HeaderController{
 	public void onKeyTyped(KeyEvent e) {
 		if (txtCmd.getText().equals("")) {
 			Main.toUpdate = false;
+=======
+			txtCmd.clear();
+			mainC.showInTabAll(systemMsg);
+>>>>>>> origin/master
 		}
+	}
+	
+	@FXML
+	public void loadSetting(MouseEvent e) throws IOException {
+		mainC.showPageInBody("/view/Setting.fxml");
 	}
 
 	public void init(MainController mainController) {
-		main = mainController;
-		
+		mainC = mainController;
 	}
 	
 	private String executeCommand(String userInput, Command commandType) {
