@@ -147,26 +147,15 @@ public class Storage {
 		Document fileDoc = getFileDocument();	
 		Task removedTask = null;
 		
-		try {
-			XPathExpression expression = 
-					_xPath.compile("/" + Constant.TAG_FILE + "/" +
-								   Constant.TAG_TASKS + "/" +
-								   Constant.TAG_TASK + "[@" +
-								   Constant.TAG_ATTRIBUTE_ID + "='" + 
-								   targetId + "']");
+		NodeList nodes = getNodesById(fileDoc, targetId);
+		if (nodes.getLength() > 0) {
+			Node targetNode = nodes.item(Constant.START_INDEX);
+			removedTask = XmlManager.transformNodeToTask(targetNode);
 			
-			NodeList nodes = (NodeList)expression.evaluate(fileDoc, XPathConstants.NODESET);
-			if (nodes.getLength() > 0) {
-				Node targetNode = nodes.item(Constant.START_INDEX);
-				removedTask = XmlManager.transformNodeToTask(targetNode);
-				
-				targetNode.getParentNode().removeChild(targetNode);
-				
-				cleanAndWriteFile(fileDoc);
-			} 
-		} catch (XPathExpressionException exception) {
-			exception.printStackTrace();
-		}
+			targetNode.getParentNode().removeChild(targetNode);
+			
+			cleanAndWriteFile(fileDoc);
+		} 
 		
 		return removedTask;
 	}
@@ -190,5 +179,63 @@ public class Storage {
 		} catch (XPathExpressionException exception) {
 			exception.printStackTrace();
 		}
+	}
+
+	public NodeList getNodesById(Document document, String targetId) {
+		try {
+			XPathExpression expression = 
+					_xPath.compile("/" + Constant.TAG_FILE + "/" +
+								   Constant.TAG_TASKS + "/" +
+								   Constant.TAG_TASK + "[@" +
+								   Constant.TAG_ATTRIBUTE_ID + "='" + 
+								   targetId + "']");
+			
+			return (NodeList)expression.evaluate(document, XPathConstants.NODESET);
+		} catch (XPathExpressionException exception) {
+			exception.printStackTrace();
+		}
+		
+		return null;
+	}	
+
+	public boolean hasCategoryInFile(Document document, String category) {
+		Node node = null;
+		String text = null;
+		boolean hasCategory = false;
+		
+		try {
+			XPathExpression expression = 
+					_xPath.compile("/" + Constant.TAG_FILE + "/" +
+								   Constant.TAG_CATEGORIES);
+			
+			NodeList nodes = (NodeList)expression.evaluate(document, XPathConstants.NODESET);
+			
+			for (int i = 0; i < nodes.getLength(); i++) {
+				node = nodes.item(i);
+				text = node.getTextContent();
+				
+				if (text.equalsIgnoreCase(category)) {
+					hasCategory = true;
+					break;
+				}
+			}
+		} catch (XPathExpressionException exception) {
+			exception.printStackTrace();
+		}
+		
+		return hasCategory;
+	}
+	
+	public String getOriginalTextById(String targetId) {
+		String originalText = null;
+		Document fileDoc = getFileDocument();
+		NodeList nodes = getNodesById(fileDoc, targetId);
+		
+		if (nodes.getLength() > 0) {
+			Element targetNode = (Element) nodes.item(Constant.START_INDEX);
+			originalText =  XmlManager.getTextByTagName(targetNode, Constant.TAG_ORIGINAL);
+		} 
+		
+		return originalText;
 	}
 }

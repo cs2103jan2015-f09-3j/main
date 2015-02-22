@@ -25,12 +25,27 @@ public class HeaderController{
 	
 	@FXML
 	public void processCmd(KeyEvent e){
-		if(e.getCode() == KeyCode.ENTER){	
-			String userInput = txtCmd.getText();		
-			String systemMsg = executeCommand(userInput);
+		if (e.getCode() == KeyCode.ENTER) {
+			String userInput = txtCmd.getText();	
+			String systemMsg = null;
 			
-			txtCmd.clear();
-			main.showInTabAll(systemMsg);
+			Command commandType = InputParser.getActionFromString(userInput);
+			
+			if (Main.toUpdate && commandType.equals(Command.UPDATE)) {
+				systemMsg = executeUpdate(userInput);
+				Main.toUpdate = false;
+			} else {
+				systemMsg = executeCommand(userInput, commandType);
+			}
+			
+			main.showInTabAll(systemMsg);			
+		}
+	}
+	
+	@FXML
+	public void onKeyTyped(KeyEvent e) {
+		if (txtCmd.getText().equals("")) {
+			Main.toUpdate = false;
 		}
 	}
 
@@ -39,20 +54,21 @@ public class HeaderController{
 		
 	}
 	
-	private String executeCommand(String userInput) {
+	private String executeCommand(String userInput, Command commandType) {
 		String systemMsg = null;
-		Command commandType = InputParser.getActionFromString(userInput);
-		TaskType taskType = InputParser.getTaskTypeFromString(userInput);
 		
 		switch (commandType) {
 		case ADD :
-			systemMsg = executeAdd(userInput, taskType);
+			systemMsg = executeAdd(userInput);
+			txtCmd.clear();
 			break;
 		case UPDATE :
 			// update
+			systemMsg = executeRetrieveOriginalText(userInput);
 			break;
 		case DELETE :
 			systemMsg = executeDelete(userInput);
+			txtCmd.clear();
 			break;
 		case SEARCH :
 			// search
@@ -69,8 +85,8 @@ public class HeaderController{
 		return systemMsg;
 	}
 
-	private String executeAdd(String userInput, TaskType taskType) {
-		Task task = new Task(userInput, taskType);	
+	private String executeAdd(String userInput) {
+		Task task = new Task(userInput);	
 		
 		Undo undo = new Undo(Command.ADD, task.getId());
 		Main.undos.push(undo);
@@ -90,6 +106,39 @@ public class HeaderController{
 			systemMsg = Constant.MSG_DELETE_SUCCESS;
 		} else {
 			systemMsg = Constant.MSG_ITEM_NOT_FOUND;
+		}
+		
+		return systemMsg;
+	}
+	
+	private String executeRetrieveOriginalText(String userInput) {
+		String systemMsg = null;
+		String targetId = InputParser.getTargetIdFromString(userInput);
+		String originalText = Main.storage.getOriginalTextById(targetId);
+		
+		if (originalText != null) {
+			txtCmd.appendText(": " + originalText);
+			Main.toUpdate = true;
+			systemMsg = Constant.MSG_ORIGINAL_RETRIEVED;
+		} else {
+			systemMsg = Constant.MSG_ORIGINAL_NOT_RETRIEVED;
+		}
+		
+		return systemMsg;
+	}
+	
+	private String executeUpdate(String userInput) {
+		String systemMsg = null;
+		String targetId = InputParser.getTargetIdFromString(userInput);
+		Task originalTask = Main.list.updateTaskOnList(userInput);
+		
+		if (originalTask != null) {
+			Undo undo = new Undo(Command.UPDATE, originalTask, targetId);
+			Main.undos.push(undo);
+			
+			systemMsg = Constant.MSG_UPDATE_SUCCESS;
+		} else {
+			systemMsg = Constant.MSG_UPDATE_FAIL;
 		}
 		
 		return systemMsg;

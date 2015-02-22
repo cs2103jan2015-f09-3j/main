@@ -20,17 +20,18 @@ public class Task {
 		// convert from node
 	}
 	
-	public Task(String userInput, TaskType taskType) {
-		this(userInput, taskType, generateId(taskType));
+	public Task(String userInput) {
+		this(userInput, null);
+		_id = generateId(_taskType);	
 	}
-	
-	public Task(String userInput, TaskType taskType, String id) {
+
+	public Task(String userInput, String id) {
 		_id = id;		
-		_taskType = taskType;
+		_taskType = InputParser.getTaskTypeFromString(userInput);
 		_originalText = userInput;
 		
 		List<Date> dates = Main.inputParser.getDatesFromString(userInput);
-		setDatesForTaskType(dates, taskType);
+		setDatesForTaskType(dates, _taskType);
 		
 		_category = InputParser.getCategoryFromString(userInput);
 		
@@ -38,7 +39,7 @@ public class Task {
 		
 		_priority = InputParser.getPriorityFromString(userInput);
 		
-		_toDo = generateToDoString(userInput, taskType);
+		_toDo = generateToDoString(userInput, _taskType);
 	}
 	
 	public String getId() {
@@ -235,6 +236,7 @@ public class Task {
 		return toDoString.trim(); 
 	}
 
+	
 	private void setDatesForTaskType(List<Date> dates, TaskType taskType) {
 		_on = null;
 		_from = null;

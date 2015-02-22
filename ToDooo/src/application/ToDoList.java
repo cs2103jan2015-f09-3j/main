@@ -20,6 +20,7 @@ import javax.xml.xpath.XPathFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 import org.w3c.dom.Text;
 import org.xml.sax.SAXException;
 
@@ -92,15 +93,7 @@ public class ToDoList {
 									 getElementsByTagName(Constant.TAG_TASKS).
 									 item(Constant.START_INDEX);
 		
-		boolean isCategorised = !(task.getCategory().equals(Constant.CATEGORY_UNCATEGORISED));
-		if (isCategorised) {
-			Element categoriesTag = (Element) rootTag.
-											  getElementsByTagName(Constant.TAG_CATEGORIES).
-											  item(Constant.START_INDEX);
-
-			XmlManager.createAndAppendChildElement(document, categoriesTag, Constant.TAG_CATEGORY,
-										task.getCategory().toString());
-		}
+		addCategoryToList(document, task, rootTag);
 		
 		int nextId = Main.storage.readNextId() + 1;
 		nextIdTag.setTextContent(String.valueOf(nextId));				
@@ -146,12 +139,77 @@ public class ToDoList {
 		String result = Main.storage.writeFile(document);
 		return result;
 	}
+	
+	public void addCategoryToList(Document document, Task task, Element rootTag) {
+		String category = task.getCategory();
+		boolean isCategorised = !(task.getCategory().equals(Constant.CATEGORY_UNCATEGORISED));	
+		
+		if (isCategorised) {
+			boolean toWrite = !(Main.storage.hasCategoryInFile(document, category));
+			
+			if (toWrite) {
+				Element categoriesTag = (Element) rootTag.
+						  getElementsByTagName(Constant.TAG_CATEGORIES).
+						  item(Constant.START_INDEX);
+
+				XmlManager.createAndAppendChildElement(document, categoriesTag, 
+							   						   Constant.TAG_CATEGORY, category);
+			}
+			
+		}
+	}
 
 	public Task deleteTaskFromList(String userInput) {
-		String targetId = InputParser.getDeleteTargetIdFromString(userInput);
+		String targetId = InputParser.getTargetIdFromString(userInput);
 		
 		Task removedTask = Main.storage.deleteTaskFromFileById(targetId);
 		
 		return removedTask;
+	}
+	
+	public Task updateTaskOnList(String userInput) {
+		Task originalTask = null;
+		Document document = Main.storage.getFileDocument();
+		String targetId = InputParser.getTargetIdFromUpdateString(userInput);
+		
+		Task updatedTask = new Task(userInput, targetId);
+		
+		Element rootTag = document.getDocumentElement();		
+		NodeList nodes = Main.storage.getNodesById(document, updatedTask.getId());
+		
+		if (nodes.getLength() > 0) {
+			Node targetNode = nodes.item(Constant.START_INDEX);
+			originalTask = XmlManager.transformNodeToTask(targetNode);			
+			
+			addCategoryToList(document, updatedTask, rootTag);
+			
+			Element parentElement = (Element) targetNode;
+			XmlManager.setText(parentElement, Constant.TAG_TYPE, 
+							   updatedTask.getTaskType().toString());
+			XmlManager.setText(parentElement, Constant.TAG_TODO, 
+					   		   updatedTask.getToDo().toString());
+			XmlManager.setText(parentElement, Constant.TAG_ORIGINAL, 
+							   updatedTask.getOriginalText());
+			XmlManager.setText(parentElement, Constant.TAG_ON, 
+							   InputParser.getDateString(updatedTask.getOn()));
+			XmlManager.setText(parentElement, Constant.TAG_FROM, 
+					   		   InputParser.getDateString(updatedTask.getFrom()));
+			XmlManager.setText(parentElement, Constant.TAG_TO, 
+					   		   InputParser.getDateString(updatedTask.getTo()));
+			XmlManager.setText(parentElement, Constant.TAG_BY, 
+					   		   InputParser.getDateString(updatedTask.getBy()));
+			XmlManager.setText(parentElement, Constant.TAG_CATEGORY, 
+					  		   updatedTask.getCategory());
+			XmlManager.setText(parentElement, Constant.TAG_RECURRING, 
+			  		   		   String.valueOf(updatedTask.getIsRecurring()));
+			XmlManager.setText(parentElement, Constant.TAG_REPEAT, 
+			  		   		   updatedTask.getRepeat().toString());
+			XmlManager.setText(parentElement, Constant.TAG_PRIORITY, 
+			  		   		   updatedTask.getPriority().toString());
+		
+			Main.storage.writeFile(document);
+		}
+		
+		return originalTask;
 	}
 }

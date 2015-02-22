@@ -14,7 +14,7 @@
          <font>
             <Font name="Ebrima" size="36.0" />
          </font></Label>
-      <TextField fx:id="txtCmd" layoutX="14.0" layoutY="61.0" onKeyPressed="#processCmd" prefHeight="25.0" prefWidth="686.0" promptText="Type your command here" style="-fx-background-color: #EDEAE3;" />
+      <TextField fx:id="txtCmd" layoutX="14.0" layoutY="61.0" onKeyPressed="#processCmd" onKeyTyped="#onKeyTyped" prefHeight="25.0" prefWidth="686.0" promptText="Type your command here" style="-fx-background-color: #EDEAE3;" />
       <Text fill="#edeae3" layoutX="124.0" layoutY="37.0" strokeType="OUTSIDE" strokeWidth="0.0" text="✓">
          <font>
             <Font size="27.0" />
