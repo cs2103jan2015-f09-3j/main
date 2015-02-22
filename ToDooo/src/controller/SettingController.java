@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.image.ImageView;
@@ -15,7 +16,7 @@ import javafx.stage.DirectoryChooser;
 
 public class SettingController {
 	
-	private MainController main;
+	private MainController mainC;
 	@FXML AnchorPane anPaneSetting;
 	@FXML TextField txtPath;
 	@FXML Button btnBrowse;
@@ -35,14 +36,14 @@ public class SettingController {
 	
 	@FXML
 	public void goBackToMainMouse(MouseEvent e) throws IOException {
-		//main.showPageInBody("/view/Body.fxml");
+		mainC.showPageInBody("/view/Body.fxml");
 	}
 	
 	public void init(MainController mainController) {
-		main = mainController;
+		mainC = mainController;
 	}
 	
-	private void openFileDialog(){
+	private void openFileDialog() {
 		DirectoryChooser dirChooser = new DirectoryChooser();
 		dirChooser.setTitle("Choose Storage Path");
 		File selectedDir = dirChooser.showDialog(anPaneSetting.getScene().getWindow());

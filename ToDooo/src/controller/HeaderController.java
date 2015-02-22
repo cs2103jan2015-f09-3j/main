@@ -22,7 +22,7 @@ import javafx.scene.layout.AnchorPane;
 
 public class HeaderController{
 	
-	private MainController main;
+	private MainController mainC;
 	@FXML public TextField txtCmd;
 	@FXML private Label lblLogo;
 	@FXML private AnchorPane paneHead;
@@ -35,18 +35,17 @@ public class HeaderController{
 			String systemMsg = executeCommand(userInput);
 			
 			txtCmd.clear();
-			main.showInTabAll(systemMsg);
+			mainC.showInTabAll(systemMsg);
 		}
 	}
 	
 	@FXML
 	public void loadSetting(MouseEvent e) throws IOException {
-		main.showPageInBody("/view/Setting.fxml");
+		mainC.showPageInBody("/view/Setting.fxml");
 	}
 
 	public void init(MainController mainController) {
-		main = mainController;
-		
+		mainC = mainController;
 	}
 	
 	private String executeCommand(String userInput) {
