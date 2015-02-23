@@ -16,7 +16,8 @@ public enum Command {
 	RECURRING_WEEKLY("/weekly", "-w"),
 	RECURRING_MONTHLY("/monthly", "-m"),
 	RECURRING_YEARLY("/yearly", "-y"),
-	SETTING("/setting", "/setting");
+	SETTING("/setting", "/setting"),
+	GOBACK("/~", "/~");
 	
 	private final String _COMMAND_BASIC;
 	private final String _COMMAND_ADVANCED;

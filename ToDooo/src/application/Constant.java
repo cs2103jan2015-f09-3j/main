@@ -38,7 +38,7 @@ public final class Constant {
 	
 	public static final Command[] ACTION_COMMANDS = { Command.ADD, Command.DELETE, 
 													  Command.UPDATE, Command.SEARCH,
-													  Command.SETTING };
+													  Command.SETTING, Command.GOBACK };
 	
 	public static final String PATH_SETTING = "setting.xml";
 	public static final String PATH_UNDO = "undo.xml";

@@ -31,7 +31,7 @@ public class HeaderController{
 	@FXML private ImageView backIcon;
 	
 	@FXML
-	public void processCmd(KeyEvent e){
+	public void processCmd(KeyEvent e) throws IOException {
 		if (e.getCode() == KeyCode.ENTER) {
 			String userInput = txtCmd.getText();	
 			if (userInput.equals("")) {
@@ -63,16 +63,12 @@ public class HeaderController{
 	
 	@FXML
 	public void loadSettingMouse(MouseEvent e) throws IOException {
-		settingIcon.setVisible(false);
-		backIcon.setVisible(true);
-		mainCon.showPageInBody("/view/Setting.fxml");
+		executeSetting();
 	}
 	
 	@FXML
 	public void goBackToMainMouse(MouseEvent e) throws IOException {
-		settingIcon.setVisible(true);
-		backIcon.setVisible(false);
-		mainCon.showPageInBody("/view/Body.fxml");
+		executeGoBack();
 	}
 	
 	@FXML
@@ -84,7 +80,7 @@ public class HeaderController{
 		mainCon = mainController;
 	}
 	
-	private String executeCommand(String userInput, Command commandType) {
+	private String executeCommand(String userInput, Command commandType) throws IOException {
 		String systemMsg = null;
 		
 		switch (commandType) {
@@ -106,6 +102,12 @@ public class HeaderController{
 		case SETTING :
 			// setting
 			executeSetting();
+			txtCmd.clear();
+			break;
+		case GOBACK :
+			// go back to main page
+			executeGoBack();
+			txtCmd.clear();
 			break;
 		default :
 			// invalid command
@@ -174,7 +176,15 @@ public class HeaderController{
 		return systemMsg;
 	}
 	
-	private void executeSetting() {
-		// incomplete
+	private void executeSetting() throws IOException {
+		settingIcon.setVisible(false);
+		backIcon.setVisible(true);
+		mainCon.showPageInBody("/view/Setting.fxml");
+	}
+	
+	private void executeGoBack() throws IOException {
+		settingIcon.setVisible(true);
+		backIcon.setVisible(false);
+		mainCon.showPageInBody("/view/Body.fxml");
 	}
 }
