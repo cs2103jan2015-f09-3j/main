@@ -139,7 +139,7 @@ public class Task {
 	}
 	
 	private static String generateId(TaskType taskType) {
-		int nextId = Main.storage.readNextId();
+		int nextId = Main.list.getNextId();
 		String id = null;
 		
 		switch (taskType) {

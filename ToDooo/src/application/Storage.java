@@ -2,6 +2,7 @@ package application;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -116,8 +117,8 @@ public class Storage {
 					_xPath.compile("/" + Constant.TAG_SETTING + "/" +
 								   Constant.TAG_SETTING_SAVE);
 			
-			savePath = (String)expression.evaluate(settingDoc, 
-										   XPathConstants.STRING);
+			savePath = (String) expression.
+					   evaluate(settingDoc, XPathConstants.STRING);
 		} catch (XPathExpressionException exception) {
 			exception.printStackTrace();
 		}
@@ -127,7 +128,7 @@ public class Storage {
 
 	public Document getFileDocument() {
 		try {
-			return _documentBuilder.parse(Main.list.getListFilePath()); 			
+			return _documentBuilder.parse(Main.storage.readSavePath()); 			
 		} catch (SAXException | IOException exception) {
 			exception.printStackTrace();
 		}			
@@ -143,65 +144,36 @@ public class Storage {
 		return null;
 	}
 
-	public Task deleteTaskFromFileById(String targetId) {
-		Document fileDoc = getFileDocument();	
-		Task removedTask = null;
-		
-		NodeList nodes = getNodesById(fileDoc, targetId);
-		if (nodes.getLength() > 0) {
-			Node targetNode = nodes.item(Constant.START_INDEX);
-			removedTask = XmlManager.transformNodeToTask(targetNode);
-			
-			targetNode.getParentNode().removeChild(targetNode);
-			
-			cleanAndWriteFile(fileDoc);
-		} 
-		
-		return removedTask;
-	}
-
-	public void cleanAndWriteFile() {
+	public ArrayList<Task> loadXmlToArrayList() {
 		Document document = getFileDocument();
-		cleanAndWriteFile(document);
-	}
-
-	public void cleanAndWriteFile(Document document) {
-		try {
-			NodeList nodes = (NodeList) _xPath.evaluate(Constant.XML_WHITESPACE_NODE_XPATH, 
-														document, XPathConstants.NODESET);
-			
-			for (int i = 0; i < nodes.getLength(); i++) {
-			    Node node = nodes.item(i);
-			    node.getParentNode().removeChild(node);
-			}
-			
-			writeFile(document);
-		} catch (XPathExpressionException exception) {
-			exception.printStackTrace();
-		}
-	}
-
-	public NodeList getNodesById(Document document, String targetId) {
+		ArrayList<Task> tasks = new ArrayList<Task>();
+		
 		try {
 			XPathExpression expression = 
 					_xPath.compile("/" + Constant.TAG_FILE + "/" +
 								   Constant.TAG_TASKS + "/" +
-								   Constant.TAG_TASK + "[@" +
-								   Constant.TAG_ATTRIBUTE_ID + "='" + 
-								   targetId + "']");
+								   Constant.TAG_TASK);
 			
-			return (NodeList)expression.evaluate(document, XPathConstants.NODESET);
+			NodeList taskNodes = (NodeList) expression.
+								 evaluate(document, XPathConstants.NODESET);
+			
+			Node taskNode = null;
+			for (int i = 0; i < taskNodes.getLength(); i++) {
+				taskNode = taskNodes.item(i);
+				
+				Task task = XmlManager.transformNodeToTask(taskNode);
+				tasks.add(task);
+			}
 		} catch (XPathExpressionException exception) {
 			exception.printStackTrace();
 		}
 		
-		return null;
-	}	
-
-	public boolean hasCategoryInFile(Document document, String category) {
-		Node node = null;
-		String text = null;
-		boolean hasCategory = false;
+		return tasks;
+	}
+	
+	public ArrayList<String> loadCategoriesToArrayList() {
+		Document document = getFileDocument();
+		ArrayList<String> categories = new ArrayList<String>();
 		
 		try {
 			XPathExpression expression = 
@@ -209,34 +181,27 @@ public class Storage {
 								   Constant.TAG_CATEGORIES + "/" +
 								   Constant.TAG_CATEGORY);
 			
-			NodeList nodes = (NodeList)expression.evaluate(document, XPathConstants.NODESET);
+			NodeList categoryNodes = (NodeList) expression.
+								 	 evaluate(document, XPathConstants.NODESET);
 			
-			for (int i = 0; i < nodes.getLength(); i++) {
-				node = nodes.item(i);
-				text = node.getTextContent();
+			Node categoryNode = null;
+			String categoryString = null;
+			for (int i = 0; i < categoryNodes.getLength(); i++) {
+				categoryNode = categoryNodes.item(i);
+				categoryString = categoryNode.getTextContent();
 				
-				if (text.equalsIgnoreCase(category)) {
-					hasCategory = true;
-					break;
-				}
+				categories.add(categoryString);
 			}
 		} catch (XPathExpressionException exception) {
 			exception.printStackTrace();
 		}
 		
-		return hasCategory;
+		return categories;
 	}
-	
-	public String getOriginalTextById(String targetId) {
-		String originalText = null;
-		Document fileDoc = getFileDocument();
-		NodeList nodes = getNodesById(fileDoc, targetId);
+
+	public void updateAndSaveFile() {
+		Document document = XmlManager.getUpdatedXmlDocument();
 		
-		if (nodes.getLength() > 0) {
-			Element targetNode = (Element) nodes.item(Constant.START_INDEX);
-			originalText =  XmlManager.getTextByTagName(targetNode, Constant.TAG_ORIGINAL);
-		} 
-		
-		return originalText;
+		writeFile(document);		
 	}
 }
