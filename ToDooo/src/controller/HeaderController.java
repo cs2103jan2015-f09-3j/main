@@ -51,6 +51,8 @@ public class HeaderController{
 			}
 			
 			lblSysMsg.setText(systemMsg);			
+		} else if(e.getCode() == KeyCode.F1) {
+			mainCon.loadList("All");
 		}
 	}
 	

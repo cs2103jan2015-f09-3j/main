@@ -28,3 +28,22 @@
     -fx-alignment: CENTER;
     -fx-text-fill: #ffffff;
 }
+
+.gridPaneList {
+	-fx-alignment: center;
+	-fx-padding: 0 0 10 0;
+}
+
+.paneList {
+	-fx-background-color: #E1F5C4;
+}
+
+.labelList {
+	-fx-padding:5 5 5 5;
+}
+
+.labelTitle {
+	-fx-font: bold 16px "Segoe UI";
+	-fx-text-fill: #666666;
+	-fx-padding:0 0 10 0;
+}

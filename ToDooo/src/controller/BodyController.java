@@ -6,14 +6,16 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.VBox;
 
 public class BodyController{
 
 	private MainController mainCon;
-	@FXML AnchorPane anPaneAll;
-	@FXML AnchorPane anPaneCat;
-	@FXML AnchorPane anPanePri;
-
+	
+	@FXML VBox vBoxAll;
+	@FXML VBox vBoxCategory;
+	@FXML VBox vBoxPriority;
+	
 	public void init(MainController mainController) {
 		mainCon = mainController;
 	}
