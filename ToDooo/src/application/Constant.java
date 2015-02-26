@@ -38,7 +38,7 @@ public final class Constant {
 	
 	public static final Command[] ACTION_COMMANDS = { Command.ADD, Command.DELETE, 
 													  Command.UPDATE, Command.SEARCH,
-													  Command.SETTING, Command.GOBACK };
+													  Command.SETTING, Command.GO_BACK };
 	
 	public static final String PATH_SETTING = "setting.xml";
 	public static final String PATH_UNDO = "undo.xml";
@@ -46,8 +46,8 @@ public final class Constant {
 	public static final String MSG_SAVE_FAIL = "File not saved.";
 	public static final String MSG_SAVE_SUCCESS = "File saved.";
 	
-	public static final String MSG_ADD_FAIL = "Add successful.";
-	public static final String MSG_ADD_SUCCESS = "Add failed.";
+	public static final String MSG_ADD_SUCCESS = "Add successful.";
+	public static final String MSG_ADD_FAIL = "Add failed.";
 	public static final String MSG_DELETE_SUCCESS = "Delete successful.";
 	public static final String MSG_DELETE_FAIL = "Delete failed.";
 	public static final String MSG_ITEM_NOT_FOUND = "Item not found.";

@@ -1,6 +1,5 @@
 package application;
 
-import java.util.ArrayList;
 import java.util.Stack;
 
 import javafx.application.Application;
@@ -35,12 +34,19 @@ public class Main extends Application {
 		launch(args);
 	}
 	
-	public static void initialise() {
+	private static void initialise() {
+		attachShutdownHook();
+		
 		Main.storage = new Storage();
 		Main.inputParser = new InputParser();
 		Main.list = new ToDoList();
 		Main.undos = new Stack<Undo>();
 		
 		toUpdate = false;
+	}
+	
+	private static void attachShutdownHook() {
+		ShutdownHook shutdownHook = new ShutdownHook();
+		shutdownHook.attachShutdownHook();
 	}
 }

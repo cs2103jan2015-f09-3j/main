@@ -91,7 +91,6 @@ public class HeaderController{
 			txtCmd.clear();
 			break;
 		case UPDATE :
-			// update
 			systemMsg = executeRetrieveOriginalText(userInput);
 			break;
 		case DELETE :
@@ -102,11 +101,10 @@ public class HeaderController{
 			// search
 			break;
 		case SETTING :
-			// setting
 			executeSetting();
 			txtCmd.clear();
 			break;
-		case GOBACK :
+		case GO_BACK :
 			// go back to main page
 			executeGoBack();
 			txtCmd.clear();
@@ -148,10 +146,10 @@ public class HeaderController{
 	private String executeRetrieveOriginalText(String userInput) {
 		String systemMsg = null;
 		String targetId = InputParser.getTargetIdFromString(userInput);
-		String originalText = Main.storage.getOriginalTextById(targetId);
-		
-		if (originalText != null) {
-			txtCmd.appendText(": " + originalText);
+		Task originalTask = Main.list.getTaskById(targetId);
+				
+		if (originalTask != null) {
+			txtCmd.appendText(": " + originalTask.getOriginalText());
 			Main.toUpdate = true;
 			systemMsg = Constant.MSG_ORIGINAL_RETRIEVED;
 		} else {
