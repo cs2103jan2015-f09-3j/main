@@ -217,9 +217,17 @@ public class Storage {
 			Node savePathNode = (Node) expression.
 								 evaluate(settingDoc, XPathConstants.NODE);
 			
+			
 			savePath = savePathNode.getTextContent();
 		} catch (XPathExpressionException exception) {
 			exception.printStackTrace();
+		}
+		
+		if (savePath.equals(Constant.PATH_DEFAULT)) {
+			String workingDirectory = 
+					System.getProperty(Constant.PATH_GET_PROPERTY);
+			
+			savePath = (workingDirectory + "\\" + savePath);
 		}
 		
 		return savePath;
