@@ -130,7 +130,8 @@ public class HeaderController{
 	
 	private String executeDelete(String userInput) {
 		String systemMsg= null;
-		Task removedTask = Main.list.deleteTaskFromList(userInput);		
+		Task removedTask = Main.list.deleteTaskFromList(userInput);
+		
 		if (removedTask != null) {
 			Undo undo = new Undo(Command.DELETE, removedTask);
 			Main.undos.push(undo);

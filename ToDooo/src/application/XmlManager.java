@@ -174,7 +174,7 @@ public class XmlManager {
 		}
 	}
 
-	private static Element transformTaskToXml(Document document, Task task) {
+	public static Element transformTaskToXml(Document document, Task task) {
 		Element taskTag = document.createElement(Constant.TAG_TASK);
 		taskTag.setAttribute(Constant.TAG_ATTRIBUTE_ID, task.getId());
 		

@@ -223,5 +223,106 @@ public class Storage {
 		}
 	}
 	
+	public String writeTaskToFile(Task task) {
+		Document document = getFileDocument();
+		
+		try {
+			XPathExpression expression = 
+					_xPath.compile("/" + Constant.TAG_FILE + "/" +
+								   Constant.TAG_TASKS);
+			
+			Element tasksNode = (Element) expression.
+							   evaluate(document, XPathConstants.NODE);
+			
+			Element taskNode = XmlManager.transformTaskToXml(document, task);
+			
+			tasksNode.appendChild(taskNode);
+			
+			writeFile(document);
+		} catch (Exception exception) {
+			return Constant.MSG_ADD_FAIL;
+		}
+		
+		return Constant.MSG_ADD_SUCCESS;
+	}
 	
+	public boolean hasWrittenCategoryToFile(String category) {
+		Document document = getFileDocument();
+		boolean hasWritten = false;
+		
+		try {
+			XPathExpression expression = 
+					_xPath.compile("/" + Constant.TAG_FILE + "/" +
+								   Constant.TAG_CATEGORIES);
+			
+			Element categoriesNode = (Element) expression.
+					   evaluate(document, XPathConstants.NODE);
+	
+			XmlManager.createAndAppendChildElement(document, categoriesNode, 
+					   							   Constant.TAG_CATEGORY, category);	
+			
+			writeFile(document);
+			
+			hasWritten = true;
+		} catch (XPathExpressionException exception) {
+			exception.printStackTrace();
+		}
+		
+		return hasWritten;
+	}
+	
+	public Task deleteTaskFromFileById(String targetId) {
+		Document fileDoc = getFileDocument();	
+		Task removedTask = null;
+		
+		NodeList nodes = getNodesById(fileDoc, targetId);
+		if (nodes.getLength() > 0) {
+			Node targetNode = nodes.item(Constant.START_INDEX);
+			
+			removedTask = XmlManager.transformNodeToTask(targetNode);			
+			targetNode.getParentNode().removeChild(targetNode);
+			
+			cleanAndWriteFile(fileDoc);
+		} 
+		
+		return removedTask;
+	}
+	
+	private NodeList getNodesById(Document document, String targetId) {
+		try {
+			XPathExpression expression = 
+					_xPath.compile("/" + Constant.TAG_FILE + "/" +
+								   Constant.TAG_TASKS + "/" +
+								   Constant.TAG_TASK + "[@" +
+								   Constant.TAG_ATTRIBUTE_ID + "='" + 
+								   targetId + "']");
+			
+			return (NodeList)expression.evaluate(document, XPathConstants.NODESET);
+		} catch (XPathExpressionException exception) {
+			exception.printStackTrace();
+		}
+		
+		return null;
+	}	
+	
+	public void cleanAndWriteFile() {
+		Document document = getFileDocument();
+		cleanAndWriteFile(document);
+	}
+
+	public void cleanAndWriteFile(Document document) {
+		try {
+			NodeList nodes = (NodeList) _xPath.evaluate(Constant.XML_WHITESPACE_NODE_XPATH, 
+														document, XPathConstants.NODESET);
+			
+			for (int i = 0; i < nodes.getLength(); i++) {
+			    Node node = nodes.item(i);
+			    node.getParentNode().removeChild(node);
+			}
+			
+			writeFile(document);
+		} catch (XPathExpressionException exception) {
+			exception.printStackTrace();
+		}
+	}
 }
