@@ -204,4 +204,24 @@ public class Storage {
 		
 		writeFile(document);		
 	}
+	
+	public String getSavePathFromFile() {
+		Document settingDoc = getSettingDocument();
+		String savePath = null;
+		
+		try {
+			XPathExpression expression = 
+					_xPath.compile("/" + Constant.TAG_SETTING + "/" +
+								   Constant.TAG_SETTING_SAVE);
+			
+			Node savePathNode = (Node) expression.
+								 evaluate(settingDoc, XPathConstants.NODE);
+			
+			savePath = savePathNode.getTextContent();
+		} catch (XPathExpressionException exception) {
+			exception.printStackTrace();
+		}
+		
+		return savePath;
+	}
 }
