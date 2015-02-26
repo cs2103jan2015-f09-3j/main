@@ -42,6 +42,7 @@ public final class Constant {
 	
 	public static final String PATH_SETTING = "setting.xml";
 	public static final String PATH_UNDO = "undo.xml";
+	public static final String PATH_LISTFILE = "listFile.xml";
 	
 	public static final String MSG_SAVE_FAIL = "File not saved.";
 	public static final String MSG_SAVE_SUCCESS = "File saved.";
