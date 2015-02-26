@@ -205,6 +205,24 @@ public class Storage {
 		writeFile(document);		
 	}
 	
+	public void updatePathInSetting(String path) {
+		Document doc = getSettingDocument();
+		
+		Node root = doc.getFirstChild();
+		Node element = root.getFirstChild();
+		element.setTextContent(path);
+		
+		writeFile(doc, path);
+	}
+	
+	public void changePath(String newPath) {
+		File file = new File(newPath);
+
+		if(!file.exists()) {
+			Main.list = new ToDoList();
+		}
+	}
+	
 	public String getSavePathFromFile() {
 		Document settingDoc = getSettingDocument();
 		String savePath = null;
