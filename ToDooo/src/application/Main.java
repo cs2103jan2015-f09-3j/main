@@ -34,19 +34,12 @@ public class Main extends Application {
 		launch(args);
 	}
 	
-	private static void initialise() {
-		attachShutdownHook();
-		
+	private static void initialise() {		
 		Main.storage = new Storage();
 		Main.inputParser = new InputParser();
 		Main.list = new ToDoList();
 		Main.undos = new Stack<Undo>();
 		
 		toUpdate = false;
-	}
-	
-	private static void attachShutdownHook() {
-		ShutdownHook shutdownHook = new ShutdownHook();
-		shutdownHook.attachShutdownHook();
 	}
 }

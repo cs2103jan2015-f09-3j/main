@@ -2,6 +2,7 @@ package application;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Iterator;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -78,31 +79,30 @@ public class ToDoList {
 		
 		boolean shouldCreate = !(file.exists());
 		if (shouldCreate) {
-			result = prepareNewList();
+			prepareNewList();
 		}
 	}
 		
-	private String prepareNewList() {
+	private void prepareNewList() {
 		Document document = XmlManager.initDocument();
 		
-		String result = Main.storage.writeFile(document, _listFilePath);
-		return result;
+		Main.storage.writeFile(document, _listFilePath);
 	}
 	
 	public String addTaskToList(Task task) {
-		String result = Constant.MSG_ADD_SUCCESS;		
-		int beforeSize = _tasks.size();
+		String result = Main.storage.writeTaskToFile(task);
 		
-		_tasks.add(task);
-		
-		if (_tasks.size() == beforeSize) {
-			result = Constant.MSG_ADD_FAIL;
+		if (result.equals(Constant.MSG_ADD_SUCCESS)) {
+			_tasks.add(task);
+			_nextId++;
+			
+			addCategoryToList(task.getCategory());
 		}
 		
 		return result;
 	}
 	
-	public void addCategoryToList(String category) {
+	private void addCategoryToList(String category) {
 		boolean shouldAdd = true;
 		
 		for (String taskCategory : _categories) {
@@ -114,8 +114,12 @@ public class ToDoList {
 		}
 		
 		if (shouldAdd) {
-			_categories.add(category);
-			_nextId++;
+			boolean hasWritten = 
+					Main.storage.hasWrittenCategoryToFile(category);
+			
+			if (hasWritten) {
+				_categories.add(category);
+			}
 		}
 	}
 
@@ -135,7 +139,7 @@ public class ToDoList {
 		Task originalTask = deleteTaskById(targetId);
 		
 		if (originalTask != null) {
-			_tasks.add(updatedTask);
+			addTaskToList(updatedTask);
 		}
 		
 		return originalTask;
@@ -158,22 +162,28 @@ public class ToDoList {
 	}
 	
 	private Task deleteTaskById(String targetId) {
+		Task task = null;
 		Task removedTask = null;
-		int index = 0;
-		
+		int index = 0;		
 		boolean isFound = false;
-		for (Task task : _tasks) {
+		Iterator<Task> taskIterator = _tasks.iterator();
+		
+		while (taskIterator.hasNext()) {
+			task = taskIterator.next();
+			
 			isFound = (task.getId().equals(targetId));
 			
 			if (isFound) {
-				removedTask = task;
+				removedTask = Main.storage.deleteTaskFromFileById(targetId);
+				
+				if (removedTask != null) {
+					_tasks.remove(index);
+				}
 				break;
 			}
 			
 			index++;
 		}
-		
-		_tasks.remove(index);
 		
 		return removedTask;
 	}
