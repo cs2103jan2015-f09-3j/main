@@ -181,7 +181,7 @@ public class ToDoList {
 	public String getSavePathDirectory() {
 		String savePath = Main.storage.readSavePath();
 		
-		if (savePath.equals(Constant.PATH_DEFAULT)) {
+		if (savePath.equals(Constant.PATH_FILE_NAME)) {
 			String workingDirectory = 
 					System.getProperty(Constant.PATH_GET_PROPERTY);
 			

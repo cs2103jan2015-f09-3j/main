@@ -41,7 +41,7 @@ public final class Constant {
 													  Command.SETTING, Command.GO_BACK };
 	
 	public static final String PATH_SETTING = "setting.xml";
-	public static final String PATH_DEFAULT = "listFile.xml";
+	public static final String PATH_FILE_NAME = "listFile.xml";
 	public static final String PATH_UNDO = "undo.xml";
 	public static final String PATH_GET_PROPERTY = "user.dir";
 	
