@@ -223,31 +223,5 @@ public class Storage {
 		}
 	}
 	
-	public String getSavePathFromFile() {
-		Document settingDoc = getSettingDocument();
-		String savePath = null;
-		
-		try {
-			XPathExpression expression = 
-					_xPath.compile("/" + Constant.TAG_SETTING + "/" +
-								   Constant.TAG_SETTING_SAVE);
-			
-			Node savePathNode = (Node) expression.
-								 evaluate(settingDoc, XPathConstants.NODE);
-			
-			
-			savePath = savePathNode.getTextContent();
-		} catch (XPathExpressionException exception) {
-			exception.printStackTrace();
-		}
-		
-		if (savePath.equals(Constant.PATH_DEFAULT)) {
-			String workingDirectory = 
-					System.getProperty(Constant.PATH_GET_PROPERTY);
-			
-			savePath = (workingDirectory + "\\" + savePath);
-		}
-		
-		return savePath;
-	}
+	
 }

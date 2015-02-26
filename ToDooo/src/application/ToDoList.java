@@ -177,4 +177,17 @@ public class ToDoList {
 		
 		return removedTask;
 	}
+	
+	public String getSavePathDirectory() {
+		String savePath = Main.storage.readSavePath();
+		
+		if (savePath.equals(Constant.PATH_DEFAULT)) {
+			String workingDirectory = 
+					System.getProperty(Constant.PATH_GET_PROPERTY);
+			
+			savePath = (workingDirectory + "\\" + savePath);
+		}
+		
+		return savePath;
+	}
 }
