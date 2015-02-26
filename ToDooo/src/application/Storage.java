@@ -212,15 +212,11 @@ public class Storage {
 		Node element = root.getFirstChild();
 		element.setTextContent(path);
 		
-		writeFile(doc, path);
+		writeFile(doc, Constant.PATH_FILE_NAME);
 	}
 	
 	public void changePath(String newPath) {
-		File file = new File(newPath);
-
-		if(!file.exists()) {
-			Main.list = new ToDoList();
-		}
+		Main.list = new ToDoList();
 	}
 	
 	

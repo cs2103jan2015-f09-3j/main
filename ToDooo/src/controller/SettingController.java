@@ -3,7 +3,7 @@ package controller;
 import java.io.File;
 import java.io.IOException;
 
-import application.Storage;
+import application.Main;
 
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -51,10 +51,10 @@ public class SettingController {
 		File selectedDir = dirChooser.showDialog(anPaneSetting.getScene().getWindow());
 		txtPath.setText(selectedDir.getAbsolutePath());
 		String newPath = txtPath.getText();
-		new Storage().updatePathInSetting(newPath);
-		String pathInSetting = new Storage().readSavePath();
+		Main.storage.updatePathInSetting(newPath);
+		String pathInSetting = Main.storage.readSavePath();
 		if (newPath != pathInSetting) {
-			new Storage().updatePathInSetting(newPath);
+			Main.storage.updatePathInSetting(newPath);
 		}
 	}
 
