@@ -207,12 +207,11 @@ public class Storage {
 	
 	public void updatePathInSetting(String path) {
 		Document doc = getSettingDocument();
+
+		Node save = doc.getElementsByTagName(Constant.TAG_SETTING_SAVE).item(0);
+		save.setTextContent(path + "\\" + Constant.PATH_FILE_NAME);
 		
-		Node root = doc.getFirstChild();
-		Node element = root.getFirstChild();
-		element.setTextContent(path);
-		
-		writeFile(doc, Constant.PATH_FILE_NAME);
+		writeFile(doc, Constant.PATH_SETTING);
 	}
 	
 	public void changePath(String newPath) {

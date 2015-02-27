@@ -50,9 +50,13 @@ public class SettingController {
 		dirChooser.setTitle("Choose Storage Path");
 		File selectedDir = dirChooser.showDialog(anPaneSetting.getScene().getWindow());
 		txtPath.setText(selectedDir.getAbsolutePath());
+		
 		String newPath = txtPath.getText();
+		
 		Main.storage.updatePathInSetting(newPath);
+		
 		String pathInSetting = Main.storage.readSavePath();
+		
 		if (newPath != pathInSetting) {
 			Main.storage.updatePathInSetting(newPath);
 		}
