@@ -33,23 +33,24 @@ public class Task {
 		_taskType = InputParser.getTaskTypeFromString(userInput);	
 		_originalText = removeActionFromString(userInput);
 		
-		List<Date> dates = Main.inputParser.getDatesFromString(userInput);
+		List<Date> dates = getDates(userInput);
 		
 		if (_taskType.equals(TaskType.TIMED) && dates.size() < 2) {
 			_isValid = false;
 		} else if (!_taskType.equals(TaskType.FLOATING) && dates.size() == 0) {
 			_isValid = false;
 		} else {			
-			setDatesForTaskType(dates, _taskType);			
+			setDatesForTaskType(dates);			
 			_category = InputParser.getCategoryFromString(userInput);
 			
 			setRepeatFrequency(dates, userInput);
 			
 			_priority = InputParser.getPriorityFromString(userInput);		
-			_toDo = generateToDoString(userInput, _taskType);
+			_toDo = generateToDoString(userInput);
 			_isValid = true;
 		}		
 	}
+
 	
 	public String getId() {
 		return _id;
@@ -181,7 +182,7 @@ public class Task {
 		return id;
 	}
 	
-	private String generateToDoString(String userInput, TaskType taskType) {
+	private String generateToDoString(String userInput) {
 		String toDoString = userInput;
 		String on = Command.ON.toString().toLowerCase();
 		String from = Command.FROM.toString().toLowerCase();
@@ -191,7 +192,7 @@ public class Task {
 		toDoString = removeCategoryFromString(toDoString);		
 		toDoString = removePriorityFromString(toDoString);		
 		toDoString = removeRecurringFromString(toDoString);
-		toDoString = extractDescriptionFromString(toDoString, taskType);	
+		toDoString = extractDescriptionFromString(toDoString);	
 		
 		return toDoString.trim(); 
 	}
@@ -259,7 +260,7 @@ public class Task {
 		return toDoString;
 	}
 
-	private String extractDescriptionFromString(String userInput, TaskType taskType) {
+	private String extractDescriptionFromString(String userInput) {
 		String extractedString = removeActionFromString(userInput);
 		
 		int beginIndex = 0;
@@ -268,7 +269,7 @@ public class Task {
 		String lowerCase = extractedString.toLowerCase();
 		String toBeRemoved = null;
 		Command typeCommand = null;
-		switch(taskType) {
+		switch(_taskType) {
 			case EVENT :	
 				typeCommand = Command.ON;
 				break;
@@ -290,18 +291,27 @@ public class Task {
 		}
 		
 		toBeRemoved = extractedString.substring(beginIndex, endIndex);
-		extractedString = extractedString.replace(toBeRemoved, " ");
+		extractedString = extractedString.replace(toBeRemoved, "");
 		
 		return extractedString;
 	}
 	
-	private void setDatesForTaskType(List<Date> dates, TaskType taskType) {
+
+	private List<Date> getDates(String userInput) {
+		String toBeRemoved = extractDescriptionFromString(userInput);
+		String detailsString = userInput.replace(toBeRemoved, "");
+		
+		List<Date> dates = Main.inputParser.getDatesFromString(detailsString);
+		return dates;
+	}
+	
+	private void setDatesForTaskType(List<Date> dates) {
 		_on = null;
 		_from = null;
 		_to = null;
 		_by = null;
 		
-		switch(taskType) {
+		switch(_taskType) {
 			case EVENT :
 				_on = dates.get(0);
 				break;
@@ -327,9 +337,6 @@ public class Task {
 			_isRecurring = false;
 			_repeat = Frequency.NIL;
 		}
-	}
-
-	
-	
+	}	
 	
 }
