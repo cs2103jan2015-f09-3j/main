@@ -5,10 +5,10 @@ public enum Command {
 	DELETE("delete", "/d"),
 	UPDATE("update", "/u"),
 	SEARCH("search", "/s"),
-	FROM("from", "/f"),
-	TO("to", "/t"),
-	ON("on", "/o"),
-	BY("by", "/b"),
+	FROM("/from", "/f"),
+	TO("/to", "/t"),
+	ON("/on", "/o"),
+	BY("/by", "/b"),
 	CATEGORY("//", "//"),
 	PRIORITY_HIGH("/high", "/***"),
 	PRIORITY_MEDIUM("/medium", "/**"),
@@ -44,7 +44,7 @@ public enum Command {
 			advancedCommand = command.getAdvancedCommand();
 			
 			if (commandLine.indexOf(basicCommand) == Constant.START_INDEX ||
-					commandLine.indexOf(advancedCommand) == Constant.START_INDEX) {
+				commandLine.indexOf(advancedCommand) == Constant.START_INDEX) {
 				
 				return command;
 			}

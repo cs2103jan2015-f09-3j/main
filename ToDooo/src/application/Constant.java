@@ -57,6 +57,7 @@ public final class Constant {
 	public static final String MSG_ORIGINAL_NOT_RETRIEVED = "Original input cannot be retrieved.";
 	public static final String MSG_UPDATE_FAIL = "Update failed.";
 	public static final String MSG_UPDATE_SUCCESS = "Update successful.";
+	public static final String MSG_INVALID_FORMAT = "Invalid format. Unable to extract dates.";
 	
 	public static final String MSG_UNDO_ADD_SUCCESS = "Undo add successful.";
 	public static final String MSG_UNDO_ADD_FAIL = "Undo add failed.";

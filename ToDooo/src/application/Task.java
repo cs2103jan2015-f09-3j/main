@@ -17,6 +17,7 @@ public class Task {
 	private Priority _priority;
 	private int _dayOfWeek;
 	private Date _repeatUntil;
+	private boolean _isValid;
 	
 	public Task() {
 		// convert from node
@@ -29,18 +30,25 @@ public class Task {
 
 	public Task(String userInput, String id) {
 		_id = id;
-		_taskType = InputParser.getTaskTypeFromString(userInput);	
 		_originalText = removeActionFromString(userInput);
 		
+		_taskType = InputParser.getTaskTypeFromString(userInput);	
 		List<Date> dates = Main.inputParser.getDatesFromString(userInput);
-		setDatesForTaskType(dates, _taskType);	
 		
-		_category = InputParser.getCategoryFromString(userInput);
-		
-		setRepeatFrequency(dates, userInput);
-		
-		_priority = InputParser.getPriorityFromString(userInput);		
-		_toDo = generateToDoString(userInput, _taskType);
+		if (_taskType.equals(TaskType.TIMED) && dates.size() < 2) {
+			_isValid = false;
+		} else if (!_taskType.equals(TaskType.FLOATING) && dates.size() == 0) {
+			_isValid = false;
+		} else {			
+			setDatesForTaskType(dates, _taskType);			
+			_category = InputParser.getCategoryFromString(userInput);
+			
+			setRepeatFrequency(dates, userInput);
+			
+			_priority = InputParser.getPriorityFromString(userInput);		
+			_toDo = generateToDoString(userInput, _taskType);
+			_isValid = true;
+		}		
 	}
 	
 	public String getId() {
@@ -139,6 +147,14 @@ public class Task {
 		_priority = priority;
 	}
 	
+	public boolean getIsValid() {
+		return _isValid;
+	}
+
+	public void setIsValid(boolean isValid) {
+		_isValid = isValid;
+	}
+	
 	private static String generateId(TaskType taskType) {
 		int nextId = Main.list.getNextId();
 		String id = null;
@@ -167,30 +183,38 @@ public class Task {
 	
 	private String generateToDoString(String userInput, TaskType taskType) {
 		String toDoString = userInput;
-		String on = "on";
-		String from = "from";
-		String to = "to";
-		String by = "by";
+		String on = Command.ON.toString().toLowerCase();
+		String from = Command.FROM.toString().toLowerCase();
+		String to = Command.TO.toString().toLowerCase();
+		String by = Command.BY.toString().toLowerCase();
 		
 		toDoString = removeActionFromString(userInput);
 		
 		switch(taskType) {
 			case EVENT :
-				if (toDoString.contains(Command.ON.getAdvancedCommand())) {
+				if (toDoString.contains(Command.ON.getBasicCommand())) {
+					toDoString = toDoString.replace(Command.ON.getBasicCommand(), on);
+				} else if (toDoString.contains(Command.ON.getAdvancedCommand())) {
 					toDoString = toDoString.replace(Command.ON.getAdvancedCommand(), on);
 				}
 				break;
-			case TIMED : 
-				if (toDoString.contains(Command.FROM.getAdvancedCommand())) {
+			case TIMED :
+				if (toDoString.contains(Command.FROM.getBasicCommand())) {
+					toDoString = toDoString.replace(Command.FROM.getBasicCommand(), from);
+				} else if (toDoString.contains(Command.FROM.getAdvancedCommand())) {
 					toDoString = toDoString.replace(Command.FROM.getAdvancedCommand(), from);
 				}
 				
-				if (toDoString.contains(Command.TO.getAdvancedCommand())) {
+				if (toDoString.contains(Command.TO.getBasicCommand())) {
+					toDoString = toDoString.replace(Command.TO.getBasicCommand(), to);
+				} else if (toDoString.contains(Command.TO.getAdvancedCommand())) {
 					toDoString = toDoString.replace(Command.TO.getAdvancedCommand(), to);
 				}
 				break;
 			case DATED :
-				if (toDoString.contains(Command.BY.getAdvancedCommand())) {
+				if (toDoString.contains(Command.BY.getBasicCommand())) {
+					toDoString = toDoString.replace(Command.BY.getBasicCommand(), by);
+				} else if (toDoString.contains(Command.BY.getAdvancedCommand())) {
 					toDoString = toDoString.replace(Command.BY.getAdvancedCommand(), by);
 				} 
 				break;
@@ -280,7 +304,7 @@ public class Task {
 			case EVENT :
 				_on = dates.get(0);
 				break;
-			case TIMED : 
+			case TIMED :				
 				_from = dates.get(0);
 				_to = dates.get(1);
 				break;
@@ -303,6 +327,8 @@ public class Task {
 			_repeat = Frequency.NIL;
 		}
 	}
+
+	
 	
 	
 }

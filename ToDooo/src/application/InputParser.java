@@ -35,7 +35,17 @@ public class InputParser {
 	}
 	
 	public List<Date> getDatesFromString(String userInput) {
-		List<DateGroup> groups = _parser.parse(userInput);
+		String checkString = userInput;
+		
+		if (userInput.contains(Command.TO.getBasicCommand())) {
+			checkString = userInput.replace(Command.TO.getBasicCommand(), 
+						       			    Command.TO.toString());
+		} else if (userInput.contains(Command.TO.getAdvancedCommand())) {
+			checkString = userInput.replace(Command.TO.getAdvancedCommand(), 
+											Command.TO.toString());
+		}
+		
+		List<DateGroup> groups = _parser.parse(checkString);
 		
 		if (groups.isEmpty()) {
 			return null;

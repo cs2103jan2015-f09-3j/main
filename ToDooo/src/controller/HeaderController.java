@@ -120,11 +120,16 @@ public class HeaderController{
 	private String executeAdd(String userInput) {
 		Task task = new Task(userInput);	
 		
-		Undo undo = new Undo(Command.ADD, task.getId());
-		Main.undos.push(undo);
-		
-		String systemMsg = Main.list.addTaskToList(task);
-		
+		String systemMsg = null;
+		if (task.getIsValid()) {
+			Undo undo = new Undo(Command.ADD, task.getId());
+			Main.undos.push(undo);
+			
+			systemMsg = Main.list.addTaskToList(task);
+		} else {
+			systemMsg = Constant.MSG_INVALID_FORMAT;
+		}
+				
 		return systemMsg;
 	}
 	
