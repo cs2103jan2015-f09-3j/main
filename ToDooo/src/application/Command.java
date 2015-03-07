@@ -1,21 +1,21 @@
 package application;
 
 public enum Command {
-	ADD("add", "-a"),
-	DELETE("delete", "-d"),
-	UPDATE("update", "-u"),
-	SEARCH("search", "-s"),
-	FROM("from", "-f"),
-	TO("to", "-t"),
-	ON("on", "-o"),
-	BY("by", "-b"),
+	ADD("add", "/a"),
+	DELETE("delete", "/d"),
+	UPDATE("update", "/u"),
+	SEARCH("search", "/s"),
+	FROM("from", "/f"),
+	TO("to", "/t"),
+	ON("on", "/o"),
+	BY("by", "/b"),
 	CATEGORY("//", "//"),
 	PRIORITY_HIGH("/high", "/***"),
 	PRIORITY_MEDIUM("/medium", "/**"),
 	PRIORITY_LOW("/low", "/*"),
-	RECURRING_WEEKLY("/weekly", "-w"),
-	RECURRING_MONTHLY("/monthly", "-m"),
-	RECURRING_YEARLY("/yearly", "-y"),
+	RECURRING_WEEKLY("/weekly", "/w"),
+	RECURRING_MONTHLY("/monthly", "/m"),
+	RECURRING_YEARLY("/yearly", "/y"),
 	SETTING("/setting", "/setting"),
 	GO_BACK("/~", "/~");
 	
