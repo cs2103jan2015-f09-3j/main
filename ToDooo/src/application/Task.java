@@ -15,6 +15,8 @@ public class Task {
 	private boolean _isRecurring;
 	private Frequency _repeat;
 	private Priority _priority;
+	private int _dayOfWeek;
+	private Date _repeatUntil;
 	
 	public Task() {
 		// convert from node
@@ -26,19 +28,18 @@ public class Task {
 	}
 
 	public Task(String userInput, String id) {
-		_id = id;		
-		_taskType = InputParser.getTaskTypeFromString(userInput);
+		_id = id;
+		_taskType = InputParser.getTaskTypeFromString(userInput);	
 		_originalText = removeActionFromString(userInput);
 		
 		List<Date> dates = Main.inputParser.getDatesFromString(userInput);
-		setDatesForTaskType(dates, _taskType);
+		setDatesForTaskType(dates, _taskType);	
 		
 		_category = InputParser.getCategoryFromString(userInput);
 		
 		setRepeatFrequency(dates, userInput);
 		
-		_priority = InputParser.getPriorityFromString(userInput);
-		
+		_priority = InputParser.getPriorityFromString(userInput);		
 		_toDo = generateToDoString(userInput, _taskType);
 	}
 	
