@@ -30,9 +30,9 @@ public class Task {
 
 	public Task(String userInput, String id) {
 		_id = id;
+		_taskType = InputParser.getTaskTypeFromString(userInput);	
 		_originalText = removeActionFromString(userInput);
 		
-		_taskType = InputParser.getTaskTypeFromString(userInput);	
 		List<Date> dates = Main.inputParser.getDatesFromString(userInput);
 		
 		if (_taskType.equals(TaskType.TIMED) && dates.size() < 2) {
@@ -188,44 +188,10 @@ public class Task {
 		String to = Command.TO.toString().toLowerCase();
 		String by = Command.BY.toString().toLowerCase();
 		
-		toDoString = removeActionFromString(userInput);
-		
-		switch(taskType) {
-			case EVENT :
-				if (toDoString.contains(Command.ON.getBasicCommand())) {
-					toDoString = toDoString.replace(Command.ON.getBasicCommand(), on);
-				} else if (toDoString.contains(Command.ON.getAdvancedCommand())) {
-					toDoString = toDoString.replace(Command.ON.getAdvancedCommand(), on);
-				}
-				break;
-			case TIMED :
-				if (toDoString.contains(Command.FROM.getBasicCommand())) {
-					toDoString = toDoString.replace(Command.FROM.getBasicCommand(), from);
-				} else if (toDoString.contains(Command.FROM.getAdvancedCommand())) {
-					toDoString = toDoString.replace(Command.FROM.getAdvancedCommand(), from);
-				}
-				
-				if (toDoString.contains(Command.TO.getBasicCommand())) {
-					toDoString = toDoString.replace(Command.TO.getBasicCommand(), to);
-				} else if (toDoString.contains(Command.TO.getAdvancedCommand())) {
-					toDoString = toDoString.replace(Command.TO.getAdvancedCommand(), to);
-				}
-				break;
-			case DATED :
-				if (toDoString.contains(Command.BY.getBasicCommand())) {
-					toDoString = toDoString.replace(Command.BY.getBasicCommand(), by);
-				} else if (toDoString.contains(Command.BY.getAdvancedCommand())) {
-					toDoString = toDoString.replace(Command.BY.getAdvancedCommand(), by);
-				} 
-				break;
-			default :
-				// floating task
-				break;
-		}
-		
 		toDoString = removeCategoryFromString(toDoString);		
 		toDoString = removePriorityFromString(toDoString);		
 		toDoString = removeRecurringFromString(toDoString);
+		toDoString = extractDescriptionFromString(toDoString, taskType);	
 		
 		return toDoString.trim(); 
 	}
@@ -268,7 +234,7 @@ public class Task {
 		return toDoString;
 	}
 	
-	public String removeActionFromString(String userInput) {
+	private String removeActionFromString(String userInput) {
 		int lengthOfBasicAddCommand = Command.ADD.getBasicCommand().length();
 		int lengthOfAdvancedAddCommand = Command.ADD.getAdvancedCommand().length();
 		String toDoString = userInput;
@@ -293,6 +259,41 @@ public class Task {
 		return toDoString;
 	}
 
+	private String extractDescriptionFromString(String userInput, TaskType taskType) {
+		String extractedString = removeActionFromString(userInput);
+		
+		int beginIndex = 0;
+		int endIndex = extractedString.length();
+		
+		String lowerCase = extractedString.toLowerCase();
+		String toBeRemoved = null;
+		Command typeCommand = null;
+		switch(taskType) {
+			case EVENT :	
+				typeCommand = Command.ON;
+				break;
+			case TIMED :				
+				typeCommand = Command.FROM;
+				break;
+			case DATED :
+				typeCommand = Command.BY;
+				break;
+			default :
+				// floating task
+				// no need to do anything since there is no date
+				break;
+		}
+		
+		beginIndex = lowerCase.indexOf(typeCommand.getBasicCommand());
+		if (beginIndex == -1) {
+			beginIndex = lowerCase.indexOf(typeCommand.getAdvancedCommand());
+		}
+		
+		toBeRemoved = extractedString.substring(beginIndex, endIndex);
+		extractedString = extractedString.replace(toBeRemoved, " ");
+		
+		return extractedString;
+	}
 	
 	private void setDatesForTaskType(List<Date> dates, TaskType taskType) {
 		_on = null;
