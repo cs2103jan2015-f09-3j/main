@@ -21,7 +21,7 @@ public class InputParser {
 	}
 	
 	public static TaskType getTaskTypeFromString(String userInput) {
-		return TaskType.verifyTaskType(userInput);
+		return TaskType.verifyTaskType(userInput.toLowerCase());
 	}
 	
 	public Date getDateFromString(String dateString) {
@@ -35,14 +35,14 @@ public class InputParser {
 	}
 	
 	public List<Date> getDatesFromString(String userInput) {
-		String checkString = userInput;
+		String checkString = userInput.toLowerCase();
 		
-		if (userInput.contains(Command.TO.getBasicCommand())) {
-			checkString = userInput.replace(Command.TO.getBasicCommand(), 
-						       			    Command.TO.toString());
-		} else if (userInput.contains(Command.TO.getAdvancedCommand())) {
-			checkString = userInput.replace(Command.TO.getAdvancedCommand(), 
-											Command.TO.toString());
+		if (checkString.contains(Command.TO.getBasicCommand())) {
+			checkString = checkString.replace(Command.TO.getBasicCommand(), 
+						       			      Command.TO.toString());
+		} else if (checkString.contains(Command.TO.getAdvancedCommand())) {
+			checkString = checkString.replace(Command.TO.getAdvancedCommand(), 
+											  Command.TO.toString());
 		}
 		
 		List<DateGroup> groups = _parser.parse(checkString);
