@@ -44,21 +44,50 @@ public class Undo {
 		return command;
 	}
 	
-	private String undoAction() {
+	public String undoAction() {
 		String systemMsg = null;
 		
 		switch (_undoCommand) {
 			case ADD :
 				// to undo delete action
 				// add _originalTask
+				systemMsg = Main.list.addTaskToList(_originalTask);				
+				if (systemMsg.equals(Constant.MSG_ADD_SUCCESS)) {
+					Undo redo = new Undo(Command.ADD, _originalTask.getId());
+					Main.redos.push(redo);
+					
+					systemMsg = Constant.MSG_UNDO_DELETE_SUCCESS;
+				} else {
+					systemMsg = Constant.MSG_UNDO_DELETE_FAIL;
+				}
 				break;
 			case DELETE :
 				// to undo add action
 				// delete using _targetId
+				Task removedTask = Main.list.deleteTaskById(_targetId);
+				
+				if (removedTask != null) {
+					Undo redo = new Undo(Command.DELETE, removedTask);
+					Main.redos.push(redo);
+					
+					systemMsg = Constant.MSG_UNDO_ADD_SUCCESS;
+				} else {
+					systemMsg = Constant.MSG_UNDO_ADD_FAIL;
+				}
 				break;
 			case UPDATE :
 				// to undo update action
 				// update using _originalTask and _targetId
+				Task replacedTask = Main.list.replaceTaskOnList(_originalTask, _targetId);
+				
+				if (replacedTask != null) {
+					Undo redo = new Undo(Command.UPDATE, replacedTask, _targetId);
+					Main.redos.push(redo);
+					
+					systemMsg = Constant.MSG_UNDO_UPDATE_SUCCESS;
+				} else {
+					systemMsg = Constant.MSG_UNDO_UPDATE_FAIL;
+				}
 				break;
 			default:
 				// no undo command

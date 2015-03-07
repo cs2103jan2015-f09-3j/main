@@ -236,22 +236,29 @@ public class Task {
 	}
 	
 	private String removeActionFromString(String userInput) {
-		int lengthOfBasicAddCommand = Command.ADD.getBasicCommand().length();
-		int lengthOfAdvancedAddCommand = Command.ADD.getAdvancedCommand().length();
+		String lowerCase = userInput.toLowerCase();
+		String addBasicCmd = Command.ADD.getBasicCommand();
+		String addAdvancedCmd = Command.ADD.getAdvancedCommand();
+		String updateBasicCmd = Command.UPDATE.getBasicCommand();
+		String updateAdvancedCmd = Command.UPDATE.getAdvancedCommand();
+		
+		int lengthOfBasicAddCommand = addBasicCmd.length();
+		int lengthOfAdvancedAddCommand = addAdvancedCmd.length();
 		String toDoString = userInput;
 		
-		if (userInput.contains(Command.ADD.getBasicCommand())){
+		if (lowerCase.contains(addBasicCmd) &&
+			lowerCase.indexOf(addBasicCmd) == Constant.START_INDEX){
 			toDoString = userInput.substring(lengthOfBasicAddCommand, 
 						 userInput.length()).trim();
-		} else if (userInput.contains(Command.ADD.getAdvancedCommand())) {	
+		} else if (lowerCase.contains(Command.ADD.getAdvancedCommand()) &&
+				   lowerCase.indexOf(addAdvancedCmd) == Constant.START_INDEX) {	
 			toDoString = userInput.substring(lengthOfAdvancedAddCommand, 
 						 userInput.length()).trim();
 		} 
 		
-		if (userInput.contains(Command.UPDATE.getBasicCommand()) ||
-			userInput.contains(Command.UPDATE.getAdvancedCommand())) {
-			
-			if (userInput.toLowerCase().contains(_id.toLowerCase())) {
+		if (lowerCase.contains(updateBasicCmd) ||
+			lowerCase.contains(updateAdvancedCmd)) {			
+			if (lowerCase.contains(_id.toLowerCase())) {
 				toDoString = userInput.substring(userInput.indexOf(Constant.COMMAND_DELIMETER) + 2, 
 						 	 userInput.length());
 			}
@@ -285,13 +292,15 @@ public class Task {
 				break;
 		}
 		
-		beginIndex = lowerCase.indexOf(typeCommand.getBasicCommand());
-		if (beginIndex == -1) {
-			beginIndex = lowerCase.indexOf(typeCommand.getAdvancedCommand());
+		if (typeCommand != null) {
+			beginIndex = lowerCase.indexOf(typeCommand.getBasicCommand());
+			if (beginIndex == -1) {
+				beginIndex = lowerCase.indexOf(typeCommand.getAdvancedCommand());
+			}
+			
+			toBeRemoved = extractedString.substring(beginIndex, endIndex);
+			extractedString = extractedString.replace(toBeRemoved, "");
 		}
-		
-		toBeRemoved = extractedString.substring(beginIndex, endIndex);
-		extractedString = extractedString.replace(toBeRemoved, "");
 		
 		return extractedString;
 	}

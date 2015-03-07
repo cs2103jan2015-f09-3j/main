@@ -320,4 +320,23 @@ public class Storage {
 			exception.printStackTrace();
 		}
 	}
+	
+	public void writeNextIdInFile(int nextId) {
+		Document document = getFileDocument();
+		
+		try {
+			XPathExpression expression = 
+					_xPath.compile("/" + Constant.TAG_FILE + "/" +
+								   Constant.TAG_NEXT_ID);
+			
+			Element nextIdNode = (Element) expression.
+							   	 evaluate(document, XPathConstants.NODE);
+			
+			nextIdNode.setTextContent(String.valueOf(nextId));
+			
+			writeFile(document);
+		} catch (Exception exception) {
+			exception.printStackTrace();
+		}
+	}
 }

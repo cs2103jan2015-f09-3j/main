@@ -14,6 +14,7 @@ public class Main extends Application {
 	public static ToDoList list;
 	public static InputParser inputParser;
 	public static Stack<Undo> undos;
+	public static Stack<Undo> redos;
 	public static boolean toUpdate;
 	
 	@Override
@@ -39,6 +40,7 @@ public class Main extends Application {
 		Main.inputParser = new InputParser();
 		Main.list = new ToDoList();
 		Main.undos = new Stack<Undo>();
+		Main.redos = new Stack<Undo>();
 		
 		toUpdate = false;
 	}

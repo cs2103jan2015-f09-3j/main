@@ -1,5 +1,9 @@
 package application;
 
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyCodeCombination;
+import javafx.scene.input.KeyCombination;
+
 public final class Constant {
 	public static final int START_INDEX = 0;
 	public static final int START_ID = 1;
@@ -65,10 +69,15 @@ public final class Constant {
 	public static final String MSG_UNDO_DELETE_FAIL = "Undo delete failed.";
 	public static final String MSG_UNDO_UPDATE_SUCCESS = "Undo update successful.";
 	public static final String MSG_UNDO_UPDATE_FAIL = "Undo update failed.";
+	public static final String MSG_NO_UNDO = "There is no undo action to execute.";
+	public static final String MSG_NO_REDO = "There is no redo action to execute.";
 	
 	public static final String COMMAND_DELIMETER = ":";
 
 	public static final String COLOUR_ERROR = "#FF0033";
 	public static final String COLOUR_FEEDBACK = "#4771FF";
 	public static final String COLOUR_SUCCESS = "#9ACC77";
+	
+	public static final KeyCombination SHORTCUT_UNDO = new KeyCodeCombination(KeyCode.Z, KeyCombination.SHIFT_DOWN);
+	public static final KeyCombination SHORTCUT_REDO = new KeyCodeCombination(KeyCode.Y, KeyCombination.SHIFT_DOWN);
 }

@@ -3,11 +3,19 @@ package controller;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import application.Constant;
+import application.Main;
 import application.Task;
+import application.Undo;
+import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyCodeCombination;
+import javafx.scene.input.KeyCombination;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
@@ -37,6 +45,22 @@ public class MainController{
 		headerController.init(this);
 		bodyController.init(this);
 		loadList("All");
+	}
+
+	@FXML
+	public void onShortcutKey(KeyEvent e) {	
+		String systemMsg = null;
+		
+		if (Constant.SHORTCUT_UNDO.match(e)) {
+			systemMsg = executeUndo();
+		} else if (Constant.SHORTCUT_REDO.match(e)) {
+			systemMsg = executeRedo();
+		} else {
+			return;
+		}
+		
+		headerController.txtCmd.getParent().requestFocus();
+		headerController.lblSysMsg.setText(systemMsg);
 	}
 
 	public void loadList(String tabName) {
@@ -186,5 +210,23 @@ public class MainController{
 		col5.setPrefWidth(60);
 		row = new RowConstraints();
 		row.setPrefHeight(30);
+	}
+
+	private String executeUndo() {
+		String systemMsg = null;
+		
+		boolean canUndo = !(Main.undos.isEmpty());
+		if (canUndo) {
+			Undo undo = Main.undos.pop();
+			systemMsg = undo.undoAction();
+		} else {
+			systemMsg = Constant.MSG_NO_UNDO;
+		}
+		
+		return systemMsg;
+	}
+	
+	private String executeRedo() {
+		return null;
 	}
 }

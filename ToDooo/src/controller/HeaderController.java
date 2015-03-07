@@ -25,13 +25,13 @@ public class HeaderController{
 	private MainController mainCon;
 	@FXML public TextField txtCmd;
 	@FXML private Label lblLogo;
-	@FXML private Label lblSysMsg;
+	@FXML public Label lblSysMsg;
 	@FXML private AnchorPane paneHead;
 	@FXML private ImageView settingIcon;
 	@FXML private ImageView backIcon;
 	
 	@FXML
-	public void processCmd(KeyEvent e) throws IOException {
+	public void processCmd(KeyEvent e) throws IOException {			
 		if (e.getCode() == KeyCode.ENTER) {
 			String userInput = txtCmd.getText();	
 			if (userInput.equals("")) {
@@ -62,7 +62,7 @@ public class HeaderController{
 			Main.toUpdate = false;
 		}
 	}
-	
+		
 	@FXML
 	public void loadSettingMouse(MouseEvent e) throws IOException {
 		executeSetting();
@@ -116,16 +116,19 @@ public class HeaderController{
 		
 		return systemMsg;
 	}
-
+	
 	private String executeAdd(String userInput) {
 		Task task = new Task(userInput);	
 		
 		String systemMsg = null;
 		if (task.getIsValid()) {
-			Undo undo = new Undo(Command.ADD, task.getId());
-			Main.undos.push(undo);
-			
 			systemMsg = Main.list.addTaskToList(task);
+			
+			if (systemMsg.equals(Constant.MSG_ADD_SUCCESS)) {
+				Undo undo = new Undo(Command.ADD, task.getId());
+				Main.undos.push(undo);
+			}
+			
 		} else {
 			systemMsg = Constant.MSG_INVALID_FORMAT;
 		}

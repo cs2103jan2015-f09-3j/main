@@ -94,7 +94,9 @@ public class ToDoList {
 		
 		if (result.equals(Constant.MSG_ADD_SUCCESS)) {
 			_tasks.add(task);
+			
 			_nextId++;
+			Main.storage.writeNextIdInFile(_nextId);
 			
 			addCategoryToList(task.getCategory());
 		}
@@ -145,6 +147,16 @@ public class ToDoList {
 		return originalTask;
 	}
 	
+	public Task replaceTaskOnList(Task taskToUpdateWith, String targetId) {		
+		Task originalTask = deleteTaskById(targetId);
+		
+		if (originalTask != null) {
+			addTaskToList(taskToUpdateWith);
+		}
+		
+		return originalTask;
+	}
+	
 	public Task getTaskById(String targetId) {		
 		Task targetTask = null;
 		boolean isFound = false;
@@ -161,7 +173,7 @@ public class ToDoList {
 		return targetTask;
 	}
 	
-	private Task deleteTaskById(String targetId) {
+	public Task deleteTaskById(String targetId) {
 		Task task = null;
 		Task removedTask = null;
 		int index = 0;		
