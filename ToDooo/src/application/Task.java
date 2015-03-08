@@ -47,9 +47,13 @@ public class Task {
 			if (_isValid) {
 				_priority = InputParser.getPriorityFromString(userInput);		
 				_toDo = generateToDoString(userInput);
+				
+				updateIdWithTaskType();
 				_isValid = true;
 			}
-		}		
+		}
+		
+		
 	}
 
 	
@@ -410,4 +414,11 @@ public class Task {
 		return isValid;
 	}	
 	
+	private void updateIdWithTaskType() {
+		char typePrefix = _taskType.toString()
+				 	  	  .charAt(Constant.START_INDEX);
+		
+		char prefix = _id.charAt(Constant.START_INDEX);
+		_id = _id.replace(prefix, typePrefix);
+	}
 }

@@ -19,6 +19,7 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
+import javafx.util.Pair;
 
 public class HeaderController{
 	
@@ -170,8 +171,9 @@ public class HeaderController{
 	
 	private String executeUpdate(String userInput) {
 		String systemMsg = null;
-		String targetId = InputParser.getTargetIdFromUpdateString(userInput);
-		Task originalTask = Main.list.updateTaskOnList(userInput);
+		Pair<Task, String> updatedTasksDetails = Main.list.updateTaskOnList(userInput);
+		Task originalTask = updatedTasksDetails.getKey();
+		String targetId = updatedTasksDetails.getValue();
 		
 		if (originalTask != null) {
 			Undo undo = new Undo(Command.UPDATE, originalTask, targetId);

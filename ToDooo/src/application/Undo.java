@@ -81,7 +81,7 @@ public class Undo {
 				Task replacedTask = Main.list.replaceTaskOnList(_originalTask, _targetId);
 				
 				if (replacedTask != null) {
-					Undo redo = new Undo(Command.UPDATE, replacedTask, _targetId);
+					Undo redo = new Undo(Command.UPDATE, replacedTask, _originalTask.getId());
 					Main.redos.push(redo);
 					
 					systemMsg = Constant.MSG_UNDO_UPDATE_SUCCESS;
@@ -135,7 +135,7 @@ public class Undo {
 				Task replacedTask = Main.list.replaceTaskOnList(_originalTask, _targetId);
 				
 				if (replacedTask != null) {
-					Undo undo = new Undo(Command.UPDATE, replacedTask, _targetId);
+					Undo undo = new Undo(Command.UPDATE, replacedTask, _originalTask.getId());
 					Main.undos.push(undo);
 					
 					systemMsg = Constant.MSG_REDO_UPDATE_SUCCESS;

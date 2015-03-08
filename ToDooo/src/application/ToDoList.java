@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import javafx.util.Pair;
+
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -146,17 +148,18 @@ public class ToDoList {
 		return removedTask;
 	}
 	
-	public Task updateTaskOnList(String userInput) {
-		String targetId = InputParser.getTargetIdFromUpdateString(userInput);		
+	public Pair<Task, String> updateTaskOnList(String userInput) {
+		String targetId = InputParser.getTargetIdFromUpdateString(userInput);
 		Task updatedTask = new Task(userInput, targetId);
 		
 		Task originalTask = deleteTaskById(targetId);
 		
 		if (originalTask != null) {
 			addTaskToList(updatedTask);
-		}
+		}		
 		
-		return originalTask;
+		String updatedId = updatedTask.getId();
+		return new Pair<Task, String>(originalTask, updatedId);
 	}
 	
 	public Task replaceTaskOnList(Task taskToUpdateWith, String targetId) {		
