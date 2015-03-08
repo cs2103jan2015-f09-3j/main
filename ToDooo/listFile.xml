@@ -1,54 +1,41 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <file>
-  <nextid>14</nextid>
+  <nextid>20</nextid>
   <categories>
     <category>Uncategorised</category>
   </categories>
   <tasks>
-  <task id="F10">
-      <type>FLOATING</type>
-      <todo>do cs2103</todo>
-      <original>do cs2103</original>
-      <on>NIL</on>
-      <from>NIL</from>
-      <to>NIL</to>
-      <by>NIL</by>
-      <category>Uncategorised</category>
-      <recurring>false</recurring>
-      <repeat>NIL</repeat>
-      <priority>NEUTRAL</priority>
-    </task>
-  <task id="D11">
+  <task id="D17">
       <type>DATED</type>
-      <todo>do project</todo>
-      <original>do project /by 7 march</original>
+      <todo>do hw1</todo>
+      <original>do hw1 /by march 8</original>
       <on>NIL</on>
       <from>NIL</from>
       <to>NIL</to>
-      <by>Sat Mar 07 12:26:00 SGT 2015</by>
+      <by>Sun Mar 08 13:17:31 SGT 2015</by>
       <category>Uncategorised</category>
       <recurring>false</recurring>
       <repeat>NIL</repeat>
       <priority>NEUTRAL</priority>
     </task>
-  <task id="E12">
-      <type>EVENT</type>
-      <todo>discussion</todo>
-      <original>discussion /on 8 march</original>
-      <on>Sun Mar 08 12:26:09 SGT 2015</on>
+  <task id="D18">
+      <type>DATED</type>
+      <todo>do cs2103</todo>
+      <original>do cs2103 /by 8 march</original>
+      <on>NIL</on>
       <from>NIL</from>
       <to>NIL</to>
-      <by>NIL</by>
+      <by>Sun Mar 08 13:17:42 SGT 2015</by>
       <category>Uncategorised</category>
       <recurring>false</recurring>
       <repeat>NIL</repeat>
       <priority>NEUTRAL</priority>
     </task>
-  <task id="E13">
+  <task id="E19">
       <type>EVENT</type>
       <todo>go concert</todo>
       <original>go concert /on 11 march</original>
-      <on>Wed Mar 11 12:26:18 SGT 2015</on>
+      <on>Wed Mar 11 13:17:51 SGT 2015</on>
       <from>NIL</from>
       <to>NIL</to>
       <by>NIL</by>
