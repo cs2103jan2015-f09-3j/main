@@ -1,7 +1,12 @@
 package controller;
 
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
 
 import application.Constant;
 import application.Main;
@@ -26,7 +31,9 @@ import controller.BodyController;
 
 public class MainController{
 	
-	private ArrayList<Task> taskList = new ArrayList<>();
+	private ArrayList<Task> taskList = Main.list.getTasks();
+	//private ArrayList<Task> categoryList = Main.list.getCategories();
+	//private ArrayList<Task> priorityList = new ArrayList<>();
 	private ColumnConstraints col0;
 	private ColumnConstraints col1;
 	private ColumnConstraints col2;
@@ -44,7 +51,7 @@ public class MainController{
 	public void initialize() {
 		headerController.init(this);
 		bodyController.init(this);
-		loadList("All");
+		loadListByDate("All");
 	}
 
 	@FXML
@@ -62,137 +69,183 @@ public class MainController{
 		headerController.txtCmd.getParent().requestFocus();
 		headerController.lblSysMsg.setText(systemMsg);
 	}
+	
+	private Date getDate(Task t) {
+		if(t.getOn() != null) {
+			return t.getOn();
+		} else if(t.getBy() != null) {
+			return t.getBy();
+		} else if (t.getFrom() != null && t.getTo() != null) {
+			return t.getFrom();
+		} else {
+			return null;
+		}
+	}
 
-	public void loadList(String tabName) {
-		// temporary method, will be deleted
-		loadArrayList();
-		setConstraintsOnGridPane();
-		
+	public void loadListByDate(String tabName) {
+		ArrayList<Task> overdue = new ArrayList<>();
+		ArrayList<Task> today = new ArrayList<>();
+		ArrayList<Task> floating = new ArrayList<>();
+		Calendar c = new GregorianCalendar();
+	    c.set(Calendar.HOUR_OF_DAY, 0); 
+	    c.set(Calendar.MINUTE, 0);
+	    c.set(Calendar.SECOND, 0);
+	    Date todayDate = c.getTime();
+	    int indexForNextLoop = 0;
+	    
+	    DateFormat simpleFormat = new SimpleDateFormat("MM/dd/yyyy");
+	    String todayStr = simpleFormat.format(todayDate);
+	    
 		for(int i = 0; i < taskList.size(); i++) {
-			if(i == 0 || taskList.get(i).getCategory() != taskList.get(i-1).getCategory()) {
-				Label lblTitle = new Label(taskList.get(i).getCategory());
-				lblTitle.getStyleClass().add("labelTitle");
-				switch(tabName) {
-					case "All": bodyController.vBoxAll.getChildren().add(lblTitle);
-					break;
-					case "Category": bodyController.vBoxCategory.getChildren().add(lblTitle);
-					break;
-					case "Priority": bodyController.vBoxPriority.getChildren().add(lblTitle);
-					break;
-					default:
-						// other additional tab
-					break;
+			
+			if(taskList.get(i).getTaskType().name().equalsIgnoreCase("FLOATING")||
+				simpleFormat.format(getDate(taskList.get(i))).equals(todayStr) || getDate(taskList.get(i)).before(todayDate)) {
+				if(taskList.get(i).getTaskType().name().equalsIgnoreCase("FLOATING")) {
+					floating.add(taskList.get(i));
+				} else if(taskList.get(i).getTaskType().name().equalsIgnoreCase("EVENT") ||
+						taskList.get(i).getTaskType().name().equalsIgnoreCase("DATED")) {
+					if(getDate(taskList.get(i)).before(todayDate)) {
+						overdue.add(taskList.get(i));
+					} else if(simpleFormat.format(getDate(taskList.get(i))).equals(todayStr)) {
+						today.add(taskList.get(i));
+					}
+				} else if(taskList.get(i).getTaskType().name().equalsIgnoreCase("TIMED")) {
+					if((taskList.get(i).getFrom().before(todayDate) && taskList.get(i).getTo().after(todayDate)) ||
+							simpleFormat.format(taskList.get(i).getFrom()).equals(todayStr) || 
+							simpleFormat.format(taskList.get(i).getTo()).equals(todayStr)) {
+						today.add(taskList.get(i));
+					} else if(taskList.get(i).getTo().before(todayDate)) {
+						overdue.add(taskList.get(i));
+					}
+				}
+			} else {
+				indexForNextLoop = i;
+				break;
+			}
+		} 
+		
+		if(!today.isEmpty()) {
+			for(int d = 0; d < today.size(); d++) {
+				if(d == 0) {
+					generateList("TODAY", today.get(d), tabName, today.get(d).getTaskType().name());
+				} else {
+					generateList("", today.get(d), tabName, today.get(d).getTaskType().name());
 				}
 			}
+		}
+		
+		if(!floating.isEmpty()) {
+			for(int a = 0; a < floating.size(); a++) {
+				generateList("", floating.get(a), tabName, floating.get(a).getTaskType().name());
+			}
+		}
+		
+		if(!overdue.isEmpty()) {
+			System.out.println(overdue.size());
+			for(int b = 0; b < overdue.size(); b++) {
+				if(b == 0) {
+					generateList("OVERDUE", overdue.get(b), tabName, today.get(b).getTaskType().name());
+				} else {
+					generateList("", overdue.get(b), tabName, today.get(b).getTaskType().name());
+				}
+			}
+		}
+		
+		DateFormat dateOutput;
+		String date1 = "";
+		String date2 = "";
+		String title = "";
+		
+		for(int j = indexForNextLoop; j < taskList.size(); j++) {
+			dateOutput = new SimpleDateFormat("MM/dd/yyyy		EEEEEEEEE");
+			date1 = dateOutput.format(getDate(taskList.get(j)));
 			
-			GridPane gPane = new GridPane();
-			gPane.getColumnConstraints().addAll(col0,col1,col2,col3,col4,col5);
-			gPane.getRowConstraints().addAll(row);
-			gPane.getStyleClass().add("gridPaneList");
-			
-			switch(tabName) {
-				case "All": bodyController.vBoxAll.getChildren().add(gPane);
-				break;
-				case "Category": bodyController.vBoxCategory.getChildren().add(gPane);
-				break;
-				case "Priority": bodyController.vBoxPriority.getChildren().add(gPane);
-				break;
-				default:
-					// other additional tab
-				break;
+			if(j != indexForNextLoop) {
+				date2 = dateOutput.format(getDate(taskList.get(j-1)));
 			}
 			
-			CheckBox checkbox = new CheckBox();
-			checkbox.getStyleClass().add("labelList");
-			Pane checkBoxPane = new Pane(checkbox);
-			checkBoxPane.getStyleClass().add("paneList");
-			
-			Label lblId = new Label("ID" + i);
-			lblId.getStyleClass().add("labelList");
-			Pane paneId = new Pane(lblId);
-			paneId.getStyleClass().add("paneList");
-			
-			Label lblDesc = new Label(taskList.get(i).getToDo());
-			lblDesc.getStyleClass().add("labelList");
-			Pane paneDesc = new Pane(lblDesc);
-			paneDesc.getStyleClass().add("paneList");
-			
-			Label lblDateTime = new Label("from 09/12/2015 to 09/14/2015");
-			lblDateTime.getStyleClass().add("labelList");
-			Pane paneDateTime = new Pane(lblDateTime);
-			paneDateTime.getStyleClass().add("paneList");
-			
-			Label lblCategory = new Label(taskList.get(i).getCategory());
-			lblCategory.getStyleClass().add("labelList");
-			Pane paneCategory = new Pane(lblCategory);
-			paneCategory.getStyleClass().add("paneList");
-			
-			Label lblPriority = new Label("###");
-			lblPriority.getStyleClass().add("labelList");
-			Pane panePriority = new Pane(lblPriority);
-			panePriority.getStyleClass().add("paneList");
-			
-			gPane.add(checkBoxPane, 0, 0);
-			gPane.add(paneId, 1, 0);
-			gPane.add(paneDesc, 2, 0);
-			gPane.add(paneDateTime, 3, 0);
-			gPane.add(paneCategory, 4, 0);
-			gPane.add(panePriority, 5, 0);	
+			if(j == indexForNextLoop || !date1.equals(date2)) {
+				generateList(date1, taskList.get(j), tabName, taskList.get(j).getTaskType().name());
+			} else {
+				generateList("", taskList.get(j), tabName, taskList.get(j).getTaskType().name());
+			}
 		}
+	}
+	
+	private void generateList(String header, Task t, String tab, String taskType) {
+		setConstraintsOnGridPane();
+		Label lblTitle = new Label();
+		lblTitle.getStyleClass().add("labelTitle");
+		lblTitle.setText(header);
+		bodyController.vBoxAll.getChildren().add(lblTitle);
+		
+		GridPane gPane = new GridPane();
+		gPane.getColumnConstraints().addAll(col0,col1,col2,col3,col4,col5);
+		gPane.getRowConstraints().addAll(row);
+		gPane.getStyleClass().add("gridPaneList");
+		
+		switch(tab) {
+			case "All": bodyController.vBoxAll.getChildren().add(gPane);
+			break;
+			case "Category": bodyController.vBoxCategory.getChildren().add(gPane);
+			break;
+			case "Priority": bodyController.vBoxPriority.getChildren().add(gPane);
+			break;
+			default:
+				// other additional tab
+			break;
+		}
+		
+		CheckBox checkbox = new CheckBox();
+		checkbox.getStyleClass().add("labelList");
+		Pane checkBoxPane = new Pane(checkbox);
+		checkBoxPane.getStyleClass().add("paneList");
+		gPane.add(checkBoxPane, 0, 0);
+		
+		Label lblId = new Label(t.getId());
+		lblId.getStyleClass().add("labelList");
+		Pane paneId = new Pane(lblId);
+		paneId.getStyleClass().add("paneList");
+		gPane.add(paneId, 1, 0);
+		
+		Label lblDesc = new Label(t.getToDo());
+		lblDesc.getStyleClass().add("labelList");
+		Pane paneDesc = new Pane(lblDesc);
+		paneDesc.getStyleClass().add("paneList");
+		gPane.add(paneDesc, 2, 0);
+		
+		String output = "";
+		
+		if(!taskType.equalsIgnoreCase("FLOATING")) {
+			DateFormat timeOutput = new SimpleDateFormat("h:mm a");
+			output = timeOutput.format(getDate(t));
+		} else {
+			output = "---";
+		}
+			
+		Label lblDateTime = new Label(output);
+		lblDateTime.getStyleClass().add("labelList");
+		Pane paneDateTime = new Pane(lblDateTime);
+		paneDateTime.getStyleClass().add("paneList");
+		gPane.add(paneDateTime, 3, 0);
+		
+		
+		Label lblCategory = new Label(t.getCategory());
+		lblCategory.getStyleClass().add("labelList");
+		Pane paneCategory = new Pane(lblCategory);
+		paneCategory.getStyleClass().add("paneList");
+		gPane.add(paneCategory, 4, 0);
+		
+		Label lblPriority = new Label("###");
+		lblPriority.getStyleClass().add("labelList");
+		Pane panePriority = new Pane(lblPriority);
+		panePriority.getStyleClass().add("paneList");
+		gPane.add(panePriority, 5, 0);	
 	}
 	
 	public void showPageInBody(String fxmlFileName) throws IOException {
 		anPaneBody.getChildren().clear();
 		anPaneBody.getChildren().setAll(FXMLLoader.load(getClass().getResource(fxmlFileName)));
-		loadList("All");
-	}
-	
-	// temporary method to load the array list, will be deleted
-	private void loadArrayList() {
-		taskList.add(new Task());
-		taskList.get(0).setToDo("Meet up with poly friends.");
-		taskList.get(0).setOn(null);
-		taskList.get(0).setCategory("#personal");
-		
-		taskList.add(new Task());
-		taskList.get(1).setToDo("Eat dinner with Amy.");
-		taskList.get(1).setOn(null);
-		taskList.get(1).setCategory("#personal");
-		
-		taskList.add(new Task());
-		taskList.get(2).setToDo("CNY lunch with family.");
-		taskList.get(2).setOn(null);
-		taskList.get(2).setCategory("#personal");
-		
-		taskList.add(new Task());
-		taskList.get(3).setToDo("Do CS2103 project.");
-		taskList.get(3).setOn(null);
-		taskList.get(3).setCategory("#studies");
-		
-		taskList.add(new Task());
-		taskList.get(4).setToDo("Write essay for genes and soc.");
-		taskList.get(4).setOn(null);
-		taskList.get(4).setCategory("#LSM1302");	
-		
-		taskList.add(new Task());
-		taskList.get(5).setToDo("Buy A4 paper.");
-		taskList.get(5).setOn(null);
-		taskList.get(5).setCategory("#shoppinglist");
-		
-		taskList.add(new Task());
-		taskList.get(6).setToDo("Meet up with supervisor for FYP.");
-		taskList.get(6).setOn(null);
-		taskList.get(6).setCategory("#FYP");
-		
-		taskList.add(new Task());
-		taskList.get(7).setToDo("Project discussion.");
-		taskList.get(7).setOn(null);
-		taskList.get(7).setCategory("#FYP");
-		
-		taskList.add(new Task());
-		taskList.get(8).setToDo("Hiking at tree top.");
-		taskList.get(8).setOn(null);
-		taskList.get(8).setCategory("#friends");
 	}
 	
 	private void setConstraintsOnGridPane() {
