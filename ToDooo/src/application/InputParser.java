@@ -86,7 +86,7 @@ public class InputParser {
 	}
 	
 	public static String getTargetIdFromUpdateString(String userInput) {
-		int endIndex = userInput.indexOf(Constant.COMMAND_DELIMETER_UPDATE);
+		int endIndex = userInput.indexOf(Constant.DELIMETER_UPDATE);
 		String targetId = getTargetId(userInput, endIndex);
 		
 		return targetId.toUpperCase();
@@ -186,16 +186,16 @@ public class InputParser {
 		
 		String updateBasicString = updateBasicCmd + " " +
 								   id.toLowerCase() + 
-								   Constant.COMMAND_DELIMETER_UPDATE;
+								   Constant.DELIMETER_UPDATE;
 		String updateAdvancedString = updateAdvancedCmd + " " +
 								      id.toLowerCase() + 
-								      Constant.COMMAND_DELIMETER_UPDATE;
+								      Constant.DELIMETER_UPDATE;
 		if ((lowerCase.contains(updateBasicString) &&
 			 lowerCase.indexOf(updateBasicString) == Constant.START_INDEX) ||
 			(lowerCase.contains(updateAdvancedString) &&
 			 lowerCase.indexOf(updateAdvancedString) == Constant.START_INDEX)) {
 			
-			int startIndex = userInput.indexOf(Constant.COMMAND_DELIMETER_UPDATE) + 2;
+			int startIndex = userInput.indexOf(Constant.DELIMETER_UPDATE) + 2;
 			int endIndex = userInput.length();			
 			toDoString = userInput.substring(startIndex, endIndex);
 		}
@@ -355,7 +355,7 @@ public class InputParser {
 			int endIndex = lowerCase.length();
 			
 			String detailString = lowerCase.substring(startIndex, endIndex);
-			endIndex = lowerCase.indexOf(Constant.COMMAND_DELIMETER_SEARCH);
+			endIndex = lowerCase.indexOf(Constant.DELIMETER_SEARCH);
 			
 			searchKey = detailString.substring(0, endIndex);
 		}

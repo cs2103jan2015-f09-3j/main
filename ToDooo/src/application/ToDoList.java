@@ -2,6 +2,7 @@ package application;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Iterator;
 
 import javafx.util.Pair;
@@ -146,6 +147,99 @@ public class ToDoList {
 		removedTask = deleteTaskById(targetId);
 		
 		return removedTask;
+	}
+	
+	public ArrayList<Task> searchTheList(String userInput) {
+		ArrayList<Task> searchResults = new ArrayList<Task>();
+		ArrayList<Pair<SearchAttribute, String>> attributePairs =
+				InputParser.getSearchAttributePairFromString(userInput);
+		
+		boolean hasMatched = false;
+		for (Task task : _tasks) {
+			hasMatched = hasMatchedAllAttributes(attributePairs, task);
+			
+			if (hasMatched) {
+				searchResults.add(task);
+			}
+		}
+		
+		return searchResults;
+	}
+	
+	private boolean hasMatchedAllAttributes(ArrayList<Pair<SearchAttribute, String>>
+											attributePairs, Task task) {
+		boolean hasMatched = false;
+		SearchAttribute attribute = null;
+		String searchKey = null;
+		String taskDetailString = null;
+		
+		for (Pair<SearchAttribute, String> attributePair : attributePairs) {
+			attribute = attributePair.getKey();
+			searchKey = attributePair.getValue();
+			
+			switch (attribute) {
+				case ID :
+					taskDetailString = task.getId().toLowerCase();					
+					break;
+				case DESCRIPTION :
+					taskDetailString = task.getToDo().toLowerCase();	
+					break;
+				case CATEGORY :
+					taskDetailString = task.getCategory().toLowerCase();	
+					break;
+				case PRIORITY :
+					taskDetailString = task.getPriority().
+									   toString().toLowerCase();	
+					break;
+			}
+			
+			if (attribute.equals(SearchAttribute.DATE)) {
+				hasMatched = hasDateMatch(task, attribute, searchKey);
+			} else {
+				if (taskDetailString.equals(searchKey)) {
+					hasMatched = true;
+				} else {
+					hasMatched = false;
+				}
+			}
+			
+		}		
+		
+		return hasMatched;
+	}
+	
+	private boolean hasDateMatch(Task task, SearchAttribute attribute, String searchKey) {
+		boolean hasMatched = false;
+		Date date = null;
+		Date dateKey = Main.inputParser.getDateFromString(searchKey);
+		
+		for (Command dateCommand : Constant.COMMAND_DATES) {
+			switch (dateCommand) {
+				case FROM :
+					date = task.getFrom();
+					break;
+				case TO :
+					date = task.getTo();
+					break;
+				case ON :
+					date = task.getOn();
+					break;
+				case BY :
+					date = task.getBy();
+					break;
+				default :
+					date = null;
+					break;
+			}
+			
+			if (date != null && dateKey.equals(date)) {
+				hasMatched = true;
+				
+				return hasMatched;
+			} 
+		}
+		
+		return hasMatched;
 	}
 	
 	public Pair<Task, String> updateTaskOnList(String userInput) {

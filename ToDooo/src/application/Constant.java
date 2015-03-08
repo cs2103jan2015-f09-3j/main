@@ -44,9 +44,12 @@ public final class Constant {
 	public static final String XML_OUTPUT_INDENT_AMOUNT = "2";
 	public static final String XML_WHITESPACE_NODE_XPATH = "//text()[normalize-space(.)='']";
 	
-	public static final Command[] ACTION_COMMANDS = { Command.ADD, Command.DELETE, 
+	public static final Command[] COMMAND_ACTIONS = { Command.ADD, Command.DELETE, 
 													  Command.UPDATE, Command.SEARCH,
 													  Command.SETTING, Command.GO_BACK };
+	
+	public static final Command[] COMMAND_DATES = { Command.FROM, Command.TO, 
+													Command.ON, Command.BY };
 	
 	public static final String PATH_SETTING = "setting.xml";
 	public static final String PATH_FILE_NAME = "listFile.xml";
@@ -87,8 +90,12 @@ public final class Constant {
 	public static final String MSG_NO_UNDO = "There is no undo action to execute.";
 	public static final String MSG_NO_REDO = "There is no redo action to execute.";
 	
-	public static final String COMMAND_DELIMETER_UPDATE = ":";
-	public static final String COMMAND_DELIMETER_SEARCH = ";; ";
+	public static final String MSG_NO_RESULTS = "No match found.";
+	public static final String MSG_SEARCH_SUCCESS = "{0} matches found.";
+	
+	public static final String DELIMETER_UPDATE = ":";
+	public static final String DELIMETER_SEARCH = ";; ";
+	public static final String DELIMETER_REPLACE = "{0}";
 
 	public static final String COLOUR_ERROR = "#FF0033";
 	public static final String COLOUR_FEEDBACK = "#4771FF";

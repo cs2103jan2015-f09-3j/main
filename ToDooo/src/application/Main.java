@@ -1,5 +1,6 @@
 package application;
 
+import java.util.ArrayList;
 import java.util.Stack;
 
 import javafx.application.Application;
@@ -17,6 +18,7 @@ public class Main extends Application {
 	public static Stack<Undo> redos;
 	public static boolean toUpdate;
 	public static String systemFeedback;
+	public static ArrayList<Task> searchResults;
 	
 	@Override
 	public void start(Stage primaryStage) {
@@ -42,6 +44,7 @@ public class Main extends Application {
 		Main.list = new ToDoList();
 		Main.undos = new Stack<Undo>();
 		Main.redos = new Stack<Undo>();
+		Main.searchResults = new ArrayList<Task>();
 		
 		toUpdate = false;
 		systemFeedback = "";

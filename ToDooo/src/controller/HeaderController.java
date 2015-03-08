@@ -97,7 +97,7 @@ public class HeaderController{
 			txtCmd.clear();
 			break;
 		case SEARCH :
-			// search
+			systemMsg = executeSearch(userInput);
 			break;
 		case SETTING :
 			executeSetting();
@@ -191,12 +191,18 @@ public class HeaderController{
 	private String executeSearch(String userInput) {
 		String systemMsg = null;
 		
-		
+		Main.searchResults = Main.list.searchTheList(userInput);
+		if (Main.searchResults.isEmpty()) {
+			systemMsg = Constant.MSG_NO_RESULTS;
+		} else {
+			systemMsg = Constant.MSG_SEARCH_SUCCESS.
+						replaceFirst(Constant.DELIMETER_SEARCH, 
+									  String.valueOf(Main.searchResults.size()));
+		}
 		
 		return systemMsg;
 	}
-	
-	
+		
 	private void executeSetting() throws IOException {
 		settingIcon.setVisible(false);
 		backIcon.setVisible(true);

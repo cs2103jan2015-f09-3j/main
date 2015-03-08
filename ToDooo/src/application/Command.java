@@ -43,7 +43,7 @@ public enum Command {
 		String basicCommand = "";
 		String advancedCommand = "";
 		
-		for (Command command : Constant.ACTION_COMMANDS) {
+		for (Command command : Constant.COMMAND_ACTIONS) {
 			basicCommand = command.getBasicCommand();
 			advancedCommand = command.getAdvancedCommand();
 			
