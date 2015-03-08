@@ -5,44 +5,5 @@
     <category>Uncategorised</category>
   </categories>
   <tasks>
-  <task id="D17">
-      <type>DATED</type>
-      <todo>do hw1</todo>
-      <original>do hw1 /by march 8</original>
-      <on>NIL</on>
-      <from>NIL</from>
-      <to>NIL</to>
-      <by>Sun Mar 08 13:17:31 SGT 2015</by>
-      <category>Uncategorised</category>
-      <recurring>false</recurring>
-      <repeat>NIL</repeat>
-      <priority>NEUTRAL</priority>
-    </task>
-  <task id="D18">
-      <type>DATED</type>
-      <todo>do cs2103</todo>
-      <original>do cs2103 /by 8 march</original>
-      <on>NIL</on>
-      <from>NIL</from>
-      <to>NIL</to>
-      <by>Sun Mar 08 13:17:42 SGT 2015</by>
-      <category>Uncategorised</category>
-      <recurring>false</recurring>
-      <repeat>NIL</repeat>
-      <priority>NEUTRAL</priority>
-    </task>
-  <task id="E19">
-      <type>EVENT</type>
-      <todo>go concert</todo>
-      <original>go concert /on 11 march</original>
-      <on>Wed Mar 11 13:17:51 SGT 2015</on>
-      <from>NIL</from>
-      <to>NIL</to>
-      <by>NIL</by>
-      <category>Uncategorised</category>
-      <recurring>false</recurring>
-      <repeat>NIL</repeat>
-      <priority>NEUTRAL</priority>
-    </task>
   </tasks>
 </file>
