@@ -1,5 +1,7 @@
 package application;
 
+import java.util.Date;
+
 public enum Command {
 	ADD("add", "/a"),
 	DELETE("delete", "/d"),
@@ -16,6 +18,7 @@ public enum Command {
 	RECURRING_WEEKLY("/weekly", "/w"),
 	RECURRING_MONTHLY("/monthly", "/m"),
 	RECURRING_YEARLY("/yearly", "/y"),
+	RECURRING_UNTIL("/until", "/u"),
 	SETTING("/setting", "/setting"),
 	GO_BACK("/~", "/~");
 	
@@ -36,6 +39,7 @@ public enum Command {
 	}
 	
 	public static Command verifyCrudCommands(String commandLine) {
+		String lowerCase = commandLine.toLowerCase();
 		String basicCommand = "";
 		String advancedCommand = "";
 		
@@ -43,8 +47,8 @@ public enum Command {
 			basicCommand = command.getBasicCommand();
 			advancedCommand = command.getAdvancedCommand();
 			
-			if (commandLine.indexOf(basicCommand) == Constant.START_INDEX ||
-				commandLine.indexOf(advancedCommand) == Constant.START_INDEX) {
+			if (lowerCase.indexOf(basicCommand) == Constant.START_INDEX ||
+				lowerCase.indexOf(advancedCommand) == Constant.START_INDEX) {
 				
 				return command;
 			}
@@ -54,24 +58,55 @@ public enum Command {
 	}
 
 	public static boolean isPrioritised(String commandLine) {
-		return (commandLine.contains(Command.PRIORITY_HIGH.getBasicCommand()) ||
-			    commandLine.contains(Command.PRIORITY_HIGH.getAdvancedCommand()) ||
-			    commandLine.contains(Command.PRIORITY_MEDIUM.getBasicCommand()) ||
-			    commandLine.contains(Command.PRIORITY_MEDIUM.getAdvancedCommand()) ||
-			    commandLine.contains(Command.PRIORITY_LOW.getBasicCommand()) ||
-			    commandLine.contains(Command.PRIORITY_LOW.getAdvancedCommand()));
+		String lowerCase = commandLine.toLowerCase();
+		
+		return (lowerCase.contains(Command.PRIORITY_HIGH.getBasicCommand()) ||
+				lowerCase.contains(Command.PRIORITY_HIGH.getAdvancedCommand()) ||
+				lowerCase.contains(Command.PRIORITY_MEDIUM.getBasicCommand()) ||
+				lowerCase.contains(Command.PRIORITY_MEDIUM.getAdvancedCommand()) ||
+				lowerCase.contains(Command.PRIORITY_LOW.getBasicCommand()) ||
+				lowerCase.contains(Command.PRIORITY_LOW.getAdvancedCommand()));
 	}
 
 	public static boolean isRecurred(String commandLine) {
-		return (commandLine.contains(Command.RECURRING_WEEKLY.getBasicCommand()) ||
-			    commandLine.contains(Command.RECURRING_WEEKLY.getAdvancedCommand()) ||
-			    commandLine.contains(Command.RECURRING_MONTHLY.getBasicCommand()) ||
-			    commandLine.contains(Command.RECURRING_MONTHLY.getAdvancedCommand()) ||
-			    commandLine.contains(Command.RECURRING_YEARLY.getBasicCommand()) ||
-			    commandLine.contains(Command.RECURRING_YEARLY.getAdvancedCommand()));
+		String lowerCase = commandLine.toLowerCase();
+		int beginIndex = -1;
+		int endIndex = commandLine.length();
+		
+		if (lowerCase.contains(Command.RECURRING_WEEKLY.getBasicCommand())) {
+			beginIndex = lowerCase.indexOf(Command.RECURRING_WEEKLY.getBasicCommand());
+		} else if (lowerCase.contains(Command.RECURRING_WEEKLY.getAdvancedCommand())) {
+			beginIndex = lowerCase.indexOf(Command.RECURRING_WEEKLY.getAdvancedCommand());
+		} else if (lowerCase.contains(Command.RECURRING_MONTHLY.getBasicCommand())) {
+			beginIndex = lowerCase.indexOf(Command.RECURRING_MONTHLY.getBasicCommand());
+		} else if (lowerCase.contains(Command.RECURRING_MONTHLY.getAdvancedCommand())) {
+			beginIndex = lowerCase.indexOf(Command.RECURRING_MONTHLY.getAdvancedCommand());
+		} else if (lowerCase.contains(Command.RECURRING_YEARLY.getBasicCommand())) {
+			beginIndex = lowerCase.indexOf(Command.RECURRING_YEARLY.getBasicCommand());
+		} else if (lowerCase.contains(Command.RECURRING_YEARLY.getAdvancedCommand())) {
+			beginIndex = lowerCase.indexOf(Command.RECURRING_YEARLY.getAdvancedCommand());
+		}
+		
+		boolean hasFirstCommand = (beginIndex != -1);
+		if (hasFirstCommand) {		
+			lowerCase = lowerCase.substring(beginIndex, endIndex);
+						
+			if (lowerCase.contains(Command.RECURRING_UNTIL.getBasicCommand()) ||
+				lowerCase.contains(Command.RECURRING_UNTIL.getAdvancedCommand())) {
+
+				Date untilDate = Main.inputParser.getDateFromString(lowerCase);
+				if (untilDate != null) {
+					return true;
+				}
+			} 
+		}
+		
+		return false;
 	}
 	
 	public static boolean isCategorised(String commandLine) {
-		return (commandLine.contains(Command.CATEGORY.getBasicCommand()));
+		String lowerCase = commandLine.toLowerCase();
+		
+		return (lowerCase.contains(Command.CATEGORY.getBasicCommand()));
 	}
 }

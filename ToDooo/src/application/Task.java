@@ -35,19 +35,19 @@ public class Task {
 		
 		List<Date> dates = getDates(userInput);
 		
-		if (_taskType.equals(TaskType.TIMED) && dates.size() < 2) {
-			_isValid = false;
-		} else if (!_taskType.equals(TaskType.FLOATING) && dates.size() == 0) {
+		if ((_taskType.equals(TaskType.TIMED) && dates.size() < 2) ||
+			(!_taskType.equals(TaskType.FLOATING) && dates.size() == 0)) {
 			_isValid = false;
 		} else {			
 			setDatesForTaskType(dates);			
 			_category = InputParser.getCategoryFromString(userInput);
 			
-			setRepeatFrequency(dates, userInput);
-			
-			_priority = InputParser.getPriorityFromString(userInput);		
-			_toDo = generateToDoString(userInput);
-			_isValid = true;
+			_isValid = setRepeatFrequency(dates, userInput);
+			if (_isValid) {
+				_priority = InputParser.getPriorityFromString(userInput);		
+				_toDo = generateToDoString(userInput);
+				_isValid = true;
+			}
 		}		
 	}
 
@@ -272,7 +272,7 @@ public class Task {
 		
 		if (lowerCase.contains(updateBasicCmd) ||
 			lowerCase.contains(updateAdvancedCmd)) {			
-			if (lowerCase.contains(_id.toLowerCase())) {
+			if (_id != null && lowerCase.contains(_id.toLowerCase())) {
 				toDoString = userInput.substring(userInput.indexOf(Constant.COMMAND_DELIMETER) + 2, 
 						 	 userInput.length());
 			}
@@ -356,14 +356,19 @@ public class Task {
 		}
 	}
 	
-	private void setRepeatFrequency(List<Date> dates, String userInput) {
+	private boolean setRepeatFrequency(List<Date> dates, String userInput) {
+		boolean isValid = true;
+		_isRecurring = Command.isRecurred(userInput);
+		
 		if (dates != null) {
-			_isRecurring = Command.isRecurred(userInput);
 			_repeat = InputParser.getFrequencyFromString(userInput);
-		} else {
-			_isRecurring = false;
-			_repeat = Frequency.NIL;
 		}
+		
+		if (_isRecurring && dates == null) {
+			isValid = false; 						
+		}
+		
+		return isValid;
 	}	
 	
 }
