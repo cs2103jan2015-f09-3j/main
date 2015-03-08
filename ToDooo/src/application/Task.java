@@ -184,10 +184,6 @@ public class Task {
 	
 	private String generateToDoString(String userInput) {
 		String toDoString = userInput;
-		String on = Command.ON.toString().toLowerCase();
-		String from = Command.FROM.toString().toLowerCase();
-		String to = Command.TO.toString().toLowerCase();
-		String by = Command.BY.toString().toLowerCase();
 		
 		toDoString = removeCategoryFromString(toDoString);		
 		toDoString = removePriorityFromString(toDoString);		
@@ -200,11 +196,18 @@ public class Task {
 	private String removeRecurringFromString(String toDoString) {
 		if (_isRecurring) {
 			Command recurringCommand = _repeat.getCommand();
+			String lowerCase = toDoString.toLowerCase();
+			int endIndex = -1;
 			
-			if (toDoString.contains(recurringCommand.getBasicCommand())) {
-				toDoString = toDoString.replace(recurringCommand.getBasicCommand(), "");
-			} else if (toDoString.contains(recurringCommand.getAdvancedCommand())) {
-				toDoString = toDoString.replace(recurringCommand.getAdvancedCommand(), "");
+			if (lowerCase.contains(recurringCommand.getBasicCommand())) {
+				endIndex = lowerCase.indexOf(recurringCommand.getBasicCommand());
+			} else if (lowerCase.contains(recurringCommand.getAdvancedCommand())) {
+				endIndex = lowerCase.indexOf(recurringCommand.getAdvancedCommand());
+			}
+			
+			boolean canSubstring = (endIndex != -1);
+			if (canSubstring) {
+				toDoString = toDoString.substring(0, endIndex);
 			}
 		}
 		return toDoString;
@@ -215,22 +218,33 @@ public class Task {
 		
 		if (isPrioritised) {
 			Command priorityCommand = _priority.getCommand();
+			String lowerCase = toDoString.toLowerCase();
+			int endIndex = -1;
 			
-			if (toDoString.contains(priorityCommand.getBasicCommand())) {
-				toDoString = toDoString.replace(priorityCommand.getBasicCommand(), "");
-			} else if (toDoString.contains(priorityCommand.getAdvancedCommand())) {
-				toDoString = toDoString.replace(priorityCommand.getAdvancedCommand(), "");
+			if (lowerCase.contains(priorityCommand.getBasicCommand())) {
+				endIndex = lowerCase.indexOf(priorityCommand.getBasicCommand());				
+			} else if (lowerCase.contains(priorityCommand.getAdvancedCommand())) {
+				endIndex = lowerCase.indexOf(priorityCommand.getAdvancedCommand());
 			} 
+			
+			boolean canSubstring = (endIndex != -1);
+			if (canSubstring) {
+				toDoString = toDoString.substring(0, endIndex);
+			}
 		}
 		return toDoString;
 	}
 
 	private String removeCategoryFromString(String toDoString) {
 		boolean isCategorised = (!_category.equals(Constant.CATEGORY_UNCATEGORISED));
+		String lowerCase = toDoString.toLowerCase();
 		
 		if (isCategorised) {
-			toDoString = toDoString.replace(Command.CATEGORY.getBasicCommand() + 
-											_category, "");
+			String categoryCommand = Command.CATEGORY.getBasicCommand() + 
+									 _category;
+			int endIndex = lowerCase.indexOf(categoryCommand);			
+			
+			toDoString = toDoString.substring(0, endIndex);
 		}
 		return toDoString;
 	}
@@ -294,14 +308,18 @@ public class Task {
 		
 		if (typeCommand != null) {
 			beginIndex = lowerCase.indexOf(typeCommand.getBasicCommand());
-			if (beginIndex == -1) {
+			
+			boolean notBasicCommand = (beginIndex == -1);
+			if (notBasicCommand) {
 				beginIndex = lowerCase.indexOf(typeCommand.getAdvancedCommand());
 			}
 			
-			toBeRemoved = extractedString.substring(beginIndex, endIndex);
-			extractedString = extractedString.replace(toBeRemoved, "");
-		}
-		
+			boolean toExtract = (beginIndex != -1);
+			if (toExtract) {
+				toBeRemoved = extractedString.substring(beginIndex, endIndex);
+				extractedString = extractedString.replace(toBeRemoved, "");
+			}			
+		}		
 		return extractedString;
 	}
 	
