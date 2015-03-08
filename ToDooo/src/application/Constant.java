@@ -69,6 +69,14 @@ public final class Constant {
 	public static final String MSG_UNDO_DELETE_FAIL = "Undo delete failed.";
 	public static final String MSG_UNDO_UPDATE_SUCCESS = "Undo update successful.";
 	public static final String MSG_UNDO_UPDATE_FAIL = "Undo update failed.";
+		
+	public static final String MSG_REDO_ADD_SUCCESS = "Redo add successful.";
+	public static final String MSG_REDO_ADD_FAIL = "Redo add failed.";
+	public static final String MSG_REDO_DELETE_SUCCESS = "Redo delete successful.";
+	public static final String MSG_REDO_DELETE_FAIL = "Redo delete failed.";
+	public static final String MSG_REDO_UPDATE_SUCCESS = "Redo update successful.";
+	public static final String MSG_REDO_UPDATE_FAIL = "Redo update failed.";
+	
 	public static final String MSG_NO_UNDO = "There is no undo action to execute.";
 	public static final String MSG_NO_REDO = "There is no redo action to execute.";
 	
