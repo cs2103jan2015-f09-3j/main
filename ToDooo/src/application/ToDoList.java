@@ -104,6 +104,18 @@ public class ToDoList {
 		return result;
 	}
 	
+	public String AddTaskBackToList(Task task) {
+		String result = Main.storage.writeTaskToFile(task);
+		
+		if (result.equals(Constant.MSG_ADD_SUCCESS)) {
+			_tasks.add(task);
+			
+			addCategoryToList(task.getCategory());
+		}
+		
+		return result;
+	}
+	
 	private void addCategoryToList(String category) {
 		boolean shouldAdd = true;
 		

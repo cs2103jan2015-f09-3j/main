@@ -284,6 +284,16 @@ public class MainController{
 	}
 	
 	private String executeRedo() {
-		return null;
+		String systemMsg = null;
+		
+		boolean canRedo = !(Main.redos.isEmpty());
+		if (canRedo) {
+			Undo redo = Main.redos.pop();
+			systemMsg = redo.redoAction();
+		} else {
+			systemMsg = Constant.MSG_NO_REDO;
+		}
+		
+		return systemMsg;
 	}
 }

@@ -124,7 +124,8 @@ public class HeaderController{
 			
 			if (systemMsg.equals(Constant.MSG_ADD_SUCCESS)) {
 				Undo undo = new Undo(Command.ADD, task.getId());
-				Main.undos.push(undo);
+				Main.undos.push(undo);				
+				Main.redos.clear();
 			}
 			
 		} else {
@@ -140,7 +141,8 @@ public class HeaderController{
 		
 		if (removedTask != null) {
 			Undo undo = new Undo(Command.DELETE, removedTask);
-			Main.undos.push(undo);
+			Main.undos.push(undo);			
+			Main.redos.clear();
 			
 			systemMsg = Constant.MSG_DELETE_SUCCESS;
 		} else {
@@ -174,6 +176,7 @@ public class HeaderController{
 		if (originalTask != null) {
 			Undo undo = new Undo(Command.UPDATE, originalTask, targetId);
 			Main.undos.push(undo);
+			Main.redos.clear();
 			
 			systemMsg = Constant.MSG_UPDATE_SUCCESS;
 		} else {

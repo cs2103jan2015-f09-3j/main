@@ -51,7 +51,7 @@ public class Undo {
 			case ADD :
 				// to undo delete action
 				// add _originalTask
-				systemMsg = Main.list.addTaskToList(_originalTask);				
+				systemMsg = Main.list.AddTaskBackToList(_originalTask);				
 				if (systemMsg.equals(Constant.MSG_ADD_SUCCESS)) {
 					Undo redo = new Undo(Command.ADD, _originalTask.getId());
 					Main.redos.push(redo);
@@ -87,6 +87,60 @@ public class Undo {
 					systemMsg = Constant.MSG_UNDO_UPDATE_SUCCESS;
 				} else {
 					systemMsg = Constant.MSG_UNDO_UPDATE_FAIL;
+				}
+				break;
+			default:
+				// no undo command
+				// return null
+				break;
+		}
+		
+		return systemMsg;
+	}
+	
+	public String redoAction() {
+		String systemMsg = null;
+		
+		switch (_undoCommand) {
+			case ADD :
+				// to redo add action
+				// add _originalTask
+				systemMsg = Main.list.AddTaskBackToList(_originalTask);				
+				if (systemMsg.equals(Constant.MSG_ADD_SUCCESS)) {
+					Undo undo = new Undo(Command.ADD, _originalTask.getId());
+					Main.undos.push(undo);
+					
+					systemMsg = Constant.MSG_REDO_ADD_SUCCESS;
+				} else {
+					systemMsg = Constant.MSG_REDO_ADD_FAIL;
+				}
+				break;
+			case DELETE :
+				// to redo delete action
+				// delete using _targetId
+				Task removedTask = Main.list.deleteTaskById(_targetId);
+				
+				if (removedTask != null) {
+					Undo undo = new Undo(Command.DELETE, removedTask);
+					Main.undos.push(undo);
+					
+					systemMsg = Constant.MSG_REDO_DELETE_SUCCESS;
+				} else {
+					systemMsg = Constant.MSG_REDO_DELETE_FAIL;
+				}
+				break;
+			case UPDATE :
+				// to redo update action
+				// update using _originalTask and _targetId
+				Task replacedTask = Main.list.replaceTaskOnList(_originalTask, _targetId);
+				
+				if (replacedTask != null) {
+					Undo undo = new Undo(Command.UPDATE, replacedTask, _targetId);
+					Main.undos.push(undo);
+					
+					systemMsg = Constant.MSG_REDO_UPDATE_SUCCESS;
+				} else {
+					systemMsg = Constant.MSG_REDO_UPDATE_FAIL;
 				}
 				break;
 			default:
