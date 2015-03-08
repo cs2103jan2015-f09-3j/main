@@ -1,9 +1,10 @@
 package application;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Date;
+
+import javafx.util.Pair;
 
 import com.joestelmach.natty.DateGroup;
 import com.joestelmach.natty.Parser;
@@ -85,7 +86,7 @@ public class InputParser {
 	}
 	
 	public static String getTargetIdFromUpdateString(String userInput) {
-		int endIndex = userInput.indexOf(Constant.COMMAND_DELIMETER);
+		int endIndex = userInput.indexOf(Constant.COMMAND_DELIMETER_UPDATE);
 		String targetId = getTargetId(userInput, endIndex);
 		
 		return targetId.toUpperCase();
@@ -162,5 +163,203 @@ public class InputParser {
 		}
 		
 		return untilDate;
+	}
+
+	public static String removeActionFromString(String userInput, String id) {	
+		String toDoString = userInput;		
+		
+		toDoString = InputParser.removeAddFromString(userInput); 		
+		toDoString = InputParser.removeUpdateFromString(toDoString, id);
+		
+		return toDoString;
+	}
+	
+	private static String removeUpdateFromString(String userInput, String id) {
+		if (id == null) {
+			return userInput;
+		}
+		
+		String toDoString = userInput;	
+		String lowerCase = userInput.toLowerCase();		
+		String updateBasicCmd = Command.UPDATE.getBasicCommand();
+		String updateAdvancedCmd = Command.UPDATE.getAdvancedCommand();
+		
+		String updateBasicString = updateBasicCmd + " " +
+								   id.toLowerCase() + 
+								   Constant.COMMAND_DELIMETER_UPDATE;
+		String updateAdvancedString = updateAdvancedCmd + " " +
+								      id.toLowerCase() + 
+								      Constant.COMMAND_DELIMETER_UPDATE;
+		if ((lowerCase.contains(updateBasicString) &&
+			 lowerCase.indexOf(updateBasicString) == Constant.START_INDEX) ||
+			(lowerCase.contains(updateAdvancedString) &&
+			 lowerCase.indexOf(updateAdvancedString) == Constant.START_INDEX)) {
+			
+			int startIndex = userInput.indexOf(Constant.COMMAND_DELIMETER_UPDATE) + 2;
+			int endIndex = userInput.length();			
+			toDoString = userInput.substring(startIndex, endIndex);
+		}
+		
+		return toDoString;
+	}
+
+	private static String removeAddFromString(String userInput) {
+		String lowerCase = userInput.toLowerCase();
+		String addBasicCmd = Command.ADD.getBasicCommand();
+		String addAdvancedCmd = Command.ADD.getAdvancedCommand();
+		int lengthOfBasicAddCommand = addBasicCmd.length();
+		int lengthOfAdvancedAddCommand = addAdvancedCmd.length();
+		
+		String toDoString = userInput;
+		
+		if (lowerCase.contains(addBasicCmd) &&
+			lowerCase.indexOf(addBasicCmd) == Constant.START_INDEX){
+			toDoString = userInput.substring(lengthOfBasicAddCommand, 
+						 userInput.length()).trim();
+		} else if (lowerCase.contains(addAdvancedCmd) &&
+				   lowerCase.indexOf(addAdvancedCmd) == Constant.START_INDEX) {	
+			toDoString = userInput.substring(lengthOfAdvancedAddCommand, 
+						 userInput.length()).trim();
+		}
+		return toDoString;
+	}
+	
+	public static String extractDescriptionFromString(String userInput, TaskType taskType, String id) {
+		String extractedString = InputParser.removeActionFromString(userInput, id);
+		
+		int beginIndex = 0;
+		int endIndex = extractedString.length();
+		
+		String lowerCase = extractedString.toLowerCase();
+		String toBeRemoved = null;
+		Command typeCommand = null;
+		switch(taskType) {
+			case EVENT :	
+				typeCommand = Command.ON;
+				break;
+			case TIMED :				
+				typeCommand = Command.FROM;
+				break;
+			case DATED :
+				typeCommand = Command.BY;
+				break;
+			default :
+				// floating task
+				// no need to do anything since there is no date
+				break;
+		}
+		
+		if (typeCommand != null) {
+			beginIndex = lowerCase.indexOf(typeCommand.getBasicCommand());
+			
+			boolean notBasicCommand = (beginIndex == -1);
+			if (notBasicCommand) {
+				beginIndex = lowerCase.indexOf(typeCommand.getAdvancedCommand());
+			}
+			
+			boolean toExtract = (beginIndex != -1);
+			if (toExtract) {
+				toBeRemoved = extractedString.substring(beginIndex, endIndex);
+				extractedString = extractedString.replace(toBeRemoved, "");
+			}			
+		}		
+		return extractedString;
+	}
+	
+	public static String removeRecurringFromString(String toDoString, 
+											 boolean isRecurring, Frequency repeat) {
+		if (isRecurring) {
+			Command recurringCommand = repeat.getCommand();
+			String lowerCase = toDoString.toLowerCase();
+			int endIndex = -1;
+			
+			if (lowerCase.contains(recurringCommand.getBasicCommand())) {
+				endIndex = lowerCase.indexOf(recurringCommand.getBasicCommand());
+			} else if (lowerCase.contains(recurringCommand.getAdvancedCommand())) {
+				endIndex = lowerCase.indexOf(recurringCommand.getAdvancedCommand());
+			}
+			
+			boolean canSubstring = (endIndex != -1);
+			if (canSubstring) {
+				toDoString = toDoString.substring(0, endIndex);
+			}
+		}
+		return toDoString;
+	}
+	
+	public static String removePriorityFromString(String toDoString, Priority priority) {
+		boolean isPrioritised = (!priority.equals(Priority.NEUTRAL));
+		
+		if (isPrioritised) {
+			Command priorityCommand = priority.getCommand();
+			String lowerCase = toDoString.toLowerCase();
+			int endIndex = -1;
+			
+			if (lowerCase.contains(priorityCommand.getBasicCommand())) {
+				endIndex = lowerCase.indexOf(priorityCommand.getBasicCommand());				
+			} else if (lowerCase.contains(priorityCommand.getAdvancedCommand())) {
+				endIndex = lowerCase.indexOf(priorityCommand.getAdvancedCommand());
+			} 
+			
+			boolean canSubstring = (endIndex != -1);
+			if (canSubstring) {
+				toDoString = toDoString.substring(0, endIndex);
+			}
+		}
+		return toDoString;
+	}
+	
+	public static String removeCategoryFromString(String toDoString, String category) {
+		boolean isCategorised = (!category.equals(Constant.CATEGORY_UNCATEGORISED));
+		String lowerCase = toDoString.toLowerCase();
+		
+		if (isCategorised) {
+			String categoryCommand = Command.CATEGORY.getBasicCommand() + 
+									 category;
+			int endIndex = lowerCase.indexOf(categoryCommand);			
+			
+			toDoString = toDoString.substring(0, endIndex);
+		}
+		return toDoString;
+	}
+	
+	public static ArrayList<Pair<SearchAttribute, String>> 
+				  getSearchAttributePairFromString(String userInput) {
+		ArrayList<Pair<SearchAttribute, String>> attributePairs = 
+				new ArrayList<Pair<SearchAttribute, String>>();
+		String searchKey = null;
+		
+		ArrayList<SearchAttribute> attributes = 
+				SearchAttribute.getSearchAttributes(userInput);
+			
+		for (SearchAttribute attribute : attributes) {
+			searchKey = InputParser.getSearchKeyFromString(userInput, attribute);
+			
+			if (searchKey != null) {
+				attributePairs.
+				add(new Pair<SearchAttribute, String>(attribute, searchKey));
+			}
+		}
+		
+		return attributePairs;
+	}
+	
+	private static String getSearchKeyFromString(String userInput, 
+										   SearchAttribute attribute) {
+		String searchKey = null;
+		String lowerCase = userInput.toLowerCase();
+		String command = attribute.getCommand();
+		
+		if (lowerCase.contains(command)) {		
+			int startIndex = lowerCase.indexOf(command) + command.length();
+			int endIndex = lowerCase.length();
+			
+			String detailString = lowerCase.substring(startIndex, endIndex);
+			endIndex = lowerCase.indexOf(Constant.COMMAND_DELIMETER_SEARCH);
+			
+			searchKey = detailString.substring(0, endIndex);
+		}
+		
+		return searchKey;
 	}
 }

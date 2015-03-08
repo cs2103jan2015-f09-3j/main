@@ -188,6 +188,15 @@ public class HeaderController{
 		return systemMsg;
 	}
 	
+	private String executeSearch(String userInput) {
+		String systemMsg = null;
+		
+		
+		
+		return systemMsg;
+	}
+	
+	
 	private void executeSetting() throws IOException {
 		settingIcon.setVisible(false);
 		backIcon.setVisible(true);

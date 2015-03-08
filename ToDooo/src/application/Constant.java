@@ -87,7 +87,8 @@ public final class Constant {
 	public static final String MSG_NO_UNDO = "There is no undo action to execute.";
 	public static final String MSG_NO_REDO = "There is no redo action to execute.";
 	
-	public static final String COMMAND_DELIMETER = ":";
+	public static final String COMMAND_DELIMETER_UPDATE = ":";
+	public static final String COMMAND_DELIMETER_SEARCH = ";; ";
 
 	public static final String COLOUR_ERROR = "#FF0033";
 	public static final String COLOUR_FEEDBACK = "#4771FF";
