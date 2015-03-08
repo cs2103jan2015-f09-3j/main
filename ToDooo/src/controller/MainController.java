@@ -81,6 +81,17 @@ public class MainController{
 			return null;
 		}
 	}
+	
+	private boolean compareDate(Date d1, Date d2) {
+		Calendar cal1 = Calendar.getInstance();
+		Calendar cal2 = Calendar.getInstance();
+		cal1.setTime(d1);
+		cal2.setTime(d2);
+		boolean sameDay = cal1.get(Calendar.YEAR) == cal2.get(Calendar.YEAR) &&
+		                  cal1.get(Calendar.DAY_OF_YEAR) == cal2.get(Calendar.DAY_OF_YEAR);
+		
+		return sameDay;
+	}
 
 	public void loadListByDate(String tabName) {
 		ArrayList<Task> overdue = new ArrayList<>();
@@ -93,26 +104,23 @@ public class MainController{
 	    Date todayDate = c.getTime();
 	    int indexForNextLoop = 0;
 	    
-	    DateFormat simpleFormat = new SimpleDateFormat("MM/dd/yyyy");
-	    String todayStr = simpleFormat.format(todayDate);
-	    
 		for(int i = 0; i < taskList.size(); i++) {
 			
 			if(taskList.get(i).getTaskType().name().equalsIgnoreCase("FLOATING")||
-				simpleFormat.format(getDate(taskList.get(i))).equals(todayStr) || getDate(taskList.get(i)).before(todayDate)) {
+				compareDate(todayDate, getDate(taskList.get(i))) || getDate(taskList.get(i)).before(todayDate)) {
 				if(taskList.get(i).getTaskType().name().equalsIgnoreCase("FLOATING")) {
 					floating.add(taskList.get(i));
 				} else if(taskList.get(i).getTaskType().name().equalsIgnoreCase("EVENT") ||
 						taskList.get(i).getTaskType().name().equalsIgnoreCase("DATED")) {
 					if(getDate(taskList.get(i)).before(todayDate)) {
 						overdue.add(taskList.get(i));
-					} else if(simpleFormat.format(getDate(taskList.get(i))).equals(todayStr)) {
+					} else if(compareDate(todayDate, getDate(taskList.get(i)))) {
 						today.add(taskList.get(i));
 					}
 				} else if(taskList.get(i).getTaskType().name().equalsIgnoreCase("TIMED")) {
 					if((taskList.get(i).getFrom().before(todayDate) && taskList.get(i).getTo().after(todayDate)) ||
-							simpleFormat.format(taskList.get(i).getFrom()).equals(todayStr) || 
-							simpleFormat.format(taskList.get(i).getTo()).equals(todayStr)) {
+							compareDate(todayDate, taskList.get(i).getFrom()) || 
+							compareDate(todayDate, taskList.get(i).getTo())) {
 						today.add(taskList.get(i));
 					} else if(taskList.get(i).getTo().before(todayDate)) {
 						overdue.add(taskList.get(i));
@@ -141,7 +149,6 @@ public class MainController{
 		}
 		
 		if(!overdue.isEmpty()) {
-			System.out.println(overdue.size());
 			for(int b = 0; b < overdue.size(); b++) {
 				if(b == 0) {
 					generateList("OVERDUE", overdue.get(b), tabName, today.get(b).getTaskType().name());
@@ -151,17 +158,14 @@ public class MainController{
 			}
 		}
 		
-		DateFormat dateOutput;
 		String date1 = "";
 		String date2 = "";
-		String title = "";
 		
 		for(int j = indexForNextLoop; j < taskList.size(); j++) {
-			dateOutput = new SimpleDateFormat("MM/dd/yyyy		EEEEEEEEE");
-			date1 = dateOutput.format(getDate(taskList.get(j)));
+			date1 = Constant.DATEOUTPUT.format(getDate(taskList.get(j)));
 			
 			if(j != indexForNextLoop) {
-				date2 = dateOutput.format(getDate(taskList.get(j-1)));
+				date2 = Constant.DATEOUTPUT.format(getDate(taskList.get(j-1)));
 			}
 			
 			if(j == indexForNextLoop || !date1.equals(date2)) {
