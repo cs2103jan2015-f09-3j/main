@@ -16,6 +16,7 @@ public class Main extends Application {
 	public static Stack<Undo> undos;
 	public static Stack<Undo> redos;
 	public static boolean toUpdate;
+	public static String systemFeedback;
 	
 	@Override
 	public void start(Stage primaryStage) {
@@ -43,5 +44,6 @@ public class Main extends Application {
 		Main.redos = new Stack<Undo>();
 		
 		toUpdate = false;
+		systemFeedback = "";
 	}
 }

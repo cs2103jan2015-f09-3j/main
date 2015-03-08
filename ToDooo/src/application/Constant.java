@@ -29,6 +29,8 @@ public final class Constant {
 	public static final String TAG_BY = "by";
 	public static final String TAG_RECURRING = "recurring";
 	public static final String TAG_REPEAT = "repeat";
+	public static final String TAG_REPEAT_DAY = "repeatDay";
+	public static final String TAG_REPEAT_UNTIL = "repeatUntil";
 	public static final String TAG_PRIORITY = "priority";
 	
 	public static final String TAG_SETTING = "setting";	
@@ -64,6 +66,9 @@ public final class Constant {
 	public static final String MSG_UPDATE_FAIL = "Update failed.";
 	public static final String MSG_UPDATE_SUCCESS = "Update successful.";
 	public static final String MSG_INVALID_FORMAT = "Invalid format. Unable to extract dates.";
+	public static final String MSG_INVALID_RECURRING = "Unable to create recurring task. " + 
+													   "Only /on and /by tasks can " + 
+													   "become recurring tasks.";
 	
 	public static final String MSG_UNDO_ADD_SUCCESS = "Undo add successful.";
 	public static final String MSG_UNDO_ADD_FAIL = "Undo add failed.";

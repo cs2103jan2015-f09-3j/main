@@ -105,6 +105,12 @@ public class XmlManager {
 		text = getTextByTagName(element, Constant.TAG_REPEAT);
 		task.setRepeat(Frequency.valueOf(text));
 		
+		text = getTextByTagName(element, Constant.TAG_REPEAT_DAY);
+		task.setRepeatDay(Integer.valueOf(text));
+		
+		text = getTextByTagName(element, Constant.TAG_REPEAT_UNTIL);
+		task.setRepeatUntil(Main.inputParser.getDateFromString(text));
+		
 		text = getTextByTagName(element, Constant.TAG_PRIORITY);
 		task.setPriority(Priority.valueOf(text));
 		
@@ -207,6 +213,12 @@ public class XmlManager {
 		
 		XmlManager.createAndAppendChildElement(document, taskTag, Constant.TAG_REPEAT, 
 											   task.getRepeat().toString());
+		
+		XmlManager.createAndAppendChildElement(document, taskTag, Constant.TAG_REPEAT_DAY, 
+											   String.valueOf(task.getRepeatDay()));	
+		
+		XmlManager.createAndAppendChildElement(document, taskTag, Constant.TAG_REPEAT_UNTIL, 
+											   InputParser.getDateString(task.getRepeatUntil()));	
 		
 		XmlManager.createAndAppendChildElement(document, taskTag, Constant.TAG_PRIORITY, 
 											   task.getPriority().toString());

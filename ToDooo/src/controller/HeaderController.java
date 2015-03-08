@@ -129,7 +129,7 @@ public class HeaderController{
 			}
 			
 		} else {
-			systemMsg = Constant.MSG_INVALID_FORMAT;
+			systemMsg = Main.systemFeedback;
 		}
 				
 		return systemMsg;

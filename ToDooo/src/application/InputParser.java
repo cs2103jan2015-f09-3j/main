@@ -142,5 +142,25 @@ public class InputParser {
 		
 		return dateString;
 	}
-
+	
+	public static Date getUntilDateFromString(String userInput) {
+		Date untilDate = null;
+		String lowerCase = userInput.toLowerCase();
+		int beginIndex = -1;
+		int endIndex = userInput.length();
+		
+		if (lowerCase.contains(Command.RECURRING_UNTIL.getBasicCommand())) {
+			beginIndex = lowerCase.indexOf(Command.RECURRING_UNTIL.getBasicCommand());
+		} else if (lowerCase.contains(Command.RECURRING_UNTIL.getAdvancedCommand())) {
+			beginIndex = lowerCase.indexOf(Command.RECURRING_UNTIL.getAdvancedCommand());
+		}
+		
+		boolean hasUntil = (beginIndex != -1);
+		if (hasUntil) {
+			lowerCase = lowerCase.substring(beginIndex, endIndex);
+			untilDate = Main.inputParser.getDateFromString(lowerCase);
+		}
+		
+		return untilDate;
+	}
 }

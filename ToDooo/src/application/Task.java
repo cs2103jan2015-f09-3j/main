@@ -14,9 +14,9 @@ public class Task {
 	private String _category;
 	private boolean _isRecurring;
 	private Frequency _repeat;
-	private Priority _priority;
-	private int _dayOfWeek;
+	private int _repeatDay;
 	private Date _repeatUntil;
+	private Priority _priority;
 	private boolean _isValid;
 	
 	public Task() {
@@ -37,12 +37,13 @@ public class Task {
 		
 		if ((_taskType.equals(TaskType.TIMED) && dates.size() < 2) ||
 			(!_taskType.equals(TaskType.FLOATING) && dates.size() == 0)) {
+			Main.systemFeedback = Constant.MSG_INVALID_FORMAT;
 			_isValid = false;
 		} else {			
 			setDatesForTaskType(dates);			
 			_category = InputParser.getCategoryFromString(userInput);
 			
-			_isValid = setRepeatFrequency(dates, userInput);
+			_isValid = setRecurringDetails(dates, userInput);
 			if (_isValid) {
 				_priority = InputParser.getPriorityFromString(userInput);		
 				_toDo = generateToDoString(userInput);
@@ -156,6 +157,22 @@ public class Task {
 		_isValid = isValid;
 	}
 	
+	public int getRepeatDay() {
+		return _repeatDay;
+	}
+
+	public void setRepeatDay(int repeatDay) {
+		_repeatDay = repeatDay;
+	}
+
+	public Date getRepeatUntil() {
+		return _repeatUntil;
+	}
+
+	public void setRepeatUntil(Date repeatUntil) {
+		_repeatUntil = repeatUntil;
+	}
+
 	private static String generateId(TaskType taskType) {
 		int nextId = Main.list.getNextId();
 		String id = null;
@@ -356,15 +373,37 @@ public class Task {
 		}
 	}
 	
-	private boolean setRepeatFrequency(List<Date> dates, String userInput) {
+	private boolean setRecurringDetails(List<Date> dates, String userInput) {
 		boolean isValid = true;
 		_isRecurring = Command.isRecurred(userInput);
 		
+		if (_taskType.equals(TaskType.TIMED) ||
+			_taskType.equals(TaskType.FLOATING)) {
+			Main.systemFeedback = Constant.MSG_INVALID_RECURRING;
+			isValid = false;
+			
+			return isValid;
+		}		
+		
 		if (dates != null) {
 			_repeat = InputParser.getFrequencyFromString(userInput);
+			
+			Date untilDate = InputParser.getUntilDateFromString(userInput);				
+			_repeatUntil = untilDate;
+			
+			if (_repeat.equals(Frequency.WEEKLY) &&
+			   (_taskType.equals(TaskType.DATED) ||
+				_taskType.equals(TaskType.EVENT))) {
+				
+				Date startDate = dates.get(Constant.START_INDEX);
+				_repeatDay = DateParser.calculateDayOfWeek(startDate);
+			} else {
+				_repeatDay = -1;
+			}			
 		}
 		
 		if (_isRecurring && dates == null) {
+			Main.systemFeedback = Constant.MSG_INVALID_FORMAT;			
 			isValid = false; 						
 		}
 		
