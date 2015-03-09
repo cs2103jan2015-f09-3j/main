@@ -2,6 +2,10 @@ package application;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -381,4 +385,44 @@ public class Storage {
 			exception.printStackTrace();
 		}
 	}
+	
+	public void moveFile(String path) {
+		String pathInSetting = readSavePath();
+		Path oldPath = Paths.get(pathInSetting);
+		Path newPath = Paths.get(path);
+		
+		try {
+			Files.move(oldPath, newPath.resolve(oldPath.getFileName()), StandardCopyOption.REPLACE_EXISTING);
+			Files.delete(oldPath);
+		} catch (IOException exception) {
+			exception.printStackTrace();
+		}
+		
+		updatePathInSetting(path);
+		
+		if (path != pathInSetting) {
+			updatePathInSetting(path);
+		} else {
+			changePath(path);
+		}
+	}
+	
+	public ArrayList<Task> viewListByAll() {
+		ArrayList<Task> allList = loadXmlToArrayList();
+		
+		return allList;
+	}
+	
+	public ArrayList<Task> viewListByCategories(ArrayList<Task> list) {
+		ArrayList<Task> categoryList = loadXmlToArrayList();
+		
+		return categoryList;
+	}
+	
+	public ArrayList<Task> viewListByPriorities(ArrayList<Task> list) {
+		ArrayList<Task> priorityList = loadXmlToArrayList();
+		
+		return priorityList;
+	}
+
 }
