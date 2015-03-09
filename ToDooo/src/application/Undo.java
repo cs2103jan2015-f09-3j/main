@@ -1,5 +1,7 @@
 package application;
 
+import javafx.util.Pair;
+
 public class Undo {
 	private Command _undoCommand;
 	private Task _originalTask;
@@ -51,10 +53,20 @@ public class Undo {
 			case ADD :
 				// to undo delete action
 				// add _originalTask
-				systemMsg = Main.list.AddTaskBackToList(_originalTask);				
+				Pair<String, Task> systemMsgWithRemovedTaskPair = 
+								   Main.list.AddTaskBackToList(_originalTask);		
+				
+				systemMsg = systemMsgWithRemovedTaskPair.getKey();
 				if (systemMsg.equals(Constant.MSG_ADD_SUCCESS)) {
-					Undo redo = new Undo(Command.ADD, _originalTask.getId());
-					Main.redos.push(redo);
+					Task removedTask = systemMsgWithRemovedTaskPair.getValue();
+					
+					if (removedTask != null) {
+						Undo redo = new Undo(Command.UPDATE, removedTask, _originalTask.getId());
+						Main.redos.push(redo);
+					} else {
+						Undo redo = new Undo(Command.ADD, _originalTask.getId());
+						Main.redos.push(redo);
+					}
 					
 					systemMsg = Constant.MSG_UNDO_DELETE_SUCCESS;
 				} else {
@@ -105,7 +117,10 @@ public class Undo {
 			case ADD :
 				// to redo add action
 				// add _originalTask
-				systemMsg = Main.list.AddTaskBackToList(_originalTask);				
+				Pair<String, Task> systemMsgWithRemovedTaskPair = 
+				   				   Main.list.AddTaskBackToList(_originalTask);		
+
+				systemMsg = systemMsgWithRemovedTaskPair.getKey();			
 				if (systemMsg.equals(Constant.MSG_ADD_SUCCESS)) {
 					Undo undo = new Undo(Command.ADD, _originalTask.getId());
 					Main.undos.push(undo);

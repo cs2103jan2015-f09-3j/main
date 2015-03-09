@@ -107,7 +107,9 @@ public class ToDoList {
 		return result;
 	}
 	
-	public String AddTaskBackToList(Task task) {
+	public Pair<String, Task> AddTaskBackToList(Task task) {
+		Task removedTask = deleteTaskById(task.getId());
+		
 		String result = Main.storage.writeTaskToFile(task);
 		
 		if (result.equals(Constant.MSG_ADD_SUCCESS)) {
@@ -116,7 +118,7 @@ public class ToDoList {
 			addCategoryToList(task.getCategory());
 		}
 		
-		return result;
+		return new Pair<String, Task>(result, removedTask);
 	}
 	
 	private void addCategoryToList(String category) {
@@ -149,6 +151,7 @@ public class ToDoList {
 		return removedTask;
 	}
 	
+	// need to check recurring tasks as well
 	public ArrayList<Task> searchTheList(String userInput) {
 		ArrayList<Task> searchResults = new ArrayList<Task>();
 		ArrayList<Pair<SearchAttribute, String>> attributePairs =
@@ -249,7 +252,7 @@ public class ToDoList {
 		Task originalTask = deleteTaskById(targetId);
 		
 		if (originalTask != null) {
-			addTaskToList(updatedTask);
+			AddTaskBackToList(updatedTask);
 		}		
 		
 		String updatedId = updatedTask.getId();
@@ -260,7 +263,7 @@ public class ToDoList {
 		Task originalTask = deleteTaskById(targetId);
 		
 		if (originalTask != null) {
-			addTaskToList(taskToUpdateWith);
+			AddTaskBackToList(taskToUpdateWith);
 		}
 		
 		return originalTask;
@@ -283,6 +286,21 @@ public class ToDoList {
 	}
 	
 	public Task deleteTaskById(String targetId) {
+		String taskId = targetId;
+		String recurringTaskId = null;
+		
+		boolean isRecurringTaskId = 
+				targetId.contains(Constant.PREFIX_RECURRING_ID);
+			
+		
+		if (isRecurringTaskId) {
+			recurringTaskId = targetId;
+			
+			int endIndex = recurringTaskId.
+						   indexOf(Constant.PREFIX_RECURRING_ID);
+			taskId = recurringTaskId.substring(Constant.START_INDEX, endIndex);
+		}
+		
 		Task task = null;
 		Task removedTask = null;
 		int index = 0;		
@@ -292,14 +310,51 @@ public class ToDoList {
 		while (taskIterator.hasNext()) {
 			task = taskIterator.next();
 			
-			isFound = (task.getId().equals(targetId));
+			isFound = (task.getId().equals(taskId));
 			
 			if (isFound) {
-				removedTask = Main.storage.deleteTaskFromFileById(targetId);
+				if (isRecurringTaskId) {
+					removedTask = deleteRecurringTaskById(task, recurringTaskId);
+				} else {
+					removedTask = Main.storage.deleteTaskFromFileById(targetId);
+					
+					if (removedTask != null) {
+						_tasks.remove(index);
+					}
+				}
+				
+				break;
+			}
+			
+			index++;
+		}
+		
+		return removedTask;
+	}
+	
+	private Task deleteRecurringTaskById(Task task, String recurringTaskId) {
+		RecurringTask recurringTask = null;
+		Task removedTask = null;
+		int index = 0;		
+		boolean isFound = false;
+		Iterator<RecurringTask> taskIterator = 
+				task.getRecurringTasks().iterator();
+		
+		while (taskIterator.hasNext()) {
+			recurringTask = taskIterator.next();
+			
+			isFound = (recurringTask.getRecurringTaskId().
+					   equals(recurringTaskId));
+			
+			if (isFound) {
+				removedTask = Main.storage.
+							  deleteRecurringTaskFromFileById(task.getId(), 
+							  recurringTaskId);
 				
 				if (removedTask != null) {
-					_tasks.remove(index);
+					task.getRecurringTasks().remove(index);
 				}
+				
 				break;
 			}
 			

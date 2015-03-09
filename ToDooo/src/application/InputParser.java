@@ -190,6 +190,7 @@ public class InputParser {
 		String updateAdvancedString = updateAdvancedCmd + " " +
 								      id.toLowerCase() + 
 								      Constant.DELIMETER_UPDATE;
+		
 		if ((lowerCase.contains(updateBasicString) &&
 			 lowerCase.indexOf(updateBasicString) == Constant.START_INDEX) ||
 			(lowerCase.contains(updateAdvancedString) &&

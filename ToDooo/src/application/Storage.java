@@ -284,6 +284,25 @@ public class Storage {
 		return removedTask;
 	}
 	
+	public Task deleteRecurringTaskFromFileById(String taskId, String recurringTaskId) {
+		Document fileDoc = getFileDocument();	
+		Task removedTask = null;
+		
+		NodeList nodes = getRecurringTasksNodesById(fileDoc, taskId, recurringTaskId);
+		if (nodes.getLength() > 0) {
+			Element targetNode = (Element) nodes.item(Constant.START_INDEX);			
+			
+			NodeList taskNodes = getNodesById(fileDoc, taskId);
+			Element taskNode = (Element) taskNodes.item(Constant.START_INDEX);
+			removedTask = XmlManager.transformNodeToTask(taskNode);		
+			
+			targetNode.getParentNode().removeChild(targetNode);
+			cleanAndWriteFile(fileDoc);
+		} 
+		
+		return removedTask;
+	}
+	
 	private NodeList getNodesById(Document document, String targetId) {
 		try {
 			XPathExpression expression = 
@@ -300,6 +319,28 @@ public class Storage {
 		
 		return null;
 	}	
+	
+	private NodeList getRecurringTasksNodesById(Document document, String taskId, 
+												String recurringTaskId) {
+		try {
+			XPathExpression expression = 
+					_xPath.compile("/" + Constant.TAG_FILE + "/" +
+								   Constant.TAG_TASKS + "/" +
+								   Constant.TAG_TASK + "[@" +
+								   Constant.TAG_ATTRIBUTE_ID + "='" + 
+								   taskId + "']" + "/" +
+								   Constant.TAG_RECURRING_TASKS + "/" +
+								   Constant.TAG_RECURRING_TASK + "[@" +
+								   Constant.TAG_RECURRING_ID + "='" + 
+								   recurringTaskId + "']");
+			
+			return (NodeList)expression.evaluate(document, XPathConstants.NODESET);
+		} catch (XPathExpressionException exception) {
+			exception.printStackTrace();
+		}
+		
+		return null;
+	}
 	
 	public void cleanAndWriteFile() {
 		Document document = getFileDocument();

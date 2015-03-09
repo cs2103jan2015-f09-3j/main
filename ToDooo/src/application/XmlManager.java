@@ -9,6 +9,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 import org.w3c.dom.Text;
 
 public class XmlManager {
@@ -114,7 +115,50 @@ public class XmlManager {
 		text = getTextByTagName(element, Constant.TAG_PRIORITY);
 		task.setPriority(Priority.valueOf(text));
 		
+		text = getTextByTagName(element, Constant.TAG_STATUS);
+		task.setStatus(Status.valueOf(text));
+		
+		text = getTextByTagName(element, Constant.TAG_END_DATE);
+		task.setEndDate(Main.inputParser.getDateFromString(text));
+		
+		if (task.getIsRecurring()) {
+			ArrayList<RecurringTask> recurringTasks = 
+					transformRecurringTasksNodesToArrayList(element);
+			task.setRecurringTasks(recurringTasks);
+		}
+		
 		return task;
+	}
+	
+	private static ArrayList<RecurringTask> transformRecurringTasksNodesToArrayList(Element element) {
+		ArrayList<RecurringTask> recurringTasks = new ArrayList<RecurringTask>();
+		
+		Element recurringTasksWrapper = 
+				(Element) element.getElementsByTagName(Constant.TAG_RECURRING_TASKS).
+				item(Constant.START_INDEX);
+		
+		NodeList recurringTasksNodes = recurringTasksWrapper.
+									   getElementsByTagName(Constant.TAG_RECURRING_TASK);
+		
+		Element recurringTaskNode = null;
+		String text = null;
+		for (int i = 0; i < recurringTasksNodes.getLength(); i++) {
+			RecurringTask recurringTask = new RecurringTask();
+			recurringTaskNode = (Element) recurringTasksNodes.item(i);
+			
+			text = recurringTaskNode.getAttribute(Constant.TAG_RECURRING_ID);
+			recurringTask.setRecurringTaskId(text);
+			
+			text = getTextByTagName(recurringTaskNode, Constant.TAG_RECURRING_STATUS);
+			recurringTask.setStatus(Status.valueOf(text));		
+			
+			text = getTextByTagName(recurringTaskNode, Constant.TAG_RECURRING_DATE);
+			recurringTask.setRecurDate(Main.inputParser.getDateFromString(text));
+			
+			recurringTasks.add(recurringTask);
+		}
+				
+		return recurringTasks;
 	}
 	
 	public static void setText(Element parentElement, String tagName, String text) {
@@ -222,6 +266,40 @@ public class XmlManager {
 		
 		XmlManager.createAndAppendChildElement(document, taskTag, Constant.TAG_PRIORITY, 
 											   task.getPriority().toString());
+		
+		XmlManager.createAndAppendChildElement(document, taskTag, Constant.TAG_STATUS, 
+				   							   task.getStatus().toString());
+		
+		XmlManager.createAndAppendChildElement(document, taskTag, Constant.TAG_END_DATE, 
+											   InputParser.getDateString(task.getEndDate()));
+		
+		createAndAppendRecurringTasks(document, taskTag, task);
+		
 		return taskTag;
+	}
+	
+	private static void createAndAppendRecurringTasks(Document document, Element taskTag, Task task) {
+		if (task.getIsRecurring()) {
+			Element recurringTasksWrapper = XmlManager.createAndAppendWrapper(document, taskTag, 
+					   						String.valueOf(Constant.TAG_RECURRING_TASKS));
+						
+			ArrayList<RecurringTask> recurringTasks = task.getRecurringTasks();
+			
+			
+			for (RecurringTask recurringTask : recurringTasks) {
+				Element recurringTaskTag = document.createElement(Constant.TAG_RECURRING_TASK);
+				recurringTaskTag.setAttribute(Constant.TAG_RECURRING_ID, recurringTask.getRecurringTaskId());
+				
+				XmlManager.createAndAppendChildElement(document, recurringTaskTag, 
+													   Constant.TAG_RECURRING_STATUS, 
+													   recurringTask.getStatus().toString());		
+				
+				XmlManager.createAndAppendChildElement(document, recurringTaskTag, 
+													   Constant.TAG_RECURRING_DATE, 
+													   InputParser.getDateString(recurringTask.getRecurDate()));	
+				
+				recurringTasksWrapper.appendChild(recurringTaskTag);
+			}
+		}
 	}
 }

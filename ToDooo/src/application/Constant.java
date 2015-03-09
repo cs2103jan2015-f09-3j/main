@@ -32,6 +32,14 @@ public final class Constant {
 	public static final String TAG_REPEAT_DAY = "repeatDay";
 	public static final String TAG_REPEAT_UNTIL = "repeatUntil";
 	public static final String TAG_PRIORITY = "priority";
+	public static final String TAG_STATUS = "status";
+	public static final String TAG_END_DATE = "endDate";
+	
+	public static final String TAG_RECURRING_TASKS = "recurringTasks";
+	public static final String TAG_RECURRING_TASK = "recurringTask";
+	public static final String TAG_RECURRING_ID = "recurringTaskId";
+	public static final String TAG_RECURRING_STATUS = "recurringTaskStatus";
+	public static final String TAG_RECURRING_DATE = "recurDate";
 	
 	public static final String TAG_SETTING = "setting";	
 	public static final String TAG_SETTING_SAVE = "save";
@@ -96,6 +104,7 @@ public final class Constant {
 	public static final String DELIMETER_UPDATE = ":";
 	public static final String DELIMETER_SEARCH = ";; ";
 	public static final String DELIMETER_REPLACE = "{0}";
+	public static final String PREFIX_RECURRING_ID = "R";
 
 	public static final String COLOUR_ERROR = "#FF0033";
 	public static final String COLOUR_FEEDBACK = "#4771FF";

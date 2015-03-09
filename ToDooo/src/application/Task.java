@@ -1,4 +1,6 @@
 package application;
+import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -18,6 +20,9 @@ public class Task {
 	private Date _repeatUntil;
 	private Priority _priority;
 	private boolean _isValid;
+	private Status _status;
+	private Date _endDate;
+	private ArrayList<RecurringTask> _recurringTasks;
 	
 	public Task() {
 		// convert from node
@@ -25,12 +30,17 @@ public class Task {
 	
 	public Task(String userInput) {
 		this(userInput, null);
-		_id = generateId(_taskType);	
 	}
 
-	public Task(String userInput, String id) {
-		_id = id;
+	public Task(String userInput, String id) {	
 		_taskType = InputParser.getTaskTypeFromString(userInput);	
+		
+		if (id == null) {
+			_id = generateId(_taskType);	
+		} else {
+			_id = id;	
+		}
+		
 		_originalText = InputParser.removeActionFromString(userInput, _id);
 		
 		List<Date> dates = getDates(userInput);
@@ -39,7 +49,9 @@ public class Task {
 			(!_taskType.equals(TaskType.FLOATING) && dates.size() == 0)) {
 			Main.systemFeedback = Constant.MSG_INVALID_FORMAT;
 			_isValid = false;
-		} else {			
+		} else {
+			_recurringTasks = new ArrayList<RecurringTask>();
+			
 			setDatesForTaskType(dates);			
 			_category = InputParser.getCategoryFromString(userInput);
 			
@@ -47,13 +59,12 @@ public class Task {
 			if (_isValid) {
 				_priority = InputParser.getPriorityFromString(userInput);		
 				_toDo = generateToDoString(userInput);
+				_status = Task.getStatus(_endDate);
 				
 				updateIdWithTaskType();
 				_isValid = true;
 			}
 		}
-		
-		
 	}
 
 	
@@ -176,6 +187,30 @@ public class Task {
 	public void setRepeatUntil(Date repeatUntil) {
 		_repeatUntil = repeatUntil;
 	}
+	
+	public Date getEndDate() {
+		return _endDate;
+	}
+
+	public void setEndDate(Date endDate) {
+		_endDate = endDate;
+	}
+
+	public Status getStatus() {
+		return _status;
+	}
+
+	public void setStatus(Status status) {
+		_status = status;
+	}
+
+	public ArrayList<RecurringTask> getRecurringTasks() {
+		return _recurringTasks;
+	}
+
+	public void setRecurringTasks(ArrayList<RecurringTask> recurringTask) {
+		_recurringTasks = recurringTask;
+	}
 
 	private static String generateId(TaskType taskType) {
 		int nextId = Main.list.getNextId();
@@ -228,23 +263,51 @@ public class Task {
 		_from = null;
 		_to = null;
 		_by = null;
+		_endDate = null;
 		
 		switch(_taskType) {
 			case EVENT :
 				_on = dates.get(0);
+				_endDate = _on;
 				break;
 			case TIMED :				
 				_from = dates.get(0);
 				_to = dates.get(1);
+				
+				_endDate = _to;
 				break;
 			case DATED :
 				_by = dates.get(0);
+				
+				_endDate = _by;
 				break;
 			default :
 				// floating task
 				// does not require action since no date in array
 				break;
 		}
+	}
+	
+	public Date getEndDateForTaskType() {
+		Date endDate = null;
+		
+		switch(_taskType) {
+			case EVENT :
+				endDate = _on;
+				break;
+			case TIMED :			
+				endDate = _to;
+				break;
+			case DATED :
+				endDate = _by;
+				break;
+			default :
+				// floating task
+				// does not require action since no end date
+				break;
+		}
+		
+		return endDate;
 	}
 	
 	private boolean setRecurringDetails(List<Date> dates, String userInput) {
@@ -272,6 +335,8 @@ public class Task {
 				
 				Date startDate = dates.get(Constant.START_INDEX);
 				_repeatDay = DateParser.calculateDayOfWeek(startDate);
+				
+				generateRecurringTasks(startDate);				
 			} else {
 				_repeatDay = -1;
 			}			
@@ -294,6 +359,107 @@ public class Task {
 				 	  	  .charAt(Constant.START_INDEX);
 		
 		char prefix = _id.charAt(Constant.START_INDEX);
-		_id = _id.replace(prefix, typePrefix);
+		
+		if (typePrefix != prefix) {
+			_id = _id.replace(prefix, typePrefix);
+			
+			if (_isRecurring) {
+				updateRecurringTasksIdWithTaskType(prefix, typePrefix);
+			}
+		}
 	}
+	
+	private void updateRecurringTasksIdWithTaskType(char prefix, char typePrefix) {
+		String newRecurringTaskId = null;
+		for (RecurringTask recurringTask : _recurringTasks) {
+			newRecurringTaskId = recurringTask.getRecurringTaskId().
+								 replace(prefix, typePrefix);
+			
+			recurringTask.setRecurringTaskId(newRecurringTaskId);
+		}
+	}
+	
+	public static Status getStatus(Date endDate) {
+		Status status = Status.OVERDUE;
+		
+		
+		if (endDate == null) { // floating task
+			return Status.ONGOING;
+		} else {
+			Date todayDate = new Date();
+			boolean isOngoing = DateParser.isBeforeDate(todayDate, endDate);
+			
+			if (isOngoing) {
+				status = Status.ONGOING;
+			}
+		}
+		
+		return status;
+	}
+	
+	private void generateRecurringTasks(Date startDate) {
+		Calendar calendarStart = DateParser.createCalendar(startDate);
+		Calendar calendarEnd = DateParser.createCalendar(_repeatUntil);
+		int dayOfWeek = -1;
+		int dayOfMonth = -1;
+		int month = -1;
+		int startDateDayOfMonth = DateParser.calculateDayOfMonth(calendarStart);
+		int startDateMonth = DateParser.calculateMonth(calendarStart);
+		
+		
+		while (calendarStart.before(calendarEnd) || calendarStart.equals(calendarEnd)) {
+			switch (_repeat) {
+				case WEEKLY :
+					dayOfWeek = DateParser.calculateDayOfWeek(calendarStart);
+					
+					if (dayOfWeek == _repeatDay) {
+						addToRecurringTasks(calendarStart);
+						
+						calendarStart.add(Calendar.WEEK_OF_YEAR, 1);
+						continue;
+					}					
+					break;
+				case MONTHLY :
+					dayOfMonth = DateParser.calculateDayOfMonth(calendarStart);	
+					
+					if (dayOfMonth == startDateDayOfMonth) {
+						addToRecurringTasks(calendarStart);
+						
+						calendarStart.add(Calendar.MONTH, 1);
+						continue;
+					}	
+					break;
+				case YEARLY :
+					dayOfMonth = DateParser.calculateDayOfMonth(calendarStart);	
+					month = DateParser.calculateMonth(calendarStart);
+					
+					if (dayOfMonth == startDateDayOfMonth &&
+						month == startDateMonth) {
+						addToRecurringTasks(calendarStart);
+						
+						calendarStart.add(Calendar.YEAR, 1);
+						continue;
+					}	
+					break;					
+				default :
+					// invalid task object
+					return;
+			}
+			
+			calendarStart.add(Calendar.DAY_OF_MONTH, 1);
+		}
+	}
+
+	private void addToRecurringTasks(Calendar calendarStart) {
+		String recurringTaskId = generateRecurringTaskId();
+		RecurringTask recurringTask = 
+				new RecurringTask(recurringTaskId, calendarStart);
+		
+		_recurringTasks.add(recurringTask);
+	}
+	
+	private String generateRecurringTaskId() {
+		return _id + Constant.PREFIX_RECURRING_ID + 
+			   _recurringTasks.size();
+	}	
 }
