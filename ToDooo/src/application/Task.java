@@ -250,9 +250,10 @@ public class Task {
 	private boolean setRecurringDetails(List<Date> dates, String userInput) {
 		boolean isValid = true;
 		_isRecurring = Command.isRecurred(userInput);
+		_repeat = Frequency.NIL;
 		
-		if (_taskType.equals(TaskType.TIMED) ||
-			_taskType.equals(TaskType.FLOATING)) {
+		if ((_taskType.equals(TaskType.TIMED) ||
+			_taskType.equals(TaskType.FLOATING)) && _isRecurring) {
 			Main.systemFeedback = Constant.MSG_INVALID_RECURRING;
 			isValid = false;
 			

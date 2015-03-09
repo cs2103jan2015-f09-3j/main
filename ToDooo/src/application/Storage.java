@@ -235,6 +235,7 @@ public class Storage {
 			
 			writeFile(document);
 		} catch (Exception exception) {
+			exception.printStackTrace();
 			return Constant.MSG_ADD_FAIL;
 		}
 		
