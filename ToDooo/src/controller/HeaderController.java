@@ -11,6 +11,8 @@ import application.InputParser;
 import application.Main;
 import application.Task;
 import application.Undo;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
@@ -55,13 +57,58 @@ public class HeaderController{
 			mainCon.bodyController.loadListByDate("All");
 			lblSysMsg.setText(systemMsg);	
 		} 
+		
+		
 	}
 	
-	@FXML
-	public void onKeyTyped(KeyEvent e) {
+	public void onTextChanged() {	
 		boolean toReset = textArea.getText().trim().equals("");
 		if (toReset) {
 			resetTextArea();
+		}
+		
+		highlightKeyWords();
+	}
+	
+	
+	private void highlightKeyWords() {		
+		String inputString = textArea.getText();
+		String lowerCase = inputString.toLowerCase();
+		
+		highlightActionCommands(lowerCase);	
+	}
+
+	private void highlightActionCommands(String lowerCase) {
+		String basicCommand = null;
+		String advancedCommand = null;
+		int startIndex = -1;
+		int endIndex = -1;
+		
+		for (Command command : Constant.COMMAND_ACTIONS) {
+			basicCommand = command.getBasicCommand();
+			advancedCommand = command.getAdvancedCommand();
+			
+			if (lowerCase.contains(basicCommand) && 
+				lowerCase.indexOf(basicCommand) == Constant.START_INDEX) {
+				startIndex = lowerCase.indexOf(basicCommand);
+				endIndex = startIndex + basicCommand.length();
+			} else if (lowerCase.contains(advancedCommand) &&
+					   lowerCase.indexOf(advancedCommand) == Constant.START_INDEX) {
+				startIndex = lowerCase.indexOf(advancedCommand);
+				endIndex = startIndex + advancedCommand.length();
+			}
+			
+			if (startIndex != -1 && endIndex != -1) {
+				textArea.setStyleClass(startIndex, endIndex, "red");
+				
+				if (endIndex < lowerCase.length()) {
+					textArea.clearStyle(endIndex, endIndex + 1);
+				}				
+				break;
+			} 
+			
+			startIndex = -1;
+			endIndex = -1;
 		}
 	}
 		
@@ -82,6 +129,13 @@ public class HeaderController{
 
 	public void init(MainController mainController) {
 		mainCon = mainController;
+		
+		textArea.textProperty().addListener(new ChangeListener<String>() {
+			@Override
+		    public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+				onTextChanged();
+		    }
+		});		
 	}
 	
 	private String executeCommand(String userInput, Command commandType) throws IOException {
@@ -219,8 +273,10 @@ public class HeaderController{
 	}
 	
 	private void resetTextArea() {
-		Main.toUpdate = false;
+		Main.toUpdate = false;	
+
+		textArea.clearStyle(0);
 		textArea.clear();
-		textArea.positionCaret(0);
+		textArea.positionCaret(0);		
 	}
 }

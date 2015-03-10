@@ -117,3 +117,14 @@
 	-fx-opacity: 0.5;
 	-fx-stroke: #838689;
 }
+
+.red { -fx-fill: red; }
+.black { -fx-fill: black; }
+
+.textArea { 
+	-fx-border-radius: 5; 
+	-fx-border-color: #D3D4C4; 
+	-fx-fill: blue; 
+	-fx-background-color: #ffffff; 
+	-fx-padding: 1 1 1 1;
+}
