@@ -47,3 +47,7 @@
 	-fx-text-fill: #666666;
 	-fx-padding:0 0 10 0;
 }
+
+.red { -fx-fill: red; }
+
+.blue { -fx-fill: blue; }

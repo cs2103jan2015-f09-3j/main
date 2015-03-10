@@ -2,6 +2,7 @@ package controller;
 
 import java.io.IOException;
 
+import org.fxmisc.richtext.StyleClassedTextArea;
 import org.w3c.dom.Node;
 
 import application.Command;
@@ -9,32 +10,32 @@ import application.Constant;
 import application.InputParser;
 import application.Main;
 import application.Task;
-import application.TaskType;
 import application.Undo;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.Pane;
 import javafx.util.Pair;
 
 public class HeaderController{
 	
 	private MainController mainCon;
-	@FXML public TextField txtCmd;
 	@FXML private Label lblLogo;
 	@FXML public Label lblSysMsg;
 	@FXML private AnchorPane paneHead;
 	@FXML private ImageView settingIcon;
 	@FXML private ImageView backIcon;
+	@FXML private Pane txtAreaPane;
+	@FXML public StyleClassedTextArea textArea;
 	
 	@FXML
 	public void processCmd(KeyEvent e) throws IOException {			
 		if (e.getCode() == KeyCode.ENTER) {
-			String userInput = txtCmd.getText();	
+			String userInput = textArea.getText();	
 			if (userInput.equals("")) {
 				return;
 			}
@@ -46,7 +47,7 @@ public class HeaderController{
 				systemMsg = executeUpdate(userInput);
 				
 				Main.toUpdate = false;
-				txtCmd.clear();
+				textArea.clear();
 			} else {
 				systemMsg = executeCommand(userInput, commandType);
 			}
@@ -57,8 +58,9 @@ public class HeaderController{
 	
 	@FXML
 	public void onKeyTyped(KeyEvent e) {
-		if (txtCmd.getText().equals("")) {
-			Main.toUpdate = false;
+		boolean toReset = textArea.getText().trim().equals("");
+		if (toReset) {
+			resetTextArea();
 		}
 	}
 		
@@ -87,26 +89,26 @@ public class HeaderController{
 		switch (commandType) {
 		case ADD :
 			systemMsg = executeAdd(userInput);
-			txtCmd.clear();
+			textArea.clear();
 			break;
 		case UPDATE :
 			systemMsg = executeRetrieveOriginalText(userInput);
 			break;
 		case DELETE :
 			systemMsg = executeDelete(userInput);
-			txtCmd.clear();
+			textArea.clear();
 			break;
 		case SEARCH :
 			systemMsg = executeSearch(userInput);
 			break;
 		case SETTING :
 			executeSetting();
-			txtCmd.clear();
+			textArea.clear();
 			break;
 		case GO_BACK :
 			// go back to main page
 			executeGoBack();
-			txtCmd.clear();
+			textArea.clear();
 			break;
 		default :
 			// invalid command
@@ -159,7 +161,7 @@ public class HeaderController{
 		Task originalTask = Main.list.getTaskById(targetId);
 				
 		if (originalTask != null) {
-			txtCmd.appendText(": " + originalTask.getOriginalText());
+			textArea.appendText(": " + originalTask.getOriginalText());
 			Main.toUpdate = true;
 			systemMsg = Constant.MSG_ORIGINAL_RETRIEVED;
 		} else {
@@ -213,5 +215,11 @@ public class HeaderController{
 		settingIcon.setVisible(true);
 		backIcon.setVisible(false);
 		mainCon.showPageInBody("/view/Body.fxml");
+	}
+	
+	private void resetTextArea() {
+		Main.toUpdate = false;
+		textArea.clear();
+		textArea.positionCaret(0);
 	}
 }

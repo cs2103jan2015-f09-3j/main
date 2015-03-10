@@ -68,7 +68,7 @@ public class MainController{
 			return;
 		}
 		
-		headerController.txtCmd.getParent().requestFocus();
+		headerController.textArea.getParent().requestFocus();
 		headerController.lblSysMsg.setText(systemMsg);
 	}
 	
