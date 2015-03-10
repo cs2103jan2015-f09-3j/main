@@ -19,7 +19,7 @@
             <Font name="Ebrima" size="36.0" />
          </font></Label>
       <Pane fx:id="txtAreaPane" layoutX="14.0" layoutY="61.0" prefHeight="40.0" prefWidth="734.0">
-         <StyleClassedTextArea fx:id="textArea" wrapText="true" onKeyPressed="#processCmd" onKeyTyped="#onKeyTyped" prefHeight="40.0" prefWidth="734.0" style="-fx-border-radius: 5; -fx-border-color: #D3D4C4; -fx-background-color: #ffffff; -fx-padding: 1 1 1 1;" />
+         <StyleClassedTextArea fx:id="textArea" wrapText="true" onKeyPressed="#processCmd" prefHeight="40.0" prefWidth="734.0" style="-fx-border-radius: 5; -fx-border-color: #D3D4C4; -fx-fill: black; -fx-background-color: #ffffff; -fx-padding: 1 1 1 1;" />
       </Pane>
 
       <Text fill="#87b763" layoutX="124.0" layoutY="37.0" strokeType="OUTSIDE" strokeWidth="0.0" text="✓">
