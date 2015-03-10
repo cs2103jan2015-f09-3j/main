@@ -1,6 +1,8 @@
 package application;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
@@ -453,4 +455,121 @@ public class Task {
 		return _id + Constant.PREFIX_RECURRING_ID + 
 			   _recurringTasks.size();
 	}
+	
+	public static Comparator<Task> getComparator(SortParameter[] sortParameters) {
+		return new TaskComparator(sortParameters);
+	}
+	
+	public enum SortParameter {
+		ALPHABETICAL_ORDER, CATEGORY, DATE, PRIORITY, TASKTYPE_FLOATING
+	}
+	
+	private SortParameter[] parametersForViewAll = new SortParameter[]{
+			SortParameter.TASKTYPE_FLOATING, 
+			SortParameter.DATE, 
+			SortParameter.PRIORITY, 
+			SortParameter.ALPHABETICAL_ORDER
+	};
+	
+	private SortParameter[] parametersForViewCategory = new SortParameter[]{
+			SortParameter.CATEGORY,
+			SortParameter.DATE, 
+			SortParameter.PRIORITY, 
+			SortParameter.ALPHABETICAL_ORDER
+	};
+	
+	private SortParameter[] parametersForViewPriority = new SortParameter[]{
+			SortParameter.PRIORITY, 
+			SortParameter.DATE, 
+			SortParameter.ALPHABETICAL_ORDER
+	};
+	
+	private static class TaskComparator implements Comparator<Task> {
+		private SortParameter[] parameters;
+		
+		private TaskComparator(SortParameter[] parameters) {
+			this.parameters = parameters;
+		}
+		
+		public int compare(Task taskA, Task taskB) {
+			int comparison = 0;
+			for (SortParameter parameter : parameters) {
+				switch (parameter) {
+				case ALPHABETICAL_ORDER:
+					comparison = taskA.getToDo().compareTo(taskB.getToDo());
+					if (comparison != 0) {
+						return comparison;
+					}
+					break;
+				case CATEGORY:
+					String categoryOfTaskA = taskA.getCategory();
+					String categoryOfTaskB = taskB.getCategory();
+					comparison = categoryOfTaskA.compareTo(categoryOfTaskB);
+					if (comparison != 0) {
+						return comparison;
+					}
+				case DATE:
+					Date dateOfTaskA = taskA.getStartDate();
+					Date dateOfTaskB = taskB.getStartDate();
+					comparison = dateOfTaskA.compareTo(dateOfTaskB);
+					if (comparison != 0) {
+						return comparison;
+					}
+					break;
+				case PRIORITY:
+					Priority taskAPriority = taskA.getPriority();
+					Priority taskBPriority = taskB.getPriority();
+					int priorityLengthOfTaskA, priorityLengthOfTaskB;
+					
+					if (!taskAPriority.equals(Priority.NEUTRAL) && !taskBPriority.equals(Priority.NEUTRAL)) {
+						priorityLengthOfTaskA = taskA.getPriority().getCommand().getAdvancedCommand().length();
+						priorityLengthOfTaskB = taskB.getPriority().getCommand().getAdvancedCommand().length();
+					} else if (taskAPriority.equals(Priority.NEUTRAL) && !taskBPriority.equals(Priority.NEUTRAL)) {
+						priorityLengthOfTaskA = 0;
+						priorityLengthOfTaskB = taskB.getPriority().getCommand().getAdvancedCommand().length();
+					} else if (!taskAPriority.equals(Priority.NEUTRAL) && taskBPriority.equals(Priority.NEUTRAL)) {
+						priorityLengthOfTaskA = taskA.getPriority().getCommand().getAdvancedCommand().length();
+						priorityLengthOfTaskB = 0;
+					} else {
+						priorityLengthOfTaskA = 0;
+						priorityLengthOfTaskB = 0;
+					}
+			
+					comparison = priorityLengthOfTaskB - priorityLengthOfTaskA;
+					
+					if (comparison != 0) {
+						return comparison;
+					}
+					break;
+				case TASKTYPE_FLOATING:
+					int taskTypeOfTaskA = taskA.getTaskType().toString().length();
+					int taskTypeOfTaskB = taskB.getTaskType().toString().length();
+					comparison = taskTypeOfTaskB - taskTypeOfTaskA;
+					if (comparison != 0) {
+						return comparison;
+					}
+					break; 
+				}
+			}
+			return comparison;
+		}
+	}
+	
+	public ArrayList<Task> viewListByAll(ArrayList<Task> list) {
+		Comparator<Task> comparator = getComparator(parametersForViewAll);
+		Collections.sort(list, comparator);
+		return list;
+	}
+	
+	public ArrayList<Task> viewListByCategories(ArrayList<Task> categoryList) {
+		Comparator<Task> CategoryComparator = getComparator(parametersForViewCategory);
+		Collections.sort(categoryList, CategoryComparator);
+		return categoryList;
+	}
+	
+	public ArrayList<Task> viewListByPriorities(ArrayList<Task> priorityList) {
+		Comparator<Task> priorityComparator = getComparator(parametersForViewPriority);
+		Collections.sort(priorityList, priorityComparator);
+		return priorityList;
+	}	
 }

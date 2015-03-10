@@ -29,25 +29,91 @@
     -fx-text-fill: #ffffff;
 }
 
-.gridPaneList {
-	-fx-alignment: center;
-	-fx-padding: 0 0 10 0;
+.bPaneAll {
+	-fx-background-color: linear-gradient(to bottom, derive(#E1F5C4, 20%), #E1F5C4);
+	-fx-background-radius: 10;
+	-fx-max-width: 770;	
+	-fx-max-height: 40;
+	-fx-min-height: 40;
+	-fx-border-color: black;
+	-fx-border-width: 0;
+	-fx-padding: 10 10 10 10;
 }
 
 .paneList {
-	-fx-background-color: #E1F5C4;
+	-fx-padding: 5 5 5 5;
+}
+
+.paneHBar {
+	-fx-padding: 10 0 0 0;
+}
+
+.paneListCategory {
+	-fx-padding: 5 5 5 5;
 }
 
 .labelList {
 	-fx-padding:5 5 5 5;
+	-fx-font: normal 12px "Segoe UI";
+}
+
+.labelDateTime {
+	-fx-padding:5 5 5 5;
+	-fx-font: bold 11px "Segoe UI";
+}
+
+.labelBeforeTime {
+	-fx-padding:5 2 5 2;
+	-fx-font: italic 11px "Segoe UI";
+}
+
+.labelDesc {
+	-fx-padding:5 5 5 10;
+	-fx-font: normal 12px "Segoe UI";
+	-fx-max-width: 450;
+}
+
+.labelId {
+	-fx-padding: 5 5 5 15;
+	-fx-font: bold 12px "Segoe UI";
+	-fx-text-fill: black;
+	-fx-min-width: 60;
+}
+
+.labelCategory {
+	-fx-padding: 5 5 5 5;
+	-fx-background-color: white;
+	-fx-background-radius: 15;
+	-fx-border-width: 2;
+	-fx-border-color: white;
+	-fx-font: normal 10px "Segoe UI";
+	-fx-text-fill: black;
+	-fx-opacity: 0.5;
 }
 
 .labelTitle {
-	-fx-font: bold 16px "Segoe UI";
+	-fx-font: bold 13px "Segoe UI";
 	-fx-text-fill: #666666;
-	-fx-padding:0 0 10 0;
+	-fx-padding: 25 0 0 5;
+	
 }
 
-.red { -fx-fill: red; }
+.todayTitle {
+	-fx-font: bold 17px "Segoe UI";
+	-fx-text-fill: #666666;
+	-fx-padding: 0 0 0 350;
+}
 
-.blue { -fx-fill: blue; }
+.iconImage {
+	-fx-padding:5 5 5 5;
+}
+
+.priorityBar {
+	-fx-smooth: true;
+	-fx-stroke-width: 4;
+}
+
+.hBar {
+	-fx-opacity: 0.5;
+	-fx-stroke: #838689;
+}
