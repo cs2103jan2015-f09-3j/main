@@ -70,7 +70,7 @@
 .labelDesc {
 	-fx-padding:5 5 5 10;
 	-fx-font: normal 12px "Segoe UI";
-	-fx-max-width: 450;
+	-fx-max-width: 400;
 }
 
 .labelId {
@@ -83,10 +83,11 @@
 .labelCategory {
 	-fx-padding: 5 5 5 5;
 	-fx-background-color: white;
-	-fx-background-radius: 15;
+	-fx-background-radius: 7;
 	-fx-border-width: 2;
 	-fx-border-color: white;
-	-fx-font: normal 10px "Segoe UI";
+	-fx-border-radius: 7;
+	-fx-font: bold 10px "Segoe UI";
 	-fx-text-fill: black;
 	-fx-opacity: 0.5;
 }
