@@ -472,7 +472,6 @@ public class Task {
 	};
 	
 	private SortParameter[] parametersForViewCategory = new SortParameter[]{
-			SortParameter.TASKTYPE_FLOATING, 
 			SortParameter.CATEGORY,
 			SortParameter.DATE, 
 			SortParameter.PRIORITY, 
@@ -480,7 +479,6 @@ public class Task {
 	};
 	
 	private SortParameter[] parametersForViewPriority = new SortParameter[]{
-			SortParameter.TASKTYPE_FLOATING, 
 			SortParameter.PRIORITY, 
 			SortParameter.DATE, 
 			SortParameter.ALPHABETICAL_ORDER
@@ -557,22 +555,19 @@ public class Task {
 		}
 	}
 	
-	public ArrayList<Task> viewListByAll() {
-		ArrayList<Task> allList = Main.storage.loadXmlToArrayList();
+	public ArrayList<Task> viewListByAll(ArrayList<Task> list) {
 		Comparator<Task> comparator = getComparator(parametersForViewAll);
-		Collections.sort(allList, comparator);
-		return allList;
+		Collections.sort(list, comparator);
+		return list;
 	}
 	
-	public ArrayList<Task> viewListByCategories(ArrayList<Task> list) {
-		ArrayList<Task> categoryList = Main.storage.loadXmlToArrayList();
+	public ArrayList<Task> viewListByCategories(ArrayList<Task> categoryList) {
 		Comparator<Task> CategoryComparator = getComparator(parametersForViewCategory);
 		Collections.sort(categoryList, CategoryComparator);
 		return categoryList;
 	}
 	
-	public ArrayList<Task> viewListByPriorities(ArrayList<Task> list) {
-		ArrayList<Task> priorityList = Main.storage.loadXmlToArrayList();
+	public ArrayList<Task> viewListByPriorities(ArrayList<Task> priorityList) {
 		Comparator<Task> priorityComparator = getComparator(parametersForViewPriority);
 		Collections.sort(priorityList, priorityComparator);
 		return priorityList;
