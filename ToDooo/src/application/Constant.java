@@ -110,7 +110,7 @@ public final class Constant {
 	public static final String COLOUR_FEEDBACK = "#4771FF";
 	public static final String COLOUR_SUCCESS = "#9ACC77";
 	
-	public static final SimpleDateFormat DATEOUTPUT = new SimpleDateFormat("MM/dd/yyyy, EEEEEEEEE");
+	public static final SimpleDateFormat DATEOUTPUT = new SimpleDateFormat("dd MMMMMMMMM yyyy, EEEEEEEEE");
 	
 	public static final KeyCombination SHORTCUT_UNDO = new KeyCodeCombination(KeyCode.Z, KeyCombination.SHIFT_DOWN);
 	public static final KeyCombination SHORTCUT_REDO = new KeyCodeCombination(KeyCode.Y, KeyCombination.SHIFT_DOWN);

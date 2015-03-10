@@ -51,7 +51,8 @@ public class HeaderController{
 				systemMsg = executeCommand(userInput, commandType);
 			}
 			
-			lblSysMsg.setText(systemMsg);			
+			mainCon.bodyController.loadListByDate("All");
+			lblSysMsg.setText(systemMsg);	
 		} 
 	}
 	
