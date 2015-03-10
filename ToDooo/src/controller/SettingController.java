@@ -41,6 +41,11 @@ public class SettingController {
 		mainCon.showPageInBody("/view/Body.fxml");
 	}
 	
+	@FXML
+	public void initialize() {
+		txtPath.setText(Main.storage.readSavePath());
+	}
+	
 	public void init(MainController mainController) {
 		mainCon = mainController;
 	}
