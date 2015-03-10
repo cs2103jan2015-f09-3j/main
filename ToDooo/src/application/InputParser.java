@@ -82,31 +82,43 @@ public class InputParser {
 		int endIndex = userInput.length();
 		String targetId = getTargetId(userInput, endIndex);
 
-		return targetId.toUpperCase();
+		if (targetId != null) {
+			return targetId.toUpperCase();
+		} else {
+			return targetId;
+		}
 	}
 	
 	public static String getTargetIdFromUpdateString(String userInput) {
 		int endIndex = userInput.indexOf(Constant.DELIMETER_UPDATE);
 		String targetId = getTargetId(userInput, endIndex);
 		
-		return targetId.toUpperCase();
+		if (targetId != null) {
+			return targetId.toUpperCase();
+		} else {
+			return targetId;
+		}
 	}
 	
 	private static String getTargetId(String userInput, int endIndex) {
 		String targetId = null;
 		
-		Command command = getActionFromString(userInput);
-		String basicCommand = command.getBasicCommand();
-		String advancedCommand = command.getAdvancedCommand();
-		
-		if (userInput.contains(basicCommand)) {
-			targetId = userInput.substring(basicCommand.length() + 1, 
-										   endIndex);
-		} else if (userInput.contains(advancedCommand)) {
-			targetId = userInput.substring(advancedCommand.length() + 1, 
-										   endIndex);
+		try {
+			Command command = getActionFromString(userInput);
+			String basicCommand = command.getBasicCommand();
+			String advancedCommand = command.getAdvancedCommand();
+			
+			if (userInput.contains(basicCommand)) {
+				targetId = userInput.substring(basicCommand.length() + 1, 
+											   endIndex);
+			} else if (userInput.contains(advancedCommand)) {
+				targetId = userInput.substring(advancedCommand.length() + 1, 
+											   endIndex);
+			}
+		} catch (StringIndexOutOfBoundsException exception) {
+			return targetId;
 		}
-		
+				
 		return targetId.toUpperCase();
 	}
 	

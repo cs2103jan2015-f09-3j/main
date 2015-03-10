@@ -17,6 +17,7 @@ public class Main extends Application {
 	public static Stack<Undo> undos;
 	public static Stack<Undo> redos;
 	public static boolean toUpdate;
+	public static boolean shouldResetCaret;
 	public static String systemFeedback;
 	public static ArrayList<Task> searchResults;
 	
@@ -47,6 +48,7 @@ public class Main extends Application {
 		Main.searchResults = new ArrayList<Task>();
 		
 		toUpdate = false;
+		shouldResetCaret = false;
 		systemFeedback = "";
 	}
 }

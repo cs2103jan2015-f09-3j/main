@@ -77,6 +77,7 @@ public final class Constant {
 	public static final String MSG_UPDATE_FAIL = "Update failed.";
 	public static final String MSG_UPDATE_SUCCESS = "Update successful.";
 	public static final String MSG_INVALID_FORMAT = "Invalid format. Unable to extract dates.";
+	public static final String MSG_NO_UNTIL_DATE = "Please follow the following format: e.g. /weekly /until 2 November 2015";
 	public static final String MSG_INVALID_RECURRING = "Unable to create recurring task. " + 
 													   "Only /on and /by tasks can " + 
 													   "become recurring tasks.";
@@ -115,4 +116,8 @@ public final class Constant {
 	public static final KeyCombination SHORTCUT_UNDO = new KeyCodeCombination(KeyCode.Z, KeyCombination.SHIFT_DOWN);
 	public static final KeyCombination SHORTCUT_REDO = new KeyCodeCombination(KeyCode.Y, KeyCombination.SHIFT_DOWN);
 	public static final KeyCombination SHORTCUT_OPENFILEDIALOG = new KeyCodeCombination(KeyCode.F10);
+	
+	public static final String TAB_NAME_ALL = "All";
+	
+	public static final int TIMER_SYSTEM_MSG_DURATION = 1500;
 }

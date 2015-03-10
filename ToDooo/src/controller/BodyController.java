@@ -41,7 +41,7 @@ public class BodyController{
 	
 	@FXML
 	public void initialize() {
-		loadListByDate("All");
+		loadListByDate(Constant.TAB_NAME_ALL);
 	}
 	
 	public void init(MainController mainController) {

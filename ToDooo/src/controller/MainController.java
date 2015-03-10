@@ -7,12 +7,15 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import application.Constant;
 import application.Main;
 import application.Task;
 import application.Undo;
 import application.DateParser;
+import javafx.application.Platform;
 import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -38,12 +41,13 @@ public class MainController{
 	@FXML AnchorPane anPaneBody;
 	@FXML HeaderController headerController;
 	@FXML BodyController bodyController;
+	private Timer timer;
 	
 	@FXML
 	public void initialize() {
 		headerController.init(this);
 		bodyController.init(this);
-		bodyController.loadListByDate("All");
+		bodyController.loadListByDate(Constant.TAB_NAME_ALL);
 		//loadList("All", taskList);
 	}
 
@@ -53,16 +57,20 @@ public class MainController{
 		
 		if (Constant.SHORTCUT_UNDO.match(e)) {
 			systemMsg = executeUndo();
+			bodyController.loadListByDate(Constant.TAB_NAME_ALL);
 		} else if (Constant.SHORTCUT_REDO.match(e)) {
 			systemMsg = executeRedo();
+			bodyController.loadListByDate(Constant.TAB_NAME_ALL);
 		} else {
 			return;
 		}
 		
 		headerController.textArea.getParent().requestFocus();
-		headerController.lblSysMsg.setText(systemMsg);
+		headerController.lblSysMsg.setText(systemMsg);	
+		
+		executeSystemMsgTimerTask();		
 	}
-
+	
 	public void showPageInBody(String fxmlFileName) throws IOException {
 		anPaneBody.getChildren().clear();
 		anPaneBody.getChildren().setAll(FXMLLoader.load(getClass().getResource(fxmlFileName)));
@@ -96,4 +104,21 @@ public class MainController{
 		
 		return systemMsg;
 	}
+	
+	public void executeSystemMsgTimerTask() {
+		timer = new Timer();
+		timer.schedule(new SystemMsgTimerTask(), Constant.TIMER_SYSTEM_MSG_DURATION);
+	}
+	
+	private class SystemMsgTimerTask extends TimerTask {
+        public void run() {
+    		Platform.runLater(new Runnable() {
+    		    @Override
+    		    public void run() {
+    		    	headerController.lblSysMsg.setText("");					
+    		    }
+    		});
+            timer.cancel();
+        }
+    }
 }

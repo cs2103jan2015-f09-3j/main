@@ -249,6 +249,13 @@ public class ToDoList {
 		String targetId = InputParser.getTargetIdFromUpdateString(userInput);
 		Task updatedTask = new Task(userInput, targetId);
 		
+		if (targetId == null || 
+			targetId.toLowerCase().
+			contains(Constant.PREFIX_RECURRING_ID)) {
+			Main.systemFeedback = Constant.MSG_ITEM_NOT_FOUND;
+			return null;
+		}
+		
 		Task originalTask = deleteTaskById(targetId);
 		
 		if (originalTask != null) {

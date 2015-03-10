@@ -306,22 +306,20 @@ public class Task {
 	private boolean setRecurringDetails(List<Date> dates, String userInput) {
 		boolean isValid = true;
 		_isRecurring = Command.isRecurred(userInput);
-		_repeat = Frequency.NIL;
+		_repeat = InputParser.getFrequencyFromString(userInput);			
+			
+		Date untilDate = InputParser.getUntilDateFromString(userInput);				
+		_repeatUntil = untilDate;
 		
 		if ((_taskType.equals(TaskType.TIMED) ||
 			_taskType.equals(TaskType.FLOATING)) && _isRecurring) {
 			Main.systemFeedback = Constant.MSG_INVALID_RECURRING;
 			isValid = false;
-			
-			return isValid;
-		}		
-		
-		if (dates != null) {
-			_repeat = InputParser.getFrequencyFromString(userInput);
-			
-			Date untilDate = InputParser.getUntilDateFromString(userInput);				
-			_repeatUntil = untilDate;
-			
+		} else if ((_isRecurring && dates == null) ||
+				   (_isRecurring && _repeatUntil == null)) {
+			Main.systemFeedback = Constant.MSG_NO_UNTIL_DATE;			
+			isValid = false; 	
+		} else if (_isRecurring && dates != null) {
 			if (_repeat.equals(Frequency.WEEKLY) &&
 			   (_taskType.equals(TaskType.DATED) ||
 				_taskType.equals(TaskType.EVENT))) {
@@ -333,11 +331,6 @@ public class Task {
 			} else {
 				_repeatDay = -1;
 			}			
-		}
-		
-		if (_isRecurring && dates == null) {
-			Main.systemFeedback = Constant.MSG_INVALID_FORMAT;			
-			isValid = false; 						
 		}
 		
 		return isValid;

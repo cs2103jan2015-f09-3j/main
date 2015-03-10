@@ -27,7 +27,7 @@ public class HeaderController{
 	
 	private MainController mainCon;
 	@FXML private Label lblLogo;
-	@FXML public Label lblSysMsg;
+	@FXML public  Label lblSysMsg;
 	@FXML private AnchorPane paneHead;
 	@FXML private ImageView settingIcon;
 	@FXML private ImageView backIcon;
@@ -54,17 +54,24 @@ public class HeaderController{
 				systemMsg = executeCommand(userInput, commandType);
 			}
 			
-			mainCon.bodyController.loadListByDate("All");
+			mainCon.bodyController.loadListByDate(Constant.TAB_NAME_ALL);
+			
 			lblSysMsg.setText(systemMsg);	
-		} 
-		
-		
+			mainCon.executeSystemMsgTimerTask();	
+		} 			
 	}
 	
 	public void onTextChanged() {	
-		boolean toReset = textArea.getText().trim().equals("");
+		String textAreaText = textArea.getText();
+		
+		boolean toReset = textAreaText.trim().equals("");
 		if (toReset) {
 			resetTextArea();
+		}
+		
+		if (Main.shouldResetCaret) {
+			textArea.positionCaret(textAreaText.length() - 1);
+			Main.shouldResetCaret = false;
 		}
 		
 		highlightKeyWords();
@@ -85,8 +92,8 @@ public class HeaderController{
 		int endIndex = -1;
 		
 		for (Command command : Constant.COMMAND_ACTIONS) {
-			basicCommand = command.getBasicCommand();
-			advancedCommand = command.getAdvancedCommand();
+			basicCommand = command.getBasicCommand() + " ";
+			advancedCommand = command.getAdvancedCommand() + " ";
 			
 			if (lowerCase.contains(basicCommand) && 
 				lowerCase.indexOf(basicCommand) == Constant.START_INDEX) {
@@ -147,7 +154,8 @@ public class HeaderController{
 			textArea.clear();
 			break;
 		case UPDATE :
-			systemMsg = executeRetrieveOriginalText(userInput);
+			systemMsg = executeRetrieveOriginalText(userInput);	
+			Main.shouldResetCaret = true;
 			break;
 		case DELETE :
 			systemMsg = executeDelete(userInput);
@@ -215,12 +223,14 @@ public class HeaderController{
 		String targetId = InputParser.getTargetIdFromString(userInput);
 		Task originalTask = Main.list.getTaskById(targetId);
 				
-		if (originalTask != null) {
-			textArea.appendText(": " + originalTask.getOriginalText());
+		if (originalTask != null) {		
+			textArea.appendText(": " + originalTask.getOriginalText());						
+			
 			Main.toUpdate = true;
 			systemMsg = Constant.MSG_ORIGINAL_RETRIEVED;
 		} else {
 			systemMsg = Constant.MSG_ORIGINAL_NOT_RETRIEVED;
+			resetTextArea();
 		}
 		
 		return systemMsg;
@@ -228,18 +238,27 @@ public class HeaderController{
 	
 	private String executeUpdate(String userInput) {
 		String systemMsg = null;
-		Pair<Task, String> updatedTasksDetails = Main.list.updateTaskOnList(userInput);
-		Task originalTask = updatedTasksDetails.getKey();
-		String targetId = updatedTasksDetails.getValue();
 		
-		if (originalTask != null) {
-			Undo undo = new Undo(Command.UPDATE, originalTask, targetId);
-			Main.undos.push(undo);
-			Main.redos.clear();
-			
-			systemMsg = Constant.MSG_UPDATE_SUCCESS;
+		if (userInput.indexOf(Constant.DELIMETER_UPDATE) == -1) {
+			systemMsg = executeRetrieveOriginalText(userInput);
 		} else {
-			systemMsg = Constant.MSG_UPDATE_FAIL;
+			Pair<Task, String> updatedTasksDetails = Main.list.updateTaskOnList(userInput);
+			if (updatedTasksDetails == null) {
+				return systemMsg = Main.systemFeedback;
+			}
+			
+			Task originalTask = updatedTasksDetails.getKey();
+			String targetId = updatedTasksDetails.getValue();
+			
+			if (originalTask != null) {
+				Undo undo = new Undo(Command.UPDATE, originalTask, targetId);
+				Main.undos.push(undo);
+				Main.redos.clear();
+				
+				systemMsg = Constant.MSG_UPDATE_SUCCESS;
+			} else {
+				systemMsg = Constant.MSG_UPDATE_FAIL;
+			}
 		}
 		
 		return systemMsg;
