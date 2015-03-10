@@ -49,7 +49,7 @@ public class Task {
 		List<Date> dates = getDates(userInput);
 		
 		if ((_taskType.equals(TaskType.TIMED) && dates.size() < 2) ||
-			(!_taskType.equals(TaskType.FLOATING) && dates.size() == 0)) {
+			(!_taskType.equals(TaskType.FLOATING) && dates == null)) {
 			Main.systemFeedback = Constant.MSG_INVALID_FORMAT;
 			_isValid = false;
 		} else {
