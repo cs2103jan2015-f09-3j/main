@@ -52,6 +52,17 @@ public class DateParser {
 		return month;
 	}
 	
+	public static boolean compareDate(Date d1, Date d2) {
+		Calendar cal1 = Calendar.getInstance();
+		Calendar cal2 = Calendar.getInstance();
+		cal1.setTime(d1);
+		cal2.setTime(d2);
+		boolean sameDay = cal1.get(Calendar.YEAR) == cal2.get(Calendar.YEAR) &&
+		                  cal1.get(Calendar.DAY_OF_YEAR) == cal2.get(Calendar.DAY_OF_YEAR);
+		
+		return sameDay;
+	}
+	
 	public static boolean isBeforeDate(Date thisDate, Date thatDate) {
 		Calendar calendarA = DateParser.createCalendar(thisDate);
 		Calendar calendarB = DateParser.createCalendar(thatDate);

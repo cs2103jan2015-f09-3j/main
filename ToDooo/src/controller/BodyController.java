@@ -10,6 +10,7 @@ import java.util.GregorianCalendar;
 import application.Constant;
 import application.Main;
 import application.Task;
+import application.DateParser;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -57,17 +58,6 @@ public class BodyController{
 		} else {
 			return null;
 		}
-	}
-	
-	private boolean compareDate(Date d1, Date d2) {
-		Calendar cal1 = Calendar.getInstance();
-		Calendar cal2 = Calendar.getInstance();
-		cal1.setTime(d1);
-		cal2.setTime(d2);
-		boolean sameDay = cal1.get(Calendar.YEAR) == cal2.get(Calendar.YEAR) &&
-		                  cal1.get(Calendar.DAY_OF_YEAR) == cal2.get(Calendar.DAY_OF_YEAR);
-		
-		return sameDay;
 	}
 	
 	private ArrayList<Task> cloneTaskList() {
@@ -152,27 +142,16 @@ public class BodyController{
 	    for(int i = 0; i < temp.size(); i++) {
 			
 			if(temp.get(i).getTaskType().name().equalsIgnoreCase("FLOATING")||
-				compareDate(todayDate, temp.get(i).getStartDate()) || temp.get(i).getStartDate().before(todayDate)) {
+				DateParser.compareDate(todayDate, temp.get(i).getStartDate()) || temp.get(i).getStartDate().before(todayDate)) {
 				
 				if(temp.get(i).getTaskType().name().equalsIgnoreCase("FLOATING")) {
 					floating.add(temp.get(i));
-				} else if(temp.get(i).getTaskType().name().equalsIgnoreCase("EVENT") ||
-						temp.get(i).getTaskType().name().equalsIgnoreCase("DATED")) {
+				} else {
 					
 					if(temp.get(i).getStartDate().before(todayDate)) {
 						overdue.add(temp.get(i));
-					} else if(compareDate(todayDate, temp.get(i).getStartDate())) {
+					} else if(DateParser.compareDate(todayDate, temp.get(i).getStartDate())) {
 						today.add(temp.get(i));
-					}
-					
-				} else if(temp.get(i).getTaskType().name().equalsIgnoreCase("TIMED")) {
-					
-					if((temp.get(i).getStartDate().before(todayDate) && temp.get(i).getTo().after(todayDate)) ||
-							compareDate(todayDate, temp.get(i).getStartDate()) || 
-							compareDate(todayDate, temp.get(i).getTo())) {
-						today.add(temp.get(i));
-					} else if(temp.get(i).getTo().before(todayDate)) {
-						overdue.add(temp.get(i));
 					}
 					
 				}
@@ -293,9 +272,9 @@ public class BodyController{
 		priorityBar.setStartY(18);
 		priorityBar.getStyleClass().add("priorityBar");
 		switch (t.getPriority().name()) {
-			case "HIGH": priorityBar.setStroke(Color.rgb(254, 67, 101));
+			case "HIGH": priorityBar.setStroke(Color.rgb(194, 26, 1));
 			break;
-			case "MEDIUM": priorityBar.setStroke(Color.rgb(252, 145, 58));
+			case "MEDIUM": priorityBar.setStroke(Color.rgb(248, 135, 46));
 			break;
 			case "LOW": priorityBar.setStroke(Color.rgb(249, 212, 35));
 			break;
@@ -312,9 +291,7 @@ public class BodyController{
 		if(!t.getCategory().equalsIgnoreCase("Uncategorised")) {
 			Label lblCategory = new Label(t.getCategory());
 			lblCategory.getStyleClass().add("labelCategory");
-			Pane paneCategory = new Pane(lblCategory);
-			paneCategory.getStyleClass().add("paneList");
-			hBox1.getChildren().add(paneCategory);
+			hBox1.getChildren().add(lblCategory);
 		}
 		
 		HBox hBox2 = new HBox();
@@ -345,7 +322,7 @@ public class BodyController{
 				hBox2.getChildren().add(lblFrom);
 				hBox2.getChildren().add(lblDateTime1);
 			} else if(taskType.equalsIgnoreCase("TIMED")) {
-				if(compareDate(t.getFrom(), t.getTo())) {
+				if(DateParser.compareDate(t.getFrom(), t.getTo())) {
 					lblFrom.setText("from");
 					lblDateTime1.setText(timeOutput.format(t.getFrom()));
 					lblTo.setText("to");
@@ -354,12 +331,12 @@ public class BodyController{
 					hBox2.getChildren().add(lblDateTime1);
 					hBox2.getChildren().add(lblTo);
 					hBox2.getChildren().add(lblDateTime2);
-				} else if(compareDate(t.getStartDate(), t.getFrom())) {
+				} else if(DateParser.compareDate(t.getStartDate(), t.getFrom())) {
 					lblFrom.setText("from");
 					lblDateTime1.setText(timeOutput.format(t.getFrom()));
 					hBox2.getChildren().add(lblFrom);
 					hBox2.getChildren().add(lblDateTime1);
-				} else if(compareDate(t.getStartDate(),t.getTo())) {
+				} else if(DateParser.compareDate(t.getStartDate(),t.getTo())) {
 					lblTo.setText("to");
 					lblDateTime2.setText(timeOutput.format(t.getTo()));
 					hBox2.getChildren().add(lblTo);
