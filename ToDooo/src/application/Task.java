@@ -21,6 +21,7 @@ public class Task {
 	private Priority _priority;
 	private boolean _isValid;
 	private Status _status;
+	private Date _startDate;
 	private Date _endDate;
 	private ArrayList<RecurringTask> _recurringTasks;
 	
@@ -211,6 +212,14 @@ public class Task {
 	public void setRecurringTasks(ArrayList<RecurringTask> recurringTask) {
 		_recurringTasks = recurringTask;
 	}
+	
+	public Date getStartDate() {
+		return _startDate;
+	}
+
+	public void setStartDate(Date startDate) {
+		_startDate = startDate;
+	}	
 
 	private static String generateId(TaskType taskType) {
 		int nextId = Main.list.getNextId();
@@ -268,17 +277,21 @@ public class Task {
 		switch(_taskType) {
 			case EVENT :
 				_on = dates.get(0);
+				
+				_startDate = _on;
 				_endDate = _on;
 				break;
 			case TIMED :				
 				_from = dates.get(0);
 				_to = dates.get(1);
 				
+				_startDate= _from;
 				_endDate = _to;
 				break;
 			case DATED :
 				_by = dates.get(0);
 				
+				_startDate = _by;
 				_endDate = _by;
 				break;
 			default :
@@ -287,29 +300,7 @@ public class Task {
 				break;
 		}
 	}
-	
-	public Date getEndDateForTaskType() {
-		Date endDate = null;
 		
-		switch(_taskType) {
-			case EVENT :
-				endDate = _on;
-				break;
-			case TIMED :			
-				endDate = _to;
-				break;
-			case DATED :
-				endDate = _by;
-				break;
-			default :
-				// floating task
-				// does not require action since no end date
-				break;
-		}
-		
-		return endDate;
-	}
-	
 	private boolean setRecurringDetails(List<Date> dates, String userInput) {
 		boolean isValid = true;
 		_isRecurring = Command.isRecurred(userInput);
@@ -461,5 +452,5 @@ public class Task {
 	private String generateRecurringTaskId() {
 		return _id + Constant.PREFIX_RECURRING_ID + 
 			   _recurringTasks.size();
-	}	
+	}
 }
