@@ -3,8 +3,8 @@ package controller;
 import java.io.File;
 import java.io.IOException;
 
+import application.Constant;
 import application.Main;
-
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Button;
@@ -26,7 +26,7 @@ public class SettingController {
 	
 	@FXML 
 	public void openFileDialogKey(KeyEvent e) {
-		if(e.getCode() == KeyCode.F10) {
+		if(Constant.SHORTCUT_OPENFILEDIALOG.match(e)) {
 			openFileDialog();
 		}
 	}
@@ -44,6 +44,7 @@ public class SettingController {
 	@FXML
 	public void initialize() {
 		txtPath.setText(Main.storage.readSavePath());
+		
 	}
 	
 	public void init(MainController mainController) {

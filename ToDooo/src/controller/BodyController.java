@@ -227,7 +227,7 @@ public class BodyController{
 			if(header.equals("TODAY") || header.equals("OVERDUE")) {
 				lblTitle.getStyleClass().add("todayTitle");
 			} else {
-				lblTitle.getStyleClass().add("labelTitle");
+				lblTitle.getStyleClass().add("dateTitle");
 			}
 			lblTitle.setText(header);
 			vBoxAll.getChildren().add(lblTitle);

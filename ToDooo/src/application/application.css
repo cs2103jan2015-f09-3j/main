@@ -40,17 +40,8 @@
 	-fx-padding: 10 10 10 10;
 }
 
-.paneList {
-	-fx-padding: 5 5 5 5;
-}
-
 .paneHBar {
 	-fx-padding: 10 0 0 0;
-}
-
-.labelList {
-	-fx-padding:5 5 5 5;
-	-fx-font: normal 12px "Segoe UI";
 }
 
 .labelDateTime {
@@ -88,7 +79,7 @@
 	-fx-opacity: 0.6;
 }
 
-.labelTitle {
+.dateTitle {
 	-fx-font: bold 13px "Segoe UI";
 	-fx-text-fill: #666666;
 	-fx-padding: 25 0 0 5;

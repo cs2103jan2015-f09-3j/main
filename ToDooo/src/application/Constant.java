@@ -114,4 +114,5 @@ public final class Constant {
 	
 	public static final KeyCombination SHORTCUT_UNDO = new KeyCodeCombination(KeyCode.Z, KeyCombination.SHIFT_DOWN);
 	public static final KeyCombination SHORTCUT_REDO = new KeyCodeCombination(KeyCode.Y, KeyCombination.SHIFT_DOWN);
+	public static final KeyCombination SHORTCUT_OPENFILEDIALOG = new KeyCodeCombination(KeyCode.F10);
 }
