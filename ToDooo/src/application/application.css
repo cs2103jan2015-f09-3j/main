@@ -41,21 +41,21 @@
 }
 
 .paneHBar {
-	-fx-padding: 10 0 0 0;
+	-fx-padding: 0 0 0 0;
 }
 
 .labelDateTime {
-	-fx-padding:5 5 5 5;
+	-fx-padding:5 3 5 3;
 	-fx-font: bold 11px "Segoe UI";
 }
 
 .labelBeforeTime {
-	-fx-padding:5 2 5 2;
+	-fx-padding:5 0 5 0;
 	-fx-font: italic 11px "Segoe UI";
 }
 
 .labelDesc {
-	-fx-padding:5 5 5 15;
+	-fx-padding:5 10 5 15;
 	-fx-font: normal 12px "Segoe UI";
 	-fx-max-width: 450;
 }
