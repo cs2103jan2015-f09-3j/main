@@ -48,10 +48,6 @@
 	-fx-padding: 10 0 0 0;
 }
 
-.paneListCategory {
-	-fx-padding: 5 5 5 5;
-}
-
 .labelList {
 	-fx-padding:5 5 5 5;
 	-fx-font: normal 12px "Segoe UI";
@@ -68,9 +64,9 @@
 }
 
 .labelDesc {
-	-fx-padding:5 5 5 10;
+	-fx-padding:5 5 5 15;
 	-fx-font: normal 12px "Segoe UI";
-	-fx-max-width: 400;
+	-fx-max-width: 450;
 }
 
 .labelId {
@@ -81,15 +77,15 @@
 }
 
 .labelCategory {
-	-fx-padding: 5 5 5 5;
+	-fx-padding: 2 5 2 5;
 	-fx-background-color: white;
-	-fx-background-radius: 7;
+	-fx-background-radius: 5;
 	-fx-border-width: 2;
-	-fx-border-color: white;
-	-fx-border-radius: 7;
-	-fx-font: bold 10px "Segoe UI";
+	-fx-border-color: #E8E8E8;
+	-fx-border-radius: 5;
+	-fx-font: bold italic 10px "Segoe UI";
 	-fx-text-fill: black;
-	-fx-opacity: 0.5;
+	-fx-opacity: 0.6;
 }
 
 .labelTitle {

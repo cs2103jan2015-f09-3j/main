@@ -272,9 +272,9 @@ public class BodyController{
 		priorityBar.setStartY(18);
 		priorityBar.getStyleClass().add("priorityBar");
 		switch (t.getPriority().name()) {
-			case "HIGH": priorityBar.setStroke(Color.rgb(254, 67, 101));
+			case "HIGH": priorityBar.setStroke(Color.rgb(194, 26, 1));
 			break;
-			case "MEDIUM": priorityBar.setStroke(Color.rgb(252, 145, 58));
+			case "MEDIUM": priorityBar.setStroke(Color.rgb(248, 135, 46));
 			break;
 			case "LOW": priorityBar.setStroke(Color.rgb(249, 212, 35));
 			break;
@@ -291,9 +291,7 @@ public class BodyController{
 		if(!t.getCategory().equalsIgnoreCase("Uncategorised")) {
 			Label lblCategory = new Label(t.getCategory());
 			lblCategory.getStyleClass().add("labelCategory");
-			Pane paneCategory = new Pane(lblCategory);
-			paneCategory.getStyleClass().add("paneList");
-			hBox1.getChildren().add(paneCategory);
+			hBox1.getChildren().add(lblCategory);
 		}
 		
 		HBox hBox2 = new HBox();
