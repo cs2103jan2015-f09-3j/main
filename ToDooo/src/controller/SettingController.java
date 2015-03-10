@@ -52,7 +52,10 @@ public class SettingController {
 		txtPath.setText(selectedDir.getAbsolutePath());
 		
 		String newPath = txtPath.getText();
-		Main.storage.moveFile(newPath);
+		String pathInSetting = Main.storage.readSavePath();
+		
+		if (!pathInSetting.equals(newPath)) {
+			Main.storage.moveFile(newPath);
+		}
 	}
-
 }

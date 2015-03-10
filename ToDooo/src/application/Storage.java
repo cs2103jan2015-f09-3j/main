@@ -218,10 +218,6 @@ public class Storage {
 		writeFile(doc, Constant.PATH_SETTING);
 	}
 	
-	public void changePath(String newPath) {
-		Main.list = new ToDoList();
-	}
-	
 	public String writeTaskToFile(Task task) {
 		Document document = getFileDocument();
 		
@@ -393,36 +389,12 @@ public class Storage {
 		
 		try {
 			Files.move(oldPath, newPath.resolve(oldPath.getFileName()), StandardCopyOption.REPLACE_EXISTING);
-			Files.delete(oldPath);
 		} catch (IOException exception) {
 			exception.printStackTrace();
 		}
 		
 		updatePathInSetting(path);
 		
-		if (path != pathInSetting) {
-			updatePathInSetting(path);
-		} else {
-			changePath(path);
-		}
+		Main.list = new ToDoList();
 	}
-	
-	public ArrayList<Task> viewListByAll() {
-		ArrayList<Task> allList = loadXmlToArrayList();
-		
-		return allList;
-	}
-	
-	public ArrayList<Task> viewListByCategories(ArrayList<Task> list) {
-		ArrayList<Task> categoryList = loadXmlToArrayList();
-		
-		return categoryList;
-	}
-	
-	public ArrayList<Task> viewListByPriorities(ArrayList<Task> list) {
-		ArrayList<Task> priorityList = loadXmlToArrayList();
-		
-		return priorityList;
-	}
-
 }
