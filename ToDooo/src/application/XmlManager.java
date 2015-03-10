@@ -1,6 +1,7 @@
 package application;
 
 import java.util.ArrayList;
+import java.util.Date;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -86,16 +87,19 @@ public class XmlManager {
 		task.setOriginalText(text);
 		
 		text = getTextByTagName(element, Constant.TAG_ON);
-		task.setOn(Main.inputParser.getDateFromString(text));
-		
+		task.setOn(Main.inputParser.getDateFromString(text));		
+		setStartEndDate(task, task.getOn(), text);
+				
 		text = getTextByTagName(element, Constant.TAG_FROM);
 		task.setFrom(Main.inputParser.getDateFromString(text));
+		setStartEndDate(task, task.getFrom(), text);
 		
 		text = getTextByTagName(element, Constant.TAG_TO);
 		task.setTo(Main.inputParser.getDateFromString(text));
 		
 		text = getTextByTagName(element, Constant.TAG_BY);
 		task.setBy(Main.inputParser.getDateFromString(text));
+		setStartEndDate(task, task.getBy(), text);
 		
 		text = getTextByTagName(element, Constant.TAG_CATEGORY);
 		task.setCategory(text);
@@ -117,10 +121,7 @@ public class XmlManager {
 		
 		text = getTextByTagName(element, Constant.TAG_STATUS);
 		task.setStatus(Status.valueOf(text));
-		
-		text = getTextByTagName(element, Constant.TAG_END_DATE);
-		task.setEndDate(Main.inputParser.getDateFromString(text));
-		
+				
 		if (task.getIsRecurring()) {
 			ArrayList<RecurringTask> recurringTasks = 
 					transformRecurringTasksNodesToArrayList(element);
@@ -128,6 +129,18 @@ public class XmlManager {
 		}
 		
 		return task;
+	}
+
+	private static void setStartEndDate(Task task, Date date, String text) {
+		if (!text.equals(Constant.XML_TEXT_NIL)) {
+			task.setStartDate(date);
+			
+			if (task.getTaskType().equals(TaskType.TIMED)) {
+				task.setEndDate(task.getTo());
+			} else {
+				task.setEndDate(date);
+			}			
+		}
 	}
 	
 	private static ArrayList<RecurringTask> transformRecurringTasksNodesToArrayList(Element element) {
@@ -269,10 +282,7 @@ public class XmlManager {
 		
 		XmlManager.createAndAppendChildElement(document, taskTag, Constant.TAG_STATUS, 
 				   							   task.getStatus().toString());
-		
-		XmlManager.createAndAppendChildElement(document, taskTag, Constant.TAG_END_DATE, 
-											   InputParser.getDateString(task.getEndDate()));
-		
+				
 		createAndAppendRecurringTasks(document, taskTag, task);
 		
 		return taskTag;
