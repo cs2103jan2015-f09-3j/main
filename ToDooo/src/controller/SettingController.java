@@ -26,7 +26,7 @@ public class SettingController {
 	
 	@FXML 
 	public void openFileDialogKey(KeyEvent e) {
-		if(Constant.SHORTCUT_OPENFILEDIALOG.match(e)) {
+		if(Constant.SHORTCUT_OPEN_FILE_DIALOG.match(e)) {
 			openFileDialog();
 		}
 	}

@@ -184,9 +184,9 @@ public class BodyController{
 			if(!floating.isEmpty()) {
 				Line hBar = new Line();
 				hBar.setStartX(4.5);
-				hBar.setStartY(29.5);
+				hBar.setStartY(0.5);
 				hBar.setEndX(760);
-				hBar.setEndY(29.5);
+				hBar.setEndY(0.5);
 				hBar.getStyleClass().add("hBar");
 				Pane paneHBar = new Pane(hBar);
 				paneHBar.getStyleClass().add("paneHBar");
@@ -272,7 +272,7 @@ public class BodyController{
 		priorityBar.setStartY(18);
 		priorityBar.getStyleClass().add("priorityBar");
 		switch (t.getPriority().name()) {
-			case "HIGH": priorityBar.setStroke(Color.rgb(194, 26, 1));
+			case "HIGH": priorityBar.setStroke(Color.rgb(196, 1, 9));
 			break;
 			case "MEDIUM": priorityBar.setStroke(Color.rgb(248, 135, 46));
 			break;
@@ -310,35 +310,43 @@ public class BodyController{
 		String output = "";
 		
 		if(!taskType.equalsIgnoreCase("FLOATING")) {
-			DateFormat timeOutput = new SimpleDateFormat("hh:mm a");
 			
 			if(taskType.equalsIgnoreCase("EVENT")) {
-				lblDateTime1.setText(timeOutput.format(t.getOn()));
+				lblDateTime1.setText(Constant.TIMEOUTPUT.format(t.getOn()));
 				hBox2.getChildren().add(lblFrom);
 				hBox2.getChildren().add(lblDateTime1);
 			} else if(taskType.equalsIgnoreCase("DATED")) {
 				lblFrom.setText("by");
-				lblDateTime1.setText(timeOutput.format(t.getBy()));
+				lblDateTime1.setText(Constant.TIMEOUTPUT.format(t.getBy()));
 				hBox2.getChildren().add(lblFrom);
 				hBox2.getChildren().add(lblDateTime1);
 			} else if(taskType.equalsIgnoreCase("TIMED")) {
 				if(DateParser.compareDate(t.getFrom(), t.getTo())) {
 					lblFrom.setText("from");
-					lblDateTime1.setText(timeOutput.format(t.getFrom()));
+					lblDateTime1.setText(Constant.TIMEOUTPUT.format(t.getFrom()));
 					lblTo.setText("to");
-					lblDateTime2.setText(timeOutput.format(t.getTo()));
+					lblDateTime2.setText(Constant.TIMEOUTPUT.format(t.getTo()));
 					hBox2.getChildren().add(lblFrom);
 					hBox2.getChildren().add(lblDateTime1);
 					hBox2.getChildren().add(lblTo);
 					hBox2.getChildren().add(lblDateTime2);
 				} else if(DateParser.compareDate(t.getStartDate(), t.getFrom())) {
 					lblFrom.setText("from");
-					lblDateTime1.setText(timeOutput.format(t.getFrom()));
+					lblDateTime1.setText(Constant.TIMEOUTPUT.format(t.getFrom()));
 					hBox2.getChildren().add(lblFrom);
 					hBox2.getChildren().add(lblDateTime1);
 				} else if(DateParser.compareDate(t.getStartDate(),t.getTo())) {
 					lblTo.setText("to");
-					lblDateTime2.setText(timeOutput.format(t.getTo()));
+					lblDateTime2.setText(Constant.TIMEOUTPUT.format(t.getTo()));
+					hBox2.getChildren().add(lblTo);
+					hBox2.getChildren().add(lblDateTime2);
+				} else {
+					lblFrom.setText("from");
+					lblDateTime1.setText(Constant.DATEOUTPUT_FOR_TIMEDTASK.format(t.getFrom()));
+					lblTo.setText("to");
+					lblDateTime2.setText(Constant.DATEOUTPUT_FOR_TIMEDTASK.format(t.getTo()));
+					hBox2.getChildren().add(lblFrom);
+					hBox2.getChildren().add(lblDateTime1);
 					hBox2.getChildren().add(lblTo);
 					hBox2.getChildren().add(lblDateTime2);
 				}
