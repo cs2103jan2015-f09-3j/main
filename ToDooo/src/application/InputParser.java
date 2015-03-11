@@ -29,21 +29,21 @@ public class InputParser {
 		List<Date> dates = getDatesFromString(dateString);
 		
 		if (dates != null) {
-			return dates.get(Constant.START_INDEX);
+			return dates.get(0);
 		} else {
 			return null;
 		}
 	}
 	
 	public List<Date> getDatesFromString(String userInput) {
-		String checkString = userInput.toLowerCase();
+		String checkString = userInput.toLowerCase() + " ";
+		String basicCmd = Command.TO.getBasicCommand();
+		String advancedCmd = Command.TO.getAdvancedCommand();
 		
-		if (checkString.contains(Command.TO.getBasicCommand())) {
-			checkString = checkString.replace(Command.TO.getBasicCommand(), 
-						       			      Command.TO.toString());
-		} else if (checkString.contains(Command.TO.getAdvancedCommand())) {
-			checkString = checkString.replace(Command.TO.getAdvancedCommand(), 
-											  Command.TO.toString());
+		if (checkString.contains(basicCmd)) {
+			checkString = checkString.replace(basicCmd, Command.TO.toString());
+		} else if (checkString.contains(advancedCmd)) {
+			checkString = checkString.replace(advancedCmd, Command.TO.toString());
 		}
 		
 		List<DateGroup> groups = _parser.parse(checkString);
@@ -59,12 +59,14 @@ public class InputParser {
 	}
 	
 	public static String getCategoryFromString(String userInput) {
-		boolean isCategorised = Command.isCategorised(userInput);
+		boolean isCategorised = Command.hasCategoryCommandInString(userInput);
 		
 		if (isCategorised) {
-			int commandIndex = userInput.indexOf(Command.CATEGORY.getBasicCommand());
+			String basicCmd = Command.CATEGORY.getBasicCommand();
+			
+			int commandIndex = userInput.indexOf(basicCmd);
 			String concatString = userInput.substring(commandIndex + 
-								  Command.CATEGORY.getBasicCommand().length(), 
+								  basicCmd.length(), 
 								  userInput.length());
 			
 			boolean noWhiteSpace = (concatString.indexOf(" ") == -1);
@@ -107,13 +109,14 @@ public class InputParser {
 			Command command = getActionFromString(userInput);
 			String basicCommand = command.getBasicCommand();
 			String advancedCommand = command.getAdvancedCommand();
+			int beginIndex = -1;
 			
 			if (userInput.contains(basicCommand)) {
-				targetId = userInput.substring(basicCommand.length() + 1, 
-											   endIndex);
+				beginIndex = basicCommand.length() + 1;
+				targetId = userInput.substring(beginIndex, endIndex);
 			} else if (userInput.contains(advancedCommand)) {
-				targetId = userInput.substring(advancedCommand.length() + 1, 
-											   endIndex);
+				beginIndex = advancedCommand.length() + 1;
+				targetId = userInput.substring(beginIndex, endIndex);
 			}
 		} catch (StringIndexOutOfBoundsException exception) {
 			return targetId;
@@ -121,19 +124,7 @@ public class InputParser {
 				
 		return targetId.toUpperCase();
 	}
-	
-	public static Frequency getFrequencyFromString(String userInput) {
-		if (Frequency.isWeekly(userInput)) {
-			return Frequency.WEEKLY;
-		} else if (Frequency.isMonthly(userInput)) {
-			return Frequency.MONTHLY;
-		} else if (Frequency.isYearly(userInput)) {
-			return Frequency.YEARLY;
-		} else {
-			return Frequency.NIL;
-		}
-	}
-	
+		
 	public static Priority getPriorityFromString(String userInput) {
 		if (Priority.isHigh(userInput)) {
 			return Priority.HIGH;
@@ -158,14 +149,16 @@ public class InputParser {
 	
 	public static Date getUntilDateFromString(String userInput) {
 		Date untilDate = null;
-		String lowerCase = userInput.toLowerCase();
+		String lowerCase = userInput.toLowerCase() + " ";
+		String basicCmd = Command.RECURRING_UNTIL.getBasicCommand() + " ";
+		String advancedCmd = Command.RECURRING_UNTIL.getAdvancedCommand() + " "; 
 		int beginIndex = -1;
 		int endIndex = userInput.length();
 		
-		if (lowerCase.contains(Command.RECURRING_UNTIL.getBasicCommand())) {
-			beginIndex = lowerCase.indexOf(Command.RECURRING_UNTIL.getBasicCommand());
-		} else if (lowerCase.contains(Command.RECURRING_UNTIL.getAdvancedCommand())) {
-			beginIndex = lowerCase.indexOf(Command.RECURRING_UNTIL.getAdvancedCommand());
+		if (lowerCase.contains(basicCmd)) {
+			beginIndex = lowerCase.indexOf(basicCmd);
+		} else if (lowerCase.contains(advancedCmd)) {
+			beginIndex = lowerCase.indexOf(advancedCmd);
 		}
 		
 		boolean hasUntil = (beginIndex != -1);
@@ -192,7 +185,7 @@ public class InputParser {
 		}
 		
 		String toDoString = userInput;	
-		String lowerCase = userInput.toLowerCase();		
+		String lowerCase = userInput.toLowerCase() + " ";	
 		String updateBasicCmd = Command.UPDATE.getBasicCommand();
 		String updateAdvancedCmd = Command.UPDATE.getAdvancedCommand();
 		
@@ -204,9 +197,9 @@ public class InputParser {
 								      Constant.DELIMETER_UPDATE;
 		
 		if ((lowerCase.contains(updateBasicString) &&
-			 lowerCase.indexOf(updateBasicString) == Constant.START_INDEX) ||
+			 lowerCase.indexOf(updateBasicString) == 0) ||
 			(lowerCase.contains(updateAdvancedString) &&
-			 lowerCase.indexOf(updateAdvancedString) == Constant.START_INDEX)) {
+			 lowerCase.indexOf(updateAdvancedString) == 0)) {
 			
 			int startIndex = userInput.indexOf(Constant.DELIMETER_UPDATE) + 2;
 			int endIndex = userInput.length();			
@@ -217,7 +210,7 @@ public class InputParser {
 	}
 
 	private static String removeAddFromString(String userInput) {
-		String lowerCase = userInput.toLowerCase();
+		String lowerCase = userInput.toLowerCase() + " ";
 		String addBasicCmd = Command.ADD.getBasicCommand();
 		String addAdvancedCmd = Command.ADD.getAdvancedCommand();
 		int lengthOfBasicAddCommand = addBasicCmd.length();
@@ -226,11 +219,11 @@ public class InputParser {
 		String toDoString = userInput;
 		
 		if (lowerCase.contains(addBasicCmd) &&
-			lowerCase.indexOf(addBasicCmd) == Constant.START_INDEX){
+			lowerCase.indexOf(addBasicCmd) == 0){
 			toDoString = userInput.substring(lengthOfBasicAddCommand, 
 						 userInput.length()).trim();
 		} else if (lowerCase.contains(addAdvancedCmd) &&
-				   lowerCase.indexOf(addAdvancedCmd) == Constant.START_INDEX) {	
+				   lowerCase.indexOf(addAdvancedCmd) == 0) {	
 			toDoString = userInput.substring(lengthOfAdvancedAddCommand, 
 						 userInput.length()).trim();
 		}
@@ -283,7 +276,7 @@ public class InputParser {
 											 boolean isRecurring, Frequency repeat) {
 		if (isRecurring) {
 			Command recurringCommand = repeat.getCommand();
-			String lowerCase = toDoString.toLowerCase();
+			String lowerCase = toDoString.toLowerCase() + " ";
 			int endIndex = -1;
 			
 			if (lowerCase.contains(recurringCommand.getBasicCommand())) {
@@ -305,7 +298,7 @@ public class InputParser {
 		
 		if (isPrioritised) {
 			Command priorityCommand = priority.getCommand();
-			String lowerCase = toDoString.toLowerCase();
+			String lowerCase = toDoString.toLowerCase() + " ";
 			int endIndex = -1;
 			
 			if (lowerCase.contains(priorityCommand.getBasicCommand())) {
@@ -324,7 +317,7 @@ public class InputParser {
 	
 	public static String removeCategoryFromString(String toDoString, String category) {
 		boolean isCategorised = (!category.equals(Constant.CATEGORY_UNCATEGORISED));
-		String lowerCase = toDoString.toLowerCase();
+		String lowerCase = toDoString.toLowerCase() + " ";
 		
 		if (isCategorised) {
 			String categoryCommand = Command.CATEGORY.getBasicCommand() + 
@@ -360,7 +353,7 @@ public class InputParser {
 	private static String getSearchKeyFromString(String userInput, 
 										   SearchAttribute attribute) {
 		String searchKey = null;
-		String lowerCase = userInput.toLowerCase();
+		String lowerCase = userInput.toLowerCase() + " ";
 		String command = attribute.getCommand();
 		
 		if (lowerCase.contains(command)) {		

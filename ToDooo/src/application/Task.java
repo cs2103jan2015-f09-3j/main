@@ -46,27 +46,31 @@ public class Task {
 		
 		_originalText = InputParser.removeActionFromString(userInput, _id);
 		
-		List<Date> dates = getDates(userInput);
-		
-		if ((_taskType.equals(TaskType.TIMED) && dates.size() < 2) ||
-			(!_taskType.equals(TaskType.FLOATING) && dates == null)) {
-			Main.systemFeedback = Constant.MSG_INVALID_FORMAT;
-			_isValid = false;
-		} else {
-			_recurringTasks = new ArrayList<RecurringTask>();
+		_isValid = Command.isValidNumOfDateCommands(userInput);
+		if (_isValid) {
+			List<Date> dates = getDates(userInput);
 			
-			setDatesForTaskType(dates);			
-			_category = InputParser.getCategoryFromString(userInput);
-			
-			_isValid = setRecurringDetails(dates, userInput);
-			if (_isValid) {
-				_priority = InputParser.getPriorityFromString(userInput);		
-				_toDo = generateToDoString(userInput);
-				_status = Task.getStatus(_endDate);
+			if ((_taskType.equals(TaskType.TIMED) && dates.size() < 2) ||
+				(!_taskType.equals(TaskType.FLOATING) && dates == null)) {
+				Main.systemFeedback = Constant.MSG_INVALID_FORMAT;
+				_isValid = false;
+			} else {
+				setDatesForTaskType(dates);			
+				_category = InputParser.getCategoryFromString(userInput);
 				
-				updateIdWithTaskType();
-				_isValid = true;
+				_isValid = setRecurringDetails(dates, userInput);
+				
+				if (_isValid) {
+					_priority = InputParser.getPriorityFromString(userInput);		
+					_toDo = generateToDoString(userInput);
+					_status = Task.getStatus(_endDate);
+					
+					updateIdWithTaskType();
+					_isValid = true;
+				}
 			}
+		} else {
+			Main.systemFeedback = Constant.MSG_INVALID_FORMAT;
 		}
 	}
 
@@ -304,35 +308,46 @@ public class Task {
 	}
 		
 	private boolean setRecurringDetails(List<Date> dates, String userInput) {
+		_recurringTasks = new ArrayList<RecurringTask>();
+		_isRecurring = false;
+		_repeatUntil = null;
+		_repeat = Frequency.NIL;
+		_repeatDay = -1;
+		
 		boolean isValid = true;
-		_isRecurring = Command.isRecurred(userInput);
-		_repeat = InputParser.getFrequencyFromString(userInput);			
+		Command recurringCommand = Command.verifyRecurringCommands(userInput);
+		if (RecurringTask.isValidRecurringTaskType(_taskType)) {
+			Date untilDate = InputParser.getUntilDateFromString(userInput);
 			
-		Date untilDate = InputParser.getUntilDateFromString(userInput);				
-		_repeatUntil = untilDate;
-		
-		if ((_taskType.equals(TaskType.TIMED) ||
-			_taskType.equals(TaskType.FLOATING)) && _isRecurring) {
-			Main.systemFeedback = Constant.MSG_INVALID_RECURRING;
-			isValid = false;
-		} else if ((_isRecurring && dates == null) ||
-				   (_isRecurring && _repeatUntil == null)) {
-			Main.systemFeedback = Constant.MSG_NO_UNTIL_DATE;			
-			isValid = false; 	
-		} else if (_isRecurring && dates != null) {
-			if (_repeat.equals(Frequency.WEEKLY) &&
-			   (_taskType.equals(TaskType.DATED) ||
-				_taskType.equals(TaskType.EVENT))) {
-				
-				Date startDate = dates.get(Constant.START_INDEX);
-				_repeatDay = DateParser.calculateDayOfWeek(startDate);
-				
-				generateRecurringTasks(startDate);				
+			if (recurringCommand == null) {
+				boolean hasRecurringCommands = Command.hasRecurringCommands(userInput);
+				if (hasRecurringCommands && untilDate == null) {
+					isValid = false;
+					Main.systemFeedback = Constant.MSG_NO_UNTIL_DATE;						
+				} else if (!hasRecurringCommands && untilDate == null) {
+					isValid = true;
+				}
 			} else {
-				_repeatDay = -1;
-			}			
+				if (dates != null) {
+					_isRecurring = true;
+					_repeatUntil = untilDate;
+					_repeat = Frequency.getFrequency(recurringCommand);	
+					
+					Date startDate = dates.get(0);
+					_repeatDay = DateParser.calculateDayOfWeek(startDate);
+					
+					generateRecurringTasks(startDate);	
+					isValid = true;				
+				} else {
+					isValid = false;
+					Main.systemFeedback = Constant.MSG_INVALID_RECURRING;
+				}
+			}
+		} else if (recurringCommand != null) {
+			isValid = false;
+			Main.systemFeedback = Constant.MSG_INVALID_RECURRING;
 		}
-		
+				
 		return isValid;
 	}	
 	
@@ -342,9 +357,9 @@ public class Task {
 		}
 		
 		char typePrefix = _taskType.toString()
-				 	  	  .charAt(Constant.START_INDEX);
+				 	  	  .charAt(0);
 		
-		char prefix = _id.charAt(Constant.START_INDEX);
+		char prefix = _id.charAt(0);
 		
 		if (typePrefix != prefix) {
 			_id = _id.replace(prefix, typePrefix);

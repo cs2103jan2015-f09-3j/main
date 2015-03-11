@@ -273,7 +273,7 @@ public class Storage {
 		
 		NodeList nodes = getNodesById(fileDoc, targetId);
 		if (nodes.getLength() > 0) {
-			Node targetNode = nodes.item(Constant.START_INDEX);
+			Node targetNode = nodes.item(0);
 			
 			removedTask = XmlManager.transformNodeToTask(targetNode);			
 			targetNode.getParentNode().removeChild(targetNode);
@@ -290,10 +290,10 @@ public class Storage {
 		
 		NodeList nodes = getRecurringTasksNodesById(fileDoc, taskId, recurringTaskId);
 		if (nodes.getLength() > 0) {
-			Element targetNode = (Element) nodes.item(Constant.START_INDEX);			
+			Element targetNode = (Element) nodes.item(0);			
 			
 			NodeList taskNodes = getNodesById(fileDoc, taskId);
-			Element taskNode = (Element) taskNodes.item(Constant.START_INDEX);
+			Element taskNode = (Element) taskNodes.item(0);
 			removedTask = XmlManager.transformNodeToTask(taskNode);		
 			
 			targetNode.getParentNode().removeChild(targetNode);

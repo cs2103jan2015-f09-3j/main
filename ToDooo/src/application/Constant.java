@@ -7,7 +7,6 @@ import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
 
 public final class Constant {
-	public static final int START_INDEX = 0;
 	public static final int START_ID = 1;
 	
 	public static final String CATEGORY_UNCATEGORISED = "Uncategorised";
@@ -59,6 +58,12 @@ public final class Constant {
 	public static final Command[] COMMAND_DATES = { Command.FROM, Command.TO, 
 													Command.ON, Command.BY };
 	
+	public static final Command[] COMMAND_PRIORITIES = { Command.PRIORITY_HIGH, Command.PRIORITY_MEDIUM,
+														 Command.PRIORITY_LOW };
+	
+	public static final Command[] COMMAND_RECURRING = { Command.RECURRING_MONTHLY, Command.RECURRING_WEEKLY,
+														Command.RECURRING_YEARLY };
+	
 	public static final String PATH_SETTING = "setting.xml";
 	public static final String PATH_FILE_NAME = "listFile.xml";
 	public static final String PATH_UNDO = "undo.xml";
@@ -106,6 +111,7 @@ public final class Constant {
 	public static final String DELIMETER_SEARCH = ";; ";
 	public static final String DELIMETER_REPLACE = "{0}";
 	public static final String PREFIX_RECURRING_ID = "R";
+	public static final String REGEX_LINE_BREAK = "(\\r|\\n)";
 
 	public static final String COLOUR_ERROR = "#FF0033";
 	public static final String COLOUR_FEEDBACK = "#4771FF";
@@ -120,6 +126,6 @@ public final class Constant {
 	public static final KeyCombination SHORTCUT_OPEN_FILE_DIALOG = new KeyCodeCombination(KeyCode.F10);
 	
     public static final String TAB_NAME_ALL = "All";    
-    public static final int TIMER_SYSTEM_MSG_DURATION = 1500;
+    public static final int TIMER_SYSTEM_MSG_DURATION = 2500;
 
 }

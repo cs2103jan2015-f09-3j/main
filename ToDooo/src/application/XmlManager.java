@@ -148,7 +148,7 @@ public class XmlManager {
 		
 		Element recurringTasksWrapper = 
 				(Element) element.getElementsByTagName(Constant.TAG_RECURRING_TASKS).
-				item(Constant.START_INDEX);
+				item(0);
 		
 		NodeList recurringTasksNodes = recurringTasksWrapper.
 									   getElementsByTagName(Constant.TAG_RECURRING_TASK);
@@ -177,13 +177,13 @@ public class XmlManager {
 	public static void setText(Element parentElement, String tagName, String text) {
 		Element element = (Element) parentElement.
 									  getElementsByTagName(tagName).
-									  item(Constant.START_INDEX);
+									  item(0);
 		element.setTextContent(text);
 	}
 	
 	public static String getTextByTagName(Element parentElement, String tagName) {
 		return parentElement.getElementsByTagName(tagName).
-			   item(Constant.START_INDEX).
+			   item(0).
 			   getTextContent();
 	}
 
@@ -202,7 +202,7 @@ public class XmlManager {
 		int nextId = Main.list.getNextId();
 		Element nextIdElement = (Element) root.
 								getElementsByTagName(Constant.TAG_NEXT_ID).
-								item(Constant.START_INDEX);
+								item(0);
 		
 		nextIdElement.setTextContent(String.valueOf(nextId));
 	}
@@ -212,7 +212,7 @@ public class XmlManager {
 		
 		Element categoriesWrapper = (Element) root.
 									getElementsByTagName(Constant.TAG_CATEGORIES).
-				   					item(Constant.START_INDEX);
+				   					item(0);
 		
 		for (String category : categories) {
 			if (category.equals(Constant.CATEGORY_UNCATEGORISED)) {
@@ -229,7 +229,7 @@ public class XmlManager {
 		
 		Element tasksWrapper = (Element) root.
 								getElementsByTagName(Constant.TAG_TASKS).
-							   item(Constant.START_INDEX);
+							   item(0);
 		for (Task task : tasks) {
 			Element taskTag = transformTaskToXml(document, task);
 			

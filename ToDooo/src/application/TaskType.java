@@ -21,20 +21,34 @@ public enum TaskType {
 	}
 	
 	public static boolean isEvent(String commandLine) {
-		return (commandLine.contains(Command.ON.getBasicCommand()) ||
-				commandLine.contains(Command.ON.getAdvancedCommand()));
+		String lowerCase = commandLine.toLowerCase();
+		String basicCmd = Command.ON.getBasicCommand() + " ";
+		String advancedCmd = Command.ON.getAdvancedCommand() + " ";
+		
+		return (lowerCase.contains(basicCmd) ||
+				lowerCase.contains(advancedCmd));
 	}
 
 	public static boolean isTimedTask(String commandLine) {
-		return ((commandLine.contains(Command.FROM.getBasicCommand()) ||
-				 commandLine.contains(Command.FROM.getAdvancedCommand())) &&
-				(commandLine.contains(Command.TO.getBasicCommand()) ||
-				 commandLine.contains(Command.TO.getAdvancedCommand())));
+		String lowerCase = commandLine.toLowerCase();
+		String basicFromCmd = Command.FROM.getBasicCommand() + " ";
+		String advancedFromCmd = Command.FROM.getAdvancedCommand() + " ";
+		String basicToCmd = Command.TO.getBasicCommand() + " ";
+		String advancedToCmd = Command.TO.getAdvancedCommand() + " ";
+				
+		return ((lowerCase.contains(basicFromCmd) ||
+				 lowerCase.contains(advancedFromCmd)) &&
+				(lowerCase.contains(basicToCmd) ||
+				 lowerCase.contains(advancedToCmd)));
 	}
 	
 	public static boolean isDatedTask(String commandLine) {
-		return (commandLine.contains(Command.BY.getBasicCommand()) ||
-				commandLine.contains(Command.BY.getAdvancedCommand()));
+		String lowerCase = commandLine.toLowerCase();
+		String basicCmd = Command.BY.getBasicCommand() + " ";
+		String advancedCmd = Command.BY.getAdvancedCommand() + " ";
+		
+		return (lowerCase.contains(basicCmd) ||
+				lowerCase.contains(advancedCmd));
 	}
 	
 	public static boolean isFloatingTask(String commandLine) {

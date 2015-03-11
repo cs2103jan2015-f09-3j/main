@@ -16,17 +16,29 @@ public enum Priority {
 	}
 
 	public static boolean isLow(String commandLine) {
-		return (commandLine.contains(Command.PRIORITY_LOW.getBasicCommand()) ||
-				commandLine.contains(Command.PRIORITY_LOW.getAdvancedCommand()));
+		String lowerCase = commandLine.toLowerCase() + " ";
+		String basicCmd = Command.PRIORITY_LOW.getBasicCommand() + " ";
+		String advancedCmd = Command.PRIORITY_LOW.getAdvancedCommand() + " ";
+		
+		return (lowerCase.contains(basicCmd) ||
+				lowerCase.contains(advancedCmd));
 	}
 	
 	public static boolean isMedium(String commandLine) {
-		return (commandLine.contains(Command.PRIORITY_MEDIUM.getBasicCommand()) ||
-				commandLine.contains(Command.PRIORITY_MEDIUM.getAdvancedCommand()));
+		String lowerCase = commandLine.toLowerCase() + " ";
+		String basicCmd = Command.PRIORITY_MEDIUM.getBasicCommand() + " ";
+		String advancedCmd = Command.PRIORITY_MEDIUM.getAdvancedCommand() + " ";
+		
+		return (lowerCase.contains(basicCmd) ||
+				lowerCase.contains(advancedCmd));
 	}
 	
 	public static boolean isHigh(String commandLine) {
-		return (commandLine.contains(Command.PRIORITY_HIGH.getBasicCommand()) ||
-				commandLine.contains(Command.PRIORITY_HIGH.getAdvancedCommand()));
+		String lowerCase = commandLine.toLowerCase() + " ";
+		String basicCmd = Command.PRIORITY_HIGH.getBasicCommand() + " ";
+		String advancedCmd = Command.PRIORITY_HIGH.getAdvancedCommand() + " ";
+		
+		return (lowerCase.contains(basicCmd) ||
+				lowerCase.contains(advancedCmd));
 	}
 }

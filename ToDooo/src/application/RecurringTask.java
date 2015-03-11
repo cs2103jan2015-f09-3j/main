@@ -50,4 +50,9 @@ public class RecurringTask {
 	public void setRecurDate(Date recurDate) {
 		_recurDate = recurDate;
 	}
+	
+	public static boolean isValidRecurringTaskType(TaskType taskType) {
+		return (taskType.equals(TaskType.DATED) ||
+				taskType.equals(TaskType.EVENT));
+	}
 }

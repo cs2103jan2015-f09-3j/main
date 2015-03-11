@@ -37,7 +37,8 @@ public class HeaderController{
 	@FXML
 	public void processCmd(KeyEvent e) throws IOException {			
 		if (e.getCode() == KeyCode.ENTER) {
-			String userInput = textArea.getText();	
+			String userInput = textArea.getText();
+							   
 			if (userInput.equals("")) {
 				return;
 			}
@@ -46,6 +47,7 @@ public class HeaderController{
 			Command commandType = InputParser.getActionFromString(userInput);	
 
 			if (Main.toUpdate && commandType.equals(Command.UPDATE)) {
+				userInput = removeLineBreaks(userInput);
 				systemMsg = executeUpdate(userInput);
 				
 				Main.toUpdate = false;
@@ -96,11 +98,11 @@ public class HeaderController{
 			advancedCommand = command.getAdvancedCommand() + " ";
 			
 			if (lowerCase.contains(basicCommand) && 
-				lowerCase.indexOf(basicCommand) == Constant.START_INDEX) {
+				lowerCase.indexOf(basicCommand) == 0) {
 				startIndex = lowerCase.indexOf(basicCommand);
 				endIndex = startIndex + basicCommand.length();
 			} else if (lowerCase.contains(advancedCommand) &&
-					   lowerCase.indexOf(advancedCommand) == Constant.START_INDEX) {
+					   lowerCase.indexOf(advancedCommand) == 0) {
 				startIndex = lowerCase.indexOf(advancedCommand);
 				endIndex = startIndex + advancedCommand.length();
 			}
@@ -147,6 +149,7 @@ public class HeaderController{
 	
 	private String executeCommand(String userInput, Command commandType) throws IOException {
 		String systemMsg = null;
+		userInput = removeLineBreaks(userInput);
 		
 		switch (commandType) {
 		case ADD :
@@ -297,5 +300,9 @@ public class HeaderController{
 		textArea.clearStyle(0);
 		textArea.clear();
 		textArea.positionCaret(0);		
+	}
+	
+	private String removeLineBreaks(String userInput) {
+		return userInput.replaceAll(Constant.REGEX_LINE_BREAK, "");
 	}
 }

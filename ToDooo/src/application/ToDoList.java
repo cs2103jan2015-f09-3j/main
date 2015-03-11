@@ -305,7 +305,7 @@ public class ToDoList {
 			
 			int endIndex = recurringTaskId.
 						   indexOf(Constant.PREFIX_RECURRING_ID);
-			taskId = recurringTaskId.substring(Constant.START_INDEX, endIndex);
+			taskId = recurringTaskId.substring(0, endIndex);
 		}
 		
 		Task task = null;
