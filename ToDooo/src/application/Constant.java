@@ -55,8 +55,8 @@ public final class Constant {
 													  Command.UPDATE, Command.SEARCH,
 													  Command.SETTING, Command.GO_BACK };
 	
-	public static final Command[] COMMAND_DATES = { Command.FROM, Command.TO, 
-													Command.ON, Command.BY };
+	public static final Command[] COMMAND_DATES = { Command.ON, Command.BY, 
+													Command.FROM, Command.TO };
 	
 	public static final Command[] COMMAND_PRIORITIES = { Command.PRIORITY_HIGH, Command.PRIORITY_MEDIUM,
 														 Command.PRIORITY_LOW };
@@ -127,5 +127,11 @@ public final class Constant {
 	
     public static final String TAB_NAME_ALL = "All";    
     public static final int TIMER_SYSTEM_MSG_DURATION = 2500;
+    
+    public static final String CSS_CLASS_ACTION_COMMANDS = "actionCommands";
+    public static final String CSS_CLASS_DATE_COMMANDS = "dateCommands";
+    public static final String CSS_CLASS_CATEGORY = "category";
+    public static final String CSS_CLASS_PRIORITY = "priority";
+    public static final String CSS_CLASS_RECURRING_COMMANDS = "recurringCommands";
 
 }

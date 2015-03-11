@@ -106,13 +106,32 @@
 	-fx-stroke: #838689;
 }
 
-.red { -fx-fill: red; }
-.black { -fx-fill: black; }
+.actionCommands { 
+	-fx-fill: #488AE4; 
+	-fx-font-weight: bold;
+	-fx-font-style: italic;
+}
 
-.textArea { 
-	-fx-border-radius: 5; 
-	-fx-border-color: #D3D4C4; 
-	-fx-fill: blue; 
-	-fx-background-color: #ffffff; 
-	-fx-padding: 1 1 1 1;
+.dateCommands { 
+	-fx-fill: #A045E5; 
+	-fx-font-weight: bold;
+	-fx-font-style: italic;
+}
+
+.category { 
+	-fx-fill: #FF9740; 
+	-fx-font-weight: bold;
+	-fx-font-style: italic;
+	-fx-underline: true;
+}
+
+.priority { 
+	-fx-font-weight: bold;
+	-fx-font-style: italic;
+}
+
+.recurringCommands { 
+	-fx-fill: #DE5480; 
+	-fx-font-weight: bold;
+	-fx-font-style: italic;
 }

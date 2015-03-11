@@ -64,6 +64,7 @@ public class HeaderController{
 	}
 	
 	public void onTextChanged() {	
+		textArea.clearStyle(0);		
 		String textAreaText = textArea.getText();
 		
 		boolean toReset = textAreaText.trim().equals("");
@@ -84,9 +85,116 @@ public class HeaderController{
 		String inputString = textArea.getText();
 		String lowerCase = inputString.toLowerCase();
 		
-		highlightActionCommands(lowerCase);	
+		highlightActionCommands(lowerCase);
+		highlightDatesCommands(lowerCase);
+		highlightCategory(lowerCase);
+		highlightPriority(lowerCase);
+		highlightRecurringCommands(lowerCase);
 	}
-
+	
+	private void highlightRecurringCommands(String lowerCase) {
+		String basicCommand = null;
+		String advancedCommand = null;
+		int startIndex = -1;
+		int endIndex = -1;
+		
+		for (Command command : Constant.COMMAND_RECURRING) {
+			basicCommand = command.getBasicCommand() + " " + 
+						   Command.RECURRING_UNTIL.getBasicCommand() + " ";
+			advancedCommand = command.getAdvancedCommand() + " " +
+							  Command.RECURRING_UNTIL.getAdvancedCommand() + " ";;
+			
+			if (lowerCase.contains(basicCommand)) {
+				startIndex = lowerCase.indexOf(basicCommand);
+				endIndex = startIndex + basicCommand.length();
+			} else if (lowerCase.contains(advancedCommand)) {
+				startIndex = lowerCase.indexOf(advancedCommand);
+				endIndex = startIndex + advancedCommand.length();
+			}
+			
+			if (startIndex != -1 && endIndex != -1) {
+				textArea.setStyleClass(startIndex, endIndex, 
+									   Constant.CSS_CLASS_RECURRING_COMMANDS);			
+				break;
+			} 
+			
+			startIndex = -1;
+			endIndex = -1;
+		}
+	}
+	
+	private void highlightPriority(String lowerCase) {
+		String basicCommand = null;
+		String advancedCommand = null;
+		int startIndex = -1;
+		int endIndex = -1;
+		
+		for (Command command : Constant.COMMAND_PRIORITIES) {
+			basicCommand = command.getBasicCommand() + " ";
+			advancedCommand = command.getAdvancedCommand() + " ";
+			
+			if (lowerCase.contains(basicCommand)) {
+				startIndex = lowerCase.indexOf(basicCommand);
+				endIndex = startIndex + basicCommand.length();
+			} else if (lowerCase.contains(advancedCommand)) {
+				startIndex = lowerCase.indexOf(advancedCommand);
+				endIndex = startIndex + advancedCommand.length();
+			}
+			
+			if (startIndex != -1 && endIndex != -1) {
+				textArea.setStyleClass(startIndex, endIndex, 
+									   Constant.CSS_CLASS_PRIORITY);			
+				break;
+			} 
+			
+			startIndex = -1;
+			endIndex = -1;
+		}
+	}
+	
+	private void highlightCategory(String lowerCase) {
+		String lowerCaseTemp = lowerCase + " ";
+		String basicCommand = Command.CATEGORY.getBasicCommand();
+		int startIndex = -1;
+		int endIndex = -1;
+		
+		if (lowerCaseTemp.contains(basicCommand)) {			
+			startIndex = lowerCaseTemp.indexOf(basicCommand);
+			endIndex = lowerCaseTemp.length();
+			
+			lowerCaseTemp = lowerCaseTemp.substring(startIndex, endIndex);
+			endIndex = startIndex + lowerCaseTemp.indexOf(" ");
+			textArea.setStyleClass(startIndex, endIndex, Constant.CSS_CLASS_CATEGORY);
+		}
+	}
+	
+	private void highlightDatesCommands(String lowerCase) {
+		String basicCommand = null;
+		String advancedCommand = null;
+		int startIndex = -1;
+		int endIndex = -1;
+		
+		for (Command command : Constant.COMMAND_DATES) {						
+			basicCommand = command.getBasicCommand() + " ";
+			advancedCommand = command.getAdvancedCommand() + " ";
+			
+			if (lowerCase.contains(basicCommand)) {
+				startIndex = lowerCase.indexOf(basicCommand);
+				endIndex = startIndex + basicCommand.length();
+			} else if (lowerCase.contains(advancedCommand)) {
+				startIndex = lowerCase.indexOf(advancedCommand);
+				endIndex = startIndex + advancedCommand.length();
+			}
+			
+			if (startIndex != -1 && endIndex != -1) {			
+				textArea.setStyleClass(startIndex, endIndex, 
+						   Constant.CSS_CLASS_DATE_COMMANDS);				
+			} 
+			
+			startIndex = -1;
+			endIndex = -1;
+		}
+	}
 	private void highlightActionCommands(String lowerCase) {
 		String basicCommand = null;
 		String advancedCommand = null;
@@ -108,11 +216,8 @@ public class HeaderController{
 			}
 			
 			if (startIndex != -1 && endIndex != -1) {
-				textArea.setStyleClass(startIndex, endIndex, "red");
-				
-				if (endIndex < lowerCase.length()) {
-					textArea.clearStyle(endIndex, endIndex + 1);
-				}				
+				textArea.setStyleClass(startIndex, endIndex, 
+									   Constant.CSS_CLASS_ACTION_COMMANDS);			
 				break;
 			} 
 			
@@ -227,7 +332,8 @@ public class HeaderController{
 		Task originalTask = Main.list.getTaskById(targetId);
 				
 		if (originalTask != null) {		
-			textArea.appendText(": " + originalTask.getOriginalText());						
+			textArea.appendText(Constant.DELIMETER_UPDATE + " " + 
+								originalTask.getOriginalText());						
 			
 			Main.toUpdate = true;
 			systemMsg = Constant.MSG_ORIGINAL_RETRIEVED;
