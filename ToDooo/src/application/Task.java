@@ -501,6 +501,8 @@ public class Task {
 		
 		public int compare(Task taskA, Task taskB) {
 			int comparison = 0;
+			TaskType taskTypeOfTaskA = taskA.getTaskType();
+			TaskType taskTypeOfTaskB = taskB.getTaskType();
 			for (SortParameter parameter : parameters) {
 				switch (parameter) {
 				case ALPHABETICAL_ORDER:
@@ -517,9 +519,18 @@ public class Task {
 						return comparison;
 					}
 				case DATE:
-					Date dateOfTaskA = taskA.getStartDate();
-					Date dateOfTaskB = taskB.getStartDate();
-					comparison = dateOfTaskA.compareTo(dateOfTaskB);
+					Date dateOfTaskA, dateOfTaskB;
+					if (!taskTypeOfTaskA.equals(TaskType.FLOATING) && !taskTypeOfTaskB.equals(TaskType.FLOATING)) {
+						dateOfTaskA = taskA.getStartDate();
+						dateOfTaskB = taskB.getStartDate();
+						comparison = dateOfTaskA.compareTo(dateOfTaskB);
+					} else if (taskTypeOfTaskA.equals(TaskType.FLOATING) && !taskTypeOfTaskB.equals(TaskType.FLOATING)) {
+						comparison = 1;
+					} else if (!taskTypeOfTaskA.equals(TaskType.FLOATING) && taskTypeOfTaskB.equals(TaskType.FLOATING)) {
+						comparison = -1;
+					} else {
+						comparison = 0;
+					}
 					if (comparison != 0) {
 						return comparison;
 					}
@@ -550,9 +561,9 @@ public class Task {
 					}
 					break;
 				case TASKTYPE_FLOATING:
-					int taskTypeOfTaskA = taskA.getTaskType().toString().length();
-					int taskTypeOfTaskB = taskB.getTaskType().toString().length();
-					comparison = taskTypeOfTaskB - taskTypeOfTaskA;
+					int lengthOfTaskTypeOfTaskA = taskTypeOfTaskA.toString().length();
+					int lengthOfTaskTypeOfTaskB = taskTypeOfTaskB.toString().length();
+					comparison = lengthOfTaskTypeOfTaskB - lengthOfTaskTypeOfTaskA;
 					if (comparison != 0) {
 						return comparison;
 					}
