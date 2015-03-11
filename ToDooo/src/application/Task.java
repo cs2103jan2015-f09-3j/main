@@ -70,7 +70,11 @@ public class Task {
 				}
 			}
 		} else {
-			Main.systemFeedback = Constant.MSG_INVALID_FORMAT;
+			if (Command.verifyRecurringCommands(userInput) != null) {
+				Main.systemFeedback = Constant.MSG_INVALID_RECURRING;
+			} else {
+				Main.systemFeedback = Constant.MSG_INVALID_FORMAT;
+			}			
 		}
 	}
 

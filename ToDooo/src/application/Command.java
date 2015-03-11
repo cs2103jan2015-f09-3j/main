@@ -155,6 +155,12 @@ public enum Command {
 		boolean isCorrectNum = false;
 		boolean isValidTimed = true;
 		
+		if (TaskType.isFloatingTask(commandLine)) {
+			isCorrectNum = true;
+			
+			return isCorrectNum;
+		}
+		
 		for (Command command : Constant.COMMAND_DATES) {
 			if (command.hasCommandInString(commandLine)) {
 				isValidTimed = !(((command.name().equals(Command.FROM) ||
