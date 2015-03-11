@@ -11,6 +11,7 @@ import application.Constant;
 import application.Main;
 import application.Task;
 import application.DateParser;
+import application.TaskType;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -35,6 +36,7 @@ public class BodyController{
 	private MainController mainCon;
 	private ArrayList<Task> taskList = Main.list.getTasks();
 	
+	@FXML AnchorPane anPaneMain;
 	@FXML VBox vBoxAll;
 	@FXML VBox vBoxCategory;
 	@FXML VBox vBoxPriority;
@@ -48,36 +50,70 @@ public class BodyController{
 		mainCon = mainController;
 	}
 	
-	private Date getDate(Task t) {
-		if(t.getOn() != null) {
-			return t.getOn();
-		} else if(t.getBy() != null) {
-			return t.getBy();
-		} else if (t.getFrom() != null) {
-			return t.getFrom();
-		} else {
-			return null;
-		}
-	}
-	
+	// This method has not been applied SLAP yet.
 	private ArrayList<Task> cloneTaskList() {
 		ArrayList<Task> tempTaskList = new ArrayList<>();
 		for(int i = 0; i < taskList.size(); i++) {
 			if(!taskList.get(i).getTaskType().name().equalsIgnoreCase("TIMED")) {
-				if(taskList.get(i).getIsRecurring() && taskList.get(i).getTaskType().name().equalsIgnoreCase("EVENT")) {
+				if(taskList.get(i).getIsRecurring()) {
 					for(int j = 0; j < taskList.get(i).getRecurringTasks().size(); j++) {
-						String input = taskList.get(i).getToDo() + "/on " + Main.inputParser.getDateString(taskList.get(i).getRecurringTasks().get(j).getRecurDate());
+						/*String input = taskList.get(i).getToDo() + "/on " + Main.inputParser.getDateString(taskList.get(i).getRecurringTasks().get(j).getRecurDate());
 						Task t1 = new Task(input);
 						t1.setId(taskList.get(i).getRecurringTasks().get(j).getRecurringTaskId());
+						tempTaskList.add(t1);*/
+						
+						Task t1 = new Task();
+						t1.setBy(taskList.get(i).getBy());
+						t1.setCategory(taskList.get(i).getCategory());
+						t1.setEndDate(taskList.get(i).getEndDate());
+						t1.setFrom(taskList.get(i).getFrom());
+						t1.setId(taskList.get(i).getRecurringTasks().get(j).getRecurringTaskId());
+						t1.setIsRecurring(taskList.get(i).getIsRecurring());
+						t1.setIsValid(taskList.get(i).getIsValid());
+						t1.setOn(taskList.get(i).getRecurringTasks().get(j).getRecurDate());
+						t1.setOriginalText(taskList.get(i).getOriginalText());
+						t1.setPriority(taskList.get(i).getPriority());
+						t1.setRecurringTasks(taskList.get(i).getRecurringTasks());
+						t1.setRepeat(taskList.get(i).getRepeat());
+						t1.setRepeatDay(taskList.get(i).getRepeatDay());
+						t1.setRepeatUntil(taskList.get(i).getRepeatUntil());
+						t1.setStartDate(taskList.get(i).getRecurringTasks().get(j).getRecurDate());
+						t1.setStatus(taskList.get(i).getStatus());
+						t1.setTaskType(taskList.get(i).getTaskType());
+						t1.setTo(taskList.get(i).getTo());
+						t1.setToDo(taskList.get(i).getToDo());
 						tempTaskList.add(t1);
 					}
 					
 				} else if(taskList.get(i).getIsRecurring() && taskList.get(i).getTaskType().name().equalsIgnoreCase("DATED")) {
 					for(int j = 0; j < taskList.get(i).getRecurringTasks().size(); j++) {
-						String input = taskList.get(i).getToDo() + "/by " + Main.inputParser.getDateString(taskList.get(i).getRecurringTasks().get(j).getRecurDate());
+						/*String input = taskList.get(i).getToDo() + "/by " + Main.inputParser.getDateString(taskList.get(i).getRecurringTasks().get(j).getRecurDate());
 						Task t2 = new Task(input);
 						t2.setId(taskList.get(i).getRecurringTasks().get(j).getRecurringTaskId());
+						tempTaskList.add(t2);*/
+						
+						Task t2 = new Task();
+						t2.setBy(taskList.get(i).getRecurringTasks().get(j).getRecurDate());
+						t2.setCategory(taskList.get(i).getCategory());
+						t2.setEndDate(taskList.get(i).getEndDate());
+						t2.setFrom(taskList.get(i).getFrom());
+						t2.setId(taskList.get(i).getRecurringTasks().get(j).getRecurringTaskId());
+						t2.setIsRecurring(taskList.get(i).getIsRecurring());
+						t2.setIsValid(taskList.get(i).getIsValid());
+						t2.setOn(taskList.get(i).getOn());
+						t2.setOriginalText(taskList.get(i).getOriginalText());
+						t2.setPriority(taskList.get(i).getPriority());
+						t2.setRecurringTasks(taskList.get(i).getRecurringTasks());
+						t2.setRepeat(taskList.get(i).getRepeat());
+						t2.setRepeatDay(taskList.get(i).getRepeatDay());
+						t2.setRepeatUntil(taskList.get(i).getRepeatUntil());
+						t2.setStartDate(taskList.get(i).getRecurringTasks().get(j).getRecurDate());
+						t2.setStatus(taskList.get(i).getStatus());
+						t2.setTaskType(taskList.get(i).getTaskType());
+						t2.setTo(taskList.get(i).getTo());
+						t2.setToDo(taskList.get(i).getToDo());
 						tempTaskList.add(t2);
+						
 					}
 					
 				} else {
@@ -216,7 +252,6 @@ public class BodyController{
 				generateListByDate("", temp.get(j), tabName, temp.get(j).getTaskType().name());
 			}
 		}
-		
 	}
 	
 	private void generateListByDate(String header, Task t, String tab, String taskType) {
@@ -354,10 +389,5 @@ public class BodyController{
 		} else {
 			lblDateTime1.setText("");
 		}
-		
-		
-		
 	}
-
-
 }
