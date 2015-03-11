@@ -4,14 +4,14 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<VBox fx:id="vBoxMain" onKeyPressed="#onShortcutKey" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.MainController">
+<VBox fx:id="vBoxMain" onKeyPressed="#onShortcutKey" prefHeight="625.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.MainController">
    <children>
-      <AnchorPane fx:id="anPaneHeader" prefHeight="100.0" prefWidth="750.0">
+      <AnchorPane fx:id="anPaneHeader" prefHeight="125.0" prefWidth="800.0">
          <children>
             <fx:include fx:id="header" source="Header.fxml" />
          </children>
       </AnchorPane>
-      <AnchorPane fx:id="anPaneBody" prefHeight="500.0" prefWidth="750.0">
+      <AnchorPane fx:id="anPaneBody" prefHeight="500.0" prefWidth="800.0">
          <children>
             <fx:include fx:id="body" source="Body.fxml" />
             <fx:include fx:id="setting" source="Setting.fxml" />

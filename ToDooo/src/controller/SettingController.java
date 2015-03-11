@@ -37,11 +37,6 @@ public class SettingController {
 	}
 	
 	@FXML
-	public void goBackToMainMouse(MouseEvent e) throws IOException {
-		mainCon.showPageInBody("/view/Body.fxml");
-	}
-	
-	@FXML
 	public void initialize() {
 		txtPath.setText(Main.storage.readSavePath());
 		
@@ -53,7 +48,7 @@ public class SettingController {
 	
 	private void openFileDialog() {
 		DirectoryChooser dirChooser = new DirectoryChooser();
-		dirChooser.setTitle("Choose Storage Path");
+		dirChooser.setTitle("Choose File Location");
 		File selectedDir = dirChooser.showDialog(anPaneSetting.getScene().getWindow());
 		txtPath.setText(selectedDir.getAbsolutePath());
 		

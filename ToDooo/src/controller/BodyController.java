@@ -34,7 +34,7 @@ import javafx.scene.text.TextAlignment;
 public class BodyController{
 
 	private MainController mainCon;
-	private ArrayList<Task> taskList = Main.list.getTasks();
+	//private ArrayList<Task> taskList = Main.list.getTasks();
 	
 	@FXML AnchorPane anPaneMain;
 	@FXML VBox vBoxAll;
@@ -51,7 +51,7 @@ public class BodyController{
 	}
 	
 	// This method has not been applied SLAP yet.
-	private ArrayList<Task> cloneTaskList() {
+	private ArrayList<Task> cloneTaskList(ArrayList<Task> taskList) {
 		ArrayList<Task> tempTaskList = new ArrayList<>();
 		for(int i = 0; i < taskList.size(); i++) {
 			if(!taskList.get(i).getTaskType().name().equalsIgnoreCase("TIMED")) {
@@ -159,7 +159,8 @@ public class BodyController{
 	public void loadListByDate(String tabName) {
 		vBoxAll.getChildren().clear();
 		
-		ArrayList<Task> unsortedTemp = cloneTaskList();
+		ArrayList<Task> taskList = Main.list.getTasks();
+		ArrayList<Task> unsortedTemp = cloneTaskList(taskList);
 		ArrayList<Task> overdue = new ArrayList<>();
 		ArrayList<Task> today = new ArrayList<>();
 		ArrayList<Task> floating = new ArrayList<>();
