@@ -41,6 +41,7 @@ public class MainController{
 	@FXML AnchorPane anPaneBody;
 	@FXML HeaderController headerController;
 	@FXML BodyController bodyController;
+	@FXML SettingController settingController;
 	private Timer timer;
 	
 	@FXML
@@ -75,7 +76,6 @@ public class MainController{
 		anPaneBody.getChildren().clear();
 		anPaneBody.getChildren().setAll(FXMLLoader.load(getClass().getResource(fxmlFileName)));
 	}
-
 
 	private String executeUndo() {
 		String systemMsg = null;

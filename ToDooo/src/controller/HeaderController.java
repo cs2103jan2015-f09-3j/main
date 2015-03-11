@@ -283,15 +283,25 @@ public class HeaderController{
 	}
 		
 	private void executeSetting() throws IOException {
+		/*settingIcon.setVisible(false);
+		backIcon.setVisible(true);
+		mainCon.showPageInBody("/view/Setting.fxml");*/
+		
 		settingIcon.setVisible(false);
 		backIcon.setVisible(true);
-		mainCon.showPageInBody("/view/Setting.fxml");
+		mainCon.settingController.anPaneSetting.setVisible(true);
+		mainCon.bodyController.anPaneMain.setVisible(false);
 	}
 	
 	private void executeGoBack() throws IOException {
+		/*settingIcon.setVisible(true);
+		backIcon.setVisible(false);
+		mainCon.showPageInBody("/view/Body.fxml");*/
+		
 		settingIcon.setVisible(true);
 		backIcon.setVisible(false);
-		mainCon.showPageInBody("/view/Body.fxml");
+		mainCon.settingController.anPaneSetting.setVisible(false);
+		mainCon.bodyController.anPaneMain.setVisible(true);
 	}
 	
 	private void resetTextArea() {
