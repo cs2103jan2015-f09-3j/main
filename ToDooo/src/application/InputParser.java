@@ -39,12 +39,8 @@ public class InputParser {
 		String checkString = userInput.toLowerCase() + " ";
 		String basicCmd = Command.TO.getBasicCommand();
 		String advancedCmd = Command.TO.getAdvancedCommand();
-		
-		if (checkString.contains(basicCmd)) {
-			checkString = checkString.replace(basicCmd, Command.TO.toString());
-		} else if (checkString.contains(advancedCmd)) {
-			checkString = checkString.replace(advancedCmd, Command.TO.toString());
-		}
+		int endIndex = checkString.length();
+		int startIndex = -1;
 		
 		List<DateGroup> groups = _parser.parse(checkString);
 		
@@ -53,6 +49,24 @@ public class InputParser {
 		}			
 		else {
 			List<Date> dates = groups.get(0).getDates();
+			
+			// check for /to command
+			if (checkString.contains(basicCmd)) {
+				startIndex = checkString.indexOf(basicCmd) + 
+							 basicCmd.length();				
+			} else if (checkString.contains(advancedCmd)) {
+				startIndex = checkString.indexOf(advancedCmd) + 
+							 basicCmd.length();		
+			}
+			
+			// extract /to date
+			if (startIndex != -1) {
+				checkString = checkString.substring(startIndex, endIndex);
+				List<Date> toDates = getDatesFromString(checkString);
+				if (toDates != null) {
+					dates.add(toDates.get(0));
+				}
+			}					
 			
 			return dates;
 		}
