@@ -335,7 +335,7 @@ public class InputParser {
 		
 		if (isCategorised) {
 			String categoryCommand = Command.CATEGORY.getBasicCommand() + 
-									 category;
+									 category.toLowerCase();
 			int endIndex = lowerCase.indexOf(categoryCommand);			
 			
 			toDoString = toDoString.substring(0, endIndex);
