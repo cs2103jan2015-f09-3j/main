@@ -14,14 +14,12 @@ import org.w3c.dom.NodeList;
 import org.w3c.dom.Text;
 
 public class XmlManager {
-	public static Element createAndAppendChildElement(Document document,
+	public static void createAndAppendChildElement(Document document,
 												Element parentElement, String tag, String content) {
 		Element element = document.createElement(tag);
 		Text text = document.createTextNode(content);
 		element.appendChild(text);
 		parentElement.appendChild(element);
-
-		return element;
 	}
 
 	public static Element createAndAppendWrapper(Document document,

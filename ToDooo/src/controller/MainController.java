@@ -66,7 +66,6 @@ public class MainController{
 			return;
 		}
 		
-		headerController.textArea.getParent().requestFocus();
 		headerController.lblSysMsg.setText(systemMsg);	
 		
 		executeSystemMsgTimerTask();		

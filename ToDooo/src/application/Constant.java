@@ -121,8 +121,8 @@ public final class Constant {
 	public static final SimpleDateFormat TIMEOUTPUT = new SimpleDateFormat("hh:mm a");
 	public static final SimpleDateFormat DATEOUTPUT_FOR_TIMEDTASK = new SimpleDateFormat("dd MMM yyyy");
 	
-	public static final KeyCombination SHORTCUT_UNDO = new KeyCodeCombination(KeyCode.Z, KeyCombination.SHIFT_DOWN);
-	public static final KeyCombination SHORTCUT_REDO = new KeyCodeCombination(KeyCode.Y, KeyCombination.SHIFT_DOWN);
+	public static final KeyCombination SHORTCUT_UNDO = new KeyCodeCombination(KeyCode.Z, KeyCombination.ALT_DOWN);
+	public static final KeyCombination SHORTCUT_REDO = new KeyCodeCombination(KeyCode.Y, KeyCombination.ALT_DOWN);
 	public static final KeyCombination SHORTCUT_OPEN_FILE_DIALOG = new KeyCodeCombination(KeyCode.F10);
 	
     public static final String TAB_NAME_ALL = "All";    
