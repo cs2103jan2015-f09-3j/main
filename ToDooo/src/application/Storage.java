@@ -218,11 +218,20 @@ public class Storage {
 		writeFile(document);		
 	}
 	
-	public void updatePathInSetting(String path) {
+	public void updateDirPathInSetting(String dirPath) {
 		Document doc = getSettingDocument();
 
 		Node save = doc.getElementsByTagName(Constant.TAG_SETTING_SAVE).item(0);
-		save.setTextContent(path + "\\" + Constant.PATH_FILE_NAME);
+		save.setTextContent(dirPath + "\\" + Constant.PATH_FILE_NAME);
+		
+		writeFile(doc, Constant.PATH_SETTING);
+	}
+	
+	public void updateFilePathInSetting(String filePath) {
+		Document doc = getSettingDocument();
+
+		Node save = doc.getElementsByTagName(Constant.TAG_SETTING_SAVE).item(0);
+		save.setTextContent(filePath);
 		
 		writeFile(doc, Constant.PATH_SETTING);
 	}
@@ -402,7 +411,7 @@ public class Storage {
 			exception.printStackTrace();
 		}
 		
-		updatePathInSetting(path);
+		updateDirPathInSetting(path);
 		
 		Main.list = new ToDoList();
 	}

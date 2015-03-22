@@ -28,6 +28,8 @@ import org.w3c.dom.NodeList;
 import org.w3c.dom.Text;
 import org.xml.sax.SAXException;
 
+import test.ToDoListTest;
+
 public class ToDoList {
 	private int _nextId;
 	private String _listFilePath;
@@ -42,6 +44,21 @@ public class ToDoList {
 		_nextId = Main.storage.readNextId();
 		_tasks = Main.storage.loadXmlToArrayList();
 		_categories = Main.storage.loadCategoriesToArrayList();
+	}
+	
+	// For testing purpose
+	public ToDoList(boolean isTest) {
+		String testListPath = ToDoListTest.PATH_TEST_FILE;
+		
+		if (isTest) {
+			_listFilePath = testListPath;
+			
+			createListFileIfNotExist();	
+			
+			_nextId = Main.storage.readNextId();
+			_tasks = Main.storage.loadXmlToArrayList();
+			_categories = Main.storage.loadCategoriesToArrayList();
+		}
 	}
 	
 	public String getListFilePath() {
