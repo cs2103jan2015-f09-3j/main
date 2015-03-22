@@ -10,13 +10,21 @@ import com.joestelmach.natty.DateGroup;
 import com.joestelmach.natty.Parser;
 
 public class InputParser {
+	private static InputParser _inputParser;
 	private Parser _parser;
 	
-	public InputParser() {
+	private InputParser() {
 		_parser = new Parser();
 	}
 	
-	// Public Methods	
+	public static InputParser getInstance() {
+		if (_inputParser == null) {
+			_inputParser = new InputParser();
+		}
+		
+		return _inputParser;
+	}
+		
 	public static Command getActionFromString(String userInput) {
 		return Command.verifyCrudCommands(userInput);
 	}

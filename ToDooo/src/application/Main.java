@@ -44,8 +44,9 @@ public class Main extends Application {
 	}
 	
 	private static void initialise() {		
-		Main.storage = new Storage();
-		Main.inputParser = new InputParser();
+		Main.storage = Storage.getInstance();
+		Main.inputParser = InputParser.getInstance();
+		
 		Main.list = new ToDoList();
 		Main.undos = new Stack<Undo>();
 		Main.redos = new Stack<Undo>();

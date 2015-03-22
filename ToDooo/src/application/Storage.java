@@ -31,14 +31,23 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 public class Storage {
+	private static Storage _storage;
 	private static Transformer _transformer;
 	private static XPath _xPath;
 	private static DocumentBuilder _documentBuilder;
 	
-	public Storage() {		
+	private Storage() {		
 		initTransformer();			
 		_xPath = getNewXPath();
 		_documentBuilder = getNewDocBuilder();
+	}
+	
+	public static Storage getInstance() {
+		if (_storage == null) {
+			_storage = new Storage();
+		}
+		
+		return _storage;
 	}
 	
 	private void initTransformer() {
