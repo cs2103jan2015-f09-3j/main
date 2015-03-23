@@ -89,27 +89,15 @@ public class BodyController{
 		} 
 		
 	    if(!overdue.isEmpty()) {
-			for(int b = 0; b < overdue.size(); b++) {
-				if(b == 0) {
-					generateListByDate(Constant.OVERDUE_TITLE, overdue.get(b), tabName, overdue.get(b).getTaskType());
-				} else {
-					generateListByDate("", overdue.get(b), tabName, overdue.get(b).getTaskType());
-				}
-			}
+			printList(overdue, Constant.OVERDUE_TITLE);
 			
-			if(!floating.isEmpty()) {
+			if(!floating.isEmpty() && today.isEmpty()) {
 				addHorizontalBar();
 			}
 		}
 		
 		if(!today.isEmpty()) {
-			for(int d = 0; d < today.size(); d++) {
-				if(d == 0) {
-					generateListByDate(Constant.TODAY_TITLE, today.get(d), tabName, today.get(d).getTaskType());
-				} else {
-					generateListByDate("", today.get(d), tabName, today.get(d).getTaskType());
-				}
-			}
+			printList(today, Constant.TODAY_TITLE);
 			
 			if(!floating.isEmpty()) {
 				addHorizontalBar();
@@ -117,9 +105,7 @@ public class BodyController{
 		}
 		
 		if(!floating.isEmpty()) {
-			for(int a = 0; a < floating.size(); a++) {
-				generateListByDate("", floating.get(a), tabName, floating.get(a).getTaskType());
-			}
+			printList(floating, "");
 		}
 		
 		for(int j = indexForNextLoop; j < temp.size(); j++) {
@@ -130,9 +116,9 @@ public class BodyController{
 			}
 			
 			if(j == indexForNextLoop || !date1.equals(date2)) {
-				generateListByDate(date1, temp.get(j), tabName, temp.get(j).getTaskType());
+				generateListByDate(date1, temp.get(j));
 			} else {
-				generateListByDate("", temp.get(j), tabName, temp.get(j).getTaskType());
+				generateListByDate("", temp.get(j));
 			}
 		}
 	}
@@ -213,7 +199,7 @@ public class BodyController{
 		return tempTaskList;
 	}
 	
-	private void generateListByDate(String header, Task t, String tab, TaskType taskType) {
+	private void generateListByDate(String header, Task t) {
 		if(!header.equals("")) {
 			addTitle(header, vBoxAll);
 		}
@@ -227,19 +213,19 @@ public class BodyController{
 		HBox hBox2 = new HBox();
 		bPane.setRight(hBox2);
 		
-		addIcon(taskType, hBox1);
+		addIcon(t, hBox1);
 		addId(t, hBox1);
 		addPriorityBar(t, hBox1);
 		addDesc(t, hBox1);
 		addCategory(t, hBox1);
 		
-		if(!taskType.toString().equalsIgnoreCase(TaskType.FLOATING.toString())) {
+		if(!t.getTaskType().toString().equalsIgnoreCase(TaskType.FLOATING.toString())) {
 			
-			if(taskType.toString().equalsIgnoreCase(TaskType.EVENT.toString())) {
+			if(t.getTaskType().toString().equalsIgnoreCase(TaskType.EVENT.toString())) {
 				addSingleDateTime(t.getOn(), hBox2, "", Constant.TIMEOUTPUT);
-			} else if(taskType.toString().equalsIgnoreCase(TaskType.DATED.toString())) {
+			} else if(t.getTaskType().toString().equalsIgnoreCase(TaskType.DATED.toString())) {
 				addSingleDateTime(t.getBy(), hBox2, "by", Constant.TIMEOUTPUT);
-			} else if(taskType.toString().equalsIgnoreCase(TaskType.TIMED.toString())) {
+			} else if(t.getTaskType().toString().equalsIgnoreCase(TaskType.TIMED.toString())) {
 				if(DateParser.compareDate(t.getFrom(), t.getTo())) {
 					addDoubleDateTime(t.getFrom(), t.getTo(), hBox2, "from", "to", Constant.TIMEOUTPUT);
 				} else if(DateParser.compareDate(t.getStartDate(), t.getFrom())) {
@@ -253,6 +239,16 @@ public class BodyController{
 		} 
 		
 		vBoxAll.getChildren().add(bPane);
+	}
+	
+	private void printList(ArrayList<Task> al, String title) {
+		for(int d = 0; d < al.size(); d++) {
+			if(d == 0) {
+				generateListByDate(title, al.get(d));
+			} else {
+				generateListByDate("", al.get(d));
+			}
+		}
 	}
 	
 	private void addHorizontalBar() {
@@ -278,9 +274,9 @@ public class BodyController{
 		container.getChildren().add(lblTitle);
 	}
 	
-	private void addIcon(TaskType taskType, HBox hBox) {
+	private void addIcon(Task t, HBox hBox) {
 		String imgName = "";
-		switch(taskType.toString()) {
+		switch(t.getTaskType().toString()) {
 		case "EVENT": imgName = Constant.EVENT_ICON;
 		break;
 		case "FLOATING": imgName = Constant.FLOATING_ICON;
