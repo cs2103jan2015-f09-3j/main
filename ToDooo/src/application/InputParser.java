@@ -81,7 +81,7 @@ public class InputParser {
 	}
 	
 	public static String getCategoryFromString(String userInput) {
-		boolean isCategorised = Command.hasCategoryCommandInString(userInput);
+		boolean isCategorised = Command.hasCategoryCommand(userInput);
 		
 		if (isCategorised) {
 			String basicCmd = Command.CATEGORY.getBasicCommand();
@@ -389,5 +389,9 @@ public class InputParser {
 		}
 		
 		return searchKey;
+	}
+	
+	public static String removeLineBreaks(String userInput) {
+		return userInput.replaceAll(Constant.REGEX_LINE_BREAK, "");
 	}
 }

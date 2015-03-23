@@ -95,7 +95,6 @@ public class ToDoList {
 
 	private void createListFileIfNotExist() {
 		File file = new File(_listFilePath);
-		String result = Constant.MSG_SAVE_SUCCESS;
 		
 		boolean shouldCreate = !(file.exists());
 		if (shouldCreate) {

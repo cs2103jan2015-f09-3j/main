@@ -1,6 +1,10 @@
 package application;
 
+import java.io.IOException;
 import java.util.Date;
+
+import controller.HeaderController;
+import javafx.util.Pair;
 
 public enum Command {
 	ADD("add", "-a"),
@@ -41,7 +45,7 @@ public enum Command {
 	public static Command verifyCrudCommands(String commandLine) {		
 		for (Command command : Constant.COMMAND_ACTIONS) {
 			
-			if (command.hasActionCommandInString(commandLine)) {				
+			if (command.hasActionCommand(commandLine)) {				
 				return command;
 			}
 		}		
@@ -50,7 +54,7 @@ public enum Command {
 
 	public static Command verifyPriorityCommands(String commandLine) {
 		for (Command command : Constant.COMMAND_PRIORITIES) {
-			if (command.hasCommandInString(commandLine)) {
+			if (command.hasCommand(commandLine)) {
 				return command;
 			}
 		}
@@ -58,7 +62,7 @@ public enum Command {
 		return null;
 	}
 
-	public boolean hasCommandInString(String commandLine) {
+	public boolean hasCommand(String commandLine) {
 		String lowerCase = commandLine.toLowerCase() + " ";
 		String basicCmd = _COMMAND_BASIC + " ";
 		String advancedCmd = _COMMAND_ADVANCED + " ";
@@ -70,7 +74,7 @@ public enum Command {
 	
 	public static Command verifyRecurringCommands(String commandLine) {				
 		for (Command recurringCommand : Constant.COMMAND_RECURRING) {
-			if (recurringCommand.hasValidRecurringCommandInString(commandLine)) {
+			if (recurringCommand.hasValidRecurringCommand(commandLine)) {
 				return recurringCommand;
 			}
 		}
@@ -78,7 +82,7 @@ public enum Command {
 		return null;
 	}
 	
-	public boolean hasValidRecurringCommandInString(String commandLine) {
+	public boolean hasValidRecurringCommand(String commandLine) {
 		String lowerCase = commandLine.toLowerCase() + " ";
 		String basicCmd = _COMMAND_BASIC + " " + 
 						  Command.RECURRING_UNTIL.getBasicCommand() + " ";
@@ -112,7 +116,7 @@ public enum Command {
 		boolean hasFound = false;
 		
 		for (Command recurringCommand : Constant.COMMAND_RECURRING) {
-			if (recurringCommand.hasCommandInString(commandLine)) {
+			if (recurringCommand.hasCommand(commandLine)) {
 				hasFound = true;
 			}
 		}
@@ -121,7 +125,7 @@ public enum Command {
 	}
 		
 	
-	public static boolean hasCategoryCommandInString(String commandLine) {
+	public static boolean hasCategoryCommand(String commandLine) {
 		String lowerCase = commandLine.toLowerCase() + " ";
 		String basicCmd = Command.CATEGORY.getBasicCommand();
 		boolean isCategorised = false;
@@ -140,7 +144,7 @@ public enum Command {
 		return isCategorised;
 	}
 	
-	public boolean hasActionCommandInString(String commandLine) {
+	public boolean hasActionCommand(String commandLine) {
 		int startIndex = 0;
 		String lowerCase = commandLine.toLowerCase();
 		String basicCmd = _COMMAND_BASIC + " ";
@@ -162,7 +166,7 @@ public enum Command {
 		}
 		
 		for (Command command : Constant.COMMAND_DATES) {
-			if (command.hasCommandInString(commandLine)) {
+			if (command.hasCommand(commandLine)) {
 				isValidTimed = !(((command.name().equals(Command.FROM) ||
 						 		command.name().equals(Command.TO)) && count >= 2) ||
 						 		(!(command.name().equals(Command.FROM) ||
@@ -178,4 +182,162 @@ public enum Command {
 		
 		return isCorrectNum;
 	}
+	
+	public static String executeUserInput(String userInput, HeaderController headerController) {
+		String systemMsg = "";
+		Command commandType = InputParser.getActionFromString(userInput);	
+
+		if (Main.toUpdate && commandType.equals(Command.UPDATE)) {
+			userInput = InputParser.removeLineBreaks(userInput);
+			systemMsg = executeUpdate(userInput, headerController);
+			
+			Main.toUpdate = false;
+			headerController.textArea.clear();
+		} else {
+			systemMsg = commandType.executeCommand(userInput, headerController);
+		}
+		
+		return systemMsg;
+	}
+		
+	private String executeCommand(String userInput, HeaderController headerController) {
+		String systemMsg = null;
+		try {			
+			userInput = InputParser.removeLineBreaks(userInput);
+			
+			switch (this) {
+				case ADD :
+					systemMsg = executeAdd(userInput);
+					headerController.textArea.clear();
+					break;
+				case UPDATE :
+					systemMsg = executeRetrieveOriginalText(userInput, headerController);	
+					Main.shouldResetCaret = true;
+					break;
+				case DELETE :
+					systemMsg = executeDelete(userInput);
+					headerController.textArea.clear();
+					break;
+				case SEARCH :
+					systemMsg = executeSearch(userInput);
+					break;
+				case SETTING :
+					headerController.executeSetting();
+					headerController.textArea.clear();
+					break;
+				case GO_BACK :
+					// go back to main page
+					headerController.executeGoBack();
+					headerController.textArea.clear();
+					break;
+				default :
+					// invalid command
+					break;
+			}
+		} catch (IOException exception) {
+			
+		}
+		
+		return systemMsg;
+	}
+	
+	private String executeAdd(String userInput) {
+		Task task = new Task(userInput);	
+		
+		String systemMsg = null;
+		if (task.getIsValid()) {
+			systemMsg = Main.list.addTaskToList(task);
+			
+			if (systemMsg.equals(Constant.MSG_ADD_SUCCESS)) {
+				Undo undo = new Undo(Command.ADD, task.getId());
+				Main.undos.push(undo);				
+				Main.redos.clear();
+			}
+			
+		} else {
+			systemMsg = Main.systemFeedback;
+		}
+				
+		return systemMsg;
+	}
+	
+	private String executeDelete(String userInput) {
+		String systemMsg= null;
+		Task removedTask = Main.list.deleteTaskFromList(userInput);
+		
+		if (removedTask != null) {
+			Undo undo = new Undo(Command.DELETE, removedTask);
+			Main.undos.push(undo);			
+			Main.redos.clear();
+			
+			systemMsg = Constant.MSG_DELETE_SUCCESS;
+		} else {
+			systemMsg = Constant.MSG_ITEM_NOT_FOUND;
+		}
+		
+		return systemMsg;
+	}
+	
+	private static String executeRetrieveOriginalText(String userInput, HeaderController headerController) {
+		String systemMsg = null;
+		String targetId = InputParser.getTargetIdFromString(userInput);
+		Task originalTask = Main.list.getTaskById(targetId);
+				
+		if (originalTask != null) {		
+			headerController.textArea.
+			appendText(Constant.DELIMETER_UPDATE + " " + 
+					   originalTask.getOriginalText());						
+			
+			Main.toUpdate = true;
+			systemMsg = Constant.MSG_ORIGINAL_RETRIEVED;
+		} else {
+			systemMsg = Constant.MSG_ORIGINAL_NOT_RETRIEVED;
+		}
+		
+		return systemMsg;
+	}
+	
+	private static String executeUpdate(String userInput, HeaderController headerController) {
+		String systemMsg = null;
+		
+		if (userInput.indexOf(Constant.DELIMETER_UPDATE) == -1) {
+			systemMsg = executeRetrieveOriginalText(userInput, headerController);
+		} else {
+			Pair<Task, String> updatedTasksDetails = Main.list.updateTaskOnList(userInput);
+			if (updatedTasksDetails == null) {
+				return systemMsg = Main.systemFeedback;
+			}
+			
+			Task originalTask = updatedTasksDetails.getKey();
+			String targetId = updatedTasksDetails.getValue();
+			
+			if (originalTask != null) {
+				Undo undo = new Undo(Command.UPDATE, originalTask, targetId);
+				Main.undos.push(undo);
+				Main.redos.clear();
+				
+				systemMsg = Constant.MSG_UPDATE_SUCCESS;
+			} else {
+				systemMsg = Constant.MSG_UPDATE_FAIL;
+			}
+		}
+		
+		return systemMsg;
+	}
+	
+	private String executeSearch(String userInput) {
+		String systemMsg = null;
+		
+		Main.searchResults = Main.list.searchTheList(userInput);
+		if (Main.searchResults.isEmpty()) {
+			systemMsg = Constant.MSG_NO_RESULTS;
+		} else {
+			systemMsg = Constant.MSG_SEARCH_SUCCESS.
+						replaceFirst(Constant.DELIMETER_SEARCH, 
+									  String.valueOf(Main.searchResults.size()));
+		}
+		
+		return systemMsg;
+	}
+	
 }

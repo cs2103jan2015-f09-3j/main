@@ -3,14 +3,10 @@ package controller;
 import java.io.IOException;
 
 import org.fxmisc.richtext.StyleClassedTextArea;
-import org.w3c.dom.Node;
 
 import application.Command;
 import application.Constant;
-import application.InputParser;
 import application.Main;
-import application.Task;
-import application.Undo;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
@@ -43,22 +39,13 @@ public class HeaderController{
 				return;
 			}
 			
-			String systemMsg = null;
-			Command commandType = InputParser.getActionFromString(userInput);	
-
-			if (Main.toUpdate && commandType.equals(Command.UPDATE)) {
-				userInput = removeLineBreaks(userInput);
-				systemMsg = executeUpdate(userInput);
-				
-				Main.toUpdate = false;
-				textArea.clear();
-			} else {
-				systemMsg = executeCommand(userInput, commandType);
-			}
-			
-			mainCon.bodyController.loadListByDate(Constant.TAB_NAME_ALL);
-			
+			String systemMsg = Command.executeUserInput(userInput, this);
+			if (systemMsg.equals(Constant.MSG_ORIGINAL_NOT_RETRIEVED)) {
+				resetTextArea();
+			}	
 			lblSysMsg.setText(systemMsg);	
+			
+			mainCon.bodyController.loadListByDate(Constant.TAB_NAME_ALL);	
 			mainCon.executeSystemMsgTimerTask();	
 		} 			
 	}
@@ -252,143 +239,12 @@ public class HeaderController{
 		});		
 	}
 	
-	private String executeCommand(String userInput, Command commandType) throws IOException {
-		String systemMsg = null;
-		userInput = removeLineBreaks(userInput);
-		
-		switch (commandType) {
-		case ADD :
-			systemMsg = executeAdd(userInput);
-			textArea.clear();
-			break;
-		case UPDATE :
-			systemMsg = executeRetrieveOriginalText(userInput);	
-			Main.shouldResetCaret = true;
-			break;
-		case DELETE :
-			systemMsg = executeDelete(userInput);
-			textArea.clear();
-			break;
-		case SEARCH :
-			systemMsg = executeSearch(userInput);
-			break;
-		case SETTING :
-			executeSetting();
-			textArea.clear();
-			break;
-		case GO_BACK :
-			// go back to main page
-			executeGoBack();
-			textArea.clear();
-			break;
-		default :
-			// invalid command
-			break;
-		}
-		
-		return systemMsg;
-	}
 	
-	private String executeAdd(String userInput) {
-		Task task = new Task(userInput);	
-		
-		String systemMsg = null;
-		if (task.getIsValid()) {
-			systemMsg = Main.list.addTaskToList(task);
-			
-			if (systemMsg.equals(Constant.MSG_ADD_SUCCESS)) {
-				Undo undo = new Undo(Command.ADD, task.getId());
-				Main.undos.push(undo);				
-				Main.redos.clear();
-			}
-			
-		} else {
-			systemMsg = Main.systemFeedback;
-		}
-				
-		return systemMsg;
-	}
 	
-	private String executeDelete(String userInput) {
-		String systemMsg= null;
-		Task removedTask = Main.list.deleteTaskFromList(userInput);
-		
-		if (removedTask != null) {
-			Undo undo = new Undo(Command.DELETE, removedTask);
-			Main.undos.push(undo);			
-			Main.redos.clear();
-			
-			systemMsg = Constant.MSG_DELETE_SUCCESS;
-		} else {
-			systemMsg = Constant.MSG_ITEM_NOT_FOUND;
-		}
-		
-		return systemMsg;
-	}
 	
-	private String executeRetrieveOriginalText(String userInput) {
-		String systemMsg = null;
-		String targetId = InputParser.getTargetIdFromString(userInput);
-		Task originalTask = Main.list.getTaskById(targetId);
-				
-		if (originalTask != null) {		
-			textArea.appendText(Constant.DELIMETER_UPDATE + " " + 
-								originalTask.getOriginalText());						
-			
-			Main.toUpdate = true;
-			systemMsg = Constant.MSG_ORIGINAL_RETRIEVED;
-		} else {
-			systemMsg = Constant.MSG_ORIGINAL_NOT_RETRIEVED;
-			resetTextArea();
-		}
-		
-		return systemMsg;
-	}
 	
-	private String executeUpdate(String userInput) {
-		String systemMsg = null;
 		
-		if (userInput.indexOf(Constant.DELIMETER_UPDATE) == -1) {
-			systemMsg = executeRetrieveOriginalText(userInput);
-		} else {
-			Pair<Task, String> updatedTasksDetails = Main.list.updateTaskOnList(userInput);
-			if (updatedTasksDetails == null) {
-				return systemMsg = Main.systemFeedback;
-			}
-			
-			Task originalTask = updatedTasksDetails.getKey();
-			String targetId = updatedTasksDetails.getValue();
-			
-			if (originalTask != null) {
-				Undo undo = new Undo(Command.UPDATE, originalTask, targetId);
-				Main.undos.push(undo);
-				Main.redos.clear();
-				
-				systemMsg = Constant.MSG_UPDATE_SUCCESS;
-			} else {
-				systemMsg = Constant.MSG_UPDATE_FAIL;
-			}
-		}
-		
-		return systemMsg;
-	}
-	
-	private String executeSearch(String userInput) {
-		String systemMsg = null;
-		
-		Main.searchResults = Main.list.searchTheList(userInput);
-		if (Main.searchResults.isEmpty()) {
-			systemMsg = Constant.MSG_NO_RESULTS;
-		} else {
-			systemMsg = Constant.MSG_SEARCH_SUCCESS.
-						replaceFirst(Constant.DELIMETER_SEARCH, 
-									  String.valueOf(Main.searchResults.size()));
-		}
-		
-		return systemMsg;
-	}
-		
-	private void executeSetting() throws IOException {
+	public void executeSetting() throws IOException {
 		/*settingIcon.setVisible(false);
 		backIcon.setVisible(true);
 		mainCon.showPageInBody("/view/Setting.fxml");*/
@@ -399,7 +255,7 @@ public class HeaderController{
 		mainCon.bodyController.anPaneMain.setVisible(false);
 	}
 	
-	private void executeGoBack() throws IOException {
+	public void executeGoBack() throws IOException {
 		/*settingIcon.setVisible(true);
 		backIcon.setVisible(false);
 		mainCon.showPageInBody("/view/Body.fxml");*/
@@ -410,7 +266,7 @@ public class HeaderController{
 		mainCon.bodyController.anPaneMain.setVisible(true);
 	}
 	
-	private void resetTextArea() {
+	public void resetTextArea() {
 		Main.toUpdate = false;	
 
 		textArea.clearStyle(0);
@@ -418,7 +274,5 @@ public class HeaderController{
 		textArea.positionCaret(0);		
 	}
 	
-	private String removeLineBreaks(String userInput) {
-		return userInput.replaceAll(Constant.REGEX_LINE_BREAK, "");
-	}
+
 }
