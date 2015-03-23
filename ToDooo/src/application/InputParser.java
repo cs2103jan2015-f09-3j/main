@@ -375,7 +375,7 @@ public class InputParser {
 	private static String getSearchKeyFromString(String userInput, 
 										   SearchAttribute attribute) {
 		String searchKey = null;
-		String lowerCase = userInput.toLowerCase() + " ";
+		String lowerCase = userInput.toLowerCase();
 		String command = attribute.getCommand();
 		
 		if (lowerCase.contains(command)) {		
@@ -383,7 +383,7 @@ public class InputParser {
 			int endIndex = lowerCase.length();
 			
 			String detailString = lowerCase.substring(startIndex, endIndex);
-			endIndex = lowerCase.indexOf(Constant.DELIMETER_SEARCH);
+			endIndex = detailString.indexOf(Constant.DELIMETER_SEARCH);
 			
 			searchKey = detailString.substring(0, endIndex);
 		}
@@ -391,7 +391,24 @@ public class InputParser {
 		return searchKey;
 	}
 	
+	public static String verifyAndCorrectSearchString(String userInput) {
+		userInput = InputParser.removeLineBreaks(userInput);
+		userInput = userInput + " ";
+		
+		int expectedPosition = userInput.length() - 2;
+		int actualPosition = userInput.lastIndexOf(Constant.DELIMETER_SEARCH);
+		
+		if (actualPosition != expectedPosition) {
+			userInput += Constant.DELIMETER_SEARCH;
+		}
+		
+		return userInput;
+	}
+	
 	public static String removeLineBreaks(String userInput) {
-		return userInput.replaceAll(Constant.REGEX_LINE_BREAK, "");
+		userInput = userInput.trim().
+					replaceAll(Constant.REGEX_LINE_BREAK, "");
+		
+		return userInput;
 	}
 }

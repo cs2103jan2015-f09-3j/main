@@ -169,6 +169,8 @@ public class ToDoList {
 	
 	// need to check recurring tasks as well
 	public ArrayList<Task> searchTheList(String userInput) {
+		userInput = InputParser.verifyAndCorrectSearchString(userInput);
+		
 		ArrayList<Task> searchResults = new ArrayList<Task>();
 		ArrayList<Pair<SearchAttribute, String>> attributePairs =
 				InputParser.getSearchAttributePairFromString(userInput);
@@ -194,7 +196,7 @@ public class ToDoList {
 		
 		for (Pair<SearchAttribute, String> attributePair : attributePairs) {
 			attribute = attributePair.getKey();
-			searchKey = attributePair.getValue();
+			searchKey = attributePair.getValue().trim();
 			
 			switch (attribute) {
 				case ID :
@@ -215,7 +217,7 @@ public class ToDoList {
 			if (attribute.equals(SearchAttribute.DATE)) {
 				hasMatched = hasDateMatch(task, attribute, searchKey);
 			} else {
-				if (taskDetailString.equals(searchKey)) {
+				if (taskDetailString.contains(searchKey)) {
 					hasMatched = true;
 				} else {
 					hasMatched = false;
