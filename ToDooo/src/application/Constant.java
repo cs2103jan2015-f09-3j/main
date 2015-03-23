@@ -5,6 +5,7 @@ import java.text.SimpleDateFormat;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
+import javafx.scene.paint.Color;
 
 public final class Constant {
 	public static final int START_ID = 1;
@@ -133,5 +134,18 @@ public final class Constant {
     public static final String CSS_CLASS_CATEGORY = "category";
     public static final String CSS_CLASS_PRIORITY = "priority";
     public static final String CSS_CLASS_RECURRING_COMMANDS = "recurringCommands";
+    
+    public static final String TODAY_TITLE = "TODAY";
+    public static final String OVERDUE_TITLE = "OVERDUE";
+    
+    public static final String EVENT_ICON = "images/eventIcon.png";
+    public static final String FLOATING_ICON = "images/floatingIcon.png";
+    public static final String TIMED_ICON = "images/timedIcon.png";
+    public static final String DATED_ICON = "images/datedIcon.png";
+    
+    public static final Color HIGH_PRIORITY = Color.rgb(196, 1, 9);
+    public static final Color MEDIUM_PRIORITY = Color.rgb(248, 135, 46);
+    public static final Color LOW_PRIORITY = Color.rgb(249, 212, 35);
+    public static final Color NEUTRAL_PRIORITY = Color.WHITE;
 
 }

@@ -34,7 +34,6 @@ import javafx.scene.text.TextAlignment;
 public class BodyController{
 
 	private MainController mainCon;
-	//private ArrayList<Task> taskList = Main.list.getTasks();
 	
 	@FXML AnchorPane anPaneMain;
 	@FXML VBox vBoxAll;
@@ -50,148 +49,38 @@ public class BodyController{
 		mainCon = mainController;
 	}
 	
-	// This method has not been applied SLAP yet.
-	private ArrayList<Task> cloneTaskList(ArrayList<Task> taskList) {
-		ArrayList<Task> tempTaskList = new ArrayList<>();
-		for(int i = 0; i < taskList.size(); i++) {
-			if(!taskList.get(i).getTaskType().name().equalsIgnoreCase("TIMED")) {
-				if(taskList.get(i).getIsRecurring()) {
-					for(int j = 0; j < taskList.get(i).getRecurringTasks().size(); j++) {
-						/*String input = taskList.get(i).getToDo() + "/on " + Main.inputParser.getDateString(taskList.get(i).getRecurringTasks().get(j).getRecurDate());
-						Task t1 = new Task(input);
-						t1.setId(taskList.get(i).getRecurringTasks().get(j).getRecurringTaskId());
-						tempTaskList.add(t1);*/
-						
-						Task t1 = new Task();
-						t1.setBy(taskList.get(i).getBy());
-						t1.setCategory(taskList.get(i).getCategory());
-						t1.setEndDate(taskList.get(i).getEndDate());
-						t1.setFrom(taskList.get(i).getFrom());
-						t1.setId(taskList.get(i).getRecurringTasks().get(j).getRecurringTaskId());
-						t1.setIsRecurring(taskList.get(i).getIsRecurring());
-						t1.setIsValid(taskList.get(i).getIsValid());
-						t1.setOn(taskList.get(i).getRecurringTasks().get(j).getRecurDate());
-						t1.setOriginalText(taskList.get(i).getOriginalText());
-						t1.setPriority(taskList.get(i).getPriority());
-						t1.setRecurringTasks(taskList.get(i).getRecurringTasks());
-						t1.setRepeat(taskList.get(i).getRepeat());
-						t1.setRepeatDay(taskList.get(i).getRepeatDay());
-						t1.setRepeatUntil(taskList.get(i).getRepeatUntil());
-						t1.setStartDate(taskList.get(i).getRecurringTasks().get(j).getRecurDate());
-						t1.setStatus(taskList.get(i).getStatus());
-						t1.setTaskType(taskList.get(i).getTaskType());
-						t1.setTo(taskList.get(i).getTo());
-						t1.setToDo(taskList.get(i).getToDo());
-						tempTaskList.add(t1);
-					}
-					
-				} else if(taskList.get(i).getIsRecurring() && taskList.get(i).getTaskType().name().equalsIgnoreCase("DATED")) {
-					for(int j = 0; j < taskList.get(i).getRecurringTasks().size(); j++) {
-						/*String input = taskList.get(i).getToDo() + "/by " + Main.inputParser.getDateString(taskList.get(i).getRecurringTasks().get(j).getRecurDate());
-						Task t2 = new Task(input);
-						t2.setId(taskList.get(i).getRecurringTasks().get(j).getRecurringTaskId());
-						tempTaskList.add(t2);*/
-						
-						Task t2 = new Task();
-						t2.setBy(taskList.get(i).getRecurringTasks().get(j).getRecurDate());
-						t2.setCategory(taskList.get(i).getCategory());
-						t2.setEndDate(taskList.get(i).getEndDate());
-						t2.setFrom(taskList.get(i).getFrom());
-						t2.setId(taskList.get(i).getRecurringTasks().get(j).getRecurringTaskId());
-						t2.setIsRecurring(taskList.get(i).getIsRecurring());
-						t2.setIsValid(taskList.get(i).getIsValid());
-						t2.setOn(taskList.get(i).getOn());
-						t2.setOriginalText(taskList.get(i).getOriginalText());
-						t2.setPriority(taskList.get(i).getPriority());
-						t2.setRecurringTasks(taskList.get(i).getRecurringTasks());
-						t2.setRepeat(taskList.get(i).getRepeat());
-						t2.setRepeatDay(taskList.get(i).getRepeatDay());
-						t2.setRepeatUntil(taskList.get(i).getRepeatUntil());
-						t2.setStartDate(taskList.get(i).getRecurringTasks().get(j).getRecurDate());
-						t2.setStatus(taskList.get(i).getStatus());
-						t2.setTaskType(taskList.get(i).getTaskType());
-						t2.setTo(taskList.get(i).getTo());
-						t2.setToDo(taskList.get(i).getToDo());
-						tempTaskList.add(t2);
-						
-					}
-					
-				} else {
-					Task t3 = new Task();
-					t3 = taskList.get(i);
-					tempTaskList.add(t3);
-				}
-				
-			} else {
-				Calendar start = Calendar.getInstance();
-				start.setTime(taskList.get(i).getFrom());
-				Calendar end = Calendar.getInstance();
-				end.setTime(taskList.get(i).getTo());
-				
-				for (Date date = start.getTime(); !start.after(end); start.add(Calendar.DATE, 1), date = start.getTime()) {
-					Task t4 = new Task();
-					t4.setBy(taskList.get(i).getBy());
-					t4.setCategory(taskList.get(i).getCategory());
-					t4.setEndDate(taskList.get(i).getEndDate());
-					t4.setFrom(taskList.get(i).getFrom());
-					t4.setId(taskList.get(i).getId());
-					t4.setIsRecurring(taskList.get(i).getIsRecurring());
-					t4.setIsValid(taskList.get(i).getIsValid());
-					t4.setOn(taskList.get(i).getOn());
-					t4.setOriginalText(taskList.get(i).getOriginalText());
-					t4.setPriority(taskList.get(i).getPriority());
-					t4.setRecurringTasks(taskList.get(i).getRecurringTasks());
-					t4.setRepeat(taskList.get(i).getRepeat());
-					t4.setRepeatDay(taskList.get(i).getRepeatDay());
-					t4.setRepeatUntil(taskList.get(i).getRepeatUntil());
-					t4.setStartDate(date);
-					t4.setStatus(taskList.get(i).getStatus());
-					t4.setTaskType(taskList.get(i).getTaskType());
-					t4.setTo(taskList.get(i).getTo());
-					t4.setToDo(taskList.get(i).getToDo());
-					tempTaskList.add(t4);
-				}
-			}
-		}
-		return tempTaskList;
-	}
-	
 	public void loadListByDate(String tabName) {
 		vBoxAll.getChildren().clear();
 		
+		int indexForNextLoop = 0;
+		String date1 = "";
+		String date2 = "";
 		ArrayList<Task> taskList = Main.list.getTasks();
 		ArrayList<Task> unsortedTemp = cloneTaskList(taskList);
 		ArrayList<Task> overdue = new ArrayList<>();
 		ArrayList<Task> today = new ArrayList<>();
 		ArrayList<Task> floating = new ArrayList<>();
-		
-		//sort the tempTaskList arraylist
+	
 		Task tClass = new Task();
 		ArrayList<Task> temp = tClass.viewListByAll(unsortedTemp);
 		
-		Calendar c = new GregorianCalendar();
-	    c.set(Calendar.HOUR_OF_DAY, 0); 
-	    c.set(Calendar.MINUTE, 0);
-	    c.set(Calendar.SECOND, 0);
-	    Date todayDate = c.getTime();
-	    int indexForNextLoop = 0;
+	    Date todayDate = getTodayDate().getTime();
 		
 	    for(int i = 0; i < temp.size(); i++) {
 			
-			if(temp.get(i).getTaskType().name().equalsIgnoreCase("FLOATING")||
+			if(temp.get(i).getTaskType().name().equalsIgnoreCase(TaskType.FLOATING.toString())||
 				DateParser.compareDate(todayDate, temp.get(i).getStartDate()) || temp.get(i).getStartDate().before(todayDate)) {
 				
-				if(temp.get(i).getTaskType().name().equalsIgnoreCase("FLOATING")) {
+				if(temp.get(i).getTaskType().name().equalsIgnoreCase(TaskType.FLOATING.toString())) {
 					floating.add(temp.get(i));
 				} else {
-					
 					if(temp.get(i).getStartDate().before(todayDate)) {
 						overdue.add(temp.get(i));
 					} else if(DateParser.compareDate(todayDate, temp.get(i).getStartDate())) {
 						today.add(temp.get(i));
 					}
-					
 				}
+				
 				indexForNextLoop = i+1;
 			} else {
 				indexForNextLoop = i;
@@ -202,43 +91,36 @@ public class BodyController{
 	    if(!overdue.isEmpty()) {
 			for(int b = 0; b < overdue.size(); b++) {
 				if(b == 0) {
-					generateListByDate("OVERDUE", overdue.get(b), tabName, overdue.get(b).getTaskType().name());
+					generateListByDate(Constant.OVERDUE_TITLE, overdue.get(b), tabName, overdue.get(b).getTaskType());
 				} else {
-					generateListByDate("", overdue.get(b), tabName, overdue.get(b).getTaskType().name());
+					generateListByDate("", overdue.get(b), tabName, overdue.get(b).getTaskType());
 				}
+			}
+			
+			if(!floating.isEmpty()) {
+				addHorizontalBar();
 			}
 		}
 		
 		if(!today.isEmpty()) {
 			for(int d = 0; d < today.size(); d++) {
 				if(d == 0) {
-					generateListByDate("TODAY", today.get(d), tabName, today.get(d).getTaskType().name());
+					generateListByDate(Constant.TODAY_TITLE, today.get(d), tabName, today.get(d).getTaskType());
 				} else {
-					generateListByDate("", today.get(d), tabName, today.get(d).getTaskType().name());
+					generateListByDate("", today.get(d), tabName, today.get(d).getTaskType());
 				}
 			}
 			
 			if(!floating.isEmpty()) {
-				Line hBar = new Line();
-				hBar.setStartX(4.5);
-				hBar.setStartY(0.5);
-				hBar.setEndX(760);
-				hBar.setEndY(0.5);
-				hBar.getStyleClass().add("hBar");
-				Pane paneHBar = new Pane(hBar);
-				paneHBar.getStyleClass().add("paneHBar");
-				vBoxAll.getChildren().add(paneHBar);
+				addHorizontalBar();
 			}
 		}
 		
 		if(!floating.isEmpty()) {
 			for(int a = 0; a < floating.size(); a++) {
-				generateListByDate("", floating.get(a), tabName, floating.get(a).getTaskType().name());
+				generateListByDate("", floating.get(a), tabName, floating.get(a).getTaskType());
 			}
 		}
-		
-		String date1 = "";
-		String date2 = "";
 		
 		for(int j = indexForNextLoop; j < temp.size(); j++) {
 			date1 = Constant.DATEOUTPUT.format(temp.get(j).getStartDate());
@@ -248,25 +130,92 @@ public class BodyController{
 			}
 			
 			if(j == indexForNextLoop || !date1.equals(date2)) {
-				generateListByDate(date1, temp.get(j), tabName, temp.get(j).getTaskType().name());
+				generateListByDate(date1, temp.get(j), tabName, temp.get(j).getTaskType());
 			} else {
-				generateListByDate("", temp.get(j), tabName, temp.get(j).getTaskType().name());
+				generateListByDate("", temp.get(j), tabName, temp.get(j).getTaskType());
 			}
 		}
 	}
 	
-	private void generateListByDate(String header, Task t, String tab, String taskType) {
-		String imgName = "";
+	private Calendar getTodayDate() {
+		Calendar c = new GregorianCalendar();
+	    c.set(Calendar.HOUR_OF_DAY, 0); 
+	    c.set(Calendar.MINUTE, 0);
+	    c.set(Calendar.SECOND, 0);
+	    
+	    return c;
+	}
+	
+	private Task copyItems(Task originalTask, String recurringId, Date onDate, Date byDate, Date startDate) {
+		Task t = new Task();
+		t.setBy(byDate);
+		t.setCategory(originalTask.getCategory());
+		t.setEndDate(originalTask.getEndDate());
+		t.setFrom(originalTask.getFrom());
+		t.setId(recurringId);
+		t.setIsRecurring(originalTask.getIsRecurring());
+		t.setIsValid(originalTask.getIsValid());
+		t.setOn(onDate);
+		t.setOriginalText(originalTask.getOriginalText());
+		t.setPriority(originalTask.getPriority());
+		t.setRecurringTasks(originalTask.getRecurringTasks());
+		t.setRepeat(originalTask.getRepeat());
+		t.setRepeatDay(originalTask.getRepeatDay());
+		t.setRepeatUntil(originalTask.getRepeatUntil());
+		t.setStartDate(startDate);
+		t.setStatus(originalTask.getStatus());
+		t.setTaskType(originalTask.getTaskType());
+		t.setTo(originalTask.getTo());
+		t.setToDo(originalTask.getToDo());
 		
-		if(!header.equals("")) {
-			Label lblTitle = new Label();
-			if(header.equals("TODAY") || header.equals("OVERDUE")) {
-				lblTitle.getStyleClass().add("todayTitle");
+		return t;
+	}
+	
+	private ArrayList<Task> cloneTaskList(ArrayList<Task> taskList) {
+		ArrayList<Task> tempTaskList = new ArrayList<>();
+		for(int i = 0; i < taskList.size(); i++) {
+			if(!taskList.get(i).getTaskType().name().equalsIgnoreCase(TaskType.TIMED.toString())) {
+				if(taskList.get(i).getIsRecurring() && taskList.get(i).getTaskType().name().equalsIgnoreCase(TaskType.EVENT.toString())) {
+					for(int j = 0; j < taskList.get(i).getRecurringTasks().size(); j++) {
+						Task t1 = copyItems(taskList.get(i), taskList.get(i).getRecurringTasks().get(j).getRecurringTaskId(), 
+								taskList.get(i).getRecurringTasks().get(j).getRecurDate(), taskList.get(i).getBy(), 
+								taskList.get(i).getRecurringTasks().get(j).getRecurDate());
+						
+						tempTaskList.add(t1);
+					}
+				} else if(taskList.get(i).getIsRecurring() && taskList.get(i).getTaskType().name().equalsIgnoreCase(TaskType.DATED.toString())) {
+					for(int j = 0; j < taskList.get(i).getRecurringTasks().size(); j++) {
+						Task t2 = copyItems(taskList.get(i), taskList.get(i).getRecurringTasks().get(j).getRecurringTaskId(), 
+								taskList.get(i).getOn(), taskList.get(i).getRecurringTasks().get(j).getRecurDate(), 
+								taskList.get(i).getRecurringTasks().get(j).getRecurDate());
+						
+						tempTaskList.add(t2);
+					}
+				} else {
+					Task t3 = new Task();
+					t3 = taskList.get(i);
+					tempTaskList.add(t3);
+				}
 			} else {
-				lblTitle.getStyleClass().add("dateTitle");
+				Calendar start = Calendar.getInstance();
+				start.setTime(taskList.get(i).getFrom());
+				Calendar end = Calendar.getInstance();
+				end.setTime(taskList.get(i).getTo());
+				
+				for (Date date = start.getTime(); !start.after(end); start.add(Calendar.DATE, 1), date = start.getTime()) {
+					Task t4 = copyItems(taskList.get(i), taskList.get(i).getId(), taskList.get(i).getOn(), taskList.get(i).getBy(), date);
+					
+					tempTaskList.add(t4);
+				}
 			}
-			lblTitle.setText(header);
-			vBoxAll.getChildren().add(lblTitle);
+		}
+		
+		return tempTaskList;
+	}
+	
+	private void generateListByDate(String header, Task t, String tab, TaskType taskType) {
+		if(!header.equals("")) {
+			addTitle(header, vBoxAll);
 		}
 		
 		BorderPane bPane = new BorderPane();
@@ -275,20 +224,70 @@ public class BodyController{
 		HBox hBox1 = new HBox();
 		bPane.setLeft(hBox1);
 		
-		if(tab.equalsIgnoreCase("All")) {
-			vBoxAll.getChildren().add(bPane);
-		} else {
-			// other additional tab
-		}
+		HBox hBox2 = new HBox();
+		bPane.setRight(hBox2);
 		
-		switch(taskType) {
-		case "EVENT": imgName = "images/eventIcon.png";
+		addIcon(taskType, hBox1);
+		addId(t, hBox1);
+		addPriorityBar(t, hBox1);
+		addDesc(t, hBox1);
+		addCategory(t, hBox1);
+		
+		if(!taskType.toString().equalsIgnoreCase(TaskType.FLOATING.toString())) {
+			
+			if(taskType.toString().equalsIgnoreCase(TaskType.EVENT.toString())) {
+				addSingleDateTime(t.getOn(), hBox2, "", Constant.TIMEOUTPUT);
+			} else if(taskType.toString().equalsIgnoreCase(TaskType.DATED.toString())) {
+				addSingleDateTime(t.getBy(), hBox2, "by", Constant.TIMEOUTPUT);
+			} else if(taskType.toString().equalsIgnoreCase(TaskType.TIMED.toString())) {
+				if(DateParser.compareDate(t.getFrom(), t.getTo())) {
+					addDoubleDateTime(t.getFrom(), t.getTo(), hBox2, "from", "to", Constant.TIMEOUTPUT);
+				} else if(DateParser.compareDate(t.getStartDate(), t.getFrom())) {
+					addSingleDateTime(t.getFrom(), hBox2, "from", Constant.TIMEOUTPUT);
+				} else if(DateParser.compareDate(t.getStartDate(),t.getTo())) {
+					addSingleDateTime(t.getTo(), hBox2, "to", Constant.TIMEOUTPUT);
+				} else {
+					addDoubleDateTime(t.getFrom(), t.getTo(), hBox2, "from", "to", Constant.DATEOUTPUT_FOR_TIMEDTASK);
+				}
+			}
+		} 
+		
+		vBoxAll.getChildren().add(bPane);
+	}
+	
+	private void addHorizontalBar() {
+		Line hBar = new Line();
+		hBar.setStartX(4.5);
+		hBar.setStartY(0.5);
+		hBar.setEndX(760);
+		hBar.setEndY(0.5);
+		hBar.getStyleClass().add("hBar");
+		Pane paneHBar = new Pane(hBar);
+		paneHBar.getStyleClass().add("paneHBar");
+		vBoxAll.getChildren().add(paneHBar);
+	}
+	
+	private void addTitle(String header, VBox container) {
+		Label lblTitle = new Label();
+		if(header.equals(Constant.TODAY_TITLE) || header.equals(Constant.OVERDUE_TITLE)) {
+			lblTitle.getStyleClass().add("todayTitle");
+		} else {
+			lblTitle.getStyleClass().add("dateTitle");
+		}
+		lblTitle.setText(header);
+		container.getChildren().add(lblTitle);
+	}
+	
+	private void addIcon(TaskType taskType, HBox hBox) {
+		String imgName = "";
+		switch(taskType.toString()) {
+		case "EVENT": imgName = Constant.EVENT_ICON;
 		break;
-		case "FLOATING": imgName = "images/floatingIcon.png";
+		case "FLOATING": imgName = Constant.FLOATING_ICON;
 		break;
-		case "TIMED": imgName = "images/timedIcon.png";
+		case "TIMED": imgName = Constant.TIMED_ICON;
 		break;
-		case "DATED": imgName = "images/datedIcon.png";
+		case "DATED": imgName = Constant.DATED_ICON;
 		break;
 		}
 		
@@ -298,97 +297,72 @@ public class BodyController{
 		icon.getStyleClass().add("iconImage");
 		icon.setFitHeight(20);
         icon.setPreserveRatio(true);
-        hBox1.getChildren().add(icon);
-        
-        Label lblId = new Label(t.getId());
+        hBox.getChildren().add(icon);
+	}
+	
+	private void addId(Task t, HBox hBox) {
+		Label lblId = new Label(t.getId());
 		lblId.getStyleClass().add("labelId");
-		hBox1.getChildren().add(lblId);
-		
+		hBox.getChildren().add(lblId);
+	}
+	
+	private void addPriorityBar(Task t, HBox hBox) {
 		Line priorityBar = new Line();
 		priorityBar.setStartY(18);
 		priorityBar.getStyleClass().add("priorityBar");
 		switch (t.getPriority().name()) {
-			case "HIGH": priorityBar.setStroke(Color.rgb(196, 1, 9));
+			case "HIGH": priorityBar.setStroke(Constant.HIGH_PRIORITY);
 			break;
-			case "MEDIUM": priorityBar.setStroke(Color.rgb(248, 135, 46));
+			case "MEDIUM": priorityBar.setStroke(Constant.MEDIUM_PRIORITY);
 			break;
-			case "LOW": priorityBar.setStroke(Color.rgb(249, 212, 35));
+			case "LOW": priorityBar.setStroke(Constant.LOW_PRIORITY);
 			break;
-			case "NEUTRAL": priorityBar.setStroke(Color.WHITE);
+			case "NEUTRAL": priorityBar.setStroke(Constant.NEUTRAL_PRIORITY);
 			break;
 		}
 		
-		hBox1.getChildren().add(priorityBar);
-		
+		hBox.getChildren().add(priorityBar);
+	}
+	
+	private void addDesc(Task t, HBox hBox) {
 		Label lblDesc = new Label(t.getToDo());
 		lblDesc.getStyleClass().add("labelDesc");
-		hBox1.getChildren().add(lblDesc);
-		
-		if(!t.getCategory().equalsIgnoreCase("Uncategorised")) {
+		hBox.getChildren().add(lblDesc);
+	}
+	
+	private void addCategory(Task t, HBox hBox) {
+		if(!t.getCategory().equalsIgnoreCase(Constant.CATEGORY_UNCATEGORISED)) {
 			Label lblCategory = new Label(t.getCategory());
 			lblCategory.getStyleClass().add("labelCategory");
-			hBox1.getChildren().add(lblCategory);
+			hBox.getChildren().add(lblCategory);
 		}
+	}
+	
+	private void addSingleDateTime(Date d, HBox hBox, String strBeforeTime, SimpleDateFormat f) {
+		Label lbl = new Label(strBeforeTime);
+		lbl.getStyleClass().add("labelBeforeTime");
 		
-		HBox hBox2 = new HBox();
-		bPane.setRight(hBox2);
+		Label lblDateTime = new Label(f.format(d));
+		lblDateTime.getStyleClass().add("labelDateTime");
 		
-		Label lblFrom = new Label();
-		lblFrom.getStyleClass().add("labelBeforeTime");
-		Label lblTo = new Label();
-		lblTo.getStyleClass().add("labelBeforeTime");
+		hBox.getChildren().add(lbl);
+		hBox.getChildren().add(lblDateTime);
+	}
+	
+	private void addDoubleDateTime(Date d1, Date d2, HBox hBox, String str1, String str2, SimpleDateFormat f) {
+		Label lbl1 = new Label(str1);
+		lbl1.getStyleClass().add("labelBeforeTime");
+		Label lbl2 = new Label(str2);
+		lbl2.getStyleClass().add("labelBeforeTime");
 		
-		Label lblDateTime1 = new Label();
+		Label lblDateTime1 = new Label(f.format(d1));
 		lblDateTime1.getStyleClass().add("labelDateTime");
-		Label lblDateTime2 = new Label();
+		Label lblDateTime2 = new Label(f.format(d2));
 		lblDateTime2.getStyleClass().add("labelDateTime");
 		
-		String output = "";
-		
-		if(!taskType.equalsIgnoreCase("FLOATING")) {
-			
-			if(taskType.equalsIgnoreCase("EVENT")) {
-				lblDateTime1.setText(Constant.TIMEOUTPUT.format(t.getOn()));
-				hBox2.getChildren().add(lblFrom);
-				hBox2.getChildren().add(lblDateTime1);
-			} else if(taskType.equalsIgnoreCase("DATED")) {
-				lblFrom.setText("by");
-				lblDateTime1.setText(Constant.TIMEOUTPUT.format(t.getBy()));
-				hBox2.getChildren().add(lblFrom);
-				hBox2.getChildren().add(lblDateTime1);
-			} else if(taskType.equalsIgnoreCase("TIMED")) {
-				if(DateParser.compareDate(t.getFrom(), t.getTo())) {
-					lblFrom.setText("from");
-					lblDateTime1.setText(Constant.TIMEOUTPUT.format(t.getFrom()));
-					lblTo.setText("to");
-					lblDateTime2.setText(Constant.TIMEOUTPUT.format(t.getTo()));
-					hBox2.getChildren().add(lblFrom);
-					hBox2.getChildren().add(lblDateTime1);
-					hBox2.getChildren().add(lblTo);
-					hBox2.getChildren().add(lblDateTime2);
-				} else if(DateParser.compareDate(t.getStartDate(), t.getFrom())) {
-					lblFrom.setText("from");
-					lblDateTime1.setText(Constant.TIMEOUTPUT.format(t.getFrom()));
-					hBox2.getChildren().add(lblFrom);
-					hBox2.getChildren().add(lblDateTime1);
-				} else if(DateParser.compareDate(t.getStartDate(),t.getTo())) {
-					lblTo.setText("to");
-					lblDateTime2.setText(Constant.TIMEOUTPUT.format(t.getTo()));
-					hBox2.getChildren().add(lblTo);
-					hBox2.getChildren().add(lblDateTime2);
-				} else {
-					lblFrom.setText("from");
-					lblDateTime1.setText(Constant.DATEOUTPUT_FOR_TIMEDTASK.format(t.getFrom()));
-					lblTo.setText("to");
-					lblDateTime2.setText(Constant.DATEOUTPUT_FOR_TIMEDTASK.format(t.getTo()));
-					hBox2.getChildren().add(lblFrom);
-					hBox2.getChildren().add(lblDateTime1);
-					hBox2.getChildren().add(lblTo);
-					hBox2.getChildren().add(lblDateTime2);
-				}
-			}
-		} else {
-			lblDateTime1.setText("");
-		}
+		hBox.getChildren().add(lbl1);
+		hBox.getChildren().add(lblDateTime1);
+		hBox.getChildren().add(lbl2);
+		hBox.getChildren().add(lblDateTime2);
 	}
 }
