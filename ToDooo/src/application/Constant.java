@@ -134,6 +134,8 @@ public final class Constant {
     public static final String CSS_CLASS_CATEGORY = "category";
     public static final String CSS_CLASS_PRIORITY = "priority";
     public static final String CSS_CLASS_RECURRING_COMMANDS = "recurringCommands";
+    public static final String CSS_CLASS_SEARCH_ATTRIBUTES = "searchAttributes";
+    
     
     public static final String TODAY_TITLE = "TODAY";
     public static final String OVERDUE_TITLE = "OVERDUE";

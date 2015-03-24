@@ -7,6 +7,7 @@ import org.fxmisc.richtext.StyleClassedTextArea;
 import application.Command;
 import application.Constant;
 import application.Main;
+import application.SearchAttribute;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
@@ -78,6 +79,7 @@ public class HeaderController{
 		highlightCategory(lowerCase);
 		highlightPriority(lowerCase);
 		highlightRecurringCommands(lowerCase);
+		highlightSearchAttributes(lowerCase);
 	}
 	
 	private void highlightRecurringCommands(String lowerCase) {
@@ -183,6 +185,7 @@ public class HeaderController{
 			endIndex = -1;
 		}
 	}
+	
 	private void highlightActionCommands(String lowerCase) {
 		String basicCommand = null;
 		String advancedCommand = null;
@@ -213,7 +216,30 @@ public class HeaderController{
 			endIndex = -1;
 		}
 	}
+			
+	private void highlightSearchAttributes(String lowerCase) {
+		String command = null;
+		int startIndex = -1;
+		int endIndex = -1;
 		
+		for (SearchAttribute searchAttribute : SearchAttribute.values()) {
+			command = searchAttribute.getCommand();
+			
+			if (lowerCase.contains(command)) {
+				startIndex = lowerCase.indexOf(command);
+				endIndex = startIndex + command.length();
+			} 
+			
+			if (startIndex != -1 && endIndex != -1) {
+				textArea.setStyleClass(startIndex, endIndex, 
+									   Constant.CSS_CLASS_SEARCH_ATTRIBUTES);			
+			} 
+			
+			startIndex = -1;
+			endIndex = -1;
+		}
+	}
+	
 	@FXML
 	public void loadSettingMouse(MouseEvent e) throws IOException {
 		executeSetting();
