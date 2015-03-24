@@ -42,20 +42,74 @@ public class BodyController{
 	
 	@FXML
 	public void initialize() {
-		loadListByDate(Constant.TAB_NAME_ALL);
+		loadListByDate("main");
 	}
 	
 	public void init(MainController mainController) {
 		mainCon = mainController;
 	}
 	
-	public void loadListByDate(String tabName) {
+	public ArrayList<Task> cloneTaskList(ArrayList<Task> taskList) {
+		ArrayList<Task> tempTaskList = new ArrayList<>();
+		Task task;
+		String taskType;
+		Date recurringDate;
+		String recurringId;
+		boolean isRecurring;
+		
+		for(int i = 0; i < taskList.size(); i++) {
+			task = taskList.get(i);
+			taskType = task.getTaskType().toString();
+			isRecurring = task.getIsRecurring();
+			
+			if(!taskType.equalsIgnoreCase(TaskType.TIMED.toString())) {
+				if(isRecurring && taskType.equalsIgnoreCase(TaskType.EVENT.toString())) {
+					for(int j = 0; j < task.getRecurringTasks().size(); j++) {
+						recurringDate = task.getRecurringTasks().get(j).getRecurDate();
+						recurringId = task.getRecurringTasks().get(j).getRecurringTaskId();
+						
+						Task t1 = copyItems(task, recurringId, recurringDate, task.getBy(), recurringDate);
+						
+						tempTaskList.add(t1);
+					}
+				} else if(isRecurring && taskType.equalsIgnoreCase(TaskType.DATED.toString())) {
+					for(int j = 0; j < task.getRecurringTasks().size(); j++) {
+						recurringDate = task.getRecurringTasks().get(j).getRecurDate();
+						recurringId = task.getRecurringTasks().get(j).getRecurringTaskId();
+						Task t2 = copyItems(task, recurringId, task.getOn(), recurringDate, recurringDate);
+						
+						tempTaskList.add(t2);
+					}
+				} else {
+					Task t3 = new Task();
+					t3 = task;
+					tempTaskList.add(t3);
+				}
+			} else {
+				Calendar start = Calendar.getInstance();
+				start.setTime(task.getFrom());
+				Calendar end = Calendar.getInstance();
+				end.setTime(task.getTo());
+				
+				for (Date date = start.getTime(); !start.after(end); start.add(Calendar.DATE, 1), date = start.getTime()) {
+					Task t4 = copyItems(task, task.getId(), task.getOn(), task.getBy(), date);
+					
+					tempTaskList.add(t4);
+				}
+			}
+		}
+		
+		return tempTaskList;
+	}
+	
+	public void loadListByDate(String displayType) {
 		vBoxAll.getChildren().clear();
 		
 		int indexForNextLoop = 0;
 		String date1 = "";
 		String date2 = "";
-		ArrayList<Task> taskList = Main.list.getTasks();
+		
+		ArrayList<Task> taskList = getList(displayType);
 		ArrayList<Task> unsortedTemp = cloneTaskList(taskList);
 		ArrayList<Task> overdue = new ArrayList<>();
 		ArrayList<Task> today = new ArrayList<>();
@@ -123,6 +177,14 @@ public class BodyController{
 		}
 	}
 	
+	private ArrayList<Task> getList(String type) {
+		if(type.equalsIgnoreCase("main")) {
+			return Main.list.getTasks();
+		} else {
+			return Main.searchResults;
+		}
+	}
+	
 	private Calendar getTodayDate() {
 		Calendar c = new GregorianCalendar();
 	    c.set(Calendar.HOUR_OF_DAY, 0); 
@@ -155,48 +217,6 @@ public class BodyController{
 		t.setToDo(originalTask.getToDo());
 		
 		return t;
-	}
-	
-	private ArrayList<Task> cloneTaskList(ArrayList<Task> taskList) {
-		ArrayList<Task> tempTaskList = new ArrayList<>();
-		for(int i = 0; i < taskList.size(); i++) {
-			if(!taskList.get(i).getTaskType().name().equalsIgnoreCase(TaskType.TIMED.toString())) {
-				if(taskList.get(i).getIsRecurring() && taskList.get(i).getTaskType().name().equalsIgnoreCase(TaskType.EVENT.toString())) {
-					for(int j = 0; j < taskList.get(i).getRecurringTasks().size(); j++) {
-						Task t1 = copyItems(taskList.get(i), taskList.get(i).getRecurringTasks().get(j).getRecurringTaskId(), 
-								taskList.get(i).getRecurringTasks().get(j).getRecurDate(), taskList.get(i).getBy(), 
-								taskList.get(i).getRecurringTasks().get(j).getRecurDate());
-						
-						tempTaskList.add(t1);
-					}
-				} else if(taskList.get(i).getIsRecurring() && taskList.get(i).getTaskType().name().equalsIgnoreCase(TaskType.DATED.toString())) {
-					for(int j = 0; j < taskList.get(i).getRecurringTasks().size(); j++) {
-						Task t2 = copyItems(taskList.get(i), taskList.get(i).getRecurringTasks().get(j).getRecurringTaskId(), 
-								taskList.get(i).getOn(), taskList.get(i).getRecurringTasks().get(j).getRecurDate(), 
-								taskList.get(i).getRecurringTasks().get(j).getRecurDate());
-						
-						tempTaskList.add(t2);
-					}
-				} else {
-					Task t3 = new Task();
-					t3 = taskList.get(i);
-					tempTaskList.add(t3);
-				}
-			} else {
-				Calendar start = Calendar.getInstance();
-				start.setTime(taskList.get(i).getFrom());
-				Calendar end = Calendar.getInstance();
-				end.setTime(taskList.get(i).getTo());
-				
-				for (Date date = start.getTime(); !start.after(end); start.add(Calendar.DATE, 1), date = start.getTime()) {
-					Task t4 = copyItems(taskList.get(i), taskList.get(i).getId(), taskList.get(i).getOn(), taskList.get(i).getBy(), date);
-					
-					tempTaskList.add(t4);
-				}
-			}
-		}
-		
-		return tempTaskList;
 	}
 	
 	private void generateListByDate(String header, Task t) {

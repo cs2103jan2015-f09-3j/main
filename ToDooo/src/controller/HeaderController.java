@@ -45,7 +45,7 @@ public class HeaderController{
 			}	
 			lblSysMsg.setText(systemMsg);	
 			
-			mainCon.bodyController.loadListByDate(Constant.TAB_NAME_ALL);	
+			mainCon.bodyController.loadListByDate("main");	
 			mainCon.executeSystemMsgTimerTask();	
 		} 			
 	}

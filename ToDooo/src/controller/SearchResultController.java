@@ -6,13 +6,13 @@ import application.Constant;
 import application.Main;
 import application.Task;
 import javafx.fxml.FXML;
-import javafx.scene.control.Label;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 
 public class SearchResultController {
 	
 	private MainController mainCon;
+	private BodyController bodyCon;
 	private ArrayList<Task> resultList;
 	@FXML AnchorPane anPaneSearchResult;
 	@FXML VBox vBoxSearchResult;
@@ -27,11 +27,9 @@ public class SearchResultController {
 	}
 	
 	public void loadSearchList() {
-		resultList = Main.searchResults;
-		for(int i = 0; i < resultList.size(); i++) {
-			Label lbl = new Label(resultList.get(i).getToDo());
-			vBoxSearchResult.getChildren().add(lbl);
-		}
+		vBoxSearchResult.getChildren().clear();
+		
+		bodyCon.loadListByDate("searchResult");
 		
 	}
 }

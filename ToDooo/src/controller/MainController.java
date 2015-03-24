@@ -49,7 +49,7 @@ public class MainController{
 	public void initialize() {
 		headerController.init(this);
 		bodyController.init(this);
-		bodyController.loadListByDate(Constant.TAB_NAME_ALL);
+		bodyController.loadListByDate("main");
 	}
 
 	@FXML
@@ -58,10 +58,10 @@ public class MainController{
 		
 		if (Constant.SHORTCUT_UNDO.match(e)) {
 			systemMsg = executeUndo();
-			bodyController.loadListByDate(Constant.TAB_NAME_ALL);
+			bodyController.loadListByDate("main");
 		} else if (Constant.SHORTCUT_REDO.match(e)) {
 			systemMsg = executeRedo();
-			bodyController.loadListByDate(Constant.TAB_NAME_ALL);
+			bodyController.loadListByDate("main");
 		} else {
 			return;
 		}
