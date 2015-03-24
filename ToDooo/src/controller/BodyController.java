@@ -52,10 +52,10 @@ public class BodyController{
 	public ArrayList<Task> cloneTaskList(ArrayList<Task> taskList) {
 		ArrayList<Task> tempTaskList = new ArrayList<>();
 		Task task;
-		String taskType;
 		Date recurringDate;
-		String recurringId;
 		boolean isRecurring;
+		String taskType;
+		String recurringId;
 		
 		for(int i = 0; i < taskList.size(); i++) {
 			task = taskList.get(i);
@@ -63,27 +63,24 @@ public class BodyController{
 			isRecurring = task.getIsRecurring();
 			
 			if(!taskType.equalsIgnoreCase(TaskType.TIMED.toString())) {
-				if(isRecurring && taskType.equalsIgnoreCase(TaskType.EVENT.toString())) {
+				if(isRecurring) {
 					for(int j = 0; j < task.getRecurringTasks().size(); j++) {
+						Task t1 = null;
 						recurringDate = task.getRecurringTasks().get(j).getRecurDate();
 						recurringId = task.getRecurringTasks().get(j).getRecurringTaskId();
 						
-						Task t1 = copyItems(task, recurringId, recurringDate, task.getBy(), recurringDate);
+						if(taskType.equalsIgnoreCase(TaskType.EVENT.toString())) {
+							t1 = copyItems(task, recurringId, recurringDate, task.getBy(), recurringDate);
+						} else if(taskType.equalsIgnoreCase(TaskType.DATED.toString())) {
+							t1 = copyItems(task, recurringId, task.getOn(), recurringDate, recurringDate);
+						}
 						
 						tempTaskList.add(t1);
 					}
-				} else if(isRecurring && taskType.equalsIgnoreCase(TaskType.DATED.toString())) {
-					for(int j = 0; j < task.getRecurringTasks().size(); j++) {
-						recurringDate = task.getRecurringTasks().get(j).getRecurDate();
-						recurringId = task.getRecurringTasks().get(j).getRecurringTaskId();
-						Task t2 = copyItems(task, recurringId, task.getOn(), recurringDate, recurringDate);
-						
-						tempTaskList.add(t2);
-					}
-				} else {
-					Task t3 = new Task();
-					t3 = task;
-					tempTaskList.add(t3);
+				}else {
+					Task t2 = new Task();
+					t2 = task;
+					tempTaskList.add(t2);
 				}
 			} else {
 				Calendar start = Calendar.getInstance();
@@ -92,9 +89,9 @@ public class BodyController{
 				end.setTime(task.getTo());
 				
 				for (Date date = start.getTime(); !start.after(end); start.add(Calendar.DATE, 1), date = start.getTime()) {
-					Task t4 = copyItems(task, task.getId(), task.getOn(), task.getBy(), date);
+					Task t3 = copyItems(task, task.getId(), task.getOn(), task.getBy(), date);
 					
-					tempTaskList.add(t4);
+					tempTaskList.add(t3);
 				}
 			}
 		}
@@ -106,7 +103,10 @@ public class BodyController{
 		vBoxAll.getChildren().clear();
 		
 		int indexForNextLoop = 0;
-		String date1 = "";
+		Task task;
+	    Date startDate;
+	    String taskType;
+	    String date1 = "";
 		String date2 = "";
 		
 		ArrayList<Task> taskList = getList(displayType);
@@ -121,17 +121,20 @@ public class BodyController{
 	    Date todayDate = getTodayDate().getTime();
 		
 	    for(int i = 0; i < temp.size(); i++) {
-			
-			if(temp.get(i).getTaskType().name().equalsIgnoreCase(TaskType.FLOATING.toString())||
-				DateParser.compareDate(todayDate, temp.get(i).getStartDate()) || temp.get(i).getStartDate().before(todayDate)) {
+			task = temp.get(i);
+			taskType = task.getTaskType().toString();
+			startDate = task.getStartDate();
+	    	
+			if(taskType.equalsIgnoreCase(TaskType.FLOATING.toString())||
+				DateParser.compareDate(todayDate, startDate) || startDate.before(todayDate)) {
 				
-				if(temp.get(i).getTaskType().name().equalsIgnoreCase(TaskType.FLOATING.toString())) {
-					floating.add(temp.get(i));
+				if(taskType.equalsIgnoreCase(TaskType.FLOATING.toString())) {
+					floating.add(task);
 				} else {
-					if(temp.get(i).getStartDate().before(todayDate)) {
-						overdue.add(temp.get(i));
-					} else if(DateParser.compareDate(todayDate, temp.get(i).getStartDate())) {
-						today.add(temp.get(i));
+					if(startDate.before(todayDate)) {
+						overdue.add(task);
+					} else if(DateParser.compareDate(todayDate, startDate)) {
+						today.add(task);
 					}
 				}
 				
@@ -163,16 +166,18 @@ public class BodyController{
 		}
 		
 		for(int j = indexForNextLoop; j < temp.size(); j++) {
-			date1 = Constant.DATEOUTPUT.format(temp.get(j).getStartDate());
+			task = temp.get(j);
+			
+			date1 = Constant.DATEOUTPUT.format(task.getStartDate());
 			
 			if(j != indexForNextLoop) {
 				date2 = Constant.DATEOUTPUT.format(temp.get(j-1).getStartDate());
 			}
 			
 			if(j == indexForNextLoop || !date1.equals(date2)) {
-				generateListByDate(date1, temp.get(j));
+				generateListByDate(date1, task);
 			} else {
-				generateListByDate("", temp.get(j));
+				generateListByDate("", task);
 			}
 		}
 	}
@@ -187,6 +192,7 @@ public class BodyController{
 	
 	private Calendar getTodayDate() {
 		Calendar c = new GregorianCalendar();
+		
 	    c.set(Calendar.HOUR_OF_DAY, 0); 
 	    c.set(Calendar.MINUTE, 0);
 	    c.set(Calendar.SECOND, 0);
@@ -196,6 +202,7 @@ public class BodyController{
 	
 	private Task copyItems(Task originalTask, String recurringId, Date onDate, Date byDate, Date startDate) {
 		Task t = new Task();
+		
 		t.setBy(byDate);
 		t.setCategory(originalTask.getCategory());
 		t.setEndDate(originalTask.getEndDate());
@@ -220,6 +227,13 @@ public class BodyController{
 	}
 	
 	private void generateListByDate(String header, Task t) {
+		String taskType = t.getTaskType().toString();
+		Date onDate = t.getOn();
+		Date byDate = t.getBy();
+		Date fromDate = t.getFrom();
+		Date toDate = t.getTo();
+		Date startDate = t.getStartDate();
+		
 		if(!header.equals("")) {
 			addTitle(header, vBoxAll);
 		}
@@ -239,22 +253,28 @@ public class BodyController{
 		addDesc(t, hBox1);
 		addCategory(t, hBox1);
 		
-		if(!t.getTaskType().toString().equalsIgnoreCase(TaskType.FLOATING.toString())) {
+		if(!taskType.equalsIgnoreCase(TaskType.FLOATING.toString())) {
 			
-			if(t.getTaskType().toString().equalsIgnoreCase(TaskType.EVENT.toString())) {
-				addSingleDateTime(t.getOn(), hBox2, "", Constant.TIMEOUTPUT);
-			} else if(t.getTaskType().toString().equalsIgnoreCase(TaskType.DATED.toString())) {
-				addSingleDateTime(t.getBy(), hBox2, "by", Constant.TIMEOUTPUT);
-			} else if(t.getTaskType().toString().equalsIgnoreCase(TaskType.TIMED.toString())) {
-				if(DateParser.compareDate(t.getFrom(), t.getTo())) {
-					addDoubleDateTime(t.getFrom(), t.getTo(), hBox2, "from", "to", Constant.TIMEOUTPUT);
+			if(taskType.equalsIgnoreCase(TaskType.EVENT.toString())) {
+				
+				addSingleDateTime(onDate, hBox2, "", Constant.TIMEOUTPUT);
+				
+			} else if(taskType.equalsIgnoreCase(TaskType.DATED.toString())) {
+				
+				addSingleDateTime(byDate, hBox2, "by", Constant.TIMEOUTPUT);
+				
+			} else if(taskType.equalsIgnoreCase(TaskType.TIMED.toString())) {
+				
+				if(DateParser.compareDate(fromDate, toDate)) {
+					addDoubleDateTime(fromDate, toDate, hBox2, "from", "to", Constant.TIMEOUTPUT);
 				} else if(DateParser.compareDate(t.getStartDate(), t.getFrom())) {
 					addSingleDateTime(t.getFrom(), hBox2, "from", Constant.TIMEOUTPUT);
-				} else if(DateParser.compareDate(t.getStartDate(),t.getTo())) {
-					addSingleDateTime(t.getTo(), hBox2, "to", Constant.TIMEOUTPUT);
+				} else if(DateParser.compareDate(startDate, toDate)) {
+					addSingleDateTime(toDate, hBox2, "to", Constant.TIMEOUTPUT);
 				} else {
-					addDoubleDateTime(t.getFrom(), t.getTo(), hBox2, "from", "to", Constant.DATEOUTPUT_FOR_TIMEDTASK);
+					addDoubleDateTime(fromDate, toDate, hBox2, "from", "to", Constant.DATEOUTPUT_FOR_TIMEDTASK);
 				}
+				
 			}
 		} 
 		
