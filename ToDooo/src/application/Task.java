@@ -518,7 +518,15 @@ public class Task {
 				case CATEGORY:
 					String categoryOfTaskA = taskA.getCategory();
 					String categoryOfTaskB = taskB.getCategory();
-					comparison = categoryOfTaskA.compareTo(categoryOfTaskB);
+					if (!categoryOfTaskA.equals(Constant.CATEGORY_UNCATEGORISED) && !categoryOfTaskB.equals(Constant.CATEGORY_UNCATEGORISED)) {
+						comparison = categoryOfTaskA.compareTo(categoryOfTaskB);
+					} else if (categoryOfTaskA.equals(Constant.CATEGORY_UNCATEGORISED) & !categoryOfTaskB.equals(Constant.CATEGORY_UNCATEGORISED)) {
+						comparison = 1;
+					} else if (!categoryOfTaskA.equals(Constant.CATEGORY_UNCATEGORISED) && categoryOfTaskB.equals(Constant.CATEGORY_UNCATEGORISED)) {
+						comparison = -1;
+					} else {
+						comparison = 0;
+					}
 					if (comparison != 0) {
 						return comparison;
 					}
