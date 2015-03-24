@@ -46,6 +46,7 @@ public class HeaderController{
 			lblSysMsg.setText(systemMsg);	
 			
 			mainCon.loadListByDate("main");	
+			mainCon.loadListByCategory("category");
 			mainCon.executeSystemMsgTimerTask();	
 		} 			
 	}
