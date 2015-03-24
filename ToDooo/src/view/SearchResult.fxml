@@ -8,94 +8,16 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<AnchorPane fx:id="anPaneOuter" prefHeight="500.0" prefWidth="800.0" style="-fx-background-color: #ffffff;" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+<AnchorPane fx:id="anPaneSearchResult" prefHeight="500.0" prefWidth="800.0" style="-fx-background-color: #ffffff;" visible="false" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.SearchResultController">
    <children>
-      <Label layoutX="14.0" layoutY="14.0" text="Search Results">
+      <Label layoutX="14.0" layoutY="14.0" text="Search Results" textFill="#666666">
          <font>
             <Font name="Segoe UI Bold" size="18.0" />
          </font>
       </Label>
-      <ScrollPane fx:id="sPane" layoutY="49.0" prefHeight="490.0" prefWidth="800.0" style="-fx-background-color: #ffffff;">
+      <ScrollPane fx:id="sPane" layoutY="49.0" prefHeight="450.0" prefWidth="800.0" style="-fx-background-color: #ffffff;">
          <content>
-            <VBox fx:id="vBox" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="487.0" prefWidth="798.0" style="-fx-background-color: #ffffff;">
-               <children>
-                  <Label fx:id="lblTitle" text="Today" textAlignment="CENTER" textFill="#666666">
-                     <font>
-                        <Font name="Segoe UI Bold" size="16.0" />
-                     </font>
-                     <GridPane.margin>
-                        <Insets left="350.0" />
-                     </GridPane.margin>
-                     <VBox.margin>
-                        <Insets bottom="10.0" left="370.0" top="10.0" />
-                     </VBox.margin>
-                  </Label>
-                  <GridPane fx:id="gPaneInner" maxWidth="-Infinity" prefWidth="770.0" style="-fx-background-color: #E6E6E6;" GridPane.rowIndex="1">
-                    <columnConstraints>
-                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="491.0" minWidth="10.0" prefWidth="38.0" />
-                      <ColumnConstraints hgrow="SOMETIMES" maxWidth="516.0" minWidth="10.0" prefWidth="385.0" />
-                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="483.0" minWidth="10.0" prefWidth="138.0" />
-                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="351.0" minWidth="10.0" prefWidth="131.0" />
-                      <ColumnConstraints hgrow="SOMETIMES" maxWidth="181.0" minWidth="10.0" prefWidth="72.0" />
-                    </columnConstraints>
-                    <rowConstraints>
-                      <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                    </rowConstraints>
-                     <children>
-                        <Pane maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="30.0" prefWidth="400.0" style="-fx-background-color: #E1F5C4;" GridPane.columnIndex="1">
-                           <children>
-                              <Label layoutX="5.0" layoutY="7.0" text="Eat dinner with Amy" textFill="#666666">
-                                 <font>
-                                    <Font name="Segoe UI" size="12.0" />
-                                 </font>
-                              </Label>
-                           </children>
-                        </Pane>
-                        <Pane maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="30.0" prefWidth="150.0" style="-fx-background-color: #E1F5C4;" GridPane.columnIndex="2">
-                           <children>
-                              <Label layoutX="5.0" layoutY="7.0" text="07:00 PM" textFill="#666666" />
-                           </children>
-                        </Pane>
-                        <Pane maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="30.0" prefWidth="150.0" style="-fx-background-color: #E1F5C4;" GridPane.columnIndex="3">
-                           <children>
-                              <Label layoutX="5.0" layoutY="7.0" text="#personal" textFill="#666666" />
-                           </children>
-                        </Pane>
-                        <Pane maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="30.0" prefWidth="70.0" style="-fx-background-color: #E1F5C4;" GridPane.columnIndex="4">
-                           <children>
-                              <ImageView fitHeight="20.0" fitWidth="20.0" layoutX="5.0" layoutY="5.0" pickOnBounds="true" preserveRatio="true">
-                                 <image>
-                                    <Image url="@../images/starIcon.png" />
-                                 </image>
-                              </ImageView>
-                              <ImageView fitHeight="20.0" fitWidth="20.0" layoutX="25.0" layoutY="5.0" pickOnBounds="true" preserveRatio="true">
-                                 <image>
-                                    <Image url="@../images/starIcon.png" />
-                                 </image>
-                              </ImageView>
-                              <ImageView fitHeight="20.0" fitWidth="20.0" layoutX="45.0" layoutY="5.0" pickOnBounds="true" preserveRatio="true">
-                                 <image>
-                                    <Image url="@../images/starIcon.png" />
-                                 </image>
-                              </ImageView>
-                           </children>
-                        </Pane>
-                        <Pane maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="27.0" prefWidth="44.0" style="-fx-background-color: #E1F5C4;">
-                           <children>
-                              <Label layoutX="5.0" layoutY="7.0" text="ID1" textFill="#666666">
-                                 <font>
-                                    <Font name="Segoe UI" size="12.0" />
-                                 </font>
-                              </Label>
-                           </children>
-                        </Pane>
-                     </children>
-                     <VBox.margin>
-                        <Insets left="15.0" />
-                     </VBox.margin>
-                  </GridPane>
-               </children>
-            </VBox>
+            <VBox fx:id="vBoxSearchResult" prefHeight="448.0" prefWidth="798.0" style="-fx-background-color: #ffffff;" />
          </content>
       </ScrollPane>
    </children>

@@ -220,6 +220,8 @@ public enum Command {
 					break;
 				case SEARCH :
 					systemMsg = executeSearch(userInput);
+					headerController.executeSearchResult();
+					headerController.textArea.clear();
 					break;
 				case SETTING :
 					headerController.executeSetting();

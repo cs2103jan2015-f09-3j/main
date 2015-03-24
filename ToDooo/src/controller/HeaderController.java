@@ -225,7 +225,7 @@ public class HeaderController{
 	
 	@FXML
 	public void loadSearchResult(KeyEvent e) throws IOException {
-		mainCon.showPageInBody("/view/SearchResult.fxml");
+		executeSearchResult();
 	}
 
 	public void init(MainController mainController) {
@@ -239,31 +239,29 @@ public class HeaderController{
 		});		
 	}
 	
-	
-	
-	
-	
-		
 	public void executeSetting() throws IOException {
-		/*settingIcon.setVisible(false);
-		backIcon.setVisible(true);
-		mainCon.showPageInBody("/view/Setting.fxml");*/
-		
 		settingIcon.setVisible(false);
 		backIcon.setVisible(true);
-		mainCon.settingController.anPaneSetting.setVisible(true);
 		mainCon.bodyController.anPaneMain.setVisible(false);
+		mainCon.settingController.anPaneSetting.setVisible(true);
+		mainCon.searchResultController.anPaneSearchResult.setVisible(false);
 	}
 	
 	public void executeGoBack() throws IOException {
-		/*settingIcon.setVisible(true);
-		backIcon.setVisible(false);
-		mainCon.showPageInBody("/view/Body.fxml");*/
-		
 		settingIcon.setVisible(true);
 		backIcon.setVisible(false);
-		mainCon.settingController.anPaneSetting.setVisible(false);
 		mainCon.bodyController.anPaneMain.setVisible(true);
+		mainCon.settingController.anPaneSetting.setVisible(false);
+		mainCon.searchResultController.anPaneSearchResult.setVisible(false);
+	}
+	
+	public void executeSearchResult() {
+		settingIcon.setVisible(false);
+		backIcon.setVisible(true);
+		mainCon.bodyController.anPaneMain.setVisible(false);
+		mainCon.settingController.anPaneSetting.setVisible(false);
+		mainCon.searchResultController.anPaneSearchResult.setVisible(true);
+		mainCon.searchResultController.loadSearchList();
 	}
 	
 	public void resetTextArea() {

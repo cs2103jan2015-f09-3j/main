@@ -15,6 +15,7 @@
          <children>
             <fx:include fx:id="body" source="Body.fxml" />
             <fx:include fx:id="setting" source="Setting.fxml" />
+            <fx:include fx:id="searchResult" source="SearchResult.fxml" />
          </children>
       </AnchorPane>
    </children>
