@@ -81,4 +81,17 @@ public class DateParser {
 	public static boolean isAfterDate(Calendar thisCalendar, Calendar thatCalendar) {
 		return DateParser.isBeforeDate(thatCalendar, thisCalendar);
 	}
+	
+	public static boolean hasMatchedDateOnly(Date thisDate, Date thatDate) {
+		Calendar calendarA = DateParser.createCalendar(thisDate);
+		Calendar calendarB = DateParser.createCalendar(thatDate);
+		
+		return DateParser.hasMatchedDateOnly(calendarA, calendarB);
+	}
+	
+	public static boolean hasMatchedDateOnly(Calendar thisCalendar, Calendar thatCalendar) {
+		return (thisCalendar.get(Calendar.ERA) == thatCalendar.get(Calendar.ERA) &&
+				thisCalendar.get(Calendar.YEAR) == thatCalendar.get(Calendar.YEAR) &&
+				thisCalendar.get(Calendar.DAY_OF_YEAR) == thatCalendar.get(Calendar.DAY_OF_YEAR));
+	}
 }

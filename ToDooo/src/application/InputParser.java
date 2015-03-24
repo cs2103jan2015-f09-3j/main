@@ -74,10 +74,25 @@ public class InputParser {
 				if (toDates != null) {
 					dates.add(toDates.get(0));
 				}
-			}					
+			} 
 			
 			return dates;
 		}
+	}
+	
+	public Date getSearchDateFromString(String userInput) {
+		String checkString = userInput.toLowerCase() + " ";
+		
+		List<DateGroup> groups = _parser.parse(checkString);
+		
+		if (groups.isEmpty()) {
+			return null;
+		}			
+		else {
+			List<Date> dates = groups.get(0).getDates();
+			
+			return dates.get(0);
+		}		
 	}
 	
 	public static String getCategoryFromString(String userInput) {
@@ -353,6 +368,7 @@ public class InputParser {
 	
 	public static ArrayList<Pair<SearchAttribute, String>> 
 				  getSearchAttributePairFromString(String userInput) {
+		
 		ArrayList<Pair<SearchAttribute, String>> attributePairs = 
 				new ArrayList<Pair<SearchAttribute, String>>();
 		String searchKey = null;

@@ -213,12 +213,13 @@ public class ToDoList {
 				case PRIORITY :
 					taskDetailString = task.getPriority().
 									   toString().toLowerCase();	
+					break;
 				case DATE :
 					if (hasDateMatch(task, attribute, searchKey)) {
 						matched++;
-						continue;
+						
 					}
-					break;
+					continue;
 			}
 			
 			if (taskDetailString.contains(searchKey)) {
@@ -236,7 +237,11 @@ public class ToDoList {
 	private boolean hasDateMatch(Task task, SearchAttribute attribute, String searchKey) {
 		boolean hasMatched = false;
 		Date date = null;
-		Date dateKey = Main.inputParser.getDateFromString(searchKey);
+		Date dateKey = Main.inputParser.getSearchDateFromString(searchKey);
+		
+		if (dateKey == null) {
+			return false;
+		}
 		
 		for (Command dateCommand : Constant.COMMAND_DATES) {
 			switch (dateCommand) {
@@ -257,7 +262,7 @@ public class ToDoList {
 					break;
 			}
 			
-			if (date != null && dateKey.equals(date)) {
+			if (date != null && DateParser.hasMatchedDateOnly(dateKey, date)) {
 				hasMatched = true;
 				
 				return hasMatched;
