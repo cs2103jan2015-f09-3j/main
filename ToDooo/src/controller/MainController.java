@@ -42,6 +42,7 @@ public class MainController{
 	@FXML HeaderController headerController;
 	@FXML BodyController bodyController;
 	@FXML SettingController settingController;
+	@FXML SearchResultController searchResultController;
 	private Timer timer;
 	
 	@FXML
@@ -49,7 +50,6 @@ public class MainController{
 		headerController.init(this);
 		bodyController.init(this);
 		bodyController.loadListByDate(Constant.TAB_NAME_ALL);
-		//loadList("All", taskList);
 	}
 
 	@FXML
