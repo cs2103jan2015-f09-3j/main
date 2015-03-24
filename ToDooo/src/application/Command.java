@@ -207,19 +207,19 @@ public enum Command {
 			
 			switch (this) {
 				case ADD :
-					systemMsg = executeAdd(userInput);
+					systemMsg = Command.executeAdd(userInput);
 					headerController.textArea.clear();
 					break;
 				case UPDATE :
-					systemMsg = executeRetrieveOriginalText(userInput, headerController);	
+					systemMsg = Command.executeRetrieveOriginalText(userInput, headerController);	
 					Main.shouldResetCaret = true;
 					break;
 				case DELETE :
-					systemMsg = executeDelete(userInput);
+					systemMsg = Command.executeDelete(userInput);
 					headerController.textArea.clear();
 					break;
 				case SEARCH :
-					systemMsg = executeSearch(userInput);
+					systemMsg = Command.executeSearch(userInput);
 					headerController.executeSearchResult();
 					headerController.textArea.clear();
 					break;
@@ -242,7 +242,7 @@ public enum Command {
 		return systemMsg;
 	}
 	
-	private String executeAdd(String userInput) {
+	private static String executeAdd(String userInput) {
 		Task task = new Task(userInput);	
 		
 		String systemMsg = null;
@@ -262,7 +262,7 @@ public enum Command {
 		return systemMsg;
 	}
 	
-	private String executeDelete(String userInput) {
+	private static String executeDelete(String userInput) {
 		String systemMsg= null;
 		Task removedTask = Main.list.deleteTaskFromList(userInput);
 		
@@ -326,7 +326,7 @@ public enum Command {
 		return systemMsg;
 	}
 	
-	private String executeSearch(String userInput) {
+	private static String executeSearch(String userInput) {
 		String systemMsg = null;
 		
 		Main.searchResults = Main.list.searchTheList(userInput);

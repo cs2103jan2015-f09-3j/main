@@ -6,6 +6,8 @@ import java.util.Date;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathFactory;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -14,6 +16,25 @@ import org.w3c.dom.NodeList;
 import org.w3c.dom.Text;
 
 public class XmlManager {
+	public static DocumentBuilder getNewDocBuilder() {		
+		try {
+			DocumentBuilderFactory documentFactory = 
+					DocumentBuilderFactory.newInstance();
+			
+			return documentFactory.newDocumentBuilder();
+		} catch (ParserConfigurationException exception) {
+			exception.printStackTrace();
+		}
+		
+		return null;
+	}
+		
+	public static XPath getNewXPath() {
+        XPathFactory xpathFactory = XPathFactory.newInstance();
+
+        return xpathFactory.newXPath();
+	}
+	
 	public static void createAndAppendChildElement(Document document,
 												Element parentElement, String tag, String content) {
 		Element element = document.createElement(tag);

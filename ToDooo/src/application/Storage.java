@@ -38,8 +38,8 @@ public class Storage {
 	
 	private Storage() {		
 		initTransformer();			
-		_xPath = getNewXPath();
-		_documentBuilder = getNewDocBuilder();
+		_xPath = XmlManager.getNewXPath();
+		_documentBuilder = XmlManager.getNewDocBuilder();
 	}
 	
 	public static Storage getInstance() {
@@ -65,24 +65,6 @@ public class Storage {
 		}
 	}
 	
-	private DocumentBuilder getNewDocBuilder() {		
-		try {
-			DocumentBuilderFactory documentFactory = 
-					DocumentBuilderFactory.newInstance();
-			
-			return documentFactory.newDocumentBuilder();
-		} catch (ParserConfigurationException exception) {
-			exception.printStackTrace();
-		}
-		
-		return null;
-	}
-	
-	private XPath getNewXPath() {
-        XPathFactory xpathFactory = XPathFactory.newInstance();
-
-        return xpathFactory.newXPath();
-	}
 	
 	public String writeFile(Document document) {
 		return writeFile(document, Main.list.getListFilePath());
