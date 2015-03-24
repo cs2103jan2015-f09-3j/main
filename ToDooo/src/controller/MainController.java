@@ -140,7 +140,7 @@ public class MainController{
 		String date2 = "";
 		
 		ArrayList<Task> taskList = getList(displayType);
-		ArrayList<Task> unsortedTemp = ToDoList.generateTaskListForView(taskList);
+		ArrayList<Task> unsortedTemp = ToDoList.generateTaskItems(taskList);
 		ArrayList<Task> overdue = new ArrayList<>();
 		ArrayList<Task> today = new ArrayList<>();
 		ArrayList<Task> floating = new ArrayList<>();

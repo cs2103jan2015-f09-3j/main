@@ -666,39 +666,14 @@ public class Task {
 	
 	public boolean hasDateMatch(SearchAttribute attribute, String searchKey) {
 		boolean hasMatched = false;
-		Date date = null;
 		Date dateKey = Main.inputParser.getSearchDateFromString(searchKey);
 		
-		if (dateKey == null) {
+		if (dateKey == null || _startDate == null) {
 			return false;
+		} else if (DateParser.hasMatchedDateOnly(dateKey, _startDate)){
+			hasMatched = true;
 		}
-		
-		for (Command dateCommand : Constant.COMMAND_DATES) {
-			switch (dateCommand) {
-				case FROM :
-					date = _from;
-					break;
-				case TO :
-					date = _to;
-					break;
-				case ON :
-					date = _on;
-					break;
-				case BY :
-					date = _by;
-					break;
-				default :
-					date = null;
-					break;
-			}
-			
-			if (date != null && DateParser.hasMatchedDateOnly(dateKey, date)) {
-				hasMatched = true;
 				
-				return hasMatched;
-			} 
-		}
-		
 		return hasMatched;
 	}
 	

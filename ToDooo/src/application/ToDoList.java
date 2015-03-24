@@ -170,6 +170,8 @@ public class ToDoList {
 	
 	// need to check recurring tasks as well
 	public ArrayList<Task> searchTheList(String userInput) {
+		ArrayList<Task> tasks = ToDoList.generateTaskItems(_tasks);
+		
 		userInput = InputParser.verifyAndCorrectSearchString(userInput);
 		
 		ArrayList<Task> searchResults = new ArrayList<Task>();
@@ -177,7 +179,7 @@ public class ToDoList {
 				InputParser.getSearchAttributePairFromString(userInput);
 		
 		boolean hasMatched = false;
-		for (Task task : _tasks) {
+		for (Task task : tasks) {
 			hasMatched = task.hasMatchedAllAttributes(attributePairs);
 			
 			if (hasMatched) {
@@ -295,16 +297,16 @@ public class ToDoList {
 		return savePath;
 	}
 			
-	public static ArrayList<Task> generateTaskListForView(ArrayList<Task> taskList) {
-		ArrayList<Task> tempTaskList = new ArrayList<>();
+	public static ArrayList<Task> generateTaskItems(ArrayList<Task> tasks) {
+		ArrayList<Task> tempTasks = new ArrayList<>();
 		Task task;
 		Date recurringDate;
 		boolean isRecurring;
 		String taskType;
 		String recurringId;
 		
-		for(int i = 0; i < taskList.size(); i++) {
-			task = taskList.get(i);
+		for(int i = 0; i < tasks.size(); i++) {
+			task = tasks.get(i);
 			taskType = task.getTaskType().toString();
 			isRecurring = task.getIsRecurring();
 			
@@ -321,12 +323,12 @@ public class ToDoList {
 							t1 = Task.createRecurringChildItem(task, recurringId, task.getOn(), recurringDate, recurringDate);
 						}
 						
-						tempTaskList.add(t1);
+						tempTasks.add(t1);
 					}
 				}else {
 					Task t2 = new Task();
 					t2 = task;
-					tempTaskList.add(t2);
+					tempTasks.add(t2);
 				}
 			} else {
 				Calendar start = Calendar.getInstance();
@@ -337,11 +339,11 @@ public class ToDoList {
 				for (Date date = start.getTime(); !start.after(end); start.add(Calendar.DATE, 1), date = start.getTime()) {
 					Task t3 = Task.createRecurringChildItem(task, task.getId(), task.getOn(), task.getBy(), date);
 					
-					tempTaskList.add(t3);
+					tempTasks.add(t3);
 				}
 			}
 		}
 		
-		return tempTaskList;
+		return tempTasks;
 	}
 }

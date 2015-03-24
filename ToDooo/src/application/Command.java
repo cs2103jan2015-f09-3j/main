@@ -334,8 +334,8 @@ public enum Command {
 			systemMsg = Constant.MSG_NO_RESULTS;
 		} else {
 			systemMsg = Constant.MSG_SEARCH_SUCCESS.
-						replaceFirst(Constant.DELIMETER_SEARCH, 
-									  String.valueOf(Main.searchResults.size()));
+						replace(Constant.DELIMETER_SEARCH, 
+								String.valueOf(Main.searchResults.size()));
 		}
 		
 		return systemMsg;
