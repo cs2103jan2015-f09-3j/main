@@ -15,9 +15,13 @@
             <Font name="Segoe UI Bold" size="18.0" />
          </font>
       </Label>
-      <ScrollPane fx:id="sPane" layoutY="49.0" prefHeight="450.0" prefWidth="800.0" style="-fx-background-color: #ffffff;">
+      <ScrollPane fx:id="sPane" layoutY="42.0" prefHeight="477.0" prefWidth="800.0" style="-fx-background-color: #ffffff;">
          <content>
-            <VBox fx:id="vBoxSearchResult" prefHeight="448.0" prefWidth="798.0" style="-fx-background-color: #ffffff;" />
+            <VBox fx:id="vBoxSearchResult" prefHeight="475.0" prefWidth="798.0" spacing="8.0" style="-fx-background-color: #ffffff;">
+               <padding>
+                  <Insets bottom="15.0" left="15.0" right="15.0" top="5.0" />
+               </padding>
+            </VBox>
          </content>
       </ScrollPane>
    </children>

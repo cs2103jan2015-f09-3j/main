@@ -40,6 +40,17 @@
 	-fx-padding: 10 10 10 10;
 }
 
+.bPaneSearchResult {
+	-fx-background-color: linear-gradient(to bottom, derive(#EEE0B7, 20%), #EEE0B7);
+	-fx-background-radius: 10;
+	-fx-max-width: 770;	
+	-fx-max-height: 40;
+	-fx-min-height: 40;
+	-fx-border-color: black;
+	-fx-border-width: 0;
+	-fx-padding: 10 10 10 10;
+}
+
 .paneHBar {
 	-fx-padding: 0 0 0 0;
 }
@@ -82,7 +93,7 @@
 .dateTitle {
 	-fx-font: bold 13px "Segoe UI";
 	-fx-text-fill: #666666;
-	-fx-padding: 25 0 0 5;
+	-fx-padding: 20 0 0 5;
 	
 }
 

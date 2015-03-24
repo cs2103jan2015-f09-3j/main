@@ -34,22 +34,23 @@ import javafx.scene.text.TextAlignment;
 public class BodyController{
 
 	private MainController mainCon;
+	private SearchResultController searchResultCon;
 	
 	@FXML AnchorPane anPaneMain;
 	@FXML VBox vBoxAll;
 	@FXML VBox vBoxCategory;
 	@FXML VBox vBoxPriority;
 	
-	@FXML
+	/*@FXML
 	public void initialize() {
 		loadListByDate("main");
-	}
+	}*/
 	
 	public void init(MainController mainController) {
 		mainCon = mainController;
 	}
 	
-	public ArrayList<Task> cloneTaskList(ArrayList<Task> taskList) {
+	/*public ArrayList<Task> cloneTaskList(ArrayList<Task> taskList) {
 		ArrayList<Task> tempTaskList = new ArrayList<>();
 		Task task;
 		Date recurringDate;
@@ -100,7 +101,9 @@ public class BodyController{
 	}
 	
 	public void loadListByDate(String displayType) {
-		vBoxAll.getChildren().clear();
+		VBox vBox = getContainer(displayType);
+		
+		vBox.getChildren().clear();
 		
 		int indexForNextLoop = 0;
 		Task task;
@@ -146,7 +149,7 @@ public class BodyController{
 		} 
 		
 	    if(!overdue.isEmpty()) {
-			printList(overdue, Constant.OVERDUE_TITLE);
+			printList(overdue, Constant.OVERDUE_TITLE, displayType);
 			
 			if(!floating.isEmpty() && today.isEmpty()) {
 				addHorizontalBar();
@@ -154,7 +157,7 @@ public class BodyController{
 		}
 		
 		if(!today.isEmpty()) {
-			printList(today, Constant.TODAY_TITLE);
+			printList(today, Constant.TODAY_TITLE, displayType);
 			
 			if(!floating.isEmpty()) {
 				addHorizontalBar();
@@ -162,7 +165,7 @@ public class BodyController{
 		}
 		
 		if(!floating.isEmpty()) {
-			printList(floating, "");
+			printList(floating, "", displayType);
 		}
 		
 		for(int j = indexForNextLoop; j < temp.size(); j++) {
@@ -175,10 +178,18 @@ public class BodyController{
 			}
 			
 			if(j == indexForNextLoop || !date1.equals(date2)) {
-				generateListByDate(date1, task);
+				generateListByDate(date1, task, displayType);
 			} else {
-				generateListByDate("", task);
+				generateListByDate("", task, displayType);
 			}
+		}
+	}
+	
+	private VBox getContainer(String type) {
+		if(type.equalsIgnoreCase("main")) {
+			return vBoxAll;
+		} else {
+			return searchResultCon.vBoxSearchResult;
 		}
 	}
 	
@@ -226,16 +237,17 @@ public class BodyController{
 		return t;
 	}
 	
-	private void generateListByDate(String header, Task t) {
+	private void generateListByDate(String header, Task t, String displayType) {
 		String taskType = t.getTaskType().toString();
 		Date onDate = t.getOn();
 		Date byDate = t.getBy();
 		Date fromDate = t.getFrom();
 		Date toDate = t.getTo();
 		Date startDate = t.getStartDate();
+		VBox vBox = getContainer(displayType);
 		
 		if(!header.equals("")) {
-			addTitle(header, vBoxAll);
+			addTitle(header, vBox);
 		}
 		
 		BorderPane bPane = new BorderPane();
@@ -278,15 +290,15 @@ public class BodyController{
 			}
 		} 
 		
-		vBoxAll.getChildren().add(bPane);
+		vBox.getChildren().add(bPane);
 	}
 	
-	private void printList(ArrayList<Task> al, String title) {
+	private void printList(ArrayList<Task> al, String title, String displayType) {
 		for(int d = 0; d < al.size(); d++) {
 			if(d == 0) {
-				generateListByDate(title, al.get(d));
+				generateListByDate(title, al.get(d), displayType);
 			} else {
-				generateListByDate("", al.get(d));
+				generateListByDate("", al.get(d), displayType);
 			}
 		}
 	}
@@ -400,5 +412,5 @@ public class BodyController{
 		hBox.getChildren().add(lblDateTime1);
 		hBox.getChildren().add(lbl2);
 		hBox.getChildren().add(lblDateTime2);
-	}
+	}*/
 }

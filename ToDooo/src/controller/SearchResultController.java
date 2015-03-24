@@ -19,7 +19,7 @@ public class SearchResultController {
 	
 	/*@FXML
 	public void initialize() {
-		loadSearchList();
+		bodyCon = new BodyController();
 	}*/
 	
 	public void init(MainController mainController) {
@@ -29,7 +29,7 @@ public class SearchResultController {
 	public void loadSearchList() {
 		vBoxSearchResult.getChildren().clear();
 		
-		bodyCon.loadListByDate("searchResult");
+		mainCon.loadListByDate("searchResult");
 		
 	}
 }
