@@ -4,7 +4,10 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
+
+import javafx.util.Pair;
 
 public class Task {
 	private String _id;
@@ -230,6 +233,32 @@ public class Task {
 	public void setStartDate(Date startDate) {
 		_startDate = startDate;
 	}	
+	
+	public static Task createRecurringChildItem(Task originalTask, String recurringId, Date onDate, Date byDate, Date startDate) {
+		Task t = new Task();
+		
+		t.setBy(byDate);
+		t.setCategory(originalTask.getCategory());
+		t.setEndDate(originalTask.getEndDate());
+		t.setFrom(originalTask.getFrom());
+		t.setId(recurringId);
+		t.setIsRecurring(originalTask.getIsRecurring());
+		t.setIsValid(originalTask.getIsValid());
+		t.setOn(onDate);
+		t.setOriginalText(originalTask.getOriginalText());
+		t.setPriority(originalTask.getPriority());
+		t.setRecurringTasks(originalTask.getRecurringTasks());
+		t.setRepeat(originalTask.getRepeat());
+		t.setRepeatDay(originalTask.getRepeatDay());
+		t.setRepeatUntil(originalTask.getRepeatUntil());
+		t.setStartDate(startDate);
+		t.setStatus(originalTask.getStatus());
+		t.setTaskType(originalTask.getTaskType());
+		t.setTo(originalTask.getTo());
+		t.setToDo(originalTask.getToDo());
+		
+		return t;
+	}
 
 	private static String generateId(TaskType taskType) {
 		int nextId = Main.list.getNextId();
@@ -603,4 +632,118 @@ public class Task {
 		Collections.sort(priorityList, priorityComparator);
 		return priorityList;
 	}	
+	
+	public Task deleteRecurringTaskById(String recurringTaskId) {
+		RecurringTask recurringTask = null;
+		Task removedTask = null;
+		int index = 0;		
+		boolean isFound = false;
+		Iterator<RecurringTask> taskIterator = _recurringTasks.iterator();
+		
+		while (taskIterator.hasNext()) {
+			recurringTask = taskIterator.next();
+			
+			isFound = (recurringTask.getRecurringTaskId().
+					   equals(recurringTaskId));
+			
+			if (isFound) {
+				removedTask = Main.storage.
+							  deleteRecurringTaskFromFileById(_id, 
+							  recurringTaskId);
+				
+				if (removedTask != null) {
+					_recurringTasks.remove(index);
+				}
+				
+				break;
+			}
+			
+			index++;
+		}
+		
+		return removedTask;
+	}
+	
+	public boolean hasDateMatch(SearchAttribute attribute, String searchKey) {
+		boolean hasMatched = false;
+		Date date = null;
+		Date dateKey = Main.inputParser.getSearchDateFromString(searchKey);
+		
+		if (dateKey == null) {
+			return false;
+		}
+		
+		for (Command dateCommand : Constant.COMMAND_DATES) {
+			switch (dateCommand) {
+				case FROM :
+					date = _from;
+					break;
+				case TO :
+					date = _to;
+					break;
+				case ON :
+					date = _on;
+					break;
+				case BY :
+					date = _by;
+					break;
+				default :
+					date = null;
+					break;
+			}
+			
+			if (date != null && DateParser.hasMatchedDateOnly(dateKey, date)) {
+				hasMatched = true;
+				
+				return hasMatched;
+			} 
+		}
+		
+		return hasMatched;
+	}
+	
+	public boolean hasMatchedAllAttributes(ArrayList<Pair<SearchAttribute, String>> attributePairs) {
+		boolean hasMatched = false;
+		SearchAttribute attribute = null;
+		String searchKey = null;
+		String taskDetailString = null;
+		int matched = 0;
+		int expectedMatched = attributePairs.size();
+
+		for (Pair<SearchAttribute, String> attributePair : attributePairs) {
+			attribute = attributePair.getKey();
+			searchKey = attributePair.getValue().trim();
+
+			switch (attribute) {
+			case ID:
+				taskDetailString = _id.toLowerCase();
+				break;
+			case DESCRIPTION:
+				taskDetailString = _toDo.toLowerCase();
+				break;
+			case CATEGORY:
+				taskDetailString = _category.toLowerCase();
+				break;
+			case PRIORITY:
+				taskDetailString = _priority.toString().toLowerCase();
+				break;
+			case DATE:
+				if (hasDateMatch(attribute, searchKey)) {
+					matched++;
+
+				}
+				continue;
+			}
+
+			if (taskDetailString.contains(searchKey)) {
+				matched++;
+			}
+		}
+
+		if (matched == expectedMatched) {
+			hasMatched = true;
+		}
+
+		return hasMatched;
+	}
 }

@@ -178,7 +178,7 @@ public class ToDoList {
 		
 		boolean hasMatched = false;
 		for (Task task : _tasks) {
-			hasMatched = hasMatchedAllAttributes(attributePairs, task);
+			hasMatched = task.hasMatchedAllAttributes(attributePairs);
 			
 			if (hasMatched) {
 				searchResults.add(task);
@@ -186,91 +186,6 @@ public class ToDoList {
 		}
 		
 		return searchResults;
-	}
-	
-	private boolean hasMatchedAllAttributes(ArrayList<Pair<SearchAttribute, String>>
-											attributePairs, Task task) {
-		boolean hasMatched = false;
-		SearchAttribute attribute = null;
-		String searchKey = null;
-		String taskDetailString = null;
-		int matched = 0;
-		int expectedMatched = attributePairs.size();
-		
-		for (Pair<SearchAttribute, String> attributePair : attributePairs) {
-			attribute = attributePair.getKey();
-			searchKey = attributePair.getValue().trim();
-			
-			switch (attribute) {
-				case ID :
-					taskDetailString = task.getId().toLowerCase();					
-					break;
-				case DESCRIPTION :
-					taskDetailString = task.getToDo().toLowerCase();	
-					break;
-				case CATEGORY :
-					taskDetailString = task.getCategory().toLowerCase();	
-					break;
-				case PRIORITY :
-					taskDetailString = task.getPriority().
-									   toString().toLowerCase();	
-					break;
-				case DATE :
-					if (hasDateMatch(task, attribute, searchKey)) {
-						matched++;
-						
-					}
-					continue;
-			}
-			
-			if (taskDetailString.contains(searchKey)) {
-				matched++;
-			} 
-		}		
-		
-		if (matched == expectedMatched) {
-			hasMatched = true;
-		} 
-		
-		return hasMatched;
-	}
-	
-	private boolean hasDateMatch(Task task, SearchAttribute attribute, String searchKey) {
-		boolean hasMatched = false;
-		Date date = null;
-		Date dateKey = Main.inputParser.getSearchDateFromString(searchKey);
-		
-		if (dateKey == null) {
-			return false;
-		}
-		
-		for (Command dateCommand : Constant.COMMAND_DATES) {
-			switch (dateCommand) {
-				case FROM :
-					date = task.getFrom();
-					break;
-				case TO :
-					date = task.getTo();
-					break;
-				case ON :
-					date = task.getOn();
-					break;
-				case BY :
-					date = task.getBy();
-					break;
-				default :
-					date = null;
-					break;
-			}
-			
-			if (date != null && DateParser.hasMatchedDateOnly(dateKey, date)) {
-				hasMatched = true;
-				
-				return hasMatched;
-			} 
-		}
-		
-		return hasMatched;
 	}
 	
 	public Pair<Task, String> updateTaskOnList(String userInput) {
@@ -349,7 +264,7 @@ public class ToDoList {
 			
 			if (isFound) {
 				if (isRecurringTaskId) {
-					removedTask = deleteRecurringTaskById(task, recurringTaskId);
+					removedTask = task.deleteRecurringTaskById(recurringTaskId);
 				} else {
 					removedTask = Main.storage.deleteTaskFromFileById(targetId);
 					
@@ -366,40 +281,8 @@ public class ToDoList {
 		
 		return removedTask;
 	}
-	
-	private Task deleteRecurringTaskById(Task task, String recurringTaskId) {
-		RecurringTask recurringTask = null;
-		Task removedTask = null;
-		int index = 0;		
-		boolean isFound = false;
-		Iterator<RecurringTask> taskIterator = 
-				task.getRecurringTasks().iterator();
-		
-		while (taskIterator.hasNext()) {
-			recurringTask = taskIterator.next();
 			
-			isFound = (recurringTask.getRecurringTaskId().
-					   equals(recurringTaskId));
-			
-			if (isFound) {
-				removedTask = Main.storage.
-							  deleteRecurringTaskFromFileById(task.getId(), 
-							  recurringTaskId);
-				
-				if (removedTask != null) {
-					task.getRecurringTasks().remove(index);
-				}
-				
-				break;
-			}
-			
-			index++;
-		}
-		
-		return removedTask;
-	}
-	
-	public String getSavePathDirectory() {
+	public static String getSavePathDirectory() {
 		String savePath = Main.storage.readSavePath();
 		
 		if (savePath.equals(Constant.PATH_FILE_NAME)) {
@@ -411,34 +294,8 @@ public class ToDoList {
 		
 		return savePath;
 	}
-	
-	private Task copyItems(Task originalTask, String recurringId, Date onDate, Date byDate, Date startDate) {
-		Task t = new Task();
-		
-		t.setBy(byDate);
-		t.setCategory(originalTask.getCategory());
-		t.setEndDate(originalTask.getEndDate());
-		t.setFrom(originalTask.getFrom());
-		t.setId(recurringId);
-		t.setIsRecurring(originalTask.getIsRecurring());
-		t.setIsValid(originalTask.getIsValid());
-		t.setOn(onDate);
-		t.setOriginalText(originalTask.getOriginalText());
-		t.setPriority(originalTask.getPriority());
-		t.setRecurringTasks(originalTask.getRecurringTasks());
-		t.setRepeat(originalTask.getRepeat());
-		t.setRepeatDay(originalTask.getRepeatDay());
-		t.setRepeatUntil(originalTask.getRepeatUntil());
-		t.setStartDate(startDate);
-		t.setStatus(originalTask.getStatus());
-		t.setTaskType(originalTask.getTaskType());
-		t.setTo(originalTask.getTo());
-		t.setToDo(originalTask.getToDo());
-		
-		return t;
-	}
-	
-	public ArrayList<Task> cloneTaskList(ArrayList<Task> taskList) {
+			
+	public static ArrayList<Task> generateTaskListForView(ArrayList<Task> taskList) {
 		ArrayList<Task> tempTaskList = new ArrayList<>();
 		Task task;
 		Date recurringDate;
@@ -459,9 +316,9 @@ public class ToDoList {
 						recurringId = task.getRecurringTasks().get(j).getRecurringTaskId();
 						
 						if(taskType.equalsIgnoreCase(TaskType.EVENT.toString())) {
-							t1 = copyItems(task, recurringId, recurringDate, task.getBy(), recurringDate);
+							t1 = Task.createRecurringChildItem(task, recurringId, recurringDate, task.getBy(), recurringDate);
 						} else if(taskType.equalsIgnoreCase(TaskType.DATED.toString())) {
-							t1 = copyItems(task, recurringId, task.getOn(), recurringDate, recurringDate);
+							t1 = Task.createRecurringChildItem(task, recurringId, task.getOn(), recurringDate, recurringDate);
 						}
 						
 						tempTaskList.add(t1);
@@ -478,7 +335,7 @@ public class ToDoList {
 				end.setTime(task.getTo());
 				
 				for (Date date = start.getTime(); !start.after(end); start.add(Calendar.DATE, 1), date = start.getTime()) {
-					Task t3 = copyItems(task, task.getId(), task.getOn(), task.getBy(), date);
+					Task t3 = Task.createRecurringChildItem(task, task.getId(), task.getOn(), task.getBy(), date);
 					
 					tempTaskList.add(t3);
 				}

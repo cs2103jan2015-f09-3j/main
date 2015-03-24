@@ -14,6 +14,7 @@ import application.Constant;
 import application.Main;
 import application.Task;
 import application.TaskType;
+import application.ToDoList;
 import application.Undo;
 import application.DateParser;
 import javafx.application.Platform;
@@ -139,7 +140,7 @@ public class MainController{
 		String date2 = "";
 		
 		ArrayList<Task> taskList = getList(displayType);
-		ArrayList<Task> unsortedTemp = Main.list.cloneTaskList(taskList);
+		ArrayList<Task> unsortedTemp = ToDoList.generateTaskListForView(taskList);
 		ArrayList<Task> overdue = new ArrayList<>();
 		ArrayList<Task> today = new ArrayList<>();
 		ArrayList<Task> floating = new ArrayList<>();
