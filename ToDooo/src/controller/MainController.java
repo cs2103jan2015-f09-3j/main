@@ -13,6 +13,7 @@ import java.util.TimerTask;
 import application.Constant;
 import application.Main;
 import application.Task;
+import application.TaskSorter;
 import application.TaskType;
 import application.ToDoList;
 import application.Undo;
@@ -49,6 +50,7 @@ public class MainController{
 	@FXML SettingController settingController;
 	@FXML SearchResultController searchResultController;
 	private Timer timer;
+	private TaskSorter taskSorter = new TaskSorter();
 	
 	@FXML
 	public void initialize() {
@@ -57,6 +59,7 @@ public class MainController{
 		searchResultController.init(this);
 		loadListByDate("main");
 		loadListByCategory("category");
+		loadListByPriority("priority");
 	}
 
 	@FXML
@@ -67,10 +70,12 @@ public class MainController{
 			systemMsg = executeUndo();
 			loadListByDate("main");
 			loadListByCategory("category");
+			loadListByPriority("priority");
 		} else if (Constant.SHORTCUT_REDO.match(e)) {
 			systemMsg = executeRedo();
 			loadListByDate("main");
 			loadListByCategory("category");
+			loadListByPriority("priority");
 		} else {
 			return;
 		}
@@ -138,13 +143,18 @@ public class MainController{
 		String date2 = "";
 		
 		ArrayList<Task> taskList = getList(displayType);
-		ArrayList<Task> unsortedTemp = ToDoList.generateTaskItems(taskList);
+		ArrayList<Task> temp;
+		
+		if(displayType.equalsIgnoreCase("searchResult")) {
+			temp = taskSorter.getTasksSortedByDate(taskList);
+		} else {
+			ArrayList<Task> unsortedTemp = ToDoList.generateTaskItems(taskList);
+			temp = taskSorter.getTasksSortedByDate(unsortedTemp);
+		}
+		
 		ArrayList<Task> overdue = new ArrayList<>();
 		ArrayList<Task> today = new ArrayList<>();
 		ArrayList<Task> floating = new ArrayList<>();
-	
-		Task tClass = new Task();
-		ArrayList<Task> temp = tClass.viewListByAll(unsortedTemp);
 		
 	    Date todayDate = getTodayDate().getTime();
 		
@@ -219,7 +229,7 @@ public class MainController{
 		ArrayList<Task> unsortedTemp = ToDoList.generateTaskItems(taskList);
 	
 		Task tClass = new Task();
-		ArrayList<Task> temp = tClass.viewListByCategories(unsortedTemp);
+		ArrayList<Task> temp = taskSorter.getTasksSortedByCategories(unsortedTemp);
 		
 		for(int i = 0; i < temp.size(); i++) {
 			task = temp.get(i);
@@ -227,6 +237,29 @@ public class MainController{
 			
 			if(i == 0 || !category.equalsIgnoreCase(temp.get(i-1).getCategory())) {
 				renderTaskItem(category, task, displayType);
+			} else {
+				renderTaskItem("", task, displayType);
+			}
+		}
+	}
+	
+	public void loadListByPriority(String displayType) {
+		bodyController.vBoxPriority.getChildren().clear();
+		
+		Task task;
+		String priority;
+		ArrayList<Task> taskList = Main.list.getTasks();
+		ArrayList<Task> unsortedTemp = ToDoList.generateTaskItems(taskList);
+	
+		Task tClass = new Task();
+		ArrayList<Task> temp = taskSorter.getTasksSortedByPriorities(unsortedTemp);
+		
+		for(int i = 0; i < temp.size(); i++) {
+			task = temp.get(i);
+			priority = task.getPriority().toString();
+			
+			if(i == 0 || !priority.equalsIgnoreCase(temp.get(i-1).getPriority().toString())) {
+				renderTaskItem(priority, task, displayType);
 			} else {
 				renderTaskItem("", task, displayType);
 			}
@@ -246,10 +279,10 @@ public class MainController{
 	}
 	
 	private ArrayList<Task> getList(String type) {
-		if(type.equalsIgnoreCase("main")) {
-			return Main.list.getTasks();
-		} else {
+		if(type.equalsIgnoreCase("searchResult")) {
 			return Main.searchResults;
+		} else {
+			return Main.list.getTasks();
 		}
 	}
 	

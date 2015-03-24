@@ -48,6 +48,7 @@ public class HeaderController{
 			
 			mainCon.loadListByDate("main");	
 			mainCon.loadListByCategory("category");
+			mainCon.loadListByPriority("priority");
 			mainCon.executeSystemMsgTimerTask();	
 		} 			
 	}
