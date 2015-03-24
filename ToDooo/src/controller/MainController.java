@@ -216,7 +216,7 @@ public class MainController{
 		Task task;
 		String category;
 		ArrayList<Task> taskList = Main.list.getTasks();
-		ArrayList<Task> unsortedTemp = ToDoList.generateTaskListForView(taskList);
+		ArrayList<Task> unsortedTemp = ToDoList.generateTaskItems(taskList);
 	
 		Task tClass = new Task();
 		ArrayList<Task> temp = tClass.viewListByCategories(unsortedTemp);
