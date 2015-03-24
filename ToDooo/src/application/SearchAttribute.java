@@ -5,7 +5,7 @@ import java.util.ArrayList;
 public enum SearchAttribute {
 	ID("id="),
 	DESCRIPTION("des="),
-	DATE("date"),
+	DATE("date="),
 	CATEGORY("cat="),
 	PRIORITY("pri=");
 	
