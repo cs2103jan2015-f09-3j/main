@@ -128,7 +128,7 @@ public class TaskSorter {
 		}
 	}
 	
-	public ArrayList<Task> getSortedTasks(ArrayList<Task> list) {
+	public ArrayList<Task> getTasksSortedByDate(ArrayList<Task> list) {
 		Comparator<Task> comparator = getComparator(parametersForViewAll);
 		Collections.sort(list, comparator);
 		return list;
