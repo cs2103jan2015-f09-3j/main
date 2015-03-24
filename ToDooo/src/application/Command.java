@@ -219,7 +219,7 @@ public enum Command {
 					headerController.textArea.clear();
 					break;
 				case SEARCH :
-					systemMsg = executeSearch(userInput);
+					systemMsg = executeSearch(userInput, headerController);
 					break;
 				case SETTING :
 					headerController.executeSetting();
@@ -325,7 +325,7 @@ public enum Command {
 		return systemMsg;
 	}
 	
-	private String executeSearch(String userInput) {
+	private String executeSearch(String userInput, HeaderController headerController) {
 		String systemMsg = null;
 		
 		Main.searchResults = Main.list.searchTheList(userInput);
@@ -333,9 +333,11 @@ public enum Command {
 			systemMsg = Constant.MSG_NO_RESULTS;
 		} else {
 			systemMsg = Constant.MSG_SEARCH_SUCCESS.
-						replaceFirst(Constant.DELIMETER_SEARCH, 
-									  String.valueOf(Main.searchResults.size()));
+						replace(Constant.DELIMETER_REPLACE, 
+								String.valueOf(Main.searchResults.size()));
 		}
+		
+		headerController.textArea.clear();
 		
 		return systemMsg;
 	}

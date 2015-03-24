@@ -193,6 +193,8 @@ public class ToDoList {
 		SearchAttribute attribute = null;
 		String searchKey = null;
 		String taskDetailString = null;
+		int matched = 0;
+		int expectedMatched = attributePairs.size();
 		
 		for (Pair<SearchAttribute, String> attributePair : attributePairs) {
 			attribute = attributePair.getKey();
@@ -211,20 +213,22 @@ public class ToDoList {
 				case PRIORITY :
 					taskDetailString = task.getPriority().
 									   toString().toLowerCase();	
+				case DATE :
+					if (hasDateMatch(task, attribute, searchKey)) {
+						matched++;
+						continue;
+					}
 					break;
 			}
 			
-			if (attribute.equals(SearchAttribute.DATE)) {
-				hasMatched = hasDateMatch(task, attribute, searchKey);
-			} else {
-				if (taskDetailString.contains(searchKey)) {
-					hasMatched = true;
-				} else {
-					hasMatched = false;
-				}
-			}
-			
+			if (taskDetailString.contains(searchKey)) {
+				matched++;
+			} 
 		}		
+		
+		if (matched == expectedMatched) {
+			hasMatched = true;
+		} 
 		
 		return hasMatched;
 	}
