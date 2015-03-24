@@ -56,6 +56,7 @@ public class MainController{
 		bodyController.init(this);
 		searchResultController.init(this);
 		loadListByDate("main");
+		loadListByCategory("category");
 	}
 
 	@FXML
@@ -65,9 +66,11 @@ public class MainController{
 		if (Constant.SHORTCUT_UNDO.match(e)) {
 			systemMsg = executeUndo();
 			loadListByDate("main");
+			loadListByCategory("category");
 		} else if (Constant.SHORTCUT_REDO.match(e)) {
 			systemMsg = executeRedo();
 			loadListByDate("main");
+			loadListByCategory("category");
 		} else {
 			return;
 		}
@@ -75,11 +78,6 @@ public class MainController{
 		headerController.lblSysMsg.setText(systemMsg);	
 		
 		executeSystemMsgTimerTask();		
-	}
-	
-	public void showPageInBody(String fxmlFileName) throws IOException {
-		anPaneBody.getChildren().clear();
-		anPaneBody.getChildren().setAll(FXMLLoader.load(getClass().getResource(fxmlFileName)));
 	}
 
 	private String executeUndo() {
@@ -176,7 +174,7 @@ public class MainController{
 		} 
 		
 	    if(!overdue.isEmpty()) {
-			printList(overdue, Constant.OVERDUE_TITLE, displayType);
+	    	renderLists(overdue, Constant.OVERDUE_TITLE, displayType);
 			
 			if(!floating.isEmpty() && today.isEmpty()) {
 				addHorizontalBar(vBox);
@@ -184,7 +182,7 @@ public class MainController{
 		}
 		
 		if(!today.isEmpty()) {
-			printList(today, Constant.TODAY_TITLE, displayType);
+			renderLists(today, Constant.TODAY_TITLE, displayType);
 			
 			if(!floating.isEmpty()) {
 				addHorizontalBar(vBox);
@@ -192,7 +190,7 @@ public class MainController{
 		}
 		
 		if(!floating.isEmpty()) {
-			printList(floating, "", displayType);
+			renderLists(floating, "", displayType);
 		}
 		
 		for(int j = indexForNextLoop; j < temp.size(); j++) {
@@ -205,9 +203,32 @@ public class MainController{
 			}
 			
 			if(j == indexForNextLoop || !date1.equals(date2)) {
-				generateListByDate(date1, task, displayType);
+				renderTaskItem(date1, task, displayType);
 			} else {
-				generateListByDate("", task, displayType);
+				renderTaskItem("", task, displayType);
+			}
+		}
+	}
+	
+	public void loadListByCategory(String displayType) {
+		bodyController.vBoxCategory.getChildren().clear();
+		
+		Task task;
+		String category;
+		ArrayList<Task> taskList = Main.list.getTasks();
+		ArrayList<Task> unsortedTemp = ToDoList.generateTaskListForView(taskList);
+	
+		Task tClass = new Task();
+		ArrayList<Task> temp = tClass.viewListByCategories(unsortedTemp);
+		
+		for(int i = 0; i < temp.size(); i++) {
+			task = temp.get(i);
+			category = task.getCategory();
+			
+			if(i == 0 || !category.equalsIgnoreCase(temp.get(i-1).getCategory())) {
+				renderTaskItem(category, task, displayType);
+			} else {
+				renderTaskItem("", task, displayType);
 			}
 		}
 	}
@@ -242,7 +263,7 @@ public class MainController{
 	    return c;
 	}
 	
-	private void generateListByDate(String header, Task t, String displayType) {
+	private void renderTaskItem(String header, Task t, String displayType) {
 		String taskType = t.getTaskType().toString();
 		Date onDate = t.getOn();
 		Date byDate = t.getBy();
@@ -299,12 +320,12 @@ public class MainController{
 		vBox.getChildren().add(bPane);
 	}
 	
-	private void printList(ArrayList<Task> al, String title, String displayType) {
+	private void renderLists(ArrayList<Task> al, String title, String displayType) {
 		for(int d = 0; d < al.size(); d++) {
 			if(d == 0) {
-				generateListByDate(title, al.get(d), displayType);
+				renderTaskItem(title, al.get(d), displayType);
 			} else {
-				generateListByDate("", al.get(d), displayType);
+				renderTaskItem("", al.get(d), displayType);
 			}
 		}
 	}
