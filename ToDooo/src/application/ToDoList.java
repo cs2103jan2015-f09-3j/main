@@ -2,6 +2,7 @@ package application;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Iterator;
 
@@ -409,5 +410,81 @@ public class ToDoList {
 		}
 		
 		return savePath;
+	}
+	
+	private Task copyItems(Task originalTask, String recurringId, Date onDate, Date byDate, Date startDate) {
+		Task t = new Task();
+		
+		t.setBy(byDate);
+		t.setCategory(originalTask.getCategory());
+		t.setEndDate(originalTask.getEndDate());
+		t.setFrom(originalTask.getFrom());
+		t.setId(recurringId);
+		t.setIsRecurring(originalTask.getIsRecurring());
+		t.setIsValid(originalTask.getIsValid());
+		t.setOn(onDate);
+		t.setOriginalText(originalTask.getOriginalText());
+		t.setPriority(originalTask.getPriority());
+		t.setRecurringTasks(originalTask.getRecurringTasks());
+		t.setRepeat(originalTask.getRepeat());
+		t.setRepeatDay(originalTask.getRepeatDay());
+		t.setRepeatUntil(originalTask.getRepeatUntil());
+		t.setStartDate(startDate);
+		t.setStatus(originalTask.getStatus());
+		t.setTaskType(originalTask.getTaskType());
+		t.setTo(originalTask.getTo());
+		t.setToDo(originalTask.getToDo());
+		
+		return t;
+	}
+	
+	public ArrayList<Task> cloneTaskList(ArrayList<Task> taskList) {
+		ArrayList<Task> tempTaskList = new ArrayList<>();
+		Task task;
+		Date recurringDate;
+		boolean isRecurring;
+		String taskType;
+		String recurringId;
+		
+		for(int i = 0; i < taskList.size(); i++) {
+			task = taskList.get(i);
+			taskType = task.getTaskType().toString();
+			isRecurring = task.getIsRecurring();
+			
+			if(!taskType.equalsIgnoreCase(TaskType.TIMED.toString())) {
+				if(isRecurring) {
+					for(int j = 0; j < task.getRecurringTasks().size(); j++) {
+						Task t1 = null;
+						recurringDate = task.getRecurringTasks().get(j).getRecurDate();
+						recurringId = task.getRecurringTasks().get(j).getRecurringTaskId();
+						
+						if(taskType.equalsIgnoreCase(TaskType.EVENT.toString())) {
+							t1 = copyItems(task, recurringId, recurringDate, task.getBy(), recurringDate);
+						} else if(taskType.equalsIgnoreCase(TaskType.DATED.toString())) {
+							t1 = copyItems(task, recurringId, task.getOn(), recurringDate, recurringDate);
+						}
+						
+						tempTaskList.add(t1);
+					}
+				}else {
+					Task t2 = new Task();
+					t2 = task;
+					tempTaskList.add(t2);
+				}
+			} else {
+				Calendar start = Calendar.getInstance();
+				start.setTime(task.getFrom());
+				Calendar end = Calendar.getInstance();
+				end.setTime(task.getTo());
+				
+				for (Date date = start.getTime(); !start.after(end); start.add(Calendar.DATE, 1), date = start.getTime()) {
+					Task t3 = copyItems(task, task.getId(), task.getOn(), task.getBy(), date);
+					
+					tempTaskList.add(t3);
+				}
+			}
+		}
+		
+		return tempTaskList;
 	}
 }

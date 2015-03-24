@@ -125,58 +125,7 @@ public class MainController{
             timer.cancel();
         }
     }
-	
-	//loading process
-	public ArrayList<Task> cloneTaskList(ArrayList<Task> taskList) {
-		ArrayList<Task> tempTaskList = new ArrayList<>();
-		Task task;
-		Date recurringDate;
-		boolean isRecurring;
-		String taskType;
-		String recurringId;
-		
-		for(int i = 0; i < taskList.size(); i++) {
-			task = taskList.get(i);
-			taskType = task.getTaskType().toString();
-			isRecurring = task.getIsRecurring();
-			
-			if(!taskType.equalsIgnoreCase(TaskType.TIMED.toString())) {
-				if(isRecurring) {
-					for(int j = 0; j < task.getRecurringTasks().size(); j++) {
-						Task t1 = null;
-						recurringDate = task.getRecurringTasks().get(j).getRecurDate();
-						recurringId = task.getRecurringTasks().get(j).getRecurringTaskId();
-						
-						if(taskType.equalsIgnoreCase(TaskType.EVENT.toString())) {
-							t1 = copyItems(task, recurringId, recurringDate, task.getBy(), recurringDate);
-						} else if(taskType.equalsIgnoreCase(TaskType.DATED.toString())) {
-							t1 = copyItems(task, recurringId, task.getOn(), recurringDate, recurringDate);
-						}
-						
-						tempTaskList.add(t1);
-					}
-				}else {
-					Task t2 = new Task();
-					t2 = task;
-					tempTaskList.add(t2);
-				}
-			} else {
-				Calendar start = Calendar.getInstance();
-				start.setTime(task.getFrom());
-				Calendar end = Calendar.getInstance();
-				end.setTime(task.getTo());
-				
-				for (Date date = start.getTime(); !start.after(end); start.add(Calendar.DATE, 1), date = start.getTime()) {
-					Task t3 = copyItems(task, task.getId(), task.getOn(), task.getBy(), date);
-					
-					tempTaskList.add(t3);
-				}
-			}
-		}
-		
-		return tempTaskList;
-	}
-	
+
 	public void loadListByDate(String displayType) {
 		VBox vBox = getContainer(displayType);
 		
@@ -190,7 +139,7 @@ public class MainController{
 		String date2 = "";
 		
 		ArrayList<Task> taskList = getList(displayType);
-		ArrayList<Task> unsortedTemp = cloneTaskList(taskList);
+		ArrayList<Task> unsortedTemp = Main.list.cloneTaskList(taskList);
 		ArrayList<Task> overdue = new ArrayList<>();
 		ArrayList<Task> today = new ArrayList<>();
 		ArrayList<Task> floating = new ArrayList<>();
@@ -265,6 +214,10 @@ public class MainController{
 	private VBox getContainer(String type) {
 		if(type.equalsIgnoreCase("main")) {
 			return bodyController.vBoxAll;
+		} else if(type.equalsIgnoreCase("category")) {
+			return bodyController.vBoxCategory;
+		} else if(type.equalsIgnoreCase("priority")) {
+			return bodyController.vBoxPriority;
 		} else {
 			return searchResultController.vBoxSearchResult;
 		}
@@ -286,32 +239,6 @@ public class MainController{
 	    c.set(Calendar.SECOND, 0);
 	    
 	    return c;
-	}
-	
-	private Task copyItems(Task originalTask, String recurringId, Date onDate, Date byDate, Date startDate) {
-		Task t = new Task();
-		
-		t.setBy(byDate);
-		t.setCategory(originalTask.getCategory());
-		t.setEndDate(originalTask.getEndDate());
-		t.setFrom(originalTask.getFrom());
-		t.setId(recurringId);
-		t.setIsRecurring(originalTask.getIsRecurring());
-		t.setIsValid(originalTask.getIsValid());
-		t.setOn(onDate);
-		t.setOriginalText(originalTask.getOriginalText());
-		t.setPriority(originalTask.getPriority());
-		t.setRecurringTasks(originalTask.getRecurringTasks());
-		t.setRepeat(originalTask.getRepeat());
-		t.setRepeatDay(originalTask.getRepeatDay());
-		t.setRepeatUntil(originalTask.getRepeatUntil());
-		t.setStartDate(startDate);
-		t.setStatus(originalTask.getStatus());
-		t.setTaskType(originalTask.getTaskType());
-		t.setTo(originalTask.getTo());
-		t.setToDo(originalTask.getToDo());
-		
-		return t;
 	}
 	
 	private void generateListByDate(String header, Task t, String displayType) {
@@ -382,10 +309,10 @@ public class MainController{
 	}
 	
 	private String getStyle(String displayType) {
-		if(displayType.equalsIgnoreCase("main")) {
-			return "bPaneAll";
-		} else {
+		if(displayType.equalsIgnoreCase("searchResult")) {
 			return "bPaneSearchResult";
+		} else {
+			return "bPaneAll";
 		}
 	}
 	

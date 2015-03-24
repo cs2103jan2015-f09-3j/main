@@ -28,8 +28,6 @@ public class SearchResultController {
 	
 	public void loadSearchList() {
 		vBoxSearchResult.getChildren().clear();
-		
 		mainCon.loadListByDate("searchResult");
-		
 	}
 }
