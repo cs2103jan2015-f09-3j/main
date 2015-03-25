@@ -24,9 +24,7 @@ public enum Command {
 	RECURRING_WEEKLY("/weekly", "-w"),
 	RECURRING_MONTHLY("/monthly", "-m"),
 	RECURRING_YEARLY("/yearly", "-y"),
-	RECURRING_UNTIL("/until", "-u"),
-	SETTING("/setting", "/setting"),
-	GO_BACK("/~", "/~");
+	RECURRING_UNTIL("/until", "-u");
 	
 	private final String _COMMAND_BASIC;
 	private final String _COMMAND_ADVANCED;
@@ -206,41 +204,30 @@ public enum Command {
 	private String executeCommand(String userInput, HeaderController headerController, 
 								  MainController mainController) {
 		String systemMsg = null;
-		try {			
-			userInput = InputParser.removeLineBreaks(userInput);
-			
-			switch (this) {
-				case ADD :
-					systemMsg = Command.executeAdd(userInput);
-					headerController.textArea.clear();
-					break;
-				case UPDATE :
-					systemMsg = Command.executeRetrieveOriginalText(userInput, headerController);	
-					Main.shouldResetCaret = true;
-					break;
-				case DELETE :
-					systemMsg = Command.executeDelete(userInput);
-					headerController.textArea.clear();
-					break;
-				case SEARCH :
-					systemMsg = Command.executeSearch(userInput);
-					mainController.executeSearchResult();
-					headerController.textArea.clear();
-					break;
-				case SETTING :
-					mainController.executeSetting();
-					headerController.textArea.clear();
-					break;
-				case GO_BACK :
-					mainController.executeGoBack();
-					headerController.textArea.clear();
-					break;
-				default :
-					// invalid command
-					break;
-			}
-		} catch (IOException exception) {
-			
+		
+		userInput = InputParser.removeLineBreaks(userInput);
+		
+		switch (this) {
+			case ADD :
+				systemMsg = Command.executeAdd(userInput);
+				headerController.textArea.clear();
+				break;
+			case UPDATE :
+				systemMsg = Command.executeRetrieveOriginalText(userInput, headerController);	
+				Main.shouldResetCaret = true;
+				break;
+			case DELETE :
+				systemMsg = Command.executeDelete(userInput);
+				headerController.textArea.clear();
+				break;
+			case SEARCH :
+				systemMsg = Command.executeSearch(userInput);
+				mainController.executeSearchResult();
+				headerController.textArea.clear();
+				break;
+			default :
+				// invalid command
+				break;
 		}
 		
 		return systemMsg;
@@ -283,7 +270,9 @@ public enum Command {
 		return systemMsg;
 	}
 	
-	private static String executeRetrieveOriginalText(String userInput, HeaderController headerController) {
+	private static String executeRetrieveOriginalText(String userInput, 
+			HeaderController headerController) {
+		
 		String systemMsg = null;
 		String targetId = InputParser.getTargetIdFromString(userInput);
 		Task originalTask = Main.list.getTaskById(targetId);

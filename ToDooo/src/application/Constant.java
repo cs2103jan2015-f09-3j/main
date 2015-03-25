@@ -53,8 +53,7 @@ public final class Constant {
 	public static final String XML_WHITESPACE_NODE_XPATH = "//text()[normalize-space(.)='']";
 	
 	public static final Command[] COMMAND_ACTIONS = { Command.ADD, Command.DELETE, 
-													  Command.UPDATE, Command.SEARCH,
-													  Command.SETTING, Command.GO_BACK };
+													  Command.UPDATE, Command.SEARCH };
 	
 	public static final Command[] COMMAND_DATES = { Command.ON, Command.BY, 
 													Command.FROM, Command.TO };

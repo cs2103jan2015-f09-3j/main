@@ -97,12 +97,12 @@ public class DateParser {
 	}
 	
 	public static Calendar getTodayDate() {
-		Calendar c = new GregorianCalendar();
+		Calendar calendar = new GregorianCalendar();
 		
-	    c.set(Calendar.HOUR_OF_DAY, 0); 
-	    c.set(Calendar.MINUTE, 0);
-	    c.set(Calendar.SECOND, 0);
+		calendar.set(Calendar.HOUR_OF_DAY, 0); 
+		calendar.set(Calendar.MINUTE, 0);
+		calendar.set(Calendar.SECOND, 0);
 	    
-	    return c;
+	    return calendar;
 	}
 }
