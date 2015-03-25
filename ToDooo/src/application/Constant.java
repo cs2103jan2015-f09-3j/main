@@ -126,7 +126,10 @@ public final class Constant {
 	public static final KeyCombination SHORTCUT_REDO = new KeyCodeCombination(KeyCode.Y, KeyCombination.ALT_DOWN);
 	public static final KeyCombination SHORTCUT_OPEN_FILE_DIALOG = new KeyCodeCombination(KeyCode.F10);
 	
-    public static final String TAB_NAME_ALL = "All";    
+    public static final String TAB_NAME_ALL = "all";  
+    public static final String TAB_NAME_CATEGORY = "category";
+    public static final String TAB_NAME_PRIORITY= "priority";
+    public static final String VIEW_NAME_SEARCH_RESULT= "searchResult";
     public static final int TIMER_SYSTEM_MSG_DURATION = 2500;
     
     public static final String CSS_CLASS_ACTION_COMMANDS = "actionCommands";
@@ -135,7 +138,6 @@ public final class Constant {
     public static final String CSS_CLASS_PRIORITY = "priority";
     public static final String CSS_CLASS_RECURRING_COMMANDS = "recurringCommands";
     public static final String CSS_CLASS_SEARCH_ATTRIBUTES = "searchAttributes";
-    
     
     public static final String TODAY_TITLE = "TODAY";
     public static final String OVERDUE_TITLE = "OVERDUE";
@@ -149,5 +151,11 @@ public final class Constant {
     public static final Color MEDIUM_PRIORITY = Color.rgb(248, 135, 46);
     public static final Color LOW_PRIORITY = Color.rgb(249, 212, 35);
     public static final Color NEUTRAL_PRIORITY = Color.WHITE;
+    
+    public static final String STR_BEFORE_DATE_BY = "by";
+    public static final String STR_BEFORE_DATE_ON = "on";
+    public static final String STR_BEFORE_DATE_FROM = "from";
+    public static final String STR_BEFORE_DATE_TO = "to";
+    
 
 }

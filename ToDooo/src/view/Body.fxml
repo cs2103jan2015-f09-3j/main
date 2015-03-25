@@ -39,7 +39,7 @@
                <content>
                   <ScrollPane fx:id="sPanePriority" fitToWidth="true" hbarPolicy="NEVER" style="-fx-background: #ffffff;">
                      <content>
-                        <VBox fx:id="vBoxPriority" style="-fx-background-color: #ffffff;">
+                        <VBox fx:id="vBoxPriority" spacing="8.0" style="-fx-background-color: #ffffff;">
                            <padding>
                               <Insets bottom="15.0" left="15.0" right="15.0" top="15.0" />
                            </padding></VBox>

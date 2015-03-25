@@ -57,9 +57,9 @@ public class MainController{
 		headerController.init(this);
 		bodyController.init(this);
 		searchResultController.init(this);
-		loadListByDate("main");
-		loadListByCategory("category");
-		loadListByPriority("priority");
+		loadListByDate(Constant.TAB_NAME_ALL);
+		loadListByCategory(Constant.TAB_NAME_CATEGORY);
+		loadListByPriority(Constant.TAB_NAME_PRIORITY);
 	}
 
 	@FXML
@@ -68,14 +68,14 @@ public class MainController{
 		
 		if (Constant.SHORTCUT_UNDO.match(e)) {
 			systemMsg = executeUndo();
-			loadListByDate("main");
-			loadListByCategory("category");
-			loadListByPriority("priority");
+			loadListByDate(Constant.TAB_NAME_ALL);
+			loadListByCategory(Constant.TAB_NAME_CATEGORY);
+			loadListByPriority(Constant.TAB_NAME_PRIORITY);
 		} else if (Constant.SHORTCUT_REDO.match(e)) {
 			systemMsg = executeRedo();
-			loadListByDate("main");
-			loadListByCategory("category");
-			loadListByPriority("priority");
+			loadListByDate(Constant.TAB_NAME_ALL);
+			loadListByCategory(Constant.TAB_NAME_CATEGORY);
+			loadListByPriority(Constant.TAB_NAME_PRIORITY);
 		} else {
 			return;
 		}
@@ -145,7 +145,7 @@ public class MainController{
 		ArrayList<Task> taskList = getList(displayType);
 		ArrayList<Task> temp;
 		
-		if(displayType.equalsIgnoreCase("searchResult")) {
+		if(displayType.equalsIgnoreCase(Constant.VIEW_NAME_SEARCH_RESULT)) {
 			temp = taskSorter.getTasksSortedByDate(taskList);
 		} else {
 			ArrayList<Task> unsortedTemp = ToDoList.generateTaskItems(taskList);
@@ -267,11 +267,11 @@ public class MainController{
 	}
 	
 	private VBox getContainer(String type) {
-		if(type.equalsIgnoreCase("main")) {
+		if(type.equalsIgnoreCase(Constant.TAB_NAME_ALL)) {
 			return bodyController.vBoxAll;
-		} else if(type.equalsIgnoreCase("category")) {
+		} else if(type.equalsIgnoreCase(Constant.TAB_NAME_CATEGORY)) {
 			return bodyController.vBoxCategory;
-		} else if(type.equalsIgnoreCase("priority")) {
+		} else if(type.equalsIgnoreCase(Constant.TAB_NAME_PRIORITY)) {
 			return bodyController.vBoxPriority;
 		} else {
 			return searchResultController.vBoxSearchResult;
@@ -279,7 +279,7 @@ public class MainController{
 	}
 	
 	private ArrayList<Task> getList(String type) {
-		if(type.equalsIgnoreCase("searchResult")) {
+		if(type.equalsIgnoreCase(Constant.VIEW_NAME_SEARCH_RESULT)) {
 			return Main.searchResults;
 		} else {
 			return Main.list.getTasks();
@@ -321,9 +321,16 @@ public class MainController{
 		
 		addIcon(t, hBox1);
 		addId(t, hBox1);
-		addPriorityBar(t, hBox1);
+		
+		if(!displayType.equalsIgnoreCase(Constant.TAB_NAME_PRIORITY)) {
+			addPriorityBar(t, hBox1);
+		}
+		
 		addDesc(t, hBox1);
-		addCategory(t, hBox1);
+		
+		if(!displayType.equalsIgnoreCase(Constant.TAB_NAME_CATEGORY)) {
+			addCategory(t, hBox1);
+		}
 		
 		if(!taskType.equalsIgnoreCase(TaskType.FLOATING.toString())) {
 			
@@ -333,18 +340,18 @@ public class MainController{
 				
 			} else if(taskType.equalsIgnoreCase(TaskType.DATED.toString())) {
 				
-				addSingleDateTime(byDate, hBox2, "by", Constant.TIMEOUTPUT);
+				addSingleDateTime(byDate, hBox2, Constant.STR_BEFORE_DATE_BY, Constant.TIMEOUTPUT);
 				
 			} else if(taskType.equalsIgnoreCase(TaskType.TIMED.toString())) {
 				
 				if(DateParser.compareDate(fromDate, toDate)) {
-					addDoubleDateTime(fromDate, toDate, hBox2, "from", "to", Constant.TIMEOUTPUT);
+					addDoubleDateTime(fromDate, toDate, hBox2, Constant.STR_BEFORE_DATE_FROM, Constant.STR_BEFORE_DATE_TO, Constant.TIMEOUTPUT);
 				} else if(DateParser.compareDate(t.getStartDate(), t.getFrom())) {
-					addSingleDateTime(t.getFrom(), hBox2, "from", Constant.TIMEOUTPUT);
+					addSingleDateTime(t.getFrom(), hBox2, Constant.STR_BEFORE_DATE_FROM, Constant.TIMEOUTPUT);
 				} else if(DateParser.compareDate(startDate, toDate)) {
-					addSingleDateTime(toDate, hBox2, "to", Constant.TIMEOUTPUT);
+					addSingleDateTime(toDate, hBox2, Constant.STR_BEFORE_DATE_TO, Constant.TIMEOUTPUT);
 				} else {
-					addDoubleDateTime(fromDate, toDate, hBox2, "from", "to", Constant.DATEOUTPUT_FOR_TIMEDTASK);
+					addDoubleDateTime(fromDate, toDate, hBox2, Constant.STR_BEFORE_DATE_FROM, Constant.STR_BEFORE_DATE_TO, Constant.DATEOUTPUT_FOR_TIMEDTASK);
 				}
 				
 			}
@@ -364,7 +371,7 @@ public class MainController{
 	}
 	
 	private String getStyle(String displayType) {
-		if(displayType.equalsIgnoreCase("searchResult")) {
+		if(displayType.equalsIgnoreCase(Constant.VIEW_NAME_SEARCH_RESULT)) {
 			return "bPaneSearchResult";
 		} else {
 			return "bPaneAll";

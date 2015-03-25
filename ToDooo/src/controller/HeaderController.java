@@ -46,9 +46,9 @@ public class HeaderController{
 			}	
 			lblSysMsg.setText(systemMsg);	
 			
-			mainCon.loadListByDate("main");	
-			mainCon.loadListByCategory("category");
-			mainCon.loadListByPriority("priority");
+			mainCon.loadListByDate(Constant.TAB_NAME_ALL);	
+			mainCon.loadListByCategory(Constant.TAB_NAME_CATEGORY);
+			mainCon.loadListByPriority(Constant.TAB_NAME_PRIORITY);
 			mainCon.executeSystemMsgTimerTask();	
 		} 			
 	}
