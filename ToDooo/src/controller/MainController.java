@@ -85,59 +85,55 @@ public class MainController{
 
 	@FXML
 	public void onShortcutKey(KeyEvent e) {	
-		try {
-			if (Constant.SHORTCUT_UNDO.match(e)) {
-				String systemMsg = executeUndo();
+		if (Constant.SHORTCUT_UNDO.match(e)) {
+			String systemMsg = executeUndo();
+			
+			loadListsInTabs();
+			setSystemMessage(systemMsg);
+		} 
+		
+		if (Constant.SHORTCUT_REDO.match(e)) {
+			String systemMsg = executeRedo();
+			
+			loadListsInTabs();
+			setSystemMessage(systemMsg);
+		} 
+		
+		if (Constant.SHORTCUT_TAB_ALL.match(e)) {
+			selectionModel.select(Constant.TAB_INDEX_ALL);			
+		} 
+		
+		if (Constant.SHORTCUT_TAB_CATEGORY.match(e)) {
+			selectionModel.select(Constant.TAB_INDEX_CATEGORY);			
+		} 
+		
+		if (Constant.SHORTCUT_TAB_PRIORITY.match(e)) {
+			selectionModel.select(Constant.TAB_INDEX_PRIORITY);			
+		}
+		
+		if (Constant.SHORTCUT_TAB_PRIORITY.match(e)) {
+			selectionModel.select(Constant.TAB_INDEX_PRIORITY);			
+		}
+		
+		if (Constant.SHORTCUT_GO_BACK.match(e)) {
+			executeGoBack();
+		}
+		
+		if (Constant.SHORTCUT_SETTING.match(e)) {
+			executeSetting();				
+		}
+		
+		if (Constant.SHORTCUT_TUTORIAL.match(e)) {
+			if (tutorialPopup.isFocused()) {
+				tutorialPopup.hide();
+			} else {
+				double positionX = Main.priStage.getX() - 
+								   Constant.POSITION_OFFSET_X_POPUP;
+				double positionY = Main.priStage.getY() * 
+								   Constant.POSITION_OFFSET_Y_POPUP;
 				
-				loadListsInTabs();
-				setSystemMessage(systemMsg);
-			} 
-			
-			if (Constant.SHORTCUT_REDO.match(e)) {
-				String systemMsg = executeRedo();
-				
-				loadListsInTabs();
-				setSystemMessage(systemMsg);
-			} 
-			
-			if (Constant.SHORTCUT_TAB_ALL.match(e)) {
-				selectionModel.select(Constant.TAB_INDEX_ALL);			
-			} 
-			
-			if (Constant.SHORTCUT_TAB_CATEGORY.match(e)) {
-				selectionModel.select(Constant.TAB_INDEX_CATEGORY);			
-			} 
-			
-			if (Constant.SHORTCUT_TAB_PRIORITY.match(e)) {
-				selectionModel.select(Constant.TAB_INDEX_PRIORITY);			
+				tutorialPopup.show(Main.priStage, positionX, positionY);
 			}
-			
-			if (Constant.SHORTCUT_TAB_PRIORITY.match(e)) {
-				selectionModel.select(Constant.TAB_INDEX_PRIORITY);			
-			}
-			
-			if (Constant.SHORTCUT_GO_BACK.match(e)) {
-				executeGoBack();
-			}
-			
-			if (Constant.SHORTCUT_SETTING.match(e)) {
-				executeSetting();				
-			}
-			
-			if (Constant.SHORTCUT_TUTORIAL.match(e)) {
-				if (tutorialPopup.isFocused()) {
-					tutorialPopup.hide();
-				} else {
-					double positionX = Main.priStage.getX() - 
-									   Constant.POSITION_OFFSET_X_POPUP;
-					double positionY = Main.priStage.getY() * 
-									   Constant.POSITION_OFFSET_Y_POPUP;
-					
-					tutorialPopup.show(Main.priStage, positionX, positionY);
-				}
-			}
-		} catch (IOException exception) {
-			exception.printStackTrace();
 		}
 		
 		
@@ -304,7 +300,7 @@ public class MainController{
 			category = task.getCategory();
 			
 			if(i == 0 || !category.equalsIgnoreCase(temp.get(i-1).getCategory())) {
-				renderTaskItem(category, task, displayType);
+				renderTaskItem(category.toUpperCase(), task, displayType);
 			} else {
 				renderTaskItem("", task, displayType);
 			}
@@ -326,11 +322,7 @@ public class MainController{
 			task = temp.get(i);
 			priority = task.getPriority().toString();
 			
-			if(i == 0 || !priority.equalsIgnoreCase(temp.get(i-1).getPriority().toString())) {
-				renderTaskItem(priority, task, displayType);
-			} else {
-				renderTaskItem("", task, displayType);
-			}
+			renderTaskItem("", task, displayType);
 		}
 	}
 	
@@ -408,6 +400,7 @@ public class MainController{
 			
 			if(displayType.equalsIgnoreCase(Constant.TAB_NAME_ALL) || 
 					displayType.equalsIgnoreCase(Constant.VIEW_NAME_SEARCH_RESULT)) {
+				
 				if(DateParser.compareDate(fromDate, toDate)) {
 					addDoubleDateTime(fromDate, toDate, hBox2, Constant.STR_BEFORE_DATE_FROM, Constant.STR_BEFORE_DATE_TO, 
 							Constant.TIMEOUTPUT, displayType);
@@ -419,7 +412,9 @@ public class MainController{
 					addDoubleDateTime(fromDate, toDate, hBox2, Constant.STR_BEFORE_DATE_FROM, Constant.STR_BEFORE_DATE_TO, 
 							Constant.DATEOUTPUT_FOR_TIMEDTASK, displayType);
 				}
+				
 			} else {
+				
 				if(DateParser.compareDate(fromDate, toDate)) {
 					addDoubleDateTime(fromDate, toDate, hBox2, Constant.STR_BEFORE_DATE_FROM, Constant.STR_BEFORE_DATE_TO, 
 							Constant.TIMEOUTPUT, displayType);
@@ -428,11 +423,7 @@ public class MainController{
 							Constant.DATETIMEOUTPUT, displayType);
 				}
 			}
-			
-			
 		}
-		 
-		
 		vBox.getChildren().add(bPane);
 	}
 	
@@ -586,7 +577,7 @@ public class MainController{
 		hBox.getChildren().add(lblDateTime2);
 	}
 
-	public void executeSetting() throws IOException {
+	public void executeSetting() {
 		headerController.settingIcon.setVisible(false);
 		headerController.backIcon.setVisible(true);
 		
@@ -596,7 +587,7 @@ public class MainController{
 		searchResultController.anPaneSearchResult.setVisible(false);
 	}
 	
-	public void executeGoBack() throws IOException {
+	public void executeGoBack() {
 		headerController.settingIcon.setVisible(true);
 		headerController.backIcon.setVisible(false);
 		
