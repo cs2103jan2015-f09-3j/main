@@ -23,6 +23,7 @@ import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Label;
+import javafx.scene.control.SingleSelectionModel;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
@@ -38,6 +39,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.RowConstraints;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.Line;
+import javafx.scene.control.Tab;
 import controller.HeaderController;
 import controller.BodyController;
 
@@ -51,15 +53,20 @@ public class MainController{
 	@FXML SearchResultController searchResultController;
 	private Timer timer;
 	private TaskSorter taskSorter = new TaskSorter();
+	private SingleSelectionModel<Tab> selectionModel;
 	
 	@FXML
 	public void initialize() {
+		initControllers();
+		loadListsInTabs();
+		
+		selectionModel = bodyController.tPaneMain.
+						 getSelectionModel();
+	}
+	private void initControllers() {
 		headerController.init(this);
 		bodyController.init(this);
 		searchResultController.init(this);
-		loadListByDate(Constant.TAB_NAME_ALL);
-		loadListByCategory(Constant.TAB_NAME_CATEGORY);
-		loadListByPriority(Constant.TAB_NAME_PRIORITY);
 	}
 
 	@FXML
@@ -68,21 +75,28 @@ public class MainController{
 		
 		if (Constant.SHORTCUT_UNDO.match(e)) {
 			systemMsg = executeUndo();
-			loadListByDate(Constant.TAB_NAME_ALL);
-			loadListByCategory(Constant.TAB_NAME_CATEGORY);
-			loadListByPriority(Constant.TAB_NAME_PRIORITY);
+			loadListsInTabs();
 		} else if (Constant.SHORTCUT_REDO.match(e)) {
 			systemMsg = executeRedo();
-			loadListByDate(Constant.TAB_NAME_ALL);
-			loadListByCategory(Constant.TAB_NAME_CATEGORY);
-			loadListByPriority(Constant.TAB_NAME_PRIORITY);
-		} else {
+			loadListsInTabs();
+		} else if (Constant.SHORTCUT_TAB_ALL.match(e)) {
+			selectionModel.select(Constant.TAB_INDEX_ALL);			
+		} else if (Constant.SHORTCUT_TAB_CATEGORY.match(e)) {
+			selectionModel.select(Constant.TAB_INDEX_CATEGORY);			
+		} else if (Constant.SHORTCUT_TAB_PRIORITY.match(e)) {
+			selectionModel.select(Constant.TAB_INDEX_PRIORITY);			
+		} else {		
 			return;
 		}
 		
-		headerController.lblSysMsg.setText(systemMsg);	
-		
+		headerController.lblSysMsg.setText(systemMsg);			
 		executeSystemMsgTimerTask();		
+	}
+	
+	private void loadListsInTabs() {
+		loadListByDate(Constant.TAB_NAME_ALL);
+		loadListByCategory(Constant.TAB_NAME_CATEGORY);
+		loadListByPriority(Constant.TAB_NAME_PRIORITY);
 	}
 
 	private String executeUndo() {

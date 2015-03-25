@@ -11,7 +11,7 @@
    <children>
       <TabPane fx:id="tPaneMain" layoutY="100.0" maxHeight="-Infinity" maxWidth="-Infinity" side="BOTTOM" style="-fx-background-color: #ffffff;" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
         <tabs>
-            <Tab fx:id="tabAll" closable="false" text="All">
+            <Tab fx:id="tabAll" closable="false" text="All (F1)">
                <content>
                   <ScrollPane fx:id="sPaneAll" fitToWidth="true" hbarPolicy="NEVER" style="-fx-background: #ffffff;">
                      <content>
@@ -23,7 +23,7 @@
                   </ScrollPane>
                </content>
             </Tab>
-          <Tab fx:id="tabCategory" closable="false" text="Categories">
+          <Tab fx:id="tabCategory" closable="false" text="Categories (F2)">
                <content>
                   <ScrollPane fx:id="sPaneCategory" fitToWidth="true" hbarPolicy="NEVER" style="-fx-background: #ffffff;">
                      <content>
@@ -35,7 +35,7 @@
                   </ScrollPane>
                </content>
           </Tab>
-            <Tab fx:id="tabPriority" closable="false" text="Priorities">
+            <Tab fx:id="tabPriority" closable="false" text="Priorities (F3)">
                <content>
                   <ScrollPane fx:id="sPanePriority" fitToWidth="true" hbarPolicy="NEVER" style="-fx-background: #ffffff;">
                      <content>

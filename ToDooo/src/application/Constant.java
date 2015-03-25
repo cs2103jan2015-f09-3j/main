@@ -125,10 +125,17 @@ public final class Constant {
 	public static final KeyCombination SHORTCUT_UNDO = new KeyCodeCombination(KeyCode.Z, KeyCombination.ALT_DOWN);
 	public static final KeyCombination SHORTCUT_REDO = new KeyCodeCombination(KeyCode.Y, KeyCombination.ALT_DOWN);
 	public static final KeyCombination SHORTCUT_OPEN_FILE_DIALOG = new KeyCodeCombination(KeyCode.F10);
+	public static final KeyCombination SHORTCUT_TAB_ALL = new KeyCodeCombination(KeyCode.F1);
+	public static final KeyCombination SHORTCUT_TAB_CATEGORY = new KeyCodeCombination(KeyCode.F2);
+	public static final KeyCombination SHORTCUT_TAB_PRIORITY = new KeyCodeCombination(KeyCode.F3);
 	
     public static final String TAB_NAME_ALL = "all";  
     public static final String TAB_NAME_CATEGORY = "category";
     public static final String TAB_NAME_PRIORITY= "priority";
+    public static final int TAB_INDEX_ALL = 0;
+    public static final int TAB_INDEX_CATEGORY = 1;
+    public static final int TAB_INDEX_PRIORITY = 2;
+    
     public static final String VIEW_NAME_SEARCH_RESULT= "searchResult";
     public static final int TIMER_SYSTEM_MSG_DURATION = 2500;
     
