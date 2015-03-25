@@ -40,6 +40,8 @@ import javafx.scene.layout.RowConstraints;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.Line;
 import javafx.scene.control.Tab;
+import javafx.stage.Popup;
+import javafx.stage.PopupWindow.AnchorLocation;
 import controller.HeaderController;
 import controller.BodyController;
 
@@ -55,15 +57,26 @@ public class MainController{
 	private Timer timer;
 	private TaskSorter taskSorter = new TaskSorter();
 	private SingleSelectionModel<Tab> selectionModel;
+	private Popup tutorialPopup;
 	
 	@FXML
 	public void initialize() {
 		initControllers();
 		loadListsInTabs();
+		initTutorialPopup();
 		
 		selectionModel = bodyController.tPaneMain.
 						 getSelectionModel();
 	}
+	
+	private void initTutorialPopup() {
+		Image image = new Image(Constant.IMAGE_TUTORIAL);
+		ImageView imageView = new ImageView(image);
+		
+		tutorialPopup = new Popup();
+		tutorialPopup.getContent().add(imageView);
+	}
+	
 	private void initControllers() {
 		headerController.init(this);
 		bodyController.init(this);
@@ -108,7 +121,20 @@ public class MainController{
 			}
 			
 			if (Constant.SHORTCUT_SETTING.match(e)) {
-				executeSetting();
+				executeSetting();				
+			}
+			
+			if (Constant.SHORTCUT_TUTORIAL.match(e)) {
+				if (tutorialPopup.isFocused()) {
+					tutorialPopup.hide();
+				} else {
+					double positionX = Main.priStage.getX() - 
+									   Constant.POSITION_OFFSET_X_POPUP;
+					double positionY = Main.priStage.getY() * 
+									   Constant.POSITION_OFFSET_Y_POPUP;
+					
+					tutorialPopup.show(Main.priStage, positionX, positionY);
+				}
 			}
 		} catch (IOException exception) {
 			exception.printStackTrace();
