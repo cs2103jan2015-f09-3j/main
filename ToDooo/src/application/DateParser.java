@@ -2,6 +2,7 @@ package application;
 
 import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.TimeZone;
 
 public class DateParser {
@@ -93,5 +94,15 @@ public class DateParser {
 		return (thisCalendar.get(Calendar.ERA) == thatCalendar.get(Calendar.ERA) &&
 				thisCalendar.get(Calendar.YEAR) == thatCalendar.get(Calendar.YEAR) &&
 				thisCalendar.get(Calendar.DAY_OF_YEAR) == thatCalendar.get(Calendar.DAY_OF_YEAR));
+	}
+	
+	public static Calendar getTodayDate() {
+		Calendar c = new GregorianCalendar();
+		
+	    c.set(Calendar.HOUR_OF_DAY, 0); 
+	    c.set(Calendar.MINUTE, 0);
+	    c.set(Calendar.SECOND, 0);
+	    
+	    return c;
 	}
 }

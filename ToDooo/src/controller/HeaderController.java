@@ -44,12 +44,9 @@ public class HeaderController{
 			if (systemMsg.equals(Constant.MSG_ORIGINAL_NOT_RETRIEVED)) {
 				resetTextArea();
 			}	
-			lblSysMsg.setText(systemMsg);	
 			
-			mainCon.loadListByDate(Constant.TAB_NAME_ALL);	
-			mainCon.loadListByCategory(Constant.TAB_NAME_CATEGORY);
-			mainCon.loadListByPriority(Constant.TAB_NAME_PRIORITY);
-			mainCon.executeSystemMsgTimerTask();	
+			mainCon.loadListsInTabs();
+			mainCon.setSystemMessage(systemMsg);
 		} 			
 	}
 	

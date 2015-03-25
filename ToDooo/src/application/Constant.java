@@ -107,6 +107,7 @@ public final class Constant {
 	
 	public static final String MSG_NO_RESULTS = "No match found.";
 	public static final String MSG_SEARCH_SUCCESS = "{0} matches found.";
+	public static final String MSG_SEARCH_INVALID = "Invalid format. Please use the search attributes and separate with ;;<space>";
 	
 	public static final String DELIMETER_UPDATE = ":";
 	public static final String DELIMETER_SEARCH = ";; ";
@@ -124,10 +125,12 @@ public final class Constant {
 	
 	public static final KeyCombination SHORTCUT_UNDO = new KeyCodeCombination(KeyCode.Z, KeyCombination.ALT_DOWN);
 	public static final KeyCombination SHORTCUT_REDO = new KeyCodeCombination(KeyCode.Y, KeyCombination.ALT_DOWN);
+	public static final KeyCombination SHORTCUT_GO_BACK = new KeyCodeCombination(KeyCode.BACK_QUOTE, KeyCombination.ALT_DOWN);
 	public static final KeyCombination SHORTCUT_OPEN_FILE_DIALOG = new KeyCodeCombination(KeyCode.F10);
 	public static final KeyCombination SHORTCUT_TAB_ALL = new KeyCodeCombination(KeyCode.F1);
 	public static final KeyCombination SHORTCUT_TAB_CATEGORY = new KeyCodeCombination(KeyCode.F2);
 	public static final KeyCombination SHORTCUT_TAB_PRIORITY = new KeyCodeCombination(KeyCode.F3);
+	public static final KeyCombination SHORTCUT_SETTING = new KeyCodeCombination(KeyCode.F4);
 	
     public static final String TAB_NAME_ALL = "all";  
     public static final String TAB_NAME_CATEGORY = "category";
@@ -146,18 +149,18 @@ public final class Constant {
     public static final String CSS_CLASS_RECURRING_COMMANDS = "recurringCommands";
     public static final String CSS_CLASS_SEARCH_ATTRIBUTES = "searchAttributes";
     
-    public static final String TODAY_TITLE = "TODAY";
-    public static final String OVERDUE_TITLE = "OVERDUE";
+    public static final String TITLE_TODAY = "TODAY";
+    public static final String TITLE_OVERDUE = "OVERDUE";
     
-    public static final String EVENT_ICON = "images/eventIcon.png";
-    public static final String FLOATING_ICON = "images/floatingIcon.png";
-    public static final String TIMED_ICON = "images/timedIcon.png";
-    public static final String DATED_ICON = "images/datedIcon.png";
+    public static final String ICON_EVENT = "images/eventIcon.png";
+    public static final String ICON_FLOATING = "images/floatingIcon.png";
+    public static final String ICON_TIMED = "images/timedIcon.png";
+    public static final String ICON_DATED = "images/datedIcon.png";
     
-    public static final Color HIGH_PRIORITY = Color.rgb(196, 1, 9);
-    public static final Color MEDIUM_PRIORITY = Color.rgb(248, 135, 46);
-    public static final Color LOW_PRIORITY = Color.rgb(249, 212, 35);
-    public static final Color NEUTRAL_PRIORITY = Color.WHITE;
+    public static final Color COLOR_PRIORITY_HIGH = Color.rgb(196, 1, 9);
+    public static final Color COLOR_PRIORITY_MEDIUM = Color.rgb(248, 135, 46);
+    public static final Color COLOR_PRIORITY_LOW = Color.rgb(249, 212, 35);
+    public static final Color COLOR_PRIORITY_NEUTRAL = Color.WHITE;
     
     public static final String STR_BEFORE_DATE_BY = "by";
     public static final String STR_BEFORE_DATE_ON = "on";

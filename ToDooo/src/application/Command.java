@@ -1,6 +1,7 @@
 package application;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Date;
 
 import controller.HeaderController;
@@ -332,9 +333,15 @@ public enum Command {
 	private static String executeSearch(String userInput) {
 		String systemMsg = null;
 		
-		Main.searchResults = Main.list.searchTheList(userInput);
-		if (Main.searchResults.isEmpty()) {
+		Pair<ArrayList<Task>, String> searchResultsPair = 
+				Main.list.searchTheList(userInput);
+		Main.searchResults = searchResultsPair.getKey();
+		systemMsg = searchResultsPair.getValue();		
+		
+		if (Main.searchResults.isEmpty() && systemMsg == null) {
 			systemMsg = Constant.MSG_NO_RESULTS;
+		} else if (systemMsg != null) {
+			systemMsg = Constant.MSG_SEARCH_INVALID;
 		} else {
 			systemMsg = Constant.MSG_SEARCH_SUCCESS.
 						replace(Constant.DELIMETER_SEARCH, 

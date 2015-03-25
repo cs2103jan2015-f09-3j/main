@@ -51,6 +51,7 @@ public class MainController{
 	@FXML BodyController bodyController;
 	@FXML SettingController settingController;
 	@FXML SearchResultController searchResultController;
+	
 	private Timer timer;
 	private TaskSorter taskSorter = new TaskSorter();
 	private SingleSelectionModel<Tab> selectionModel;
@@ -71,34 +72,61 @@ public class MainController{
 
 	@FXML
 	public void onShortcutKey(KeyEvent e) {	
-		String systemMsg = null;
-		
-		if (Constant.SHORTCUT_UNDO.match(e)) {
-			systemMsg = executeUndo();
-			loadListsInTabs();
-		} else if (Constant.SHORTCUT_REDO.match(e)) {
-			systemMsg = executeRedo();
-			loadListsInTabs();
-		} else if (Constant.SHORTCUT_TAB_ALL.match(e)) {
-			selectionModel.select(Constant.TAB_INDEX_ALL);			
-		} else if (Constant.SHORTCUT_TAB_CATEGORY.match(e)) {
-			selectionModel.select(Constant.TAB_INDEX_CATEGORY);			
-		} else if (Constant.SHORTCUT_TAB_PRIORITY.match(e)) {
-			selectionModel.select(Constant.TAB_INDEX_PRIORITY);			
-		} else {		
-			return;
+		try {
+			if (Constant.SHORTCUT_UNDO.match(e)) {
+				String systemMsg = executeUndo();
+				
+				loadListsInTabs();
+				setSystemMessage(systemMsg);
+			} 
+			
+			if (Constant.SHORTCUT_REDO.match(e)) {
+				String systemMsg = executeRedo();
+				
+				loadListsInTabs();
+				setSystemMessage(systemMsg);
+			} 
+			
+			if (Constant.SHORTCUT_TAB_ALL.match(e)) {
+				selectionModel.select(Constant.TAB_INDEX_ALL);			
+			} 
+			
+			if (Constant.SHORTCUT_TAB_CATEGORY.match(e)) {
+				selectionModel.select(Constant.TAB_INDEX_CATEGORY);			
+			} 
+			
+			if (Constant.SHORTCUT_TAB_PRIORITY.match(e)) {
+				selectionModel.select(Constant.TAB_INDEX_PRIORITY);			
+			}
+			
+			if (Constant.SHORTCUT_TAB_PRIORITY.match(e)) {
+				selectionModel.select(Constant.TAB_INDEX_PRIORITY);			
+			}
+			
+			if (Constant.SHORTCUT_GO_BACK.match(e)) {
+				executeGoBack();
+			}
+			
+			if (Constant.SHORTCUT_SETTING.match(e)) {
+				executeSetting();
+			}
+		} catch (IOException exception) {
+			exception.printStackTrace();
 		}
 		
+		
+	}
+	public void setSystemMessage(String systemMsg) {
 		headerController.lblSysMsg.setText(systemMsg);			
-		executeSystemMsgTimerTask();		
+		executeSystemMsgTimerTask();
 	}
 	
-	private void loadListsInTabs() {
+	public void loadListsInTabs() {
 		loadListByDate(Constant.TAB_NAME_ALL);
 		loadListByCategory(Constant.TAB_NAME_CATEGORY);
 		loadListByPriority(Constant.TAB_NAME_PRIORITY);
 	}
-
+	
 	private String executeUndo() {
 		String systemMsg = null;
 		
@@ -170,7 +198,7 @@ public class MainController{
 		ArrayList<Task> today = new ArrayList<>();
 		ArrayList<Task> floating = new ArrayList<>();
 		
-	    Date todayDate = getTodayDate().getTime();
+	    Date todayDate = DateParser.getTodayDate().getTime();
 		
 	    for(int i = 0; i < temp.size(); i++) {
 			task = temp.get(i);
@@ -198,7 +226,7 @@ public class MainController{
 		} 
 		
 	    if(!overdue.isEmpty()) {
-	    	renderLists(overdue, Constant.OVERDUE_TITLE, displayType);
+	    	renderLists(overdue, Constant.TITLE_OVERDUE, displayType);
 			
 			if(!floating.isEmpty() && today.isEmpty()) {
 				addHorizontalBar(vBox);
@@ -206,7 +234,7 @@ public class MainController{
 		}
 		
 		if(!today.isEmpty()) {
-			renderLists(today, Constant.TODAY_TITLE, displayType);
+			renderLists(today, Constant.TITLE_TODAY, displayType);
 			
 			if(!floating.isEmpty()) {
 				addHorizontalBar(vBox);
@@ -300,16 +328,6 @@ public class MainController{
 		}
 	}
 	
-	private Calendar getTodayDate() {
-		Calendar c = new GregorianCalendar();
-		
-	    c.set(Calendar.HOUR_OF_DAY, 0); 
-	    c.set(Calendar.MINUTE, 0);
-	    c.set(Calendar.SECOND, 0);
-	    
-	    return c;
-	}
-	
 	private void renderTaskItem(String header, Task t, String displayType) {
 		String taskType = t.getTaskType().toString();
 		Date onDate = t.getOn();
@@ -393,20 +411,23 @@ public class MainController{
 	}
 	
 	private void addHorizontalBar(VBox vBox) {
-		Line hBar = new Line();
+		Line hBar = new Line();	
+		
 		hBar.setStartX(4.5);
 		hBar.setStartY(0.5);
 		hBar.setEndX(760);
 		hBar.setEndY(0.5);
 		hBar.getStyleClass().add("hBar");
+		
 		Pane paneHBar = new Pane(hBar);
 		paneHBar.getStyleClass().add("paneHBar");
+		
 		vBox.getChildren().add(paneHBar);
 	}
 	
 	private void addTitle(String header, VBox container) {
 		Label lblTitle = new Label();
-		if(header.equals(Constant.TODAY_TITLE) || header.equals(Constant.OVERDUE_TITLE)) {
+		if(header.equals(Constant.TITLE_TODAY) || header.equals(Constant.TITLE_OVERDUE)) {
 			lblTitle.getStyleClass().add("todayTitle");
 		} else {
 			lblTitle.getStyleClass().add("dateTitle");
@@ -418,13 +439,13 @@ public class MainController{
 	private void addIcon(Task t, HBox hBox) {
 		String imgName = "";
 		switch (t.getTaskType()) {
-		case EVENT: imgName = Constant.EVENT_ICON;
+		case EVENT: imgName = Constant.ICON_EVENT;
 		break;
-		case FLOATING: imgName = Constant.FLOATING_ICON;
+		case FLOATING: imgName = Constant.ICON_FLOATING;
 		break;
-		case TIMED: imgName = Constant.TIMED_ICON;
+		case TIMED: imgName = Constant.ICON_TIMED;
 		break;
-		case DATED: imgName = Constant.DATED_ICON;
+		case DATED: imgName = Constant.ICON_DATED;
 		break;
 		}
 		
@@ -445,16 +466,22 @@ public class MainController{
 	
 	private void addPriorityBar(Task t, HBox hBox) {
 		Line priorityBar = new Line();
+		
 		priorityBar.setStartY(18);
 		priorityBar.getStyleClass().add("priorityBar");
+		
 		switch (t.getPriority()) {
-			case HIGH: priorityBar.setStroke(Constant.HIGH_PRIORITY);
+			case HIGH : 
+				priorityBar.setStroke(Constant.COLOR_PRIORITY_HIGH);
 			break;
-			case MEDIUM: priorityBar.setStroke(Constant.MEDIUM_PRIORITY);
+			case MEDIUM : 
+				priorityBar.setStroke(Constant.COLOR_PRIORITY_MEDIUM);
 			break;
-			case LOW: priorityBar.setStroke(Constant.LOW_PRIORITY);
+			case LOW : 
+				priorityBar.setStroke(Constant.COLOR_PRIORITY_LOW);
 			break;
-			case NEUTRAL: priorityBar.setStroke(Constant.NEUTRAL_PRIORITY);
+			case NEUTRAL : 
+				priorityBar.setStroke(Constant.COLOR_PRIORITY_NEUTRAL);
 			break;
 		}
 		
@@ -463,12 +490,15 @@ public class MainController{
 	
 	private void addDesc(Task t, HBox hBox) {
 		Label lblDesc = new Label(t.getToDo());
+		
 		lblDesc.getStyleClass().add("labelDesc");
 		hBox.getChildren().add(lblDesc);
 	}
 	
 	private void addCategory(Task t, HBox hBox) {
-		if(!t.getCategory().equalsIgnoreCase(Constant.CATEGORY_UNCATEGORISED)) {
+		String category = t.getCategory();
+		
+		if(!category.equalsIgnoreCase(Constant.CATEGORY_UNCATEGORISED)) {
 			Label lblCategory = new Label(t.getCategory());
 			lblCategory.getStyleClass().add("labelCategory");
 			hBox.getChildren().add(lblCategory);

@@ -169,25 +169,33 @@ public class ToDoList {
 	}
 	
 	// need to check recurring tasks as well
-	public ArrayList<Task> searchTheList(String userInput) {
+	public Pair<ArrayList<Task>, String> searchTheList(String userInput) {
 		ArrayList<Task> tasks = ToDoList.generateTaskItems(_tasks);
 		
 		userInput = InputParser.verifyAndCorrectSearchString(userInput);
 		
 		ArrayList<Task> searchResults = new ArrayList<Task>();
+		String systemMsg = null;	
 		ArrayList<Pair<SearchAttribute, String>> attributePairs =
 				InputParser.getSearchAttributePairFromString(userInput);
-		
-		boolean hasMatched = false;
-		for (Task task : tasks) {
-			hasMatched = task.hasMatchedAllAttributes(attributePairs);
-			
-			if (hasMatched) {
-				searchResults.add(task);
+				
+		if (attributePairs.isEmpty()) {
+			systemMsg = Constant.MSG_SEARCH_INVALID;
+		} else {
+			boolean hasMatched = false;
+			for (Task task : tasks) {
+				hasMatched = task.hasMatchedAllAttributes(attributePairs);
+				
+				if (hasMatched) {
+					searchResults.add(task);
+				}
 			}
-		}
+		}	
 		
-		return searchResults;
+		Pair<ArrayList<Task>, String> searchResultsPair = new
+				Pair<ArrayList<Task>, String>(searchResults, systemMsg);
+		
+		return searchResultsPair;
 	}
 	
 	public Pair<Task, String> updateTaskOnList(String userInput) {
