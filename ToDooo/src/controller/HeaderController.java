@@ -26,8 +26,8 @@ public class HeaderController{
 	@FXML private Label lblLogo;
 	@FXML public  Label lblSysMsg;
 	@FXML private AnchorPane paneHead;
-	@FXML private ImageView settingIcon;
-	@FXML private ImageView backIcon;
+	@FXML public ImageView settingIcon;
+	@FXML public ImageView backIcon;
 	@FXML private Pane txtAreaPane;
 	@FXML public StyleClassedTextArea textArea;
 	
@@ -40,7 +40,7 @@ public class HeaderController{
 				return;
 			}
 			
-			String systemMsg = Command.executeUserInput(userInput, this);
+			String systemMsg = Command.executeUserInput(userInput, this, mainCon);
 			if (systemMsg.equals(Constant.MSG_ORIGINAL_NOT_RETRIEVED)) {
 				resetTextArea();
 			}	
@@ -243,17 +243,17 @@ public class HeaderController{
 	
 	@FXML
 	public void loadSettingMouse(MouseEvent e) throws IOException {
-		executeSetting();
+		mainCon.executeSetting();
 	}
 	
 	@FXML
 	public void goBackToMainMouse(MouseEvent e) throws IOException {
-		executeGoBack();
+		mainCon.executeGoBack();
 	}
 	
 	@FXML
 	public void loadSearchResult(KeyEvent e) throws IOException {
-		executeSearchResult();
+		mainCon.executeSearchResult();
 	}
 
 	public void init(MainController mainController) {
@@ -267,31 +267,7 @@ public class HeaderController{
 		});		
 	}
 	
-	public void executeSetting() throws IOException {
-		settingIcon.setVisible(false);
-		backIcon.setVisible(true);
-		mainCon.bodyController.anPaneMain.setVisible(false);
-		mainCon.settingController.anPaneSetting.setVisible(true);
-		mainCon.searchResultController.anPaneSearchResult.setVisible(false);
-	}
-	
-	public void executeGoBack() throws IOException {
-		settingIcon.setVisible(true);
-		backIcon.setVisible(false);
-		mainCon.bodyController.anPaneMain.setVisible(true);
-		mainCon.settingController.anPaneSetting.setVisible(false);
-		mainCon.searchResultController.anPaneSearchResult.setVisible(false);
-	}
-	
-	public void executeSearchResult() {
-		settingIcon.setVisible(false);
-		backIcon.setVisible(true);
-		mainCon.bodyController.anPaneMain.setVisible(false);
-		mainCon.settingController.anPaneSetting.setVisible(false);
-		mainCon.searchResultController.anPaneSearchResult.setVisible(true);
-		mainCon.searchResultController.loadSearchList();
-	}
-	
+
 	public void resetTextArea() {
 		Main.toUpdate = false;	
 

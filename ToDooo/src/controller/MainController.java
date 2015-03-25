@@ -502,4 +502,36 @@ public class MainController{
 		hBox.getChildren().add(lbl2);
 		hBox.getChildren().add(lblDateTime2);
 	}
+
+	public void executeSetting() throws IOException {
+		headerController.settingIcon.setVisible(false);
+		headerController.backIcon.setVisible(true);
+		
+		bodyController.anPaneMain.setVisible(false);
+		
+		settingController.anPaneSetting.setVisible(true);
+		searchResultController.anPaneSearchResult.setVisible(false);
+	}
+	
+	public void executeGoBack() throws IOException {
+		headerController.settingIcon.setVisible(true);
+		headerController.backIcon.setVisible(false);
+		
+		bodyController.anPaneMain.setVisible(true);
+		
+		settingController.anPaneSetting.setVisible(false);
+		searchResultController.anPaneSearchResult.setVisible(false);
+	}
+	
+	public void executeSearchResult() {
+		headerController.settingIcon.setVisible(false);
+		headerController.backIcon.setVisible(true);
+		
+		bodyController.anPaneMain.setVisible(false);		
+		settingController.anPaneSetting.setVisible(false);
+		
+		searchResultController.anPaneSearchResult.setVisible(true);
+		searchResultController.loadSearchList();
+	}
+	
 }

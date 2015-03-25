@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.Date;
 
 import controller.HeaderController;
+import controller.MainController;
 import javafx.util.Pair;
 
 public enum Command {
@@ -183,7 +184,8 @@ public enum Command {
 		return isCorrectNum;
 	}
 	
-	public static String executeUserInput(String userInput, HeaderController headerController) {
+	public static String executeUserInput(String userInput, HeaderController headerController, 
+			  							  MainController mainController) {
 		String systemMsg = "";
 		Command commandType = InputParser.getActionFromString(userInput);	
 
@@ -194,13 +196,14 @@ public enum Command {
 			Main.toUpdate = false;
 			headerController.textArea.clear();
 		} else {
-			systemMsg = commandType.executeCommand(userInput, headerController);
+			systemMsg = commandType.executeCommand(userInput, headerController, mainController);
 		}
 		
 		return systemMsg;
 	}
 		
-	private String executeCommand(String userInput, HeaderController headerController) {
+	private String executeCommand(String userInput, HeaderController headerController, 
+								  MainController mainController) {
 		String systemMsg = null;
 		try {			
 			userInput = InputParser.removeLineBreaks(userInput);
@@ -220,15 +223,15 @@ public enum Command {
 					break;
 				case SEARCH :
 					systemMsg = Command.executeSearch(userInput);
-					headerController.executeSearchResult();
+					mainController.executeSearchResult();
 					headerController.textArea.clear();
 					break;
 				case SETTING :
-					headerController.executeSetting();
+					mainController.executeSetting();
 					headerController.textArea.clear();
 					break;
 				case GO_BACK :
-					headerController.executeGoBack();
+					mainController.executeGoBack();
 					headerController.textArea.clear();
 					break;
 				default :
