@@ -22,17 +22,21 @@ public class Main extends Application {
 	public static String systemFeedback;
 	public static ArrayList<Task> searchResults;
 	
+	public static Stage priStage;
+	
 	@Override
 	public void start(Stage primaryStage) {
 		try {
+			priStage = primaryStage;
+			
 			Parent root = FXMLLoader.load(getClass().getResource("/view/Main.fxml"));
 			Scene scene = new Scene(root);
 			scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
-			primaryStage.setScene(scene);
-			primaryStage.resizableProperty().setValue(Boolean.FALSE);
-			primaryStage.setHeight(655);
-			primaryStage.setWidth(805);
-			primaryStage.show();
+			priStage.setScene(scene);
+			priStage.resizableProperty().setValue(Boolean.FALSE);
+			priStage.setHeight(Constant.HEIGHT_STAGE);
+			priStage.setWidth(Constant.WIDTH_STAGE);
+			priStage.show();
 		} catch(Exception e) {
 			e.printStackTrace();
 		}
