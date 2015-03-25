@@ -353,41 +353,59 @@ public class MainController{
 		
 		addIcon(t, hBox1);
 		addId(t, hBox1);
-		
-		if(!displayType.equalsIgnoreCase(Constant.TAB_NAME_PRIORITY)) {
-			addPriorityBar(t, hBox1);
-		}
-		
+		addPriorityBar(t, hBox1);
 		addDesc(t, hBox1);
 		
 		if(!displayType.equalsIgnoreCase(Constant.TAB_NAME_CATEGORY)) {
 			addCategory(t, hBox1);
 		}
 		
-		if(!taskType.equalsIgnoreCase(TaskType.FLOATING.toString())) {
-			
-			if(taskType.equalsIgnoreCase(TaskType.EVENT.toString())) {
-				
+		if(taskType.equalsIgnoreCase(TaskType.EVENT.toString())) {
+			if(displayType.equalsIgnoreCase(Constant.TAB_NAME_ALL) || 
+					displayType.equalsIgnoreCase(Constant.VIEW_NAME_SEARCH_RESULT)) {
 				addSingleDateTime(onDate, hBox2, "", Constant.TIMEOUTPUT);
-				
-			} else if(taskType.equalsIgnoreCase(TaskType.DATED.toString())) {
-				
+			} else {
+				addSingleDateTime(onDate, hBox2, "", Constant.DATETIMEOUTPUT);
+			}
+			
+			
+		} else if(taskType.equalsIgnoreCase(TaskType.DATED.toString())) {
+			
+			if(displayType.equalsIgnoreCase(Constant.TAB_NAME_ALL) || 
+					displayType.equalsIgnoreCase(Constant.VIEW_NAME_SEARCH_RESULT)) {
 				addSingleDateTime(byDate, hBox2, Constant.STR_BEFORE_DATE_BY, Constant.TIMEOUTPUT);
-				
-			} else if(taskType.equalsIgnoreCase(TaskType.TIMED.toString())) {
-				
+			} else {
+				addSingleDateTime(byDate, hBox2, Constant.STR_BEFORE_DATE_BY, Constant.DATETIMEOUTPUT);
+			}
+			
+		} else if(taskType.equalsIgnoreCase(TaskType.TIMED.toString())) {
+			
+			if(displayType.equalsIgnoreCase(Constant.TAB_NAME_ALL) || 
+					displayType.equalsIgnoreCase(Constant.VIEW_NAME_SEARCH_RESULT)) {
 				if(DateParser.compareDate(fromDate, toDate)) {
-					addDoubleDateTime(fromDate, toDate, hBox2, Constant.STR_BEFORE_DATE_FROM, Constant.STR_BEFORE_DATE_TO, Constant.TIMEOUTPUT);
-				} else if(DateParser.compareDate(t.getStartDate(), t.getFrom())) {
-					addSingleDateTime(t.getFrom(), hBox2, Constant.STR_BEFORE_DATE_FROM, Constant.TIMEOUTPUT);
+					addDoubleDateTime(fromDate, toDate, hBox2, Constant.STR_BEFORE_DATE_FROM, Constant.STR_BEFORE_DATE_TO, 
+							Constant.TIMEOUTPUT, displayType);
+				} else if(DateParser.compareDate(startDate, fromDate)) {
+					addSingleDateTime(fromDate, hBox2, Constant.STR_BEFORE_DATE_FROM, Constant.TIMEOUTPUT);
 				} else if(DateParser.compareDate(startDate, toDate)) {
 					addSingleDateTime(toDate, hBox2, Constant.STR_BEFORE_DATE_TO, Constant.TIMEOUTPUT);
 				} else {
-					addDoubleDateTime(fromDate, toDate, hBox2, Constant.STR_BEFORE_DATE_FROM, Constant.STR_BEFORE_DATE_TO, Constant.DATEOUTPUT_FOR_TIMEDTASK);
+					addDoubleDateTime(fromDate, toDate, hBox2, Constant.STR_BEFORE_DATE_FROM, Constant.STR_BEFORE_DATE_TO, 
+							Constant.DATEOUTPUT_FOR_TIMEDTASK, displayType);
 				}
-				
+			} else {
+				if(DateParser.compareDate(fromDate, toDate)) {
+					addDoubleDateTime(fromDate, toDate, hBox2, Constant.STR_BEFORE_DATE_FROM, Constant.STR_BEFORE_DATE_TO, 
+							Constant.TIMEOUTPUT, displayType);
+				} else {
+					addDoubleDateTime(fromDate, toDate, hBox2, Constant.STR_BEFORE_DATE_FROM, Constant.STR_BEFORE_DATE_TO, 
+							Constant.DATETIMEOUTPUT, displayType);
+				}
 			}
-		} 
+			
+			
+		}
+		 
 		
 		vBox.getChildren().add(bPane);
 	}
@@ -516,10 +534,19 @@ public class MainController{
 		hBox.getChildren().add(lblDateTime);
 	}
 	
-	private void addDoubleDateTime(Date d1, Date d2, HBox hBox, String str1, String str2, SimpleDateFormat f) {
+	private void addDoubleDateTime(Date d1, Date d2, HBox hBox, String str1, String str2, 
+			SimpleDateFormat f, String displayType) {
+		
+		if(DateParser.compareDate(d1, d2) && (displayType.equalsIgnoreCase(Constant.TAB_NAME_CATEGORY) || 
+				displayType.equalsIgnoreCase(Constant.TAB_NAME_PRIORITY))) {
+			Label lblShortDate = new Label(Constant.DATEOUTPUT_SHORT.format(d1));
+			lblShortDate.getStyleClass().add("labelBeforeTime");
+			hBox.getChildren().add(lblShortDate);
+		}
+		
 		Label lbl1 = new Label(str1);
 		lbl1.getStyleClass().add("labelBeforeTime");
-		Label lbl2 = new Label(str2);
+		Label lbl2 = new Label("  " + str2);
 		lbl2.getStyleClass().add("labelBeforeTime");
 		
 		Label lblDateTime1 = new Label(f.format(d1));

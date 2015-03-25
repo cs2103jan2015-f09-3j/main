@@ -119,7 +119,9 @@ public final class Constant {
 	public static final String COLOUR_SUCCESS = "#9ACC77";
 	
 	public static final SimpleDateFormat DATEOUTPUT = new SimpleDateFormat("dd MMMMMMMMM yyyy, EEEEEEEEE");
+	public static final SimpleDateFormat DATEOUTPUT_SHORT = new SimpleDateFormat("dd MMM, ");
 	public static final SimpleDateFormat TIMEOUTPUT = new SimpleDateFormat("hh:mm a");
+	public static final SimpleDateFormat DATETIMEOUTPUT = new SimpleDateFormat("dd MMM, hh:mm a");
 	public static final SimpleDateFormat DATEOUTPUT_FOR_TIMEDTASK = new SimpleDateFormat("dd MMM yyyy");
 	
 	public static final KeyCombination SHORTCUT_UNDO = new KeyCodeCombination(KeyCode.Z, KeyCombination.ALT_DOWN);

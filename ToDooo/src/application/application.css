@@ -37,18 +37,18 @@
 	-fx-min-height: 40;
 	-fx-border-color: black;
 	-fx-border-width: 0;
-	-fx-padding: 10 10 10 10;
+	-fx-padding: 10 5 10 10;
 }
 
 .bPaneSearchResult {
-	-fx-background-color: linear-gradient(to bottom, derive(#EEE0B7, 20%), #EEE0B7);
+	-fx-background-color: linear-gradient(to bottom, derive(#E1F5C4, 20%), #E1F5C4);
 	-fx-background-radius: 10;
 	-fx-max-width: 760;	
 	-fx-max-height: 40;
 	-fx-min-height: 40;
 	-fx-border-color: black;
 	-fx-border-width: 0;
-	-fx-padding: 10 10 10 10;
+	-fx-padding: 10 5 10 10;
 }
 
 .paneHBar {
@@ -68,7 +68,7 @@
 .labelDesc {
 	-fx-padding:5 10 5 15;
 	-fx-font: normal 12px "Segoe UI";
-	-fx-max-width: 450;
+	-fx-max-width: 400;
 }
 
 .labelId {
