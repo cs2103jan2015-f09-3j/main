@@ -350,11 +350,14 @@ public enum Command {
 	
 	private static String executeComplete(String userInput) {
 		String systemMsg = null;
-		/*
-		Task completedTask = Main.list.completeTaskOnList(userInput);
+		
+		Pair<Task, String> toCompleteTask = Main.list.completeTaskOnList(userInput);
+		
+		Task completedTask = toCompleteTask.getKey();
+		String targetId = toCompleteTask.getValue();
 		
 		if (completedTask != null) {
-			Undo undo = new Undo(Command.COMPLETE, completedTask);
+			Undo undo = new Undo(Command.COMPLETE, completedTask, targetId);
 			Main.undos.push(undo);
 			Main.redos.clear();
 			
@@ -364,7 +367,7 @@ public enum Command {
 		} else {
 			systemMsg = Constant.MSG_ITEM_NOT_FOUND;
 		}
-		*/
+
 		return systemMsg;
 	}
 }
