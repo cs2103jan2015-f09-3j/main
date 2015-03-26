@@ -167,7 +167,18 @@ public class ToDoList {
 		
 		return removedTask;
 	}
-	
+	/*
+	public Task[] deleteMultipleTasksFromList(String userInput) {
+		Task[] removedTask = null;
+		String[] targetIds = InputParser.getTargetIdsFromString(userInput);
+		
+		for (int i = 0; i < targetIds.length; i++) {
+			removedTask[i] = deleteTaskById(targetIds[i]);
+		}
+		
+		return removedTask;
+	}
+	*/
 	// need to check recurring tasks as well
 	public Pair<ArrayList<Task>, String> searchTheList(String userInput) {
 		ArrayList<Task> tasks = ToDoList.generateTaskItems(_tasks);
@@ -353,5 +364,51 @@ public class ToDoList {
 		}
 		
 		return tempTasks;
+	}
+	
+	public Pair<Task, String>  completeTaskOnList(String userInput) {
+		String targetId = InputParser.getTargetIdFromString(userInput);
+		Task completedTask = getTaskById(targetId);
+		
+		if (completedTask != null) {
+			if (completedTask.getIsRecurring()) {
+				int index = Integer.parseInt(targetId.substring(targetId.length()-1));
+				completedTask.getRecurringTasks().get(index).setStatus(Status.COMPLETED);
+			} else {
+				completedTask.setStatus(Status.COMPLETED);
+			}
+		} 
+		
+		Task originalTask = null;
+		
+		if (completedTask.getIsRecurring()) {
+			originalTask = completedTask.deleteRecurringTaskById(targetId);
+		} else {
+			originalTask = deleteTaskById(targetId);
+		}
+		
+		if (originalTask != null) {
+			AddTaskBackToList(completedTask);
+		}
+		String completedTaskId = completedTask.getId();
+		
+		return new Pair<Task, String>(originalTask, completedTaskId);
+	}
+	
+	public Task uncompleteTaskOnList(String userInput) {
+		String targetId = InputParser.getTargetIdFromString(userInput);
+		Task uncompletedTask = getTaskById(targetId);
+		// undo doesn't work
+		if (uncompletedTask != null) {
+			Date endDate = uncompletedTask.getEndDate();
+			Status status = Task.getStatus(endDate);
+			if (status.equals(Status.OVERDUE)) {
+				uncompletedTask.setStatus(Status.OVERDUE);
+			} else {
+				uncompletedTask.setStatus(Status.ONGOING);
+			}
+		}
+		
+		return uncompletedTask;
 	}
 }

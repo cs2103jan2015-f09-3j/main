@@ -13,6 +13,7 @@ public enum Command {
 	DELETE("delete", "-d"),
 	UPDATE("update", "-u"),
 	SEARCH("search", "-s"),
+	COMPLETE("complete", "-c"),
 	FROM("/from", "-f"),
 	TO("/to", "-t"),
 	ON("/on", "-o"),
@@ -225,6 +226,10 @@ public enum Command {
 				mainController.executeSearchResult();
 				headerController.textArea.clear();
 				break;
+			case COMPLETE :
+				systemMsg = Command.executeComplete(userInput);
+				headerController.textArea.clear();
+				break;
 			default :
 				// invalid command
 				break;
@@ -343,4 +348,23 @@ public enum Command {
 		return systemMsg;
 	}
 	
+	private static String executeComplete(String userInput) {
+		String systemMsg = null;
+		/*
+		Task completedTask = Main.list.completeTaskOnList(userInput);
+		
+		if (completedTask != null) {
+			Undo undo = new Undo(Command.COMPLETE, completedTask);
+			Main.undos.push(undo);
+			Main.redos.clear();
+			
+			systemMsg = Constant.MSG_COMPLETE_SUCCESS.
+					replace(Constant.DELIMETER_REPLACE, 
+							completedTask.getId());
+		} else {
+			systemMsg = Constant.MSG_ITEM_NOT_FOUND;
+		}
+		*/
+		return systemMsg;
+	}
 }
