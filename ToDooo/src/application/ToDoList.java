@@ -392,8 +392,9 @@ public class ToDoList {
 			
 			if (originalTask != null) {
 				AddTaskBackToList(completedTask);
-				if (targetId.contains(Constant.PREFIX_RECURRING_ID)) {
-					completedTaskId = targetId;
+				String taskId = InputParser.getTargetIdFromString(userInput);
+				if (taskId.contains(Constant.PREFIX_RECURRING_ID)) {
+					completedTaskId = taskId;
 				} else {
 					completedTaskId = completedTask.getId();
 				}
@@ -418,8 +419,6 @@ public class ToDoList {
 				for (RecurringTask recurTask : recurTasks) {
 					if (recurTask.getRecurringTaskId().equals(targetId)) {
 						recurTask.setStatus(Status.COMPLETED);
-						//completedTask = task;
-						//targetId = parentId;
 						
 						break;
 					}
