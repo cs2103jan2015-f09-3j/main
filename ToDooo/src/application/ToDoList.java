@@ -323,6 +323,7 @@ public class ToDoList {
 		boolean isRecurring;
 		String taskType;
 		String recurringId;
+		Status recurringStatus;
 		
 		for(int i = 0; i < tasks.size(); i++) {
 			task = tasks.get(i);
@@ -335,11 +336,14 @@ public class ToDoList {
 						Task t1 = null;
 						recurringDate = task.getRecurringTasks().get(j).getRecurDate();
 						recurringId = task.getRecurringTasks().get(j).getRecurringTaskId();
+						recurringStatus = task.getRecurringTasks().get(j).getStatus();
 						
 						if(taskType.equalsIgnoreCase(TaskType.EVENT.toString())) {
-							t1 = Task.createRecurringChildItem(task, recurringId, recurringDate, task.getBy(), recurringDate);
+							t1 = Task.createRecurringChildItem(task, recurringId, recurringStatus, 
+									recurringDate, task.getBy(), recurringDate);
 						} else if(taskType.equalsIgnoreCase(TaskType.DATED.toString())) {
-							t1 = Task.createRecurringChildItem(task, recurringId, task.getOn(), recurringDate, recurringDate);
+							t1 = Task.createRecurringChildItem(task, recurringId, recurringStatus, 
+									task.getOn(), recurringDate, recurringDate);
 						}
 						
 						tempTasks.add(t1);
@@ -356,7 +360,8 @@ public class ToDoList {
 				end.setTime(task.getTo());
 				
 				for (Date date = start.getTime(); !start.after(end); start.add(Calendar.DATE, 1), date = start.getTime()) {
-					Task t3 = Task.createRecurringChildItem(task, task.getId(), task.getOn(), task.getBy(), date);
+					Task t3 = Task.createRecurringChildItem(task, task.getId(), task.getStatus(), 
+							task.getOn(), task.getBy(), date);
 					
 					tempTasks.add(t3);
 				}
