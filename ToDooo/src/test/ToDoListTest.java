@@ -22,6 +22,7 @@ public class ToDoListTest {
 	private static final String TEST_ADD_COMMAND = "Have dinner with Amy /on Monday //friend /*";
 	private static final String TEST_DELETE_COMMAND = "delete d1";
 	private static final String TEST_UPDATE_COMMAND = "update e1: Have dinner with Amy /by Monday //friend /*";
+	private static final String TEST_UPDATE_COMMAND_NOT_FOUND = "update d1: Have dinner with Amy /by Monday //friend /*";
 	public static final String PATH_TEST_FILE = "testFile.xml";
 	
 	private String originalSavePath;
@@ -35,7 +36,6 @@ public class ToDoListTest {
 		
 		cleanTestFromSystem();
 	}
-	
 	
 	public void testAddTaskToList() {		
 		Task testTask = new Task(ToDoListTest.TEST_ADD_COMMAND);		
@@ -51,13 +51,19 @@ public class ToDoListTest {
 		assertEquals(afterSize, expectedSize);
 	}
 
-	
+	/*
+	 * Equivalence Partition: EXISTING_TASK, NON_EXISTING_TASK
+	 * userInput: "delete d1", "delete d1" (after delete)
+	 * Delete Result: DELETED: (size == size + 1) && removedTask != null, 
+	 * 				  NOT_FOUND: (size == size) && removedTask == null
+	 */
 	public void testDeleteTaskFromList() {
 		int expectedSize = Main.list.getTasks().size() - 1;		
 		Task removedTask = Main.list.deleteTaskFromList(ToDoListTest.TEST_DELETE_COMMAND);
 		
 		// Check that task is removed
-		assertNotNull(removedTask);		
+		assertNotNull(removedTask);
+		
 		// Check size
 		int afterSize = Main.list.getTasks().size();
 		assertEquals(afterSize, expectedSize);
@@ -73,9 +79,15 @@ public class ToDoListTest {
 		assertEquals(afterSize, expectedSize);
 	}
 
-	
+	/*
+	 * Equivalence Partition: EXISTING_TASK, NON_EXISTING_TASK
+	 * userInput: "update e1: <description>", "update d1: <description>"
+	 * Delete Result: UPDATED: (id = e1) && resultPair != null, 
+	 * 				  NOT_FOUND: resultPair == null
+	 */
 	public void testUpdateTaskOnList() {				
-		Pair<Task, String> resultPair = Main.list.updateTaskOnList(ToDoListTest.TEST_UPDATE_COMMAND);
+		Pair<Task, String> resultPair = 
+				Main.list.updateTaskOnList(ToDoListTest.TEST_UPDATE_COMMAND);
 		
 		// Check that update has been done
 		assertNotNull(resultPair);	
@@ -83,6 +95,13 @@ public class ToDoListTest {
 		// Check update value
 		String expectedID = "D1";
 		assertEquals(resultPair.getValue(), expectedID);
+		
+		//---------------------------------------------------------------------------------
+		resultPair = Main.list.updateTaskOnList(ToDoListTest.
+					TEST_UPDATE_COMMAND_NOT_FOUND);
+		
+		// Check that task not found
+		assertNotNull(resultPair);	
 	}
 	
 	private void initTest() {

@@ -17,7 +17,7 @@ public class Undo {
 		this(toUndo, null, targetId);
 	}
 	
-	// to undo update
+	// to undo update / complete
 	public Undo(Command toUndo, Task originalTask, String targetId) {
 		_undoCommand = getUndoCommand(toUndo);
 		_originalTask = originalTask;
@@ -88,6 +88,7 @@ public class Undo {
 				}
 				break;
 			case UPDATE :
+			case COMPLETE:
 				// to undo update action
 				// update using _originalTask and _targetId
 				Task replacedTask = Main.list.replaceTaskOnList(_originalTask, _targetId);
@@ -145,6 +146,7 @@ public class Undo {
 				}
 				break;
 			case UPDATE :
+			case COMPLETE:
 				// to redo update action
 				// update using _originalTask and _targetId
 				Task replacedTask = Main.list.replaceTaskOnList(_originalTask, _targetId);
