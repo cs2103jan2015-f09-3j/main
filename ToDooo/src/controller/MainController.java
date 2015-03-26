@@ -10,8 +10,10 @@ import java.util.GregorianCalendar;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import net.fortuna.ical4j.model.property.Status;
 import application.Constant;
 import application.Main;
+import application.Priority;
 import application.Task;
 import application.TaskSorter;
 import application.TaskType;
@@ -369,6 +371,10 @@ public class MainController{
 			priority = task.getPriority().toString();
 			
 			renderTaskItem("", task, displayType);
+			
+			if(i != temp.size()-1 && !priority.equalsIgnoreCase(temp.get(i+1).getPriority().toString())) {
+				addHorizontalBar(getContainer(displayType));
+			} 
 		}
 	}
 	
@@ -394,13 +400,14 @@ public class MainController{
 	
 	private void renderTaskItem(String header, Task t, String displayType) {
 		String taskType = t.getTaskType().toString();
+		String status = t.getStatus().toString();
 		Date onDate = t.getOn();
 		Date byDate = t.getBy();
 		Date fromDate = t.getFrom();
 		Date toDate = t.getTo();
 		Date startDate = t.getStartDate();
 		VBox vBox = getContainer(displayType);
-		String paneColor = getStyle(displayType);
+		String paneColor = getStyle(t, displayType);
 		
 		if(!header.equals("")) {
 			addTitle(header, vBox);
@@ -420,7 +427,7 @@ public class MainController{
 		addPriorityBar(t, hBox1);
 		addDesc(t, hBox1);
 		
-		if(!displayType.equalsIgnoreCase(Constant.TAB_NAME_CATEGORY)) {
+		if(!displayType.equalsIgnoreCase(Constant.TAB_NAME_CATEGORY) || status.equalsIgnoreCase(Status.COMPLETED)) {
 			addCategory(t, hBox1);
 		}
 		
@@ -483,9 +490,22 @@ public class MainController{
 		}
 	}
 	
-	private String getStyle(String displayType) {
+	private String getStyle(Task t, String displayType) {
+		boolean isOverdue = false;
+		Date today = DateParser.getTodayDate().getTime();
+		String status = t.getStatus().toString();
+		String taskType = t.getTaskType().toString();
+		
+		if(!taskType.equalsIgnoreCase(TaskType.FLOATING.toString())) {
+			isOverdue = DateParser.isAfterDate(today, t.getStartDate());
+		}
+		
 		if(displayType.equalsIgnoreCase(Constant.VIEW_NAME_SEARCH_RESULT)) {
 			return "bPaneSearchResult";
+		} else if(isOverdue) {
+			return "bPaneOverdue";
+		} else if(status.equalsIgnoreCase(Status.COMPLETED)) {
+			return "bPaneCompleted";
 		} else {
 			return "bPaneAll";
 		}
@@ -508,8 +528,10 @@ public class MainController{
 	
 	private void addTitle(String header, VBox container) {
 		Label lblTitle = new Label();
-		if(header.equals(Constant.TITLE_TODAY) || header.equals(Constant.TITLE_OVERDUE)) {
+		if(header.equals(Constant.TITLE_TODAY)) {
 			lblTitle.getStyleClass().add("todayTitle");
+		} else if(header.equals(Constant.TITLE_OVERDUE)) {
+			lblTitle.getStyleClass().add("overdueTitle");
 		} else {
 			lblTitle.getStyleClass().add("dateTitle");
 		}
@@ -546,24 +568,25 @@ public class MainController{
 	}
 	
 	private void addPriorityBar(Task t, HBox hBox) {
+		String priority = t.getPriority().toString();
+		String status = t.getStatus().toString();
 		Line priorityBar = new Line();
 		
 		priorityBar.setStartY(18);
 		priorityBar.getStyleClass().add("priorityBar");
 		
-		switch (t.getPriority()) {
-			case HIGH : 
-				priorityBar.setStroke(Constant.COLOR_PRIORITY_HIGH);
-			break;
-			case MEDIUM : 
-				priorityBar.setStroke(Constant.COLOR_PRIORITY_MEDIUM);
-			break;
-			case LOW : 
-				priorityBar.setStroke(Constant.COLOR_PRIORITY_LOW);
-			break;
-			case NEUTRAL : 
-				priorityBar.setStroke(Constant.COLOR_PRIORITY_NEUTRAL);
-			break;
+		if(priority.equalsIgnoreCase(Priority.HIGH.toString()) 
+				&& !status.equalsIgnoreCase(Status.COMPLETED)) {
+			priorityBar.setStroke(Constant.COLOR_PRIORITY_HIGH);
+		} else if(priority.equalsIgnoreCase(Priority.MEDIUM.toString())  
+				&& !status.equalsIgnoreCase(Status.COMPLETED)) {
+			priorityBar.setStroke(Constant.COLOR_PRIORITY_MEDIUM);
+		} else if(priority.equalsIgnoreCase(Priority.LOW.toString())
+				 && !status.equalsIgnoreCase(Status.COMPLETED)) {
+			priorityBar.setStroke(Constant.COLOR_PRIORITY_LOW);
+		} else if(priority.equalsIgnoreCase(Priority.NEUTRAL.toString()) || 
+				status.equalsIgnoreCase(Status.COMPLETED)) {
+			priorityBar.setStroke(Constant.COLOR_PRIORITY_NEUTRAL);
 		}
 		
 		hBox.getChildren().add(priorityBar);
@@ -578,9 +601,15 @@ public class MainController{
 	
 	private void addCategory(Task t, HBox hBox) {
 		String category = t.getCategory();
+		String status = t.getStatus().toString();
+		Label lblCategory;
 		
 		if(!category.equalsIgnoreCase(Constant.CATEGORY_UNCATEGORISED)) {
-			Label lblCategory = new Label(t.getCategory());
+			if(status.equalsIgnoreCase(Status.COMPLETED)) {
+				lblCategory = new Label(Status.COMPLETED);
+			} else {
+				lblCategory = new Label(t.getCategory());
+			}
 			lblCategory.getStyleClass().add("labelCategory");
 			hBox.getChildren().add(lblCategory);
 		}
