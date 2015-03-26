@@ -234,7 +234,8 @@ public class Task {
 		_startDate = startDate;
 	}	
 	
-	public static Task createRecurringChildItem(Task originalTask, String recurringId, Date onDate, Date byDate, Date startDate) {
+	public static Task createRecurringChildItem(Task originalTask, String recurringId, Status recurringStatus, 
+			Date onDate, Date byDate, Date startDate) {
 		Task t = new Task();
 		
 		t.setBy(byDate);
@@ -252,7 +253,7 @@ public class Task {
 		t.setRepeatDay(originalTask.getRepeatDay());
 		t.setRepeatUntil(originalTask.getRepeatUntil());
 		t.setStartDate(startDate);
-		t.setStatus(originalTask.getStatus());
+		t.setStatus(recurringStatus);
 		t.setTaskType(originalTask.getTaskType());
 		t.setTo(originalTask.getTo());
 		t.setToDo(originalTask.getToDo());
