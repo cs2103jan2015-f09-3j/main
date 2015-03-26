@@ -568,25 +568,24 @@ public class MainController{
 	}
 	
 	private void addPriorityBar(Task t, HBox hBox) {
-		String priority = t.getPriority().toString();
-		String status = t.getStatus().toString();
 		Line priorityBar = new Line();
 		
 		priorityBar.setStartY(18);
 		priorityBar.getStyleClass().add("priorityBar");
 		
-		if(priority.equalsIgnoreCase(Priority.HIGH.toString()) 
-				&& !status.equalsIgnoreCase(Status.COMPLETED)) {
-			priorityBar.setStroke(Constant.COLOR_PRIORITY_HIGH);
-		} else if(priority.equalsIgnoreCase(Priority.MEDIUM.toString())  
-				&& !status.equalsIgnoreCase(Status.COMPLETED)) {
-			priorityBar.setStroke(Constant.COLOR_PRIORITY_MEDIUM);
-		} else if(priority.equalsIgnoreCase(Priority.LOW.toString())
-				 && !status.equalsIgnoreCase(Status.COMPLETED)) {
-			priorityBar.setStroke(Constant.COLOR_PRIORITY_LOW);
-		} else if(priority.equalsIgnoreCase(Priority.NEUTRAL.toString()) || 
-				status.equalsIgnoreCase(Status.COMPLETED)) {
-			priorityBar.setStroke(Constant.COLOR_PRIORITY_NEUTRAL);
+		switch (t.getPriority()) {
+			case HIGH : 
+				priorityBar.setStroke(Constant.COLOR_PRIORITY_HIGH);
+			break;
+			case MEDIUM : 
+				priorityBar.setStroke(Constant.COLOR_PRIORITY_MEDIUM);
+			break;
+			case LOW : 
+				priorityBar.setStroke(Constant.COLOR_PRIORITY_LOW);
+			break;
+			case NEUTRAL : 
+				priorityBar.setStroke(Constant.COLOR_PRIORITY_NEUTRAL);
+			break;
 		}
 		
 		hBox.getChildren().add(priorityBar);
@@ -601,15 +600,10 @@ public class MainController{
 	
 	private void addCategory(Task t, HBox hBox) {
 		String category = t.getCategory();
-		String status = t.getStatus().toString();
 		Label lblCategory;
 		
 		if(!category.equalsIgnoreCase(Constant.CATEGORY_UNCATEGORISED)) {
-			if(status.equalsIgnoreCase(Status.COMPLETED)) {
-				lblCategory = new Label(Status.COMPLETED);
-			} else {
-				lblCategory = new Label(t.getCategory());
-			}
+			lblCategory = new Label(t.getCategory());
 			lblCategory.getStyleClass().add("labelCategory");
 			hBox.getChildren().add(lblCategory);
 		}
