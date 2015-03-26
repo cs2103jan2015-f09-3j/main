@@ -362,8 +362,7 @@ public enum Command {
 			Main.redos.clear();
 			
 			systemMsg = Constant.MSG_COMPLETE_SUCCESS.
-					replace(Constant.DELIMETER_REPLACE, 
-							completedTask.getId());
+					replace(Constant.DELIMETER_REPLACE, targetId);
 		} else {
 			systemMsg = Constant.MSG_ITEM_NOT_FOUND;
 		}

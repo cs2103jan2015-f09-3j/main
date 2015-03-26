@@ -366,39 +366,72 @@ public class ToDoList {
 		return tempTasks;
 	}
 	
-	public Pair<Task, String>  completeTaskOnList(String userInput) {
+	public Pair<Task, String> completeTaskOnList(String userInput) {
 		String targetId = InputParser.getTargetIdFromString(userInput);
-		Task completedTask = getTaskById(targetId);
+		Task completedTask = null;
 		
-		if (completedTask != null) {
-			if (completedTask.getIsRecurring()) {
-				int index = Integer.parseInt(targetId.substring(targetId.length()-1));
-				completedTask.getRecurringTasks().get(index).setStatus(Status.COMPLETED);
-			} else {
-				completedTask.setStatus(Status.COMPLETED);
-			}
-		} 
+		if (!targetId.contains(Constant.PREFIX_RECURRING_ID)) {
+			completedTask = getTaskById(targetId);
+			completedTask.setStatus(Status.COMPLETED);
+		} else {
+			String parentId = targetId.substring(0, 
+					targetId.indexOf(Constant.PREFIX_RECURRING_ID));
+			completedTask = completeRecurringTaskOnList(targetId, parentId);
+			targetId = parentId;
+		}
 		
 		Task originalTask = null;
-		
-		if (completedTask.getIsRecurring()) {
-			originalTask = completedTask.deleteRecurringTaskById(targetId);
-		} else {
+		String completedTaskId = null;
+		if (completedTask != null) {
 			originalTask = deleteTaskById(targetId);
-		}
-		
-		if (originalTask != null) {
-			AddTaskBackToList(completedTask);
-		}
-		String completedTaskId = completedTask.getId();
+			
+			if (originalTask != null) {
+				AddTaskBackToList(completedTask);
+				if (targetId.contains(Constant.PREFIX_RECURRING_ID)) {
+					completedTaskId = targetId;
+				} else {
+					completedTaskId = completedTask.getId();
+				}
+			}
+		}	
 		
 		return new Pair<Task, String>(originalTask, completedTaskId);
 	}
 	
-	public Task uncompleteTaskOnList(String userInput) {
+	public Task completeRecurringTaskOnList(String targetId, String parentId) {
+		Task task = null;
+		boolean isFound = false;
+		Iterator<Task> taskIterator = _tasks.iterator();
+		ArrayList<RecurringTask> recurTasks = new ArrayList<RecurringTask>();
+		
+		while (taskIterator.hasNext()) {
+			task = taskIterator.next();
+			isFound = task.getId().equals(parentId);
+			
+			if (isFound) {
+				recurTasks = task.getRecurringTasks();
+				for (RecurringTask recurTask : recurTasks) {
+					if (recurTask.getRecurringTaskId().equals(targetId)) {
+						recurTask.setStatus(Status.COMPLETED);
+						//completedTask = task;
+						//targetId = parentId;
+						
+						break;
+					}
+				}	
+				
+				break;
+			}
+		}
+		
+		return task;
+	}
+	
+	/*
+	public Pair<Task, String> uncompleteTaskOnList(String userInput) {
 		String targetId = InputParser.getTargetIdFromString(userInput);
 		Task uncompletedTask = getTaskById(targetId);
-		// undo doesn't work
+		
 		if (uncompletedTask != null) {
 			Date endDate = uncompletedTask.getEndDate();
 			Status status = Task.getStatus(endDate);
@@ -409,6 +442,21 @@ public class ToDoList {
 			}
 		}
 		
-		return uncompletedTask;
+		Task originalTask = null;
+		
+		if (uncompletedTask.getIsRecurring()) {
+			originalTask = uncompletedTask.deleteRecurringTaskById(targetId);
+		} else {
+			originalTask = deleteTaskById(targetId);
+		}
+		
+		if (originalTask != null) {
+			AddTaskBackToList(uncompletedTask);
+		}
+		
+		String uncompletedTaskId = uncompletedTask.getId();
+	
+		return new Pair<Task, String>(originalTask, uncompletedTaskId);
 	}
+	*/
 }
