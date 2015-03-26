@@ -53,7 +53,8 @@ public final class Constant {
 	public static final String XML_WHITESPACE_NODE_XPATH = "//text()[normalize-space(.)='']";
 	
 	public static final Command[] COMMAND_ACTIONS = { Command.ADD, Command.DELETE, 
-													  Command.UPDATE, Command.SEARCH };
+													  Command.UPDATE, Command.SEARCH,
+													  Command.COMPLETE };
 	
 	public static final Command[] COMMAND_DATES = { Command.ON, Command.BY, 
 													Command.FROM, Command.TO };
@@ -96,6 +97,8 @@ public final class Constant {
 	public static final String MSG_UNDO_DELETE_FAIL = "Undo delete failed.";
 	public static final String MSG_UNDO_UPDATE_SUCCESS = "Undo update successful. " + Constant.MSG_TO_REDO;
 	public static final String MSG_UNDO_UPDATE_FAIL = "Undo update failed.";
+	public static final String MSG_UNDO_COMPLETE_SUCCESS = "Undo complete successful. " + Constant.MSG_TO_REDO;
+	public static final String MSG_UNDO_COMPLETE_FAIL = "Undo complete failed.";
 	
 	public static final String MSG_REDO_ADD_SUCCESS = "Redo add successful. " + Constant.MSG_TO_UNDO;
 	public static final String MSG_REDO_ADD_FAIL = "Redo add failed.";
@@ -103,6 +106,8 @@ public final class Constant {
 	public static final String MSG_REDO_DELETE_FAIL = "Redo delete failed.";
 	public static final String MSG_REDO_UPDATE_SUCCESS = "Redo update successful. " + Constant.MSG_TO_UNDO;
 	public static final String MSG_REDO_UPDATE_FAIL = "Redo update failed.";
+	public static final String MSG_REDO_COMPLETE_SUCCESS = "Redo complete successful. " + Constant.MSG_TO_UNDO;
+	public static final String MSG_REDO_COMPLETE_FAIL = "Redo complete failed.";
 	
 	public static final String MSG_NO_UNDO = "There is no undo action to execute.";
 	public static final String MSG_NO_REDO = "There is no redo action to execute.";
@@ -111,11 +116,16 @@ public final class Constant {
 	public static final String MSG_SEARCH_SUCCESS = "{0} matches found.";
 	public static final String MSG_SEARCH_INVALID = "Invalid format. Please use the search attributes and separate with ;;<space>";
 	
+	public static final String MSG_COMPLETE_SUCCESS = "Completed {0}.";
+	public static final String MSG_COMPLETE_FAIL = "Failed to complete {0}";
+	public static final String MSG_COMPLETE_INVALID = "TaskID {0} does not exist.";
+	
 	public static final String DELIMETER_UPDATE = ":";
 	public static final String DELIMETER_SEARCH = ";; ";
 	public static final String DELIMETER_REPLACE = "{0}";
 	public static final String PREFIX_RECURRING_ID = "R";
 	public static final String REGEX_LINE_BREAK = "(\\r|\\n)";
+	public static final String REGEX_SPACE = "\\s+";
 
 	public static final String COLOUR_ERROR = "#FF0033";
 	public static final String COLOUR_FEEDBACK = "#4771FF";
