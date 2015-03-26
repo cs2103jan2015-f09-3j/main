@@ -72,33 +72,36 @@ public final class Constant {
 	public static final String MSG_SAVE_FAIL = "File not saved.";
 	public static final String MSG_SAVE_SUCCESS = "File saved.";
 	
-	public static final String MSG_ADD_SUCCESS = "Add successful.";
+	public static final String MSG_TO_REDO = "Press alt + y to redo.";
+	public static final String MSG_TO_UNDO = "Press alt + z to undo.";
+			
+	public static final String MSG_ADD_SUCCESS = "Add successful. " + Constant.MSG_TO_UNDO;
 	public static final String MSG_ADD_FAIL = "Add failed.";
-	public static final String MSG_DELETE_SUCCESS = "Delete successful.";
+	public static final String MSG_DELETE_SUCCESS = "Delete {0} successful. " + Constant.MSG_TO_UNDO;
 	public static final String MSG_DELETE_FAIL = "Delete failed.";
 	public static final String MSG_ITEM_NOT_FOUND = "Item not found.";
-	public static final String MSG_ORIGINAL_RETRIEVED = "Original input retrieved.";
+	public static final String MSG_ORIGINAL_RETRIEVED = "Original input of {0} retrieved.";
 	public static final String MSG_ORIGINAL_NOT_RETRIEVED = "Original input cannot be retrieved.";
 	public static final String MSG_UPDATE_FAIL = "Update failed.";
-	public static final String MSG_UPDATE_SUCCESS = "Update successful.";
+	public static final String MSG_UPDATE_SUCCESS = "Update successful. " + Constant.MSG_TO_UNDO;
 	public static final String MSG_INVALID_FORMAT = "Invalid format. Unable to extract dates.";
     public static final String MSG_NO_UNTIL_DATE = "Please follow the following format: e.g. /weekly /until 2 November 2015";
 	public static final String MSG_INVALID_RECURRING = "Unable to create recurring task. " + 
 													   "Only /on and /by tasks can " + 
 													   "become recurring tasks.";
-	
-	public static final String MSG_UNDO_ADD_SUCCESS = "Undo add successful.";
-	public static final String MSG_UNDO_ADD_FAIL = "Undo add failed.";
-	public static final String MSG_UNDO_DELETE_SUCCESS = "Undo delete successful.";
-	public static final String MSG_UNDO_DELETE_FAIL = "Undo delete failed.";
-	public static final String MSG_UNDO_UPDATE_SUCCESS = "Undo update successful.";
-	public static final String MSG_UNDO_UPDATE_FAIL = "Undo update failed.";
 		
-	public static final String MSG_REDO_ADD_SUCCESS = "Redo add successful.";
+	public static final String MSG_UNDO_ADD_SUCCESS = "Undo add successful. " + Constant.MSG_TO_REDO;
+	public static final String MSG_UNDO_ADD_FAIL = "Undo add failed.";
+	public static final String MSG_UNDO_DELETE_SUCCESS = "Undo delete successful. " + Constant.MSG_TO_REDO;
+	public static final String MSG_UNDO_DELETE_FAIL = "Undo delete failed.";
+	public static final String MSG_UNDO_UPDATE_SUCCESS = "Undo update successful. " + Constant.MSG_TO_REDO;
+	public static final String MSG_UNDO_UPDATE_FAIL = "Undo update failed.";
+	
+	public static final String MSG_REDO_ADD_SUCCESS = "Redo add successful. " + Constant.MSG_TO_UNDO;
 	public static final String MSG_REDO_ADD_FAIL = "Redo add failed.";
-	public static final String MSG_REDO_DELETE_SUCCESS = "Redo delete successful.";
+	public static final String MSG_REDO_DELETE_SUCCESS = "Redo delete successful. " + Constant.MSG_TO_UNDO;
 	public static final String MSG_REDO_DELETE_FAIL = "Redo delete failed.";
-	public static final String MSG_REDO_UPDATE_SUCCESS = "Redo update successful.";
+	public static final String MSG_REDO_UPDATE_SUCCESS = "Redo update successful. " + Constant.MSG_TO_UNDO;
 	public static final String MSG_REDO_UPDATE_FAIL = "Redo update failed.";
 	
 	public static final String MSG_NO_UNDO = "There is no undo action to execute.";
@@ -126,7 +129,13 @@ public final class Constant {
 	
 	public static final KeyCombination SHORTCUT_UNDO = new KeyCodeCombination(KeyCode.Z, KeyCombination.ALT_DOWN);
 	public static final KeyCombination SHORTCUT_REDO = new KeyCodeCombination(KeyCode.Y, KeyCombination.ALT_DOWN);
-	public static final KeyCombination SHORTCUT_GO_BACK = new KeyCodeCombination(KeyCode.BACK_QUOTE, KeyCombination.ALT_DOWN);
+		
+	public static final KeyCombination SHORTCUT_PAGE_DOWN = new KeyCodeCombination(KeyCode.PAGE_DOWN, KeyCombination.ALT_DOWN);
+	public static final KeyCombination SHORTCUT_TA_UNFOCUSED_PAGE_DOWN = new KeyCodeCombination(KeyCode.PAGE_DOWN);
+	public static final KeyCombination SHORTCUT_PAGE_UP = new KeyCodeCombination(KeyCode.PAGE_UP, KeyCombination.ALT_DOWN);	
+	public static final KeyCombination SHORTCUT_TA_UNFOCUSED_PAGE_UP = new KeyCodeCombination(KeyCode.PAGE_UP);
+	
+	public static final KeyCombination SHORTCUT_GO_BACK = new KeyCodeCombination(KeyCode.BACK_QUOTE, KeyCombination.ALT_DOWN);	
 	public static final KeyCombination SHORTCUT_OPEN_FILE_DIALOG = new KeyCodeCombination(KeyCode.F10);
 	public static final KeyCombination SHORTCUT_TAB_ALL = new KeyCodeCombination(KeyCode.F1);
 	public static final KeyCombination SHORTCUT_TAB_CATEGORY = new KeyCodeCombination(KeyCode.F2);
@@ -172,6 +181,7 @@ public final class Constant {
     
     public static final double POSITION_OFFSET_X_POPUP = 15;
     public static final double POSITION_OFFSET_Y_POPUP = 2;
+    public static final double POSITION_OFFSET_VERTICAL = 0.2;
     
     public static final double HEIGHT_STAGE = 655;
     public static final double WIDTH_STAGE = 805;

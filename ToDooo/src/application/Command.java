@@ -262,7 +262,9 @@ public enum Command {
 			Main.undos.push(undo);			
 			Main.redos.clear();
 			
-			systemMsg = Constant.MSG_DELETE_SUCCESS;
+			systemMsg = Constant.MSG_DELETE_SUCCESS.
+						replace(Constant.DELIMETER_REPLACE, 
+								removedTask.getId());
 		} else {
 			systemMsg = Constant.MSG_ITEM_NOT_FOUND;
 		}
@@ -283,7 +285,8 @@ public enum Command {
 					   originalTask.getOriginalText());						
 			
 			Main.toUpdate = true;
-			systemMsg = Constant.MSG_ORIGINAL_RETRIEVED;
+			systemMsg = Constant.MSG_ORIGINAL_RETRIEVED.
+						replace(Constant.DELIMETER_REPLACE, targetId);
 		} else {
 			systemMsg = Constant.MSG_ORIGINAL_NOT_RETRIEVED;
 		}

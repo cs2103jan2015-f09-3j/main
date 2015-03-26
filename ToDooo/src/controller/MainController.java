@@ -23,6 +23,7 @@ import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.SingleSelectionModel;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -85,44 +86,59 @@ public class MainController{
 
 	@FXML
 	public void onShortcutKey(KeyEvent e) {	
-		if (Constant.SHORTCUT_UNDO.match(e)) {
-			String systemMsg = executeUndo();
+		scrollList(e);		
+		revertAction(e); 		
+		switchTab(e);		
+		navigateView(e);		
+		showTutorial(e);
+	}
+
+	private void scrollList(KeyEvent e) {
+		boolean shouldReturn = !(Constant.SHORTCUT_PAGE_DOWN.match(e) ||
+								 Constant.SHORTCUT_TA_UNFOCUSED_PAGE_DOWN.match(e) ||
+								 Constant.SHORTCUT_PAGE_UP.match(e) ||
+								 Constant.SHORTCUT_TA_UNFOCUSED_PAGE_UP.match(e));
+		if (shouldReturn) {
+			return;
+		}
+		
+		String tabAllId = bodyController.tabAll.getId();
+		String tabCategoryId = bodyController.tabCategory.getId();
+		String tabPriorityId = bodyController.tabPriority.getId();
+		
+		Tab selectedTab = selectionModel.getSelectedItem();			
+		String selectedTabId = selectedTab.getId();
+		ScrollPane targetScrollPane = null;	
+		
+		if (selectedTabId.equals(tabAllId)) {
+			targetScrollPane = bodyController.sPaneAll;
+		} else if (selectedTabId.equals(tabCategoryId)) {
+			targetScrollPane = bodyController.sPaneCategory;
+		} else if (selectedTabId.equals(tabPriorityId)) {
+			targetScrollPane = bodyController.sPanePriority;
+		}
+		
+		if (targetScrollPane == null) {
+			return;
+		}
+				
+		double currentPosition = targetScrollPane.getVvalue();
+		double newPosition = currentPosition;
+		
+		if (Constant.SHORTCUT_PAGE_DOWN.match(e) || 
+			Constant.SHORTCUT_TA_UNFOCUSED_PAGE_DOWN.match(e)) {
 			
-			loadListsInTabs();
-			setSystemMessage(systemMsg);
-		} 
-		
-		if (Constant.SHORTCUT_REDO.match(e)) {
-			String systemMsg = executeRedo();
+			newPosition = currentPosition + Constant.POSITION_OFFSET_VERTICAL;
+		} else if (Constant.SHORTCUT_PAGE_UP.match(e) || 
+				   Constant.SHORTCUT_TA_UNFOCUSED_PAGE_UP.match(e)) {
 			
-			loadListsInTabs();
-			setSystemMessage(systemMsg);
-		} 
-		
-		if (Constant.SHORTCUT_TAB_ALL.match(e)) {
-			selectionModel.select(Constant.TAB_INDEX_ALL);			
-		} 
-		
-		if (Constant.SHORTCUT_TAB_CATEGORY.match(e)) {
-			selectionModel.select(Constant.TAB_INDEX_CATEGORY);			
-		} 
-		
-		if (Constant.SHORTCUT_TAB_PRIORITY.match(e)) {
-			selectionModel.select(Constant.TAB_INDEX_PRIORITY);			
+			newPosition = currentPosition - Constant.POSITION_OFFSET_VERTICAL;
 		}
 		
-		if (Constant.SHORTCUT_TAB_PRIORITY.match(e)) {
-			selectionModel.select(Constant.TAB_INDEX_PRIORITY);			
-		}
-		
-		if (Constant.SHORTCUT_GO_BACK.match(e)) {
-			executeGoBack();
-		}
-		
-		if (Constant.SHORTCUT_SETTING.match(e)) {
-			executeSetting();				
-		}
-		
+		targetScrollPane.setVvalue(newPosition);
+	}
+
+	private void showTutorial(KeyEvent e) {
 		if (Constant.SHORTCUT_TUTORIAL.match(e)) {
 			if (tutorialPopup.isFocused()) {
 				tutorialPopup.hide();
@@ -135,8 +151,38 @@ public class MainController{
 				tutorialPopup.show(Main.priStage, positionX, positionY);
 			}
 		}
-		
-		
+	}
+
+	private void navigateView(KeyEvent e) {
+		if (Constant.SHORTCUT_GO_BACK.match(e)) {
+			executeGoBack();
+		} else if (Constant.SHORTCUT_SETTING.match(e)) {
+			executeSetting();				
+		}
+	}
+
+	private void revertAction(KeyEvent e) {
+		if (Constant.SHORTCUT_UNDO.match(e)) {
+			String systemMsg = executeUndo();
+			
+			loadListsInTabs();
+			setSystemMessage(systemMsg);
+		} else if (Constant.SHORTCUT_REDO.match(e)) {
+			String systemMsg = executeRedo();
+			
+			loadListsInTabs();
+			setSystemMessage(systemMsg);
+		}
+	}
+
+	private void switchTab(KeyEvent e) {
+		if (Constant.SHORTCUT_TAB_ALL.match(e)) {
+			selectionModel.select(Constant.TAB_INDEX_ALL);			
+		} else if (Constant.SHORTCUT_TAB_CATEGORY.match(e)) {
+			selectionModel.select(Constant.TAB_INDEX_CATEGORY);			
+		} else if (Constant.SHORTCUT_TAB_PRIORITY.match(e)) {
+			selectionModel.select(Constant.TAB_INDEX_PRIORITY);			
+		}
 	}
 	public void setSystemMessage(String systemMsg) {
 		headerController.lblSysMsg.setText(systemMsg);			
