@@ -158,7 +158,7 @@ public final class Constant {
     public static final String ICON_FLOATING = "images/floatingIcon.png";
     public static final String ICON_TIMED = "images/timedIcon.png";
     public static final String ICON_DATED = "images/datedIcon.png";
-    public static final String IMAGE_TUTORIAL = "images/basicTutorial.png";
+    public static final String IMAGE_TUTORIAL = "images/tutorial.png";
     
     public static final Color COLOR_PRIORITY_HIGH = Color.rgb(196, 1, 9);
     public static final Color COLOR_PRIORITY_MEDIUM = Color.rgb(248, 135, 46);
@@ -170,7 +170,7 @@ public final class Constant {
     public static final String STR_BEFORE_DATE_FROM = "from";
     public static final String STR_BEFORE_DATE_TO = "to";
     
-    public static final double POSITION_OFFSET_X_POPUP = 30;
+    public static final double POSITION_OFFSET_X_POPUP = 15;
     public static final double POSITION_OFFSET_Y_POPUP = 2;
     
     public static final double HEIGHT_STAGE = 655;

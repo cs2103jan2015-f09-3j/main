@@ -127,9 +127,9 @@ public class MainController{
 			if (tutorialPopup.isFocused()) {
 				tutorialPopup.hide();
 			} else {
-				double positionX = Main.priStage.getX() - 
-								   Constant.POSITION_OFFSET_X_POPUP;
-				double positionY = Main.priStage.getY() * 
+				double positionX = Main.priStage.getX() + 
+								   Constant.POSITION_OFFSET_X_POPUP;							
+				double positionY = (Main.priStage.getY() - headerController.textArea.getLayoutY()) * 
 								   Constant.POSITION_OFFSET_Y_POPUP;
 				
 				tutorialPopup.show(Main.priStage, positionX, positionY);

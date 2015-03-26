@@ -333,7 +333,7 @@ public enum Command {
 			systemMsg = Constant.MSG_SEARCH_INVALID;
 		} else {
 			systemMsg = Constant.MSG_SEARCH_SUCCESS.
-						replace(Constant.DELIMETER_SEARCH, 
+						replace(Constant.DELIMETER_REPLACE, 
 								String.valueOf(Main.searchResults.size()));
 		}
 		
