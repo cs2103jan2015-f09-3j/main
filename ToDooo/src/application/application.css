@@ -114,7 +114,7 @@
 }
 
 .labelSysMsg {
-	-fx-font: bold italic 12px "Segoe UI";
+	-fx-font: bold 12px "Segoe UI";
 }
 
 .dateTitle {
