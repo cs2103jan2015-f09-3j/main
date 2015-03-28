@@ -333,22 +333,15 @@ public class ToDoList {
 			if(!taskType.equalsIgnoreCase(TaskType.TIMED.toString())) {
 				if(isRecurring) {
 					for(int j = 0; j < task.getRecurringTasks().size(); j++) {
-						Task t1 = null;
+						Task taskA = null;
 						recurringDate = task.getRecurringTasks().get(j).getRecurDate();
 						recurringId = task.getRecurringTasks().get(j).getRecurringTaskId();
 						recurringStatus = task.getRecurringTasks().get(j).getStatus();
-						
-						if(taskType.equalsIgnoreCase(TaskType.EVENT.toString())) {
-							t1 = Task.createRecurringChildItem(task, recurringId, recurringStatus, 
-									recurringDate, task.getBy(), recurringDate);
-						} else if(taskType.equalsIgnoreCase(TaskType.DATED.toString())) {
-							t1 = Task.createRecurringChildItem(task, recurringId, recurringStatus, 
-									task.getOn(), recurringDate, recurringDate);
-						}
-						
-						tempTasks.add(t1);
+						taskA = getRecurChildItemForEventOrDated(task, recurringDate, taskType, recurringId,
+								recurringStatus, taskA);
+						tempTasks.add(taskA);
 					}
-				}else {
+				} else {
 					Task t2 = new Task();
 					t2 = task;
 					tempTasks.add(t2);
@@ -362,13 +355,25 @@ public class ToDoList {
 				for (Date date = start.getTime(); !start.after(end); start.add(Calendar.DATE, 1), date = start.getTime()) {
 					Task t3 = Task.createRecurringChildItem(task, task.getId(), task.getStatus(), 
 							task.getOn(), task.getBy(), date);
-					
 					tempTasks.add(t3);
 				}
 			}
 		}
 		
 		return tempTasks;
+	}
+	
+	private static Task getRecurChildItemForEventOrDated(Task task,
+			Date recurringDate, String taskType, String recurringId,
+			Status recurringStatus, Task taskA) {
+		if(taskType.equalsIgnoreCase(TaskType.EVENT.toString())) {
+			taskA = Task.createRecurringChildItem(task, recurringId, recurringStatus, 
+					recurringDate, task.getBy(), recurringDate);
+		} else if(taskType.equalsIgnoreCase(TaskType.DATED.toString())) {
+			taskA = Task.createRecurringChildItem(task, recurringId, recurringStatus, 
+					task.getOn(), recurringDate, recurringDate);
+		}
+		return taskA;
 	}
 	
 	public Pair<Task, String> completeTaskOnList(String userInput) {

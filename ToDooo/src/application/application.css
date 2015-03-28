@@ -41,7 +41,7 @@
 }
 
 .bPaneSearchResult {
-	-fx-background-color: linear-gradient(to bottom, derive(#EDEDE1, 20%), #EDEDE1);
+	-fx-background-color: linear-gradient(to bottom, derive(#E7EDEA, 20%), #E7EDEA);
 	-fx-background-radius: 10;
 	-fx-max-width: 760;	
 	-fx-max-height: 40;
