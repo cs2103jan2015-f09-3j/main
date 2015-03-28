@@ -191,7 +191,21 @@ public class MainController{
 		}
 	}
 	public void setSystemMessage(String systemMsg) {
-		headerController.lblSysMsg.setText(systemMsg);			
+		int sysMsgType = checkSystemMsg(systemMsg);
+		
+		if(sysMsgType == 1) {
+			headerController.imgSysMsg.setImage(new Image(Constant.ICON_SUCCESS));
+			headerController.lblSysMsg.setTextFill(Constant.COLOR_SUCCESS);
+		} else if(sysMsgType == -1) {
+			headerController.imgSysMsg.setImage(new Image(Constant.ICON_ERROR));
+			headerController.lblSysMsg.setTextFill(Constant.COLOR_ERROR);
+		} else if (sysMsgType == 0){
+			headerController.imgSysMsg.setImage(new Image(Constant.ICON_FEEDBACK));
+			headerController.lblSysMsg.setTextFill(Constant.COLOR_FEEDBACK);;
+		}
+		
+		headerController.lblSysMsg.setText(systemMsg);	
+		headerController.lblSysMsg.getStyleClass().add("labelSysMsg");
 		executeSystemMsgTimerTask();
 	}
 	
@@ -239,7 +253,8 @@ public class MainController{
     		Platform.runLater(new Runnable() {
     		    @Override
     		    public void run() {
-    		    	headerController.lblSysMsg.setText("");					
+    		    	headerController.lblSysMsg.setText("");	
+    		    	headerController.imgSysMsg.setImage(null);
     		    }
     		});
             timer.cancel();
@@ -278,9 +293,9 @@ public class MainController{
 			}
 		} 
 		
-	    insertIntoOverdue(displayType, vBox);
-		insertIntoToday(displayType, vBox);
-		insertIntoFloating(displayType);
+	    renderOverdueTask(displayType, vBox);
+	    renderTodayTask(displayType, vBox);
+	    renderFloatingTask(displayType);
 		
 		for(int j = indexForNextLoop; j < temp.size(); j++) {
 			task = temp.get(j);
@@ -370,13 +385,13 @@ public class MainController{
 		}
 	}
 
-	private void insertIntoFloating(String displayType) {
+	private void renderFloatingTask(String displayType) {
 		if(!floating.isEmpty()) {
 			renderLists(floating, "", displayType);
 		}
 	}
 
-	private void insertIntoToday(String displayType, VBox vBox) {
+	private void renderTodayTask(String displayType, VBox vBox) {
 		if(!today.isEmpty()) {
 			renderLists(today, Constant.TITLE_TODAY, displayType);
 			
@@ -386,7 +401,7 @@ public class MainController{
 		}
 	}
 
-	private void insertIntoOverdue(String displayType, VBox vBox) {
+	private void renderOverdueTask(String displayType, VBox vBox) {
 		if(!overdue.isEmpty()) {
 	    	renderLists(overdue, Constant.TITLE_OVERDUE, displayType);
 			
@@ -500,16 +515,6 @@ public class MainController{
 		} else {
 			return "bPaneAll";
 		}
-		
-		/*if(displayType.equalsIgnoreCase(Constant.VIEW_NAME_SEARCH_RESULT)) {
-			return "bPaneSearchResult";
-		} else if(isOverdue) {
-			return "bPaneOverdue";
-		} else if(status.equalsIgnoreCase(Status.COMPLETED)) {
-			return "bPaneCompleted";
-		} else {
-			return "bPaneAll";
-		}*/
 	}
 	
 	private void addHorizontalBar(VBox vBox) {
@@ -641,14 +646,8 @@ public class MainController{
 		} else if(taskType.equalsIgnoreCase(TaskType.DATED.toString())) {
 			addSingleDateTime(byDate, hBoxRight, Constant.STR_BEFORE_DATE_BY, Constant.DATETIMEOUTPUT);
 		} else if(taskType.equalsIgnoreCase(TaskType.TIMED.toString())) {
-			
-			if(DateParser.compareDate(fromDate, toDate)) {
-				addDoubleDateTime(fromDate, toDate, hBoxRight, Constant.STR_BEFORE_DATE_FROM, Constant.STR_BEFORE_DATE_TO, 
-						Constant.TIMEOUTPUT, displayType);
-			} else {
-				addDoubleDateTime(fromDate, toDate, hBoxRight, Constant.STR_BEFORE_DATE_FROM, Constant.STR_BEFORE_DATE_TO, 
-						Constant.DATETIMEOUTPUT, displayType);
-			}
+			addDoubleDateTime(fromDate, toDate, hBoxRight, Constant.STR_BEFORE_DATE_FROM, Constant.STR_BEFORE_DATE_TO, 
+					Constant.DATETIMEOUTPUT, displayType);
 		}
 	}
 	
@@ -666,16 +665,9 @@ public class MainController{
 	private void addDoubleDateTime(Date d1, Date d2, HBox hBox, String str1, String str2, 
 			SimpleDateFormat f, String displayType) {
 		
-		if(DateParser.compareDate(d1, d2) && (displayType.equalsIgnoreCase(Constant.TAB_NAME_CATEGORY) || 
-				displayType.equalsIgnoreCase(Constant.TAB_NAME_PRIORITY))) {
-			Label lblShortDate = new Label(Constant.DATEOUTPUT_SHORT.format(d1));
-			lblShortDate.getStyleClass().add("labelBeforeTime");
-			hBox.getChildren().add(lblShortDate);
-		}
-		
 		Label lbl1 = new Label(str1);
 		lbl1.getStyleClass().add("labelBeforeTime");
-		Label lbl2 = new Label("  " + str2);
+		Label lbl2 = new Label(str2);
 		lbl2.getStyleClass().add("labelBeforeTime");
 		
 		Label lblDateTime1 = new Label(f.format(d1));
@@ -720,4 +712,19 @@ public class MainController{
 		searchResultController.loadSearchList();
 	}
 	
+	private int checkSystemMsg(String sysMsg) {
+		for(int i = 0; i < Constant.SYS_MSG_KEYWORD_SUCCESS.length; i++) {
+			if(sysMsg.contains(Constant.SYS_MSG_KEYWORD_SUCCESS[i])) {
+				return 1;
+			}
+		}
+		
+		for(int j = 0; j < Constant.SYS_MSG_KEYWORD_ERROR.length; j++) {
+			if(sysMsg.contains(Constant.SYS_MSG_KEYWORD_ERROR[j])) {
+				return -1;
+			}
+		}
+		
+		return 0;
+	}
 }

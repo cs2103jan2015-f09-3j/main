@@ -126,13 +126,13 @@ public final class Constant {
 	public static final String PREFIX_RECURRING_ID = "R";
 	public static final String REGEX_LINE_BREAK = "(\\r|\\n)";
 	public static final String REGEX_SPACE = "\\s+";
-
-	public static final String COLOUR_ERROR = "#FF0033";
-	public static final String COLOUR_FEEDBACK = "#4771FF";
-	public static final String COLOUR_SUCCESS = "#9ACC77";
+	
+	public static final Color COLOR_ERROR = Color.rgb(255, 0, 51);
+	public static final Color COLOR_FEEDBACK = Color.rgb(71, 113, 255);
+	public static final Color COLOR_SUCCESS = Color.rgb(135, 183, 99);
 	
 	public static final SimpleDateFormat DATEOUTPUT = new SimpleDateFormat("dd MMMMMMMMM yyyy, EEEEEEEEE");
-	public static final SimpleDateFormat DATEOUTPUT_SHORT = new SimpleDateFormat("dd MMM, ");
+	public static final SimpleDateFormat DATEOUTPUT_SHORT = new SimpleDateFormat("dd MMM ");
 	public static final SimpleDateFormat TIMEOUTPUT = new SimpleDateFormat("hh:mm a");
 	public static final SimpleDateFormat DATETIMEOUTPUT = new SimpleDateFormat("dd MMM, hh:mm a");
 	public static final SimpleDateFormat DATEOUTPUT_FOR_TIMEDTASK = new SimpleDateFormat("dd MMM yyyy");
@@ -177,6 +177,9 @@ public final class Constant {
     public static final String ICON_FLOATING = "images/floatingIcon.png";
     public static final String ICON_TIMED = "images/timedIcon.png";
     public static final String ICON_DATED = "images/datedIcon.png";
+    public static final String ICON_SUCCESS = "images/successIcon.png";
+    public static final String ICON_ERROR = "images/errorIcon.png";
+    public static final String ICON_FEEDBACK = "images/feedbackIcon.png";
     public static final String IMAGE_TUTORIAL = "images/tutorial.png";
     
     public static final Color COLOR_PRIORITY_HIGH = Color.rgb(196, 1, 9);
@@ -184,10 +187,14 @@ public final class Constant {
     public static final Color COLOR_PRIORITY_LOW = Color.rgb(249, 212, 35);
     public static final Color COLOR_PRIORITY_NEUTRAL = Color.WHITE;
     
+    public static final String[] SYS_MSG_KEYWORD_SUCCESS = {"successful", "Completed", "saved" , "matches found"};
+    public static final String[] SYS_MSG_KEYWORD_ERROR = {"failed", "Failed", "cannot" , "Invalid", "does not exist",
+    	"Unable", "not saved", "not found"};
+    
     public static final String STR_BEFORE_DATE_BY = "by";
     public static final String STR_BEFORE_DATE_ON = "on";
     public static final String STR_BEFORE_DATE_FROM = "from";
-    public static final String STR_BEFORE_DATE_TO = "to";
+    public static final String STR_BEFORE_DATE_TO = "  to";
     
     public static final double POSITION_OFFSET_X_POPUP = 15;
     public static final double POSITION_OFFSET_Y_POPUP = 2;

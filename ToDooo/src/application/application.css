@@ -113,6 +113,10 @@
 	-fx-opacity: 0.6;
 }
 
+.labelSysMsg {
+	-fx-font: bold italic 12px "Segoe UI";
+}
+
 .dateTitle {
 	-fx-font: bold 13px "Segoe UI";
 	-fx-text-fill: #666666;

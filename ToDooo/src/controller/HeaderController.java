@@ -25,6 +25,7 @@ public class HeaderController{
 	private MainController mainCon;
 	@FXML private Label lblLogo;
 	@FXML public  Label lblSysMsg;
+	@FXML public ImageView imgSysMsg;
 	@FXML private AnchorPane paneHead;
 	@FXML public ImageView settingIcon;
 	@FXML public ImageView backIcon;
