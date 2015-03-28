@@ -270,7 +270,7 @@ public class MainController{
 	    	
 			if(taskType.equalsIgnoreCase(TaskType.FLOATING.toString())||
 				DateParser.compareDate(todayDate, startDate) || startDate.before(todayDate)) {
-				findFloatingOverdueTodayTask(task, startDate, taskType);
+				findFloatingOrOverdueOrTodayTask(task, startDate, taskType);
 				indexForNextLoop = i+1;
 			} else {
 				indexForNextLoop = i;
@@ -349,17 +349,15 @@ public class MainController{
 			ArrayList<Task> unsortedTemp = ToDoList.generateTaskItems(taskList);
 			temp = taskSorter.getTasksSortedByDate(unsortedTemp);
 		} else if(displayType.equalsIgnoreCase(Constant.TAB_NAME_CATEGORY)) {
-			ArrayList<Task> unsortedTemp = ToDoList.generateTaskItems(taskList);
-			temp = taskSorter.getTasksSortedByCategories(unsortedTemp);
+			temp = taskSorter.getTasksSortedByCategories(taskList);
 		} else {
-			ArrayList<Task> unsortedTemp = ToDoList.generateTaskItems(taskList);
-			temp = taskSorter.getTasksSortedByPriorities(unsortedTemp);
+			temp = taskSorter.getTasksSortedByPriorities(taskList);
 		}
 		
 		return temp;
 	}
 
-	private void findFloatingOverdueTodayTask(Task task, Date startDate,
+	private void findFloatingOrOverdueOrTodayTask(Task task, Date startDate,
 			String taskType) {
 		if(taskType.equalsIgnoreCase(TaskType.FLOATING.toString())) {
 			floating.add(task);
@@ -639,7 +637,7 @@ public class MainController{
 			Date byDate, Date fromDate, Date toDate, Date startDate, HBox hBoxRight, HBox hBoxLeft) {
 		
 		if(taskType.equalsIgnoreCase(TaskType.EVENT.toString())) {
-			addSingleDateTime(onDate, hBoxRight, "", Constant.TIMEOUTPUT);
+			addSingleDateTime(onDate, hBoxRight, "", Constant.DATETIMEOUTPUT);
 		} else if(taskType.equalsIgnoreCase(TaskType.DATED.toString())) {
 			addSingleDateTime(byDate, hBoxRight, Constant.STR_BEFORE_DATE_BY, Constant.DATETIMEOUTPUT);
 		} else if(taskType.equalsIgnoreCase(TaskType.TIMED.toString())) {
