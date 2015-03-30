@@ -782,7 +782,6 @@ public class MainController{
 	    });
 		
 		detailPopup.setScene(scene); 
-		detailPopup.initStyle(StageStyle.UNDECORATED);
         detailPopup.show();
 	}
 }
