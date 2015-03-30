@@ -115,6 +115,21 @@ public class ToDoList {
 		Main.storage.writeFile(document, _listFilePath);
 	}
 	
+	public String addTaskToList(Task task) {	
+		String result = Main.storage.writeTaskToFile(task); 
+		
+		if (result.equals(Constant.MSG_ADD_SUCCESS)) {
+			_tasks.add(task);
+						
+			_nextId++;
+			Main.storage.writeNextIdInFile(_nextId);
+			
+			addCategoryToList(task.getCategory());
+		}
+		
+		return result;
+	}
+	/*
 	public String addTaskToList(Task task) {
 		// duplicate list as a backup
 		ArrayList<Task> originalList = new ArrayList<Task>(_tasks);
@@ -144,7 +159,7 @@ public class ToDoList {
 		
 		return result;
 	}
-	
+	*/
 	public Pair<String, Task> AddTaskBackToList(Task task) {
 		Task removedTask = deleteTaskById(task.getId());
 		
