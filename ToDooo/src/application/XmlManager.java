@@ -140,6 +140,9 @@ public class XmlManager {
 		
 		text = getTextByTagName(element, Constant.TAG_STATUS);
 		task.setStatus(Status.valueOf(text));
+		
+		text = getTextByTagName(element, Constant.TAG_NUMBER);
+		task.setNumber(Integer.valueOf(text));
 				
 		if (task.getIsRecurring()) {
 			ArrayList<RecurringTask> recurringTasks = 
@@ -301,6 +304,9 @@ public class XmlManager {
 		
 		XmlManager.createAndAppendChildElement(document, taskTag, Constant.TAG_STATUS, 
 				   							   task.getStatus().toString());
+		
+		XmlManager.createAndAppendChildElement(document, taskTag, Constant.TAG_NUMBER,
+												String.valueOf(task.getNumber()));
 				
 		createAndAppendRecurringTasks(document, taskTag, task);
 		

@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.List;
 
 import javafx.util.Pair;
 
@@ -110,15 +111,30 @@ public class ToDoList {
 	}
 	
 	public String addTaskToList(Task task) {
-		String result = Main.storage.writeTaskToFile(task);
+		// duplicate list as a backup
+		ArrayList<Task> originalList = new ArrayList<Task>(_tasks);
+		
+		// add task and then sort original
+		ArrayList<Task> newList = new ArrayList<Task>(originalList);
+		newList.add(task);
+		TaskSorter.getTasksSortedByDate((ArrayList<Task>) newList);
+		
+		// write entire arraylist to storage		
+		String result = Main.storage.writeListToFile((ArrayList<Task>)newList);
+		//String result = Main.storage.writeTaskToFile(task); // cannot use this method
 		
 		if (result.equals(Constant.MSG_ADD_SUCCESS)) {
-			_tasks.add(task);
+			//_tasks.add(task); // remove this
+			Main.list.setTasks(newList);
+			// Main.list = newList
 			
 			_nextId++;
 			Main.storage.writeNextIdInFile(_nextId);
 			
 			addCategoryToList(task.getCategory());
+		} else {
+			Main.list.setTasks(originalList);
+			// Main.list = originalList
 		}
 		
 		return result;

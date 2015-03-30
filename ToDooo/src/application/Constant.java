@@ -19,6 +19,7 @@ public final class Constant {
 	public static final String TAG_TASKS = "tasks";
 	public static final String TAG_TASK = "task";
 	public static final String TAG_ATTRIBUTE_ID = "id";
+	public static final String TAG_NUMBER = "number";
 	
 	public static final String TAG_TYPE = "type";
 	public static final String TAG_TODO = "todo";

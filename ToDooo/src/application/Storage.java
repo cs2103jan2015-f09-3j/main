@@ -7,6 +7,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -234,6 +235,40 @@ public class Storage {
 			tasksNode.appendChild(taskNode);
 			
 			writeFile(document);
+		} catch (Exception exception) {
+			exception.printStackTrace();
+			return Constant.MSG_ADD_FAIL;
+		}
+		
+		return Constant.MSG_ADD_SUCCESS;
+	}
+	
+	public String writeListToFile(ArrayList<Task> tasks) {
+		Document document = getFileDocument();
+		
+		try {
+//			XPathExpression expression = _xPath.compile("/" + Constant.TAG_FILE + 
+//												"/" + Constant.TAG_TASKS);
+//			
+//			Element tasksNode = (Element) expression.
+//								evaluate(document, XPathConstants.NODE);
+//			
+//			
+//			Task task = null;
+//			for (int i = 0; i <= tasks.size(); i++) {
+//				task = tasks.get(i);
+//				task.setNumber(i + 1);
+//			}
+//			
+//			for (int j = 0; j < tasks.size(); j++) {			
+//				
+//				Element taskNode = XmlManager.transformTaskToXml(document, 
+//									tasks.get(j));
+//				
+//				tasksNode.appendChild(taskNode);
+//				
+//				writeFile(document);
+//			}
 		} catch (Exception exception) {
 			exception.printStackTrace();
 			return Constant.MSG_ADD_FAIL;

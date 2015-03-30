@@ -29,6 +29,7 @@ public class Task {
 	private Date _startDate;
 	private Date _endDate;
 	private ArrayList<RecurringTask> _recurringTasks;
+	private int _number;
 	
 	public Task() {
 		// convert from node
@@ -233,6 +234,14 @@ public class Task {
 	public void setStartDate(Date startDate) {
 		_startDate = startDate;
 	}	
+	
+	public int getNumber() {
+		return _number;
+	}
+	
+	public void setNumber(int number) {
+		_number = number;
+	}
 	
 	public static Task createRecurringChildItem(Task originalTask, String recurringId, Status recurringStatus, 
 			Date onDate, Date byDate, Date startDate) {
