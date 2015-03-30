@@ -55,7 +55,7 @@ public final class Constant {
 	
 	public static final Command[] COMMAND_ACTIONS = { Command.ADD, Command.DELETE, 
 													  Command.UPDATE, Command.SEARCH,
-													  Command.COMPLETE };
+													  Command.COMPLETE, Command.VIEW };
 	
 	public static final Command[] COMMAND_DATES = { Command.ON, Command.BY, 
 													Command.FROM, Command.TO };
@@ -121,19 +121,22 @@ public final class Constant {
 	public static final String MSG_COMPLETE_FAIL = "Failed to complete {0}";
 	public static final String MSG_COMPLETE_INVALID = "TaskID {0} does not exist.";
 	
+	public static final String MSG_VIEW_SUCCESS = "Item is found.";
+	public static final String MSG_VIEW_FAIL = "Item is not found.";
+	
 	public static final String DELIMETER_UPDATE = ":";
 	public static final String DELIMETER_SEARCH = ";; ";
 	public static final String DELIMETER_REPLACE = "{0}";
 	public static final String PREFIX_RECURRING_ID = "R";
 	public static final String REGEX_LINE_BREAK = "(\\r|\\n)";
 	public static final String REGEX_SPACE = "\\s+";
-
-	public static final String COLOUR_ERROR = "#FF0033";
-	public static final String COLOUR_FEEDBACK = "#4771FF";
-	public static final String COLOUR_SUCCESS = "#9ACC77";
+	
+	public static final Color COLOR_ERROR = Color.rgb(255, 0, 51);
+	public static final Color COLOR_FEEDBACK = Color.rgb(71, 113, 255);
+	public static final Color COLOR_SUCCESS = Color.rgb(135, 183, 99);
 	
 	public static final SimpleDateFormat DATEOUTPUT = new SimpleDateFormat("dd MMMMMMMMM yyyy, EEEEEEEEE");
-	public static final SimpleDateFormat DATEOUTPUT_SHORT = new SimpleDateFormat("dd MMM, ");
+	public static final SimpleDateFormat DATEOUTPUT_SHORT = new SimpleDateFormat("dd MMM ");
 	public static final SimpleDateFormat TIMEOUTPUT = new SimpleDateFormat("hh:mm a");
 	public static final SimpleDateFormat DATETIMEOUTPUT = new SimpleDateFormat("dd MMM, hh:mm a");
 	public static final SimpleDateFormat DATEOUTPUT_FOR_TIMEDTASK = new SimpleDateFormat("dd MMM yyyy");
@@ -153,6 +156,7 @@ public final class Constant {
 	public static final KeyCombination SHORTCUT_TAB_PRIORITY = new KeyCodeCombination(KeyCode.F3);
 	public static final KeyCombination SHORTCUT_SETTING = new KeyCodeCombination(KeyCode.F4);
 	public static final KeyCombination SHORTCUT_TUTORIAL = new KeyCodeCombination(KeyCode.F12);
+	public static final KeyCombination SHORTCUT_DETAIL = new KeyCodeCombination(KeyCode.F11);
 	
     public static final String TAB_NAME_ALL = "all";  
     public static final String TAB_NAME_CATEGORY = "category";
@@ -178,6 +182,9 @@ public final class Constant {
     public static final String ICON_FLOATING = "images/floatingIcon.png";
     public static final String ICON_TIMED = "images/timedIcon.png";
     public static final String ICON_DATED = "images/datedIcon.png";
+    public static final String ICON_SUCCESS = "images/successIcon.png";
+    public static final String ICON_ERROR = "images/errorIcon.png";
+    public static final String ICON_FEEDBACK = "images/feedbackIcon.png";
     public static final String IMAGE_TUTORIAL = "images/tutorial.png";
     
     public static final Color COLOR_PRIORITY_HIGH = Color.rgb(196, 1, 9);
@@ -185,10 +192,14 @@ public final class Constant {
     public static final Color COLOR_PRIORITY_LOW = Color.rgb(249, 212, 35);
     public static final Color COLOR_PRIORITY_NEUTRAL = Color.WHITE;
     
+    public static final String[] SYS_MSG_KEYWORD_SUCCESS = {"successful", "Completed", "saved" , "matches found", "is found"};
+    public static final String[] SYS_MSG_KEYWORD_ERROR = {"failed", "Failed", "cannot" , "Invalid", "does not exist",
+    	"Unable", "not saved", "not found"};
+    
     public static final String STR_BEFORE_DATE_BY = "by";
     public static final String STR_BEFORE_DATE_ON = "on";
     public static final String STR_BEFORE_DATE_FROM = "from";
-    public static final String STR_BEFORE_DATE_TO = "to";
+    public static final String STR_BEFORE_DATE_TO = "  to";
     
     public static final double POSITION_OFFSET_X_POPUP = 15;
     public static final double POSITION_OFFSET_Y_POPUP = 2;
@@ -196,4 +207,14 @@ public final class Constant {
     
     public static final double HEIGHT_STAGE = 655;
     public static final double WIDTH_STAGE = 805;
+    
+    public static final double LABEL_MAX_WIDTH_FLOATING = 650;
+    public static final double LABEL_MAX_WIDTH_EVENT_ALL = 550;
+    public static final double LABEL_MAX_WIDTH_TIMED_ALL = 430;
+    public static final double LABEL_MAX_WIDTH_EVENT_CAT = 500;
+    public static final double LABEL_MAX_WIDTH_TIMED_CAT = 380;
+    
+    public static final String BOOLEAN_STRING_TRUE = "Yes";
+    public static final String BOOLEAN_STRING_FALSE = "No";
+    
 }

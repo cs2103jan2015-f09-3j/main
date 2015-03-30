@@ -233,7 +233,7 @@ public class Task {
 
 	public void setStartDate(Date startDate) {
 		_startDate = startDate;
-	}	
+	}
 	
 	public int getNumber() {
 		return _number;

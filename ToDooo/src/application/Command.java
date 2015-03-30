@@ -14,6 +14,7 @@ public enum Command {
 	UPDATE("update", "-u"),
 	SEARCH("search", "-s"),
 	COMPLETE("complete", "-c"),
+	VIEW("view", "-v"),
 	FROM("/from", "-f"),
 	TO("/to", "-t"),
 	ON("/on", "-o"),
@@ -230,12 +231,27 @@ public enum Command {
 				systemMsg = Command.executeComplete(userInput);
 				headerController.textArea.clear();
 				break;
+			case VIEW :
+				systemMsg = Command.executeView(userInput);
+				displayDetail(mainController, systemMsg);
+				headerController.textArea.clear();
+				break;
 			default :
 				// invalid command
 				break;
 		}
 		
 		return systemMsg;
+	}
+
+	private void displayDetail(MainController mainController, String systemMsg) {
+		if(systemMsg.equalsIgnoreCase(Constant.MSG_VIEW_SUCCESS)) {
+			try {
+				mainController.viewDetails(Main.list.getSelectedTask());
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 	
 	private static String executeAdd(String userInput) {
@@ -367,6 +383,19 @@ public enum Command {
 			systemMsg = Constant.MSG_ITEM_NOT_FOUND;
 		}
 
+		return systemMsg;
+	}
+	
+	private static String executeView(String userInput) {
+		String systemMsg = null;
+		Task selectedTask = Main.list.selectTaskFromList(userInput);
+		
+		if(selectedTask != null) {
+			systemMsg = Constant.MSG_VIEW_SUCCESS;
+		} else {
+			systemMsg = Constant.MSG_VIEW_FAIL;
+		}
+		
 		return systemMsg;
 	}
 }

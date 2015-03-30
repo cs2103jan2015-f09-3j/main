@@ -37,6 +37,7 @@ public class ToDoList {
 	private String _listFilePath;
 	private ArrayList<Task> _tasks;
 	private ArrayList<String> _categories;
+	private Task _selectedTask;
 
 	public ToDoList() {		
 		_listFilePath = Main.storage.readSavePath();		
@@ -93,6 +94,10 @@ public class ToDoList {
 
 	public void setCategories(ArrayList<String> categories) {
 		_categories = categories;
+	}
+	
+	public Task getSelectedTask() {
+		return _selectedTask;
 	}
 
 	private void createListFileIfNotExist() {
@@ -182,6 +187,16 @@ public class ToDoList {
 		removedTask = deleteTaskById(targetId);
 		
 		return removedTask;
+	}
+	
+	public Task selectTaskFromList(String userInput) {
+		Task selectedTask = null;
+		String targetId = InputParser.getTargetIdFromString(userInput);
+		
+		selectedTask = selectTaskById(targetId);
+		_selectedTask = selectedTask;
+		
+		return selectedTask;
 	}
 	/*
 	public Task[] deleteMultipleTasksFromList(String userInput) {
@@ -318,6 +333,27 @@ public class ToDoList {
 		
 		return removedTask;
 	}
+	
+	public Task selectTaskById(String targetId) {
+		String taskId = targetId;
+		Task task = null;
+		Task selectedTask = null;
+		int index = 0;		
+		Iterator<Task> taskIterator = _tasks.iterator();
+		
+		while (taskIterator.hasNext()) {
+			task = taskIterator.next();
+			
+			if(task.getId().equals(taskId)) {
+				selectedTask = task;
+				break;
+			}
+			
+			index++;
+		}
+		
+		return selectedTask;
+	}
 			
 	public static String getSavePathDirectory() {
 		String savePath = Main.storage.readSavePath();
@@ -349,22 +385,15 @@ public class ToDoList {
 			if(!taskType.equalsIgnoreCase(TaskType.TIMED.toString())) {
 				if(isRecurring) {
 					for(int j = 0; j < task.getRecurringTasks().size(); j++) {
-						Task t1 = null;
+						Task taskA = null;
 						recurringDate = task.getRecurringTasks().get(j).getRecurDate();
 						recurringId = task.getRecurringTasks().get(j).getRecurringTaskId();
 						recurringStatus = task.getRecurringTasks().get(j).getStatus();
-						
-						if(taskType.equalsIgnoreCase(TaskType.EVENT.toString())) {
-							t1 = Task.createRecurringChildItem(task, recurringId, recurringStatus, 
-									recurringDate, task.getBy(), recurringDate);
-						} else if(taskType.equalsIgnoreCase(TaskType.DATED.toString())) {
-							t1 = Task.createRecurringChildItem(task, recurringId, recurringStatus, 
-									task.getOn(), recurringDate, recurringDate);
-						}
-						
-						tempTasks.add(t1);
+						taskA = getRecurChildItemForEventOrDated(task, recurringDate, taskType, recurringId,
+								recurringStatus, taskA);
+						tempTasks.add(taskA);
 					}
-				}else {
+				} else {
 					Task t2 = new Task();
 					t2 = task;
 					tempTasks.add(t2);
@@ -378,13 +407,25 @@ public class ToDoList {
 				for (Date date = start.getTime(); !start.after(end); start.add(Calendar.DATE, 1), date = start.getTime()) {
 					Task t3 = Task.createRecurringChildItem(task, task.getId(), task.getStatus(), 
 							task.getOn(), task.getBy(), date);
-					
 					tempTasks.add(t3);
 				}
 			}
 		}
 		
 		return tempTasks;
+	}
+	
+	private static Task getRecurChildItemForEventOrDated(Task task,
+			Date recurringDate, String taskType, String recurringId,
+			Status recurringStatus, Task taskA) {
+		if(taskType.equalsIgnoreCase(TaskType.EVENT.toString())) {
+			taskA = Task.createRecurringChildItem(task, recurringId, recurringStatus, 
+					recurringDate, task.getBy(), recurringDate);
+		} else if(taskType.equalsIgnoreCase(TaskType.DATED.toString())) {
+			taskA = Task.createRecurringChildItem(task, recurringId, recurringStatus, 
+					task.getOn(), recurringDate, recurringDate);
+		}
+		return taskA;
 	}
 	
 	public Pair<Task, String> completeTaskOnList(String userInput) {

@@ -29,10 +29,22 @@
     -fx-text-fill: #ffffff;
 }
 
+.aPaneDetail {
+	-fx-background-color: #FFFFFF;
+	-fx-max-width: 500;
+	-fx-max-height: 400;
+	-fx-border-color: black;
+	-fx-border-width: 1;
+}
+
+.vBoxDetail {
+	-fx-padding: 20 20 20 20;
+}
+
 .bPaneAll {
 	-fx-background-color: linear-gradient(to bottom, derive(#E1F5C4, 20%), #E1F5C4);
 	-fx-background-radius: 10;
-	-fx-max-width: 770;	
+	-fx-max-width: 760;	
 	-fx-max-height: 40;
 	-fx-min-height: 40;
 	-fx-border-color: black;
@@ -41,7 +53,7 @@
 }
 
 .bPaneSearchResult {
-	-fx-background-color: linear-gradient(to bottom, derive(#EDEDE1, 20%), #EDEDE1);
+	-fx-background-color: linear-gradient(to bottom, derive(#E7EDEA, 20%), #E7EDEA);
 	-fx-background-radius: 10;
 	-fx-max-width: 760;	
 	-fx-max-height: 40;
@@ -54,7 +66,7 @@
 .bPaneOverdue {
 	-fx-background-color: linear-gradient(to bottom, derive(#F5DABD, 20%), #F5DABD);
 	-fx-background-radius: 10;
-	-fx-max-width: 770;	
+	-fx-max-width: 760;	
 	-fx-max-height: 40;
 	-fx-min-height: 40;
 	-fx-border-color: black;
@@ -65,7 +77,7 @@
 .bPaneCompleted {
 	-fx-background-color: linear-gradient(to bottom, derive(#EDEDE1, 20%), #EDEDE1);
 	-fx-background-radius: 10;
-	-fx-max-width: 770;	
+	-fx-max-width: 760;	
 	-fx-max-height: 40;
 	-fx-min-height: 40;
 	-fx-border-color: black;
@@ -91,7 +103,6 @@
 .labelDesc {
 	-fx-padding:5 10 5 15;
 	-fx-font: normal 12px "Segoe UI";
-	-fx-max-width: 400;
 }
 
 .labelId {
@@ -111,6 +122,10 @@
 	-fx-font: bold italic 10px "Segoe UI";
 	-fx-text-fill: black;
 	-fx-opacity: 0.6;
+}
+
+.labelSysMsg {
+	-fx-font: bold 12px "Segoe UI";
 }
 
 .dateTitle {
@@ -180,4 +195,20 @@
 	-fx-fill: #6D5D50; 
 	-fx-font-weight: bold;
 	-fx-font-style: italic;
+}
+
+.txtAreaDesc {
+	-fx-wrap-text: true;
+	-fx-focus-traversable: false;
+	-fx-max-height: 70;
+	-fx-border-width: 0;
+	-fx-background-color: #fff, #fff;
+}
+
+.txtAreaDesc .content {
+	-fx-background-color: #fff;
+}
+
+.txtAreaDesc:focused .content {
+    -fx-background-color: #fff;
 }
