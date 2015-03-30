@@ -22,8 +22,11 @@ import application.Undo;
 import application.DateParser;
 import javafx.application.Platform;
 import javafx.event.Event;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.SingleSelectionModel;
@@ -35,16 +38,15 @@ import javafx.scene.input.KeyCombination;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.ColumnConstraints;
-import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
-import javafx.scene.layout.RowConstraints;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.Line;
 import javafx.scene.control.Tab;
 import javafx.stage.Popup;
 import javafx.stage.PopupWindow.AnchorLocation;
+import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import controller.HeaderController;
 import controller.BodyController;
 
@@ -65,6 +67,7 @@ public class MainController{
 	private ArrayList<Task> today = new ArrayList<>();
 	private ArrayList<Task> floating = new ArrayList<>();
 	private Date todayDate;
+	static Stage detailPopup;
 	
 	@FXML
 	public void initialize() {
@@ -97,6 +100,8 @@ public class MainController{
 		switchTab(e);		
 		navigateView(e);		
 		showTutorial(e);
+		//closeDetailPopup(e);
+		
 	}
 
 	private void scrollList(KeyEvent e) {
@@ -452,7 +457,7 @@ public class MainController{
 		addIcon(t, hBoxLeft);
 		addId(t, hBoxLeft);
 		addPriorityBar(t, hBoxLeft);
-		addDesc(t, hBoxLeft);
+		addDesc(t, hBoxLeft, displayType);
 		
 		if(!displayType.equalsIgnoreCase(Constant.TAB_NAME_CATEGORY) || status.equalsIgnoreCase(Status.COMPLETED)) {
 			addCategory(t, hBoxLeft);
@@ -597,8 +602,10 @@ public class MainController{
 		hBox.getChildren().add(priorityBar);
 	}
 	
-	private void addDesc(Task t, HBox hBox) {
+	private void addDesc(Task t, HBox hBox, String displayType) {
 		Label lblDesc = new Label(t.getToDo());
+		
+		setLengthForDesc(lblDesc, t, displayType);
 		
 		lblDesc.getStyleClass().add("labelDesc");
 		hBox.getChildren().add(lblDesc);
@@ -680,6 +687,37 @@ public class MainController{
 		hBox.getChildren().add(lbl2);
 		hBox.getChildren().add(lblDateTime2);
 	}
+	
+	private void setLengthForDesc(Label desc, Task task, String displayType) {
+		if(displayType.equalsIgnoreCase(Constant.TAB_NAME_ALL) || 
+				displayType.equalsIgnoreCase(Constant.VIEW_NAME_SEARCH_RESULT)) {
+			switch(task.getTaskType()) {
+				case EVENT :
+				case DATED :
+					desc.setMaxWidth(Constant.LABEL_MAX_WIDTH_EVENT_ALL);
+					break;
+				case TIMED :
+					desc.setMaxWidth(Constant.LABEL_MAX_WIDTH_TIMED_ALL);
+					break;
+				default :
+					desc.setMaxWidth(Constant.LABEL_MAX_WIDTH_FLOATING);
+					break;
+			}
+		} else {
+			switch(task.getTaskType()) {
+				case EVENT :
+				case DATED :
+					desc.setMaxWidth(Constant.LABEL_MAX_WIDTH_EVENT_CAT);
+					break;
+				case TIMED :
+					desc.setMaxWidth(Constant.LABEL_MAX_WIDTH_TIMED_CAT);
+					break;
+				default :
+					desc.setMaxWidth(Constant.LABEL_MAX_WIDTH_FLOATING);
+					break;
+			}
+		}
+	}
 
 	public void executeSetting() {
 		headerController.settingIcon.setVisible(false);
@@ -726,5 +764,25 @@ public class MainController{
 		}
 		
 		return 0;
+	}
+	
+	public void viewDetails(Task task) throws IOException {
+		FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/view/Detail.fxml"));
+        Parent root1 = (Parent) fxmlLoader.load();
+		
+		detailPopup = new Stage();
+		Scene scene = new Scene(root1);
+		
+		scene.setOnKeyPressed(new EventHandler<KeyEvent>() {
+	        public void handle(KeyEvent ke) {
+	            if (Constant.SHORTCUT_DETAIL.match(ke)) {
+	                detailPopup.close();
+	            }
+	        }
+	    });
+		
+		detailPopup.setScene(scene); 
+		detailPopup.initStyle(StageStyle.UNDECORATED);
+        detailPopup.show();
 	}
 }

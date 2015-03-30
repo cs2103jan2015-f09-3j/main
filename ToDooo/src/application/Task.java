@@ -232,7 +232,7 @@ public class Task {
 
 	public void setStartDate(Date startDate) {
 		_startDate = startDate;
-	}	
+	}
 	
 	public static Task createRecurringChildItem(Task originalTask, String recurringId, Status recurringStatus, 
 			Date onDate, Date byDate, Date startDate) {

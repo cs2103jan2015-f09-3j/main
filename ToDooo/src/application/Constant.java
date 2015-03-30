@@ -54,7 +54,7 @@ public final class Constant {
 	
 	public static final Command[] COMMAND_ACTIONS = { Command.ADD, Command.DELETE, 
 													  Command.UPDATE, Command.SEARCH,
-													  Command.COMPLETE };
+													  Command.COMPLETE, Command.VIEW };
 	
 	public static final Command[] COMMAND_DATES = { Command.ON, Command.BY, 
 													Command.FROM, Command.TO };
@@ -120,6 +120,9 @@ public final class Constant {
 	public static final String MSG_COMPLETE_FAIL = "Failed to complete {0}";
 	public static final String MSG_COMPLETE_INVALID = "TaskID {0} does not exist.";
 	
+	public static final String MSG_VIEW_SUCCESS = "Item is found.";
+	public static final String MSG_VIEW_FAIL = "Item is not found.";
+	
 	public static final String DELIMETER_UPDATE = ":";
 	public static final String DELIMETER_SEARCH = ";; ";
 	public static final String DELIMETER_REPLACE = "{0}";
@@ -152,6 +155,7 @@ public final class Constant {
 	public static final KeyCombination SHORTCUT_TAB_PRIORITY = new KeyCodeCombination(KeyCode.F3);
 	public static final KeyCombination SHORTCUT_SETTING = new KeyCodeCombination(KeyCode.F4);
 	public static final KeyCombination SHORTCUT_TUTORIAL = new KeyCodeCombination(KeyCode.F12);
+	public static final KeyCombination SHORTCUT_DETAIL = new KeyCodeCombination(KeyCode.F11);
 	
     public static final String TAB_NAME_ALL = "all";  
     public static final String TAB_NAME_CATEGORY = "category";
@@ -187,7 +191,7 @@ public final class Constant {
     public static final Color COLOR_PRIORITY_LOW = Color.rgb(249, 212, 35);
     public static final Color COLOR_PRIORITY_NEUTRAL = Color.WHITE;
     
-    public static final String[] SYS_MSG_KEYWORD_SUCCESS = {"successful", "Completed", "saved" , "matches found"};
+    public static final String[] SYS_MSG_KEYWORD_SUCCESS = {"successful", "Completed", "saved" , "matches found", "is found"};
     public static final String[] SYS_MSG_KEYWORD_ERROR = {"failed", "Failed", "cannot" , "Invalid", "does not exist",
     	"Unable", "not saved", "not found"};
     
@@ -202,4 +206,14 @@ public final class Constant {
     
     public static final double HEIGHT_STAGE = 655;
     public static final double WIDTH_STAGE = 805;
+    
+    public static final double LABEL_MAX_WIDTH_FLOATING = 650;
+    public static final double LABEL_MAX_WIDTH_EVENT_ALL = 550;
+    public static final double LABEL_MAX_WIDTH_TIMED_ALL = 430;
+    public static final double LABEL_MAX_WIDTH_EVENT_CAT = 500;
+    public static final double LABEL_MAX_WIDTH_TIMED_CAT = 380;
+    
+    public static final String BOOLEAN_STRING_TRUE = "Yes";
+    public static final String BOOLEAN_STRING_FALSE = "No";
+    
 }

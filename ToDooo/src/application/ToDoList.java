@@ -36,6 +36,7 @@ public class ToDoList {
 	private String _listFilePath;
 	private ArrayList<Task> _tasks;
 	private ArrayList<String> _categories;
+	private Task _selectedTask;
 
 	public ToDoList() {		
 		_listFilePath = Main.storage.readSavePath();		
@@ -92,6 +93,10 @@ public class ToDoList {
 
 	public void setCategories(ArrayList<String> categories) {
 		_categories = categories;
+	}
+	
+	public Task getSelectedTask() {
+		return _selectedTask;
 	}
 
 	private void createListFileIfNotExist() {
@@ -166,6 +171,16 @@ public class ToDoList {
 		removedTask = deleteTaskById(targetId);
 		
 		return removedTask;
+	}
+	
+	public Task selectTaskFromList(String userInput) {
+		Task selectedTask = null;
+		String targetId = InputParser.getTargetIdFromString(userInput);
+		
+		selectedTask = selectTaskById(targetId);
+		_selectedTask = selectedTask;
+		
+		return selectedTask;
 	}
 	/*
 	public Task[] deleteMultipleTasksFromList(String userInput) {
@@ -301,6 +316,27 @@ public class ToDoList {
 		}
 		
 		return removedTask;
+	}
+	
+	public Task selectTaskById(String targetId) {
+		String taskId = targetId;
+		Task task = null;
+		Task selectedTask = null;
+		int index = 0;		
+		Iterator<Task> taskIterator = _tasks.iterator();
+		
+		while (taskIterator.hasNext()) {
+			task = taskIterator.next();
+			
+			if(task.getId().equals(taskId)) {
+				selectedTask = task;
+				break;
+			}
+			
+			index++;
+		}
+		
+		return selectedTask;
 	}
 			
 	public static String getSavePathDirectory() {
