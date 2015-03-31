@@ -407,8 +407,7 @@ public class ToDoList {
 					for(int j = 0; j < task.getRecurringTasks().size(); j++) {
 						Task taskA = null;
 						recurringDate = task.getRecurringTasks().get(j).getRecurDate();
-						recurringId = task.getId() + Constant.PREFIX_RECURRING_ID + 
-								task.getRecurringTasks().get(j).getRecurringTaskId();
+						recurringId = task.getRecurringTasks().get(j).getRecurringTaskId();
 						recurringStatus = task.getRecurringTasks().get(j).getStatus();
 						taskA = getRecurChildItemForEventOrDated(task, recurringDate, taskType, recurringId,
 								recurringStatus, taskA);
