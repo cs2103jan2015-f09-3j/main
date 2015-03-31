@@ -3,7 +3,7 @@ package application;
 import java.util.Calendar;
 import java.util.Date;
 
-public class RecurringTask {
+public class RecurringTask implements Cloneable {
 	private String _recurringTaskId;
 	private Status _status;
 	private Date _recurDate;
@@ -25,6 +25,19 @@ public class RecurringTask {
 		_status = Task.getStatus(recurDate);
 		
 		_recurDate = recurDate;
+	}
+	
+	@Override
+	public RecurringTask clone() {
+		RecurringTask clone = null;
+		
+		try {
+			clone = (RecurringTask) super.clone();
+		} catch(CloneNotSupportedException e){
+            throw new RuntimeException(e); 
+        }
+		
+		 return clone;
 	}
 
 	public String getRecurringTaskId() {

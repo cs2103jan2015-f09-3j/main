@@ -1,15 +1,13 @@
 package application;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
 import javafx.util.Pair;
 
-public class Task {
+public class Task implements Cloneable {
 	private String _id;
 	private TaskType _taskType;
 	private String _toDo;
@@ -29,7 +27,6 @@ public class Task {
 	private Date _startDate;
 	private Date _endDate;
 	private ArrayList<RecurringTask> _recurringTasks;
-	private int _number;
 	
 	public Task() {
 		// convert from node
@@ -38,12 +35,12 @@ public class Task {
 	public Task(String userInput) {
 		this(userInput, null);
 	}
-
+	
 	public Task(String userInput, String id) {	
 		_taskType = InputParser.getTaskTypeFromString(userInput);	
 		
 		if (id == null) {
-			_id = generateId(_taskType);	
+			_id = String.valueOf(Main.list.getNextId());	
 		} else {
 			_id = id;	
 		}
@@ -69,7 +66,6 @@ public class Task {
 					_toDo = generateToDoString(userInput);
 					_status = Task.getStatus(_endDate);
 					
-					updateIdWithTaskType();
 					_isValid = true;
 				}
 			}
@@ -81,7 +77,19 @@ public class Task {
 			}			
 		}
 	}
-
+	
+	@Override
+	public Task clone() {
+		Task clone = null;
+		
+		try {
+			clone = (Task) super.clone();
+		} catch(CloneNotSupportedException e){
+            throw new RuntimeException(e); 
+        }
+		
+		 return clone;
+	}
 	
 	public String getId() {
 		return _id;
@@ -235,14 +243,6 @@ public class Task {
 		_startDate = startDate;
 	}
 	
-	public int getNumber() {
-		return _number;
-	}
-	
-	public void setNumber(int number) {
-		_number = number;
-	}
-	
 	public static Task createRecurringChildItem(Task originalTask, String recurringId, Status recurringStatus, 
 			Date onDate, Date byDate, Date startDate) {
 		Task t = new Task();
@@ -268,32 +268,6 @@ public class Task {
 		t.setToDo(originalTask.getToDo());
 		
 		return t;
-	}
-
-	private static String generateId(TaskType taskType) {
-		int nextId = Main.list.getNextId();
-		String id = null;
-		
-		switch (taskType) {
-			case EVENT :
-				id = "E" + nextId;
-				break;
-			case TIMED :
-				id = "T" + nextId;
-				break;
-			case DATED :
-				id = "D" + nextId;
-				break;
-			case FLOATING :
-				id = "F" + nextId;
-				break;
-			default :
-				// invalid task
-				// return null
-				break;
-		}
-		
-		return id;
 	}
 	
 	private String generateToDoString(String userInput) {
@@ -503,13 +477,11 @@ public class Task {
 	}
 	
 	private String generateRecurringTaskId() {
-		return _id + Constant.PREFIX_RECURRING_ID + 
-			   _recurringTasks.size();
+		return String.valueOf(_recurringTasks.size() + 1);
 	}
 	
-	public Task deleteRecurringTaskById(String recurringTaskId) {
+	public void deleteRecurringTaskById(String recurringTaskId) {
 		RecurringTask recurringTask = null;
-		Task removedTask = null;
 		int index = 0;		
 		boolean isFound = false;
 		Iterator<RecurringTask> taskIterator = _recurringTasks.iterator();
@@ -521,21 +493,12 @@ public class Task {
 					   equals(recurringTaskId));
 			
 			if (isFound) {
-				removedTask = Main.storage.
-							  deleteRecurringTaskFromFileById(_id, 
-							  recurringTaskId);
-				
-				if (removedTask != null) {
-					_recurringTasks.remove(index);
-				}
-				
+				_recurringTasks.remove(index);				
 				break;
 			}
 			
 			index++;
 		}
-		
-		return removedTask;
 	}
 	
 	public boolean hasDateMatch(SearchAttribute attribute, String searchKey) {
@@ -594,5 +557,16 @@ public class Task {
 		}
 
 		return hasMatched;
+	}
+	
+	public ArrayList<RecurringTask> deepCloneArrayList() {
+		ArrayList<RecurringTask> copies = new ArrayList<RecurringTask>();
+		Iterator<RecurringTask> iterator = _recurringTasks.iterator();
+		
+		while(iterator.hasNext()){
+			copies.add(iterator.next().clone());
+		}
+		
+		return copies;
 	}
 }

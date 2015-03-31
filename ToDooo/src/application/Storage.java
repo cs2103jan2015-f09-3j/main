@@ -66,7 +66,6 @@ public class Storage {
 		}
 	}
 	
-	
 	public String writeFile(Document document) {
 		return writeFile(document, Main.list.getListFilePath());
 	}
@@ -244,31 +243,27 @@ public class Storage {
 	}
 	
 	public String writeListToFile(ArrayList<Task> tasks) {
+		removeAllTaskNodesFromFile();
 		Document document = getFileDocument();
 		
 		try {
-//			XPathExpression expression = _xPath.compile("/" + Constant.TAG_FILE + 
-//												"/" + Constant.TAG_TASKS);
-//			
-//			Element tasksNode = (Element) expression.
-//								evaluate(document, XPathConstants.NODE);
-//			
-//			
-//			Task task = null;
-//			for (int i = 0; i <= tasks.size(); i++) {
-//				task = tasks.get(i);
-//				task.setNumber(i + 1);
-//			}
-//			
-//			for (int j = 0; j < tasks.size(); j++) {			
-//				
-//				Element taskNode = XmlManager.transformTaskToXml(document, 
-//									tasks.get(j));
-//				
-//				tasksNode.appendChild(taskNode);
-//				
-//				writeFile(document);
-//			}
+			XPathExpression expression = _xPath.compile("/" + Constant.TAG_FILE + 
+												"/" + Constant.TAG_TASKS);
+			
+			Element tasksNode = (Element) expression.
+								evaluate(document, XPathConstants.NODE);
+						
+			Element taskNode = null;
+			Task task = null;
+			for (int i = 0; i < tasks.size(); i++) {
+				task = tasks.get(i);
+				task.setId(String.valueOf(i + 1));
+				
+				taskNode = XmlManager.transformTaskToXml(document, task);
+				tasksNode.appendChild(taskNode);
+			}
+			
+			cleanAndWriteFile(document);
 		} catch (Exception exception) {
 			exception.printStackTrace();
 			return Constant.MSG_ADD_FAIL;
@@ -276,7 +271,7 @@ public class Storage {
 		
 		return Constant.MSG_ADD_SUCCESS;
 	}
-	
+		
 	public boolean hasWrittenCategoryToFile(String category) {
 		Document document = getFileDocument();
 		boolean hasWritten = false;
@@ -318,26 +313,7 @@ public class Storage {
 		
 		return removedTask;
 	}
-	
-	public Task deleteRecurringTaskFromFileById(String taskId, String recurringTaskId) {
-		Document fileDoc = getFileDocument();	
-		Task removedTask = null;
 		
-		NodeList nodes = getRecurringTasksNodesById(fileDoc, taskId, recurringTaskId);
-		if (nodes.getLength() > 0) {
-			Element targetNode = (Element) nodes.item(0);			
-			
-			NodeList taskNodes = getNodesById(fileDoc, taskId);
-			Element taskNode = (Element) taskNodes.item(0);
-			removedTask = XmlManager.transformNodeToTask(taskNode);		
-			
-			targetNode.getParentNode().removeChild(targetNode);
-			cleanAndWriteFile(fileDoc);
-		} 
-		
-		return removedTask;
-	}
-	
 	private NodeList getNodesById(Document document, String targetId) {
 		try {
 			XPathExpression expression = 
@@ -354,29 +330,7 @@ public class Storage {
 		
 		return null;
 	}	
-	
-	private NodeList getRecurringTasksNodesById(Document document, String taskId, 
-												String recurringTaskId) {
-		try {
-			XPathExpression expression = 
-					_xPath.compile("/" + Constant.TAG_FILE + "/" +
-								   Constant.TAG_TASKS + "/" +
-								   Constant.TAG_TASK + "[@" +
-								   Constant.TAG_ATTRIBUTE_ID + "='" + 
-								   taskId + "']" + "/" +
-								   Constant.TAG_RECURRING_TASKS + "/" +
-								   Constant.TAG_RECURRING_TASK + "[@" +
-								   Constant.TAG_RECURRING_ID + "='" + 
-								   recurringTaskId + "']");
-			
-			return (NodeList)expression.evaluate(document, XPathConstants.NODESET);
-		} catch (XPathExpressionException exception) {
-			exception.printStackTrace();
-		}
 		
-		return null;
-	}
-	
 	public void cleanAndWriteFile() {
 		Document document = getFileDocument();
 		cleanAndWriteFile(document);
@@ -431,5 +385,26 @@ public class Storage {
 		updateDirPathInSetting(path);
 		
 		Main.list = new ToDoList();
+	}
+
+	private void removeAllTaskNodesFromFile() {
+		Document document = getFileDocument();
+		Element root = document.getDocumentElement();
+		
+		try {
+			XPathExpression expression = _xPath.compile("/" + Constant.TAG_FILE + 
+												"/" + Constant.TAG_TASKS);
+			
+			Element tasksNode = (Element) expression.
+								evaluate(document, XPathConstants.NODE);
+			
+			tasksNode.getParentNode().removeChild(tasksNode);
+			XmlManager.createAndAppendWrapper(document, root, 
+					   						  String.valueOf(Constant.TAG_TASKS));
+			
+			cleanAndWriteFile(document);
+		} catch (Exception exception) {
+			exception.printStackTrace();
+		}
 	}
 }

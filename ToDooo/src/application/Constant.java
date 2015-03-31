@@ -79,10 +79,10 @@ public final class Constant {
 			
 	public static final String MSG_ADD_SUCCESS = "Add successful. " + Constant.MSG_TO_UNDO;
 	public static final String MSG_ADD_FAIL = "Add failed.";
-	public static final String MSG_DELETE_SUCCESS = "Delete {0} successful. " + Constant.MSG_TO_UNDO;
+	public static final String MSG_DELETE_SUCCESS = "Delete task {0} successful. " + Constant.MSG_TO_UNDO;
 	public static final String MSG_DELETE_FAIL = "Delete failed.";
 	public static final String MSG_ITEM_NOT_FOUND = "Item not found.";
-	public static final String MSG_ORIGINAL_RETRIEVED = "Original input of {0} retrieved.";
+	public static final String MSG_ORIGINAL_RETRIEVED = "Original input of task {0} retrieved.";
 	public static final String MSG_ORIGINAL_NOT_RETRIEVED = "Original input cannot be retrieved.";
 	public static final String MSG_UPDATE_FAIL = "Update failed.";
 	public static final String MSG_UPDATE_SUCCESS = "Update successful. " + Constant.MSG_TO_UNDO;
@@ -96,8 +96,8 @@ public final class Constant {
 	public static final String MSG_UNDO_ADD_FAIL = "Undo add failed.";
 	public static final String MSG_UNDO_DELETE_SUCCESS = "Undo delete successful. " + Constant.MSG_TO_REDO;
 	public static final String MSG_UNDO_DELETE_FAIL = "Undo delete failed.";
-	public static final String MSG_UNDO_UPDATE_SUCCESS = "Undo update successful. " + Constant.MSG_TO_REDO;
-	public static final String MSG_UNDO_UPDATE_FAIL = "Undo update failed.";
+	public static final String MSG_UNDO_UPDATE_SUCCESS = "Undo successful. " + Constant.MSG_TO_REDO;
+	public static final String MSG_UNDO_UPDATE_FAIL = "Undo failed.";
 	public static final String MSG_UNDO_COMPLETE_SUCCESS = "Undo complete successful. " + Constant.MSG_TO_REDO;
 	public static final String MSG_UNDO_COMPLETE_FAIL = "Undo complete failed.";
 	
@@ -105,8 +105,8 @@ public final class Constant {
 	public static final String MSG_REDO_ADD_FAIL = "Redo add failed.";
 	public static final String MSG_REDO_DELETE_SUCCESS = "Redo delete successful. " + Constant.MSG_TO_UNDO;
 	public static final String MSG_REDO_DELETE_FAIL = "Redo delete failed.";
-	public static final String MSG_REDO_UPDATE_SUCCESS = "Redo update successful. " + Constant.MSG_TO_UNDO;
-	public static final String MSG_REDO_UPDATE_FAIL = "Redo update failed.";
+	public static final String MSG_REDO_UPDATE_SUCCESS = "Redo successful. " + Constant.MSG_TO_UNDO;
+	public static final String MSG_REDO_UPDATE_FAIL = "Redo failed.";
 	public static final String MSG_REDO_COMPLETE_SUCCESS = "Redo complete successful. " + Constant.MSG_TO_UNDO;
 	public static final String MSG_REDO_COMPLETE_FAIL = "Redo complete failed.";
 	
@@ -127,7 +127,7 @@ public final class Constant {
 	public static final String DELIMETER_UPDATE = ":";
 	public static final String DELIMETER_SEARCH = ";; ";
 	public static final String DELIMETER_REPLACE = "{0}";
-	public static final String PREFIX_RECURRING_ID = "R";
+	public static final String PREFIX_RECURRING_ID = ".";
 	public static final String REGEX_LINE_BREAK = "(\\r|\\n)";
 	public static final String REGEX_SPACE = "\\s+";
 	

@@ -427,4 +427,24 @@ public class InputParser {
 		
 		return userInput;
 	}
+	
+	public static String getTaskIdFromRecurringId(String targetId) {
+		int prefixIndex = targetId.
+		   		  indexOf(Constant.PREFIX_RECURRING_ID);
+		
+		String taskId = targetId.substring(0, prefixIndex);
+		
+		return taskId;
+	}
+	
+	public static String getChildIdFromRecurringId(String targetId) {
+		int prefixIndex = targetId.
+		   		  indexOf(Constant.PREFIX_RECURRING_ID);
+		int startIndex = prefixIndex + 1;
+		int endIndex = targetId.length();
+		
+		String recurringTaskId = targetId.substring(startIndex, endIndex);	
+		
+		return recurringTaskId;
+	}
 }
