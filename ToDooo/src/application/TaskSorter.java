@@ -14,21 +14,21 @@ public class TaskSorter {
 		TASKTYPE_FLOATING
 	}
 
-	private SortParameter[] parametersForViewAll = new SortParameter[]{
+	private static SortParameter[] parametersForViewAll = {
 			SortParameter.TASKTYPE_FLOATING, 
 			SortParameter.DATE, 
 			SortParameter.PRIORITY, 
 			SortParameter.ALPHABETICAL_ORDER
 	};
 	
-	private SortParameter[] parametersForViewCategory = new SortParameter[]{
+	private static SortParameter[] parametersForViewCategory = {
 			SortParameter.CATEGORY,
 			SortParameter.DATE, 
 			SortParameter.PRIORITY, 
 			SortParameter.ALPHABETICAL_ORDER
 	};
 	
-	private SortParameter[] parametersForViewPriority = new SortParameter[]{
+	private static SortParameter[] parametersForViewPriority = {
 			SortParameter.PRIORITY, 
 			SortParameter.DATE, 
 			SortParameter.ALPHABETICAL_ORDER
@@ -128,19 +128,19 @@ public class TaskSorter {
 		}
 	}
 	
-	public ArrayList<Task> getTasksSortedByDate(ArrayList<Task> list) {
+	public static ArrayList<Task> getTasksSortedByDate(ArrayList<Task> list) {
 		Comparator<Task> comparator = getComparator(parametersForViewAll);
 		Collections.sort(list, comparator);
 		return list;
 	}
 	
-	public ArrayList<Task> getTasksSortedByCategories(ArrayList<Task> list) {
+	public static ArrayList<Task> getTasksSortedByCategories(ArrayList<Task> list) {
 		Comparator<Task> CategoryComparator = getComparator(parametersForViewCategory);
 		Collections.sort(list, CategoryComparator);
 		return list;
 	}
 	
-	public ArrayList<Task> getTasksSortedByPriorities(ArrayList<Task> list) {
+	public static ArrayList<Task> getTasksSortedByPriorities(ArrayList<Task> list) {
 		Comparator<Task> priorityComparator = getComparator(parametersForViewPriority);
 		Collections.sort(list, priorityComparator);
 		return list;

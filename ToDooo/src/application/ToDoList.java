@@ -116,6 +116,11 @@ public class ToDoList {
 	}
 	
 	public String addTaskToList(Task task) {	
+//		ArrayList<Task> backupList = new ArrayList<Task>(_tasks);
+//		
+//		_tasks.add(task);
+//		TaskSorter.getTasksSortedByDate(_tasks);
+		
 		String result = Main.storage.writeTaskToFile(task); 
 		
 		if (result.equals(Constant.MSG_ADD_SUCCESS)) {

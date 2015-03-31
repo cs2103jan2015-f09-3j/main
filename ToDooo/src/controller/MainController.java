@@ -60,7 +60,6 @@ public class MainController{
 	@FXML SearchResultController searchResultController;
 	
 	private Timer timer;
-	private TaskSorter taskSorter = new TaskSorter();
 	private SingleSelectionModel<Tab> selectionModel;
 	private Popup tutorialPopup;
 	private ArrayList<Task> overdue = new ArrayList<>();
@@ -364,14 +363,14 @@ public class MainController{
 		ArrayList<Task> temp;
 		
 		if(displayType.equalsIgnoreCase(Constant.VIEW_NAME_SEARCH_RESULT)) {
-			temp = taskSorter.getTasksSortedByDate(taskList);
+			temp = TaskSorter.getTasksSortedByDate(taskList);
 		} else if(displayType.equalsIgnoreCase(Constant.TAB_NAME_ALL)) {
 			ArrayList<Task> unsortedTemp = ToDoList.generateTaskItems(taskList);
-			temp = taskSorter.getTasksSortedByDate(unsortedTemp);
+			temp = TaskSorter.getTasksSortedByDate(unsortedTemp);
 		} else if(displayType.equalsIgnoreCase(Constant.TAB_NAME_CATEGORY)) {
-			temp = taskSorter.getTasksSortedByCategories(taskList);
+			temp = TaskSorter.getTasksSortedByCategories(taskList);
 		} else {
-			temp = taskSorter.getTasksSortedByPriorities(taskList);
+			temp = TaskSorter.getTasksSortedByPriorities(taskList);
 		}
 		
 		return temp;
