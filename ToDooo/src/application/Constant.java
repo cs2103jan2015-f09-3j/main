@@ -216,5 +216,6 @@ public final class Constant {
     
     public static final String BOOLEAN_STRING_TRUE = "Yes";
     public static final String BOOLEAN_STRING_FALSE = "No";
+    public static final String EMPTY_STRING = "";
     
 }

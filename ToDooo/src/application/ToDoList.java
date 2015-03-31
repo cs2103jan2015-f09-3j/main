@@ -170,7 +170,7 @@ public class ToDoList {
 	*/
 
 	public Pair<ArrayList<Task>, String> searchTheList(String userInput) {
-		ArrayList<Task> tasks = ToDoList.generateTaskItems(_tasks);
+		ArrayList<Task> tasks = ToDoList.generateTaskItems(_tasks, Constant.EMPTY_STRING);
 		
 		userInput = InputParser.verifyAndCorrectSearchString(userInput);
 		
@@ -322,7 +322,7 @@ public class ToDoList {
 		return savePath;
 	}
 			
-	public static ArrayList<Task> generateTaskItems(ArrayList<Task> tasks) {
+	public static ArrayList<Task> generateTaskItems(ArrayList<Task> tasks, String displayType) {
 		ArrayList<Task> tempTasks = new ArrayList<>();
 		Task task;
 		Date recurringDate;
@@ -341,8 +341,8 @@ public class ToDoList {
 					for(int j = 0; j < task.getRecurringTasks().size(); j++) {
 						Task taskA = null;
 						recurringDate = task.getRecurringTasks().get(j).getRecurDate();
-                        recurringId = task.getId() + Constant.PREFIX_RECURRING_ID + 
-                                task.getRecurringTasks().get(j).getRecurringTaskId();
+						recurringId = task.getId() + Constant.PREFIX_RECURRING_ID + 
+								task.getRecurringTasks().get(j).getRecurringTaskId();
 						recurringStatus = task.getRecurringTasks().get(j).getStatus();
 						taskA = getRecurChildItemForEventOrDated(task, recurringDate, taskType, recurringId,
 								recurringStatus, taskA);
@@ -354,15 +354,22 @@ public class ToDoList {
 					tempTasks.add(t2);
 				}
 			} else {
-				Calendar start = Calendar.getInstance();
-				start.setTime(task.getFrom());
-				Calendar end = Calendar.getInstance();
-				end.setTime(task.getTo());
-				
-				for (Date date = start.getTime(); !start.after(end); start.add(Calendar.DATE, 1), date = start.getTime()) {
-					Task t3 = Task.createRecurringChildItem(task, task.getId(), task.getStatus(), 
-							task.getOn(), task.getBy(), date);
-					tempTasks.add(t3);
+				if(displayType.equalsIgnoreCase(Constant.TAB_NAME_CATEGORY) || 
+						displayType.equalsIgnoreCase(Constant.TAB_NAME_PRIORITY)) {
+					Task t2 = new Task();
+					t2 = task;
+					tempTasks.add(t2);
+				} else {
+					Calendar start = Calendar.getInstance();
+					start.setTime(task.getFrom());
+					Calendar end = Calendar.getInstance();
+					end.setTime(task.getTo());
+					
+					for (Date date = start.getTime(); !start.after(end); start.add(Calendar.DATE, 1), date = start.getTime()) {
+						Task t3 = Task.createRecurringChildItem(task, task.getId(), task.getStatus(), 
+								task.getOn(), task.getBy(), date);
+						tempTasks.add(t3);
+					}
 				}
 			}
 		}

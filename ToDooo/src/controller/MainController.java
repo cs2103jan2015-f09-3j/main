@@ -365,12 +365,14 @@ public class MainController{
 		if(displayType.equalsIgnoreCase(Constant.VIEW_NAME_SEARCH_RESULT)) {
 			temp = TaskSorter.getTasksSortedByDate(taskList);
 		} else if(displayType.equalsIgnoreCase(Constant.TAB_NAME_ALL)) {
-			ArrayList<Task> unsortedTemp = ToDoList.generateTaskItems(taskList);
+			ArrayList<Task> unsortedTemp = ToDoList.generateTaskItems(taskList, Constant.TAB_NAME_ALL);
 			temp = TaskSorter.getTasksSortedByDate(unsortedTemp);
 		} else if(displayType.equalsIgnoreCase(Constant.TAB_NAME_CATEGORY)) {
-			temp = TaskSorter.getTasksSortedByCategories(taskList);
+			ArrayList<Task> unsortedTemp = ToDoList.generateTaskItems(taskList, Constant.TAB_NAME_CATEGORY);
+			temp = TaskSorter.getTasksSortedByCategories(unsortedTemp);
 		} else {
-			temp = TaskSorter.getTasksSortedByPriorities(taskList);
+			ArrayList<Task> unsortedTemp = ToDoList.generateTaskItems(taskList, Constant.TAB_NAME_PRIORITY);
+			temp = TaskSorter.getTasksSortedByPriorities(unsortedTemp);
 		}
 		
 		return temp;
@@ -625,7 +627,7 @@ public class MainController{
 			Date byDate, Date fromDate, Date toDate, Date startDate, HBox hBoxRight, HBox hBoxLeft) {
 		
 		if(taskType.equalsIgnoreCase(TaskType.EVENT.toString())) {
-			addSingleDateTime(onDate, hBoxRight, "", Constant.DATETIMEOUTPUT);
+			addSingleDateTime(onDate, hBoxRight, "", Constant.TIMEOUTPUT);
 		} else if(taskType.equalsIgnoreCase(TaskType.DATED.toString())) {
 			addSingleDateTime(byDate, hBoxRight, Constant.STR_BEFORE_DATE_BY, Constant.TIMEOUTPUT);
 		} else if(taskType.equalsIgnoreCase(TaskType.TIMED.toString())) {
