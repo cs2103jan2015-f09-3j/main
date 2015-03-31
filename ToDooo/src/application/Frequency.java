@@ -6,15 +6,24 @@ public enum Frequency {
 	YEARLY(Command.RECURRING_YEARLY);
 	
 	private final Command _COMMAND;
-	
+
+	// -----------------------------------------------------------------------------------------------
+	// Constructor
+	// -----------------------------------------------------------------------------------------------			
 	private Frequency(Command command) {
 		_COMMAND = command;
 	}
 	
+	// -----------------------------------------------------------------------------------------------
+	// Get methods
+	// -----------------------------------------------------------------------------------------------
 	public Command getCommand() {
 		return _COMMAND;
 	}
 
+	// -----------------------------------------------------------------------------------------------
+	// Public methods
+	// -----------------------------------------------------------------------------------------------		
 	public static Frequency getFrequency(Command recurringCommand) {
 		boolean hasFound = false;
 		Frequency matchedFrequency = null;

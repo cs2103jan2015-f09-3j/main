@@ -1,12 +1,6 @@
 package application;
 
-import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Date;
-
-import controller.HeaderController;
-import controller.MainController;
-import javafx.util.Pair;
 
 public enum Command {
 	ADD("add", "-a"),
@@ -31,11 +25,17 @@ public enum Command {
 	private final String _COMMAND_BASIC;
 	private final String _COMMAND_ADVANCED;
 	
+	// -----------------------------------------------------------------------------------------------
+	// Constructor
+	// -----------------------------------------------------------------------------------------------		
 	private Command(String commandBasic, String commandAdvanced) {
 		_COMMAND_BASIC = commandBasic;
 		_COMMAND_ADVANCED = commandAdvanced;
 	}
 	
+	// -----------------------------------------------------------------------------------------------
+	// Get methods
+	// -----------------------------------------------------------------------------------------------
 	public String getBasicCommand() {
 		return _COMMAND_BASIC;
 	}
@@ -43,7 +43,10 @@ public enum Command {
 	public String getAdvancedCommand() {
 		return _COMMAND_ADVANCED;
 	}
-	
+		
+	// -----------------------------------------------------------------------------------------------
+	// Public methods
+	// -----------------------------------------------------------------------------------------------
 	public static Command verifyCrudCommands(String commandLine) {		
 		for (Command command : Constant.COMMAND_ACTIONS) {
 			
@@ -54,26 +57,10 @@ public enum Command {
 		return Command.ADD;
 	}
 
-	public static Command verifyPriorityCommands(String commandLine) {
-		for (Command command : Constant.COMMAND_PRIORITIES) {
-			if (command.hasCommand(commandLine)) {
-				return command;
-			}
-		}
-		
-		return null;
-	}
-
-	public boolean hasCommand(String commandLine) {
-		String lowerCase = commandLine.toLowerCase() + " ";
-		String basicCmd = _COMMAND_BASIC + " ";
-		String advancedCmd = _COMMAND_ADVANCED + " ";
-				
-		
-		return (lowerCase.contains(basicCmd) ||
-				lowerCase.contains(advancedCmd));
-	}
-	
+	/*
+	 * Returns recurring command if: 
+	 * 1) has the correct recurring command e.g. /weekly /until
+	 */
 	public static Command verifyRecurringCommands(String commandLine) {				
 		for (Command recurringCommand : Constant.COMMAND_RECURRING) {
 			if (recurringCommand.hasValidRecurringCommand(commandLine)) {
@@ -84,36 +71,10 @@ public enum Command {
 		return null;
 	}
 	
-	public boolean hasValidRecurringCommand(String commandLine) {
-		String lowerCase = commandLine.toLowerCase() + " ";
-		String basicCmd = _COMMAND_BASIC + " " + 
-						  Command.RECURRING_UNTIL.getBasicCommand() + " ";
-		String advancedCmd = _COMMAND_ADVANCED + " " + 
-						  	 Command.RECURRING_UNTIL.getAdvancedCommand() + " ";
-		int beginIndex = -1;
-		int endIndex = lowerCase.length();
-		
-		if (lowerCase.contains(basicCmd)) {
-			beginIndex = lowerCase.indexOf(basicCmd);
-		} else if (lowerCase.contains(advancedCmd)) {
-			beginIndex = lowerCase.indexOf(advancedCmd);
-		}
-				
-		boolean hasRecurringCommand = (beginIndex != -1);
-		if (hasRecurringCommand) {
-			lowerCase = lowerCase.substring(beginIndex, endIndex);
-			
-			Date untilDate = Main.inputParser.getDateFromString(lowerCase);
-			if (untilDate != null) {
-				hasRecurringCommand = true;
-			} else {
-				hasRecurringCommand = false;
-			}
-		}
-		
-		return hasRecurringCommand;
-	}
-	
+	/*
+	 * Returns true if:
+	 * 1) commandLine has either /weekly, /monthly or /yearly
+	 */
 	public static boolean hasRecurringCommands(String commandLine) {			
 		boolean hasFound = false;
 		
@@ -125,8 +86,7 @@ public enum Command {
 		
 		return hasFound;
 	}
-		
-	
+			
 	public static boolean hasCategoryCommand(String commandLine) {
 		String lowerCase = commandLine.toLowerCase() + " ";
 		String basicCmd = Command.CATEGORY.getBasicCommand();
@@ -145,18 +105,8 @@ public enum Command {
 				
 		return isCategorised;
 	}
-	
-	public boolean hasActionCommand(String commandLine) {
-		int startIndex = 0;
-		String lowerCase = commandLine.toLowerCase();
-		String basicCmd = _COMMAND_BASIC + " ";
-		String advancedCmd = _COMMAND_ADVANCED + " ";
-		
-		return (lowerCase.indexOf(basicCmd) == startIndex ||
-			    lowerCase.indexOf(advancedCmd) == startIndex);
-	}
-	
-	public static boolean isValidNumOfDateCommands(String commandLine) {
+			
+	public static boolean hasValidNumOfDateCommands(String commandLine) {
 		int count = 0;
 		boolean isCorrectNum = false;
 		boolean isValidTimed = true;
@@ -185,217 +135,57 @@ public enum Command {
 		return isCorrectNum;
 	}
 	
-	public static String executeUserInput(String userInput, HeaderController headerController, 
-			  							  MainController mainController) {
-		String systemMsg = "";
-		Command commandType = InputParser.getActionFromString(userInput);	
-
-		if (Main.toUpdate && commandType.equals(Command.UPDATE)) {
-			userInput = InputParser.removeLineBreaks(userInput);
-			systemMsg = executeUpdate(userInput, headerController);
-			
-			Main.toUpdate = false;
-			headerController.textArea.clear();
-		} else {
-			systemMsg = commandType.executeCommand(userInput, headerController, mainController);
-		}
+	
+	// -----------------------------------------------------------------------------------------------
+	// Private methods
+	// -----------------------------------------------------------------------------------------------
+	private boolean hasCommand(String commandLine) {
+		String lowerCase = commandLine.toLowerCase() + " ";
+		String basicCmd = _COMMAND_BASIC + " ";
+		String advancedCmd = _COMMAND_ADVANCED + " ";
+				
 		
-		return systemMsg;
-	}
-		
-	private String executeCommand(String userInput, HeaderController headerController, 
-								  MainController mainController) {
-		String systemMsg = null;
-		
-		userInput = InputParser.removeLineBreaks(userInput);
-		
-		switch (this) {
-			case ADD :
-				systemMsg = Command.executeAdd(userInput);
-				headerController.textArea.clear();
-				break;
-			case UPDATE :
-				systemMsg = Command.executeRetrieveOriginalText(userInput, headerController);	
-				Main.shouldResetCaret = true;
-				break;
-			case DELETE :
-				systemMsg = Command.executeDelete(userInput);
-				headerController.textArea.clear();
-				break;
-			case SEARCH :
-				systemMsg = Command.executeSearch(userInput);
-				mainController.executeSearchResult();
-				headerController.textArea.clear();
-				break;
-			case COMPLETE :
-				systemMsg = Command.executeComplete(userInput);
-				headerController.textArea.clear();
-				break;
-			case VIEW :
-				systemMsg = Command.executeView(userInput);
-				displayDetail(mainController, systemMsg);
-				headerController.textArea.clear();
-				break;
-			default :
-				// invalid command
-				break;
-		}
-		
-		return systemMsg;
-	}
-
-	private void displayDetail(MainController mainController, String systemMsg) {
-		if(systemMsg.equalsIgnoreCase(Constant.MSG_VIEW_SUCCESS)) {
-			try {
-				mainController.viewDetails(Main.list.getSelectedTask());
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
+		return (lowerCase.contains(basicCmd) ||
+				lowerCase.contains(advancedCmd));
 	}
 	
-	private static String executeAdd(String userInput) {
-		Task task = new Task(userInput);	
+	private boolean hasActionCommand(String commandLine) {
+		int startIndex = 0;
+		String lowerCase = commandLine.toLowerCase();
+		String basicCmd = _COMMAND_BASIC + " ";
+		String advancedCmd = _COMMAND_ADVANCED + " ";
 		
-		String systemMsg = null;
-		if (task.getIsValid()) {
-			systemMsg = Main.list.addTaskToList(task);
-			
-			if (systemMsg.equals(Constant.MSG_ADD_SUCCESS)) {
-				Undo undo = new Undo(Command.ADD, task.getId());
-				Main.undos.push(undo);				
-				Main.redos.clear();
-			}
-			
-		} else {
-			systemMsg = Main.systemFeedback;
+		return (lowerCase.indexOf(basicCmd) == startIndex ||
+			    lowerCase.indexOf(advancedCmd) == startIndex);
+	}
+	
+	private boolean hasValidRecurringCommand(String commandLine) {
+		String lowerCase = commandLine.toLowerCase() + " ";
+		String basicCmd = _COMMAND_BASIC + " " + 
+						  Command.RECURRING_UNTIL.getBasicCommand() + " ";
+		String advancedCmd = _COMMAND_ADVANCED + " " + 
+						  	 Command.RECURRING_UNTIL.getAdvancedCommand() + " ";
+		int beginIndex = -1;
+		int endIndex = lowerCase.length();
+		
+		if (lowerCase.contains(basicCmd)) {
+			beginIndex = lowerCase.indexOf(basicCmd);
+		} else if (lowerCase.contains(advancedCmd)) {
+			beginIndex = lowerCase.indexOf(advancedCmd);
 		}
 				
-		return systemMsg;
-	}
-	
-	private static String executeDelete(String userInput) {
-		String systemMsg= null;
-		Task removedTask = Main.list.deleteTaskFromList(userInput);
-		
-		if (removedTask != null) {
-			Undo undo = new Undo(Command.DELETE, removedTask);
-			Main.undos.push(undo);			
-			Main.redos.clear();
+		boolean hasRecurringCommand = (beginIndex != -1);
+		if (hasRecurringCommand) {
+			lowerCase = lowerCase.substring(beginIndex, endIndex);
 			
-			systemMsg = Constant.MSG_DELETE_SUCCESS.
-						replace(Constant.DELIMETER_REPLACE, 
-								removedTask.getId());
-		} else {
-			systemMsg = Constant.MSG_ITEM_NOT_FOUND;
-		}
-		
-		return systemMsg;
-	}
-	
-	private static String executeRetrieveOriginalText(String userInput, 
-			HeaderController headerController) {
-		
-		String systemMsg = null;
-		String targetId = InputParser.getTargetIdFromString(userInput);
-		Task originalTask = Main.list.getTaskById(targetId);
-				
-		if (originalTask != null) {		
-			headerController.textArea.
-			appendText(Constant.DELIMETER_UPDATE + " " + 
-					   originalTask.getOriginalText());						
-			
-			Main.toUpdate = true;
-			systemMsg = Constant.MSG_ORIGINAL_RETRIEVED.
-						replace(Constant.DELIMETER_REPLACE, targetId);
-		} else {
-			systemMsg = Constant.MSG_ORIGINAL_NOT_RETRIEVED;
-		}
-		
-		return systemMsg;
-	}
-	
-	private static String executeUpdate(String userInput, HeaderController headerController) {
-		String systemMsg = null;
-		
-		if (userInput.indexOf(Constant.DELIMETER_UPDATE) == -1) {
-			systemMsg = executeRetrieveOriginalText(userInput, headerController);
-		} else {
-			Pair<Task, String> updatedTasksDetails = Main.list.updateTaskOnList(userInput);
-			if (updatedTasksDetails == null) {
-				return systemMsg = Main.systemFeedback;
-			}
-			
-			Task originalTask = updatedTasksDetails.getKey();
-			String targetId = updatedTasksDetails.getValue();
-			
-			if (originalTask != null) {
-				Undo undo = new Undo(Command.UPDATE, originalTask, targetId);
-				Main.undos.push(undo);
-				Main.redos.clear();
-				
-				systemMsg = Constant.MSG_UPDATE_SUCCESS;
+			Date untilDate = Main.inputParser.getDateFromString(lowerCase);
+			if (untilDate != null) {
+				hasRecurringCommand = true;
 			} else {
-				systemMsg = Constant.MSG_UPDATE_FAIL;
+				hasRecurringCommand = false;
 			}
 		}
 		
-		return systemMsg;
-	}
-	
-	private static String executeSearch(String userInput) {
-		String systemMsg = null;
-		
-		Pair<ArrayList<Task>, String> searchResultsPair = 
-				Main.list.searchTheList(userInput);
-		Main.searchResults = searchResultsPair.getKey();
-		systemMsg = searchResultsPair.getValue();		
-		
-		if (Main.searchResults.isEmpty() && systemMsg == null) {
-			systemMsg = Constant.MSG_NO_RESULTS;
-		} else if (systemMsg != null) {
-			systemMsg = Constant.MSG_SEARCH_INVALID;
-		} else {
-			systemMsg = Constant.MSG_SEARCH_SUCCESS.
-						replace(Constant.DELIMETER_REPLACE, 
-								String.valueOf(Main.searchResults.size()));
-		}
-		
-		return systemMsg;
-	}
-	
-	private static String executeComplete(String userInput) {
-		String systemMsg = null;
-		
-		Pair<Task, String> toCompleteTask = Main.list.completeTaskOnList(userInput);
-		
-		Task completedTask = toCompleteTask.getKey();
-		String targetId = toCompleteTask.getValue();
-		
-		if (completedTask != null) {
-			Undo undo = new Undo(Command.COMPLETE, completedTask, targetId);
-			Main.undos.push(undo);
-			Main.redos.clear();
-			
-			systemMsg = Constant.MSG_COMPLETE_SUCCESS.
-					replace(Constant.DELIMETER_REPLACE, targetId);
-		} else {
-			systemMsg = Constant.MSG_ITEM_NOT_FOUND;
-		}
-
-		return systemMsg;
-	}
-	
-	private static String executeView(String userInput) {
-		String systemMsg = null;
-		Task selectedTask = Main.list.selectTaskFromList(userInput);
-		
-		if(selectedTask != null) {
-			systemMsg = Constant.MSG_VIEW_SUCCESS;
-		} else {
-			systemMsg = Constant.MSG_VIEW_FAIL;
-		}
-		
-		return systemMsg;
+		return hasRecurringCommand;
 	}
 }

@@ -7,6 +7,9 @@ public class Undo {
 	private Task _originalTask;
 	private String _targetId;
 	
+	// -----------------------------------------------------------------------------------------------
+	// Constructors
+	// -----------------------------------------------------------------------------------------------
 	// to undo delete
 	public Undo(Command toUndo, Task originalTask) {
 		this(toUndo, originalTask, null);
@@ -24,6 +27,9 @@ public class Undo {
 		_targetId = targetId;
 	}
 	
+	// -----------------------------------------------------------------------------------------------
+	// Get methods
+	// -----------------------------------------------------------------------------------------------
 	private Command getUndoCommand(Command toUndo) {
 		Command command = null;
 		
@@ -46,6 +52,9 @@ public class Undo {
 		return command;
 	}
 	
+	// -----------------------------------------------------------------------------------------------
+	// Undo-related methods
+	// -----------------------------------------------------------------------------------------------
 	public String undoAction() {
 		String systemMsg = null;
 		
@@ -53,54 +62,18 @@ public class Undo {
 			case ADD :
 				// to undo delete action
 				// add _originalTask
-				Pair<String, Task> systemMsgWithRemovedTaskPair = 
-								   Main.list.AddTaskBackToList(_originalTask);		
-				
-				systemMsg = systemMsgWithRemovedTaskPair.getKey();
-				if (systemMsg.equals(Constant.MSG_ADD_SUCCESS)) {
-					Task removedTask = systemMsgWithRemovedTaskPair.getValue();
-					
-					if (removedTask != null) {
-						Undo redo = new Undo(Command.UPDATE, removedTask, _originalTask.getId());
-						Main.redos.push(redo);
-					} else {
-						Undo redo = new Undo(Command.ADD, _originalTask.getId());
-						Main.redos.push(redo);
-					}
-					
-					systemMsg = Constant.MSG_UNDO_DELETE_SUCCESS;
-				} else {
-					systemMsg = Constant.MSG_UNDO_DELETE_FAIL;
-				}
+				systemMsg = undoDelete();
 				break;
 			case DELETE :
 				// to undo add action
 				// delete using _targetId
-				Task removedTask = Main.list.deleteTaskById(_targetId);
-				
-				if (removedTask != null) {
-					Undo redo = new Undo(Command.DELETE, removedTask);
-					Main.redos.push(redo);
-					
-					systemMsg = Constant.MSG_UNDO_ADD_SUCCESS;
-				} else {
-					systemMsg = Constant.MSG_UNDO_ADD_FAIL;
-				}
+				systemMsg = undoAdd();
 				break;
 			case UPDATE :
 			case COMPLETE:
 				// to undo update action
 				// update using _originalTask and _targetId
-				Task replacedTask = Main.list.replaceTaskOnList(_originalTask, _targetId);
-				
-				if (replacedTask != null) {
-					Undo redo = new Undo(Command.UPDATE, replacedTask, _originalTask.getId());
-					Main.redos.push(redo);
-					
-					systemMsg = Constant.MSG_UNDO_UPDATE_SUCCESS;
-				} else {
-					systemMsg = Constant.MSG_UNDO_UPDATE_FAIL;
-				}
+				systemMsg = undoUpdate();
 				break;
 			default:
 				// no undo command
@@ -110,7 +83,64 @@ public class Undo {
 		
 		return systemMsg;
 	}
+
+	private String undoUpdate() {
+		String systemMsg;
+		Task replacedTask = Main.list.replaceTaskOnList(_originalTask, _targetId);
+		
+		if (replacedTask != null) {
+			Undo redo = new Undo(Command.UPDATE, replacedTask, _originalTask.getId());
+			Main.redos.push(redo);
+			
+			systemMsg = Constant.MSG_UNDO_UPDATE_SUCCESS;
+		} else {
+			systemMsg = Constant.MSG_UNDO_UPDATE_FAIL;
+		}
+		return systemMsg;
+	}
+
+	private String undoAdd() {
+		String systemMsg;
+		Task removedTask = Main.list.deleteTaskById(_targetId);
+		
+		if (removedTask != null) {
+			Undo redo = new Undo(Command.DELETE, removedTask);
+			Main.redos.push(redo);
+			
+			systemMsg = Constant.MSG_UNDO_ADD_SUCCESS;
+		} else {
+			systemMsg = Constant.MSG_UNDO_ADD_FAIL;
+		}
+		return systemMsg;
+	}
+
+	private String undoDelete() {
+		String systemMsg;
+		Pair<String, Task> systemMsgWithRemovedTaskPair = 
+						   Main.list.AddTaskBackToList(_originalTask);		
+		
+		systemMsg = systemMsgWithRemovedTaskPair.getKey();
+		if (systemMsg.equals(Constant.MSG_ADD_SUCCESS)) {
+			Task removedTask = systemMsgWithRemovedTaskPair.getValue();
+			
+			if (removedTask != null) {
+				Undo redo = new Undo(Command.UPDATE, removedTask, _originalTask.getId());
+				Main.redos.push(redo);
+			} else {
+				Undo redo = new Undo(Command.ADD, _originalTask.getId());
+				Main.redos.push(redo);
+			}
+			
+			systemMsg = Constant.MSG_UNDO_DELETE_SUCCESS;
+		} else {
+			systemMsg = Constant.MSG_UNDO_DELETE_FAIL;
+		}
+		return systemMsg;
+	}
 	
+	// -----------------------------------------------------------------------------------------------
+	// Redo-related methods
+	// -----------------------------------------------------------------------------------------------
 	public String redoAction() {
 		String systemMsg = null;
 		
@@ -118,47 +148,18 @@ public class Undo {
 			case ADD :
 				// to redo add action
 				// add _originalTask
-				Pair<String, Task> systemMsgWithRemovedTaskPair = 
-				   				   Main.list.AddTaskBackToList(_originalTask);		
-
-				systemMsg = systemMsgWithRemovedTaskPair.getKey();			
-				if (systemMsg.equals(Constant.MSG_ADD_SUCCESS)) {
-					Undo undo = new Undo(Command.ADD, _originalTask.getId());
-					Main.undos.push(undo);
-					
-					systemMsg = Constant.MSG_REDO_ADD_SUCCESS;
-				} else {
-					systemMsg = Constant.MSG_REDO_ADD_FAIL;
-				}
+				systemMsg = redoAdd();
 				break;
 			case DELETE :
 				// to redo delete action
 				// delete using _targetId
-				Task removedTask = Main.list.deleteTaskById(_targetId);
-				
-				if (removedTask != null) {
-					Undo undo = new Undo(Command.DELETE, removedTask);
-					Main.undos.push(undo);
-					
-					systemMsg = Constant.MSG_REDO_DELETE_SUCCESS;
-				} else {
-					systemMsg = Constant.MSG_REDO_DELETE_FAIL;
-				}
+				systemMsg = redoDelete();
 				break;
 			case UPDATE :
 			case COMPLETE:
 				// to redo update action
 				// update using _originalTask and _targetId
-				Task replacedTask = Main.list.replaceTaskOnList(_originalTask, _targetId);
-				
-				if (replacedTask != null) {
-					Undo undo = new Undo(Command.UPDATE, replacedTask, _originalTask.getId());
-					Main.undos.push(undo);
-					
-					systemMsg = Constant.MSG_REDO_UPDATE_SUCCESS;
-				} else {
-					systemMsg = Constant.MSG_REDO_UPDATE_FAIL;
-				}
+				systemMsg = redoUpdate();
 				break;
 			default:
 				// no undo command
@@ -166,6 +167,53 @@ public class Undo {
 				break;
 		}
 		
+		return systemMsg;
+	}
+
+	private String redoUpdate() {
+		String systemMsg;
+		Task replacedTask = Main.list.replaceTaskOnList(_originalTask, _targetId);
+		
+		if (replacedTask != null) {
+			Undo undo = new Undo(Command.UPDATE, replacedTask, _originalTask.getId());
+			Main.undos.push(undo);
+			
+			systemMsg = Constant.MSG_REDO_UPDATE_SUCCESS;
+		} else {
+			systemMsg = Constant.MSG_REDO_UPDATE_FAIL;
+		}
+		return systemMsg;
+	}
+
+	private String redoDelete() {
+		String systemMsg;
+		Task removedTask = Main.list.deleteTaskById(_targetId);
+		
+		if (removedTask != null) {
+			Undo undo = new Undo(Command.DELETE, removedTask);
+			Main.undos.push(undo);
+			
+			systemMsg = Constant.MSG_REDO_DELETE_SUCCESS;
+		} else {
+			systemMsg = Constant.MSG_REDO_DELETE_FAIL;
+		}
+		return systemMsg;
+	}
+
+	private String redoAdd() {
+		String systemMsg;
+		Pair<String, Task> systemMsgWithRemovedTaskPair = 
+		   				   Main.list.AddTaskBackToList(_originalTask);		
+
+		systemMsg = systemMsgWithRemovedTaskPair.getKey();			
+		if (systemMsg.equals(Constant.MSG_ADD_SUCCESS)) {
+			Undo undo = new Undo(Command.ADD, _originalTask.getId());
+			Main.undos.push(undo);
+			
+			systemMsg = Constant.MSG_REDO_ADD_SUCCESS;
+		} else {
+			systemMsg = Constant.MSG_REDO_ADD_FAIL;
+		}
 		return systemMsg;
 	}
 }

@@ -97,7 +97,8 @@ public class DateParser {
 	}
 	
 	public static Calendar getTodayDate() {
-		Calendar calendar = new GregorianCalendar();
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTimeZone(TimeZone.getDefault());
 		
 		calendar.set(Calendar.HOUR_OF_DAY, 0); 
 		calendar.set(Calendar.MINUTE, 0);

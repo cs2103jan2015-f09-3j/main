@@ -8,13 +8,16 @@ public class RecurringTask implements Cloneable {
 	private Status _status;
 	private Date _recurDate;
 	
+	// -----------------------------------------------------------------------------------------------
+	// Constructors
+	// -----------------------------------------------------------------------------------------------	
 	public RecurringTask() {
 		
 	}
 	
 	public RecurringTask(String recurringTaskId, Date recurDate) {
 		_recurringTaskId = recurringTaskId;
-		_status = Task.getStatus(recurDate);
+		_status = Status.getTaskStatus(recurDate);
 		_recurDate = recurDate;
 	}
 	
@@ -22,9 +25,47 @@ public class RecurringTask implements Cloneable {
 		_recurringTaskId = recurringTaskId;
 		
 		Date recurDate = recurDateCalendar.getTime();
-		_status = Task.getStatus(recurDate);
+		_status = Status.getTaskStatus(recurDate);
 		
 		_recurDate = recurDate;
+	}
+	
+	// -----------------------------------------------------------------------------------------------
+	// Get methods
+	// -----------------------------------------------------------------------------------------------
+	public String getRecurringTaskId() {
+		return _recurringTaskId;
+	}
+
+	public Status getStatus() {
+		return _status;
+	}
+
+	public Date getRecurDate() {
+		return _recurDate;
+	}
+	
+	// -----------------------------------------------------------------------------------------------
+	// Set methods
+	// -----------------------------------------------------------------------------------------------
+	public void setRecurringTaskId(String recurringTaskId) {
+		_recurringTaskId = recurringTaskId;
+	}
+
+	public void setStatus(Status status) {
+		_status = status;
+	}
+
+	public void setRecurDate(Date recurDate) {
+		_recurDate = recurDate;
+	}
+
+	// -----------------------------------------------------------------------------------------------
+	// Public methods
+	// -----------------------------------------------------------------------------------------------		
+	public static boolean isValidRecurringTaskType(TaskType taskType) {
+		return (taskType.equals(TaskType.DATED) ||
+				taskType.equals(TaskType.EVENT));
 	}
 	
 	@Override
@@ -33,39 +74,10 @@ public class RecurringTask implements Cloneable {
 		
 		try {
 			clone = (RecurringTask) super.clone();
-		} catch(CloneNotSupportedException e){
-            throw new RuntimeException(e); 
+		} catch(CloneNotSupportedException exception){
+            throw new RuntimeException(exception); 
         }
 		
 		 return clone;
-	}
-
-	public String getRecurringTaskId() {
-		return _recurringTaskId;
-	}
-
-	public void setRecurringTaskId(String recurringTaskId) {
-		_recurringTaskId = recurringTaskId;
-	}
-
-	public Status getStatus() {
-		return _status;
-	}
-
-	public void setStatus(Status status) {
-		_status = status;
-	}
-
-	public Date getRecurDate() {
-		return _recurDate;
-	}
-
-	public void setRecurDate(Date recurDate) {
-		_recurDate = recurDate;
-	}
-	
-	public static boolean isValidRecurringTaskType(TaskType taskType) {
-		return (taskType.equals(TaskType.DATED) ||
-				taskType.equals(TaskType.EVENT));
 	}
 }

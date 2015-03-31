@@ -37,12 +37,18 @@ public class Storage {
 	private static XPath _xPath;
 	private static DocumentBuilder _documentBuilder;
 	
+	// -----------------------------------------------------------------------------------------------
+	// Constructor
+	// -----------------------------------------------------------------------------------------------		
 	private Storage() {		
 		initTransformer();			
 		_xPath = XmlManager.getNewXPath();
 		_documentBuilder = XmlManager.getNewDocBuilder();
 	}
 	
+	// -----------------------------------------------------------------------------------------------
+	// Get methods
+	// -----------------------------------------------------------------------------------------------
 	public static Storage getInstance() {
 		if (_storage == null) {
 			_storage = new Storage();
@@ -51,46 +57,19 @@ public class Storage {
 		return _storage;
 	}
 	
-	private void initTransformer() {
-		try {
-			TransformerFactory transformerFactory = 
-					TransformerFactory.newInstance();
-			
-			_transformer = transformerFactory.newTransformer();
-			_transformer.setOutputProperty(OutputKeys.INDENT, 
-					   					   Constant.XML_OUTPUT_INDENT);
-			_transformer.setOutputProperty(Constant.XML_OUTPUT_INDENT_PROPERTY, 
-										   Constant.XML_OUTPUT_INDENT_AMOUNT);
-		} catch (TransformerConfigurationException exception) {
-			exception.printStackTrace();
-		}
-	}
-	
-	public String writeFile(Document document) {
-		return writeFile(document, Main.list.getListFilePath());
-	}
-	
-	public String writeFile(Document document, String savePath) {
-		try {
-			DOMSource domSource = new DOMSource(document);
-			StreamResult streamResult = 
-					new StreamResult(new File(savePath));
-			_transformer.transform(domSource, streamResult);
-		} catch (TransformerException exception) {
-			return Constant.MSG_SAVE_FAIL;
-		}
-		
-		return Constant.MSG_SAVE_SUCCESS;
-	}
-
+	// -----------------------------------------------------------------------------------------------
+	// Public methods
+	// -----------------------------------------------------------------------------------------------
+	// ---------------------------------------------------------
+	// Read-related methods
+	// ---------------------------------------------------------
 	public int readNextId() {
 		int nextId = 0;
 		Document fileDoc = getFileDocument();	
 		
 		try {
 			XPathExpression expression = 
-					_xPath.compile("/" + Constant.TAG_FILE + "/" +
-								   Constant.TAG_NEXT_ID);
+					_xPath.compile(Constant.XML_XPATH_NEXT_ID);
 			
 			Double value = (Double)expression.
 						   evaluate(fileDoc, XPathConstants.NUMBER);
@@ -102,15 +81,14 @@ public class Storage {
 		
 		return nextId;
 	}
-
+	
 	public String readSavePath() {
 		String savePath = null;
 		Document settingDoc = getSettingDocument();		
 		
 		try {
 			XPathExpression expression = 
-					_xPath.compile("/" + Constant.TAG_SETTING + "/" +
-								   Constant.TAG_SETTING_SAVE);
+					_xPath.compile(Constant.XML_XPATH_SETTING_SAVE);
 			
 			savePath = (String) expression.
 					   evaluate(settingDoc, XPathConstants.STRING);
@@ -120,23 +98,38 @@ public class Storage {
 		
 		return savePath;
 	}
+	
+	/*
+	 * Used in unit testing
+	 */
+	public void updateFilePathInSetting(String filePath) {
+		Document doc = getSettingDocument();
 
-	public Document getFileDocument() {
-		try {
-			return _documentBuilder.parse(Main.storage.readSavePath()); 			
-		} catch (SAXException | IOException exception) {
-			exception.printStackTrace();
-		}			
-		return null;
+		Node save = doc.getElementsByTagName(Constant.TAG_SETTING_SAVE).item(0);
+		save.setTextContent(filePath);
+		
+		writeFile(doc, Constant.PATH_SETTING);
 	}
 	
-	public Document getSettingDocument() {
-		try {			
-			return _documentBuilder.parse(Constant.PATH_SETTING); 			
-		} catch (SAXException | IOException exception) {
-			exception.printStackTrace();
-		}			
-		return null;
+	// ---------------------------------------------------------
+	// Write-related methods
+	// ---------------------------------------------------------
+	public String writeFile(Document document) {
+		return writeFile(document, Main.list.getListFilePath());
+	}
+	
+	public String writeFile(Document document, String savePath) {
+		try {
+			DOMSource domSource = new DOMSource(document);
+			StreamResult streamResult = 
+					new StreamResult(new File(savePath));
+			
+			_transformer.transform(domSource, streamResult);
+		} catch (TransformerException exception) {
+			return Constant.MSG_SAVE_FAIL;
+		}
+		
+		return Constant.MSG_SAVE_SUCCESS;
 	}
 
 	public ArrayList<Task> loadXmlToArrayList() {
@@ -145,9 +138,7 @@ public class Storage {
 		
 		try {
 			XPathExpression expression = 
-					_xPath.compile("/" + Constant.TAG_FILE + "/" +
-								   Constant.TAG_TASKS + "/" +
-								   Constant.TAG_TASK);
+					_xPath.compile(Constant.XML_XPATH_TASK);
 			
 			NodeList taskNodes = (NodeList) expression.
 								 evaluate(document, XPathConstants.NODESET);
@@ -165,16 +156,14 @@ public class Storage {
 		
 		return tasks;
 	}
-	
+
 	public ArrayList<String> loadCategoriesToArrayList() {
 		Document document = getFileDocument();
 		ArrayList<String> categories = new ArrayList<String>();
 		
 		try {
 			XPathExpression expression = 
-					_xPath.compile("/" + Constant.TAG_FILE + "/" +
-								   Constant.TAG_CATEGORIES + "/" +
-								   Constant.TAG_CATEGORY);
+					_xPath.compile(Constant.XML_XPATH_CATEGORY);
 			
 			NodeList categoryNodes = (NodeList) expression.
 								 	 evaluate(document, XPathConstants.NODESET);
@@ -193,67 +182,18 @@ public class Storage {
 		
 		return categories;
 	}
-
-	public void updateAndSaveFile() {
-		Document document = XmlManager.getUpdatedXmlDocument();
-		
-		writeFile(document);		
-	}
-	
-	public void updateDirPathInSetting(String dirPath) {
-		Document doc = getSettingDocument();
-
-		Node save = doc.getElementsByTagName(Constant.TAG_SETTING_SAVE).item(0);
-		save.setTextContent(dirPath + "\\" + Constant.PATH_FILE_NAME);
-		
-		writeFile(doc, Constant.PATH_SETTING);
-	}
-	
-	public void updateFilePathInSetting(String filePath) {
-		Document doc = getSettingDocument();
-
-		Node save = doc.getElementsByTagName(Constant.TAG_SETTING_SAVE).item(0);
-		save.setTextContent(filePath);
-		
-		writeFile(doc, Constant.PATH_SETTING);
-	}
-	
-	public String writeTaskToFile(Task task) {
-		Document document = getFileDocument();
-		
-		try {
-			XPathExpression expression = 
-					_xPath.compile("/" + Constant.TAG_FILE + "/" +
-								   Constant.TAG_TASKS);
-			
-			Element tasksNode = (Element) expression.
-							   evaluate(document, XPathConstants.NODE);
-			
-			Element taskNode = XmlManager.transformTaskToXml(document, task);
-			
-			tasksNode.appendChild(taskNode);
-			
-			writeFile(document);
-		} catch (Exception exception) {
-			exception.printStackTrace();
-			return Constant.MSG_ADD_FAIL;
-		}
-		
-		return Constant.MSG_ADD_SUCCESS;
-	}
 	
 	public String writeListToFile(ArrayList<Task> tasks) {
 		removeAllTaskNodesFromFile();
 		Document document = getFileDocument();
 		
 		try {
-			XPathExpression expression = _xPath.compile("/" + Constant.TAG_FILE + 
-												"/" + Constant.TAG_TASKS);
+			XPathExpression expression = _xPath.compile(Constant.XML_XPATH_TASKS);
 			
-			Element tasksNode = (Element) expression.
-								evaluate(document, XPathConstants.NODE);
+			Node tasksNode = (Node) expression.
+							  evaluate(document, XPathConstants.NODE);
 						
-			Element taskNode = null;
+			Node taskNode = null;
 			Task task = null;
 			for (int i = 0; i < tasks.size(); i++) {
 				task = tasks.get(i);
@@ -271,15 +211,14 @@ public class Storage {
 		
 		return Constant.MSG_ADD_SUCCESS;
 	}
-		
+	
 	public boolean hasWrittenCategoryToFile(String category) {
 		Document document = getFileDocument();
 		boolean hasWritten = false;
 		
 		try {
 			XPathExpression expression = 
-					_xPath.compile("/" + Constant.TAG_FILE + "/" +
-								   Constant.TAG_CATEGORIES);
+					_xPath.compile(Constant.XML_XPATH_CATEGORIES);
 			
 			Element categoriesNode = (Element) expression.
 					   evaluate(document, XPathConstants.NODE);
@@ -297,68 +236,12 @@ public class Storage {
 		return hasWritten;
 	}
 	
-	public Task deleteTaskFromFileById(String targetId) {
-		Document fileDoc = getFileDocument();	
-		Task removedTask = null;
-		
-		NodeList nodes = getNodesById(fileDoc, targetId);
-		if (nodes.getLength() > 0) {
-			Node targetNode = nodes.item(0);
-			
-			removedTask = XmlManager.transformNodeToTask(targetNode);			
-			targetNode.getParentNode().removeChild(targetNode);
-			
-			cleanAndWriteFile(fileDoc);
-		} 
-		
-		return removedTask;
-	}
-		
-	private NodeList getNodesById(Document document, String targetId) {
-		try {
-			XPathExpression expression = 
-					_xPath.compile("/" + Constant.TAG_FILE + "/" +
-								   Constant.TAG_TASKS + "/" +
-								   Constant.TAG_TASK + "[@" +
-								   Constant.TAG_ATTRIBUTE_ID + "='" + 
-								   targetId + "']");
-			
-			return (NodeList)expression.evaluate(document, XPathConstants.NODESET);
-		} catch (XPathExpressionException exception) {
-			exception.printStackTrace();
-		}
-		
-		return null;
-	}	
-		
-	public void cleanAndWriteFile() {
-		Document document = getFileDocument();
-		cleanAndWriteFile(document);
-	}
-
-	public void cleanAndWriteFile(Document document) {
-		try {
-			NodeList nodes = (NodeList) _xPath.evaluate(Constant.XML_WHITESPACE_NODE_XPATH, 
-														document, XPathConstants.NODESET);
-			
-			for (int i = 0; i < nodes.getLength(); i++) {
-			    Node node = nodes.item(i);
-			    node.getParentNode().removeChild(node);
-			}
-			
-			writeFile(document);
-		} catch (XPathExpressionException exception) {
-			exception.printStackTrace();
-		}
-	}
-	
 	public void writeNextIdInFile(int nextId) {
 		Document document = getFileDocument();
 		
 		try {
 			XPathExpression expression = 
-					_xPath.compile("/" + Constant.TAG_FILE + "/" +
-								   Constant.TAG_NEXT_ID);
+					_xPath.compile(Constant.XML_XPATH_NEXT_ID);
 			
 			Element nextIdNode = (Element) expression.
 							   	 evaluate(document, XPathConstants.NODE);
@@ -371,6 +254,27 @@ public class Storage {
 		}
 	}
 	
+	// ---------------------------------------------------------
+	// Others
+	// ---------------------------------------------------------
+	public Document getFileDocument() {
+		try {
+			return _documentBuilder.parse(Main.storage.readSavePath()); 			
+		} catch (SAXException | IOException exception) {
+			exception.printStackTrace();
+		}			
+		return null;
+	}
+	
+	public Document getSettingDocument() {
+		try {			
+			return _documentBuilder.parse(Constant.PATH_SETTING); 			
+		} catch (SAXException | IOException exception) {
+			exception.printStackTrace();
+		}			
+		return null;
+	}
+
 	public void moveFile(String path) {
 		String pathInSetting = readSavePath();
 		Path oldPath = Paths.get(pathInSetting);
@@ -386,7 +290,36 @@ public class Storage {
 		
 		Main.list = new ToDoList();
 	}
+	
+	// -----------------------------------------------------------------------------------------------
+	// Private methods
+	// -----------------------------------------------------------------------------------------------
+	private void updateDirPathInSetting(String dirPath) {
+		Document doc = getSettingDocument();
 
+		Node save = doc.getElementsByTagName(Constant.TAG_SETTING_SAVE).item(0);
+		save.setTextContent(dirPath + "\\" + Constant.PATH_FILE_NAME);
+		
+		writeFile(doc, Constant.PATH_SETTING);
+	}
+		
+	private void cleanAndWriteFile(Document document) {
+		try {
+			NodeList nodes = (NodeList) _xPath.
+							evaluate(Constant.XML_WHITESPACE_NODE_XPATH, 
+							document, XPathConstants.NODESET);
+			
+			for (int i = 0; i < nodes.getLength(); i++) {
+			    Node node = nodes.item(i);
+			    node.getParentNode().removeChild(node);
+			}
+			
+			writeFile(document);
+		} catch (XPathExpressionException exception) {
+			exception.printStackTrace();
+		}
+	}
+	
 	private void removeAllTaskNodesFromFile() {
 		Document document = getFileDocument();
 		Element root = document.getDocumentElement();
@@ -404,6 +337,21 @@ public class Storage {
 			
 			cleanAndWriteFile(document);
 		} catch (Exception exception) {
+			exception.printStackTrace();
+		}
+	}
+		
+	private void initTransformer() {
+		try {
+			TransformerFactory transformerFactory = 
+					TransformerFactory.newInstance();
+			
+			_transformer = transformerFactory.newTransformer();
+			_transformer.setOutputProperty(OutputKeys.INDENT, 
+					   					   Constant.XML_OUTPUT_INDENT);
+			_transformer.setOutputProperty(Constant.XML_OUTPUT_INDENT_PROPERTY, 
+										   Constant.XML_OUTPUT_INDENT_AMOUNT);
+		} catch (TransformerConfigurationException exception) {
 			exception.printStackTrace();
 		}
 	}

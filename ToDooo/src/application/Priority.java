@@ -6,15 +6,24 @@ public enum Priority {
 	HIGH(Command.PRIORITY_HIGH);
 	
 	private final Command _COMMAND;
-	
+
+	// -----------------------------------------------------------------------------------------------
+	// Constructor
+	// -----------------------------------------------------------------------------------------------		
 	private Priority(Command command) {
 		_COMMAND = command;
 	}
 	
+	// -----------------------------------------------------------------------------------------------
+	// Get methods
+	// -----------------------------------------------------------------------------------------------
 	public Command getCommand() {
 		return _COMMAND;
 	}
-
+	
+	// -----------------------------------------------------------------------------------------------
+	// Public methods
+	// -----------------------------------------------------------------------------------------------		
 	public static boolean isLow(String commandLine) {
 		String lowerCase = commandLine.toLowerCase() + " ";
 		String basicCmd = Command.PRIORITY_LOW.getBasicCommand() + " ";

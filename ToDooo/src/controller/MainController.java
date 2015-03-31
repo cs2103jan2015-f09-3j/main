@@ -304,10 +304,10 @@ public class MainController{
 		for(int j = indexForNextLoop; j < temp.size(); j++) {
 			task = temp.get(j);
 			
-			dateA = Constant.DATEOUTPUT.format(task.getStartDate());
+			dateA = Constant.FORMAT_DATE_OUTPUT.format(task.getStartDate());
 			
 			if(j != indexForNextLoop) {
-				dateB = Constant.DATEOUTPUT.format(temp.get(j-1).getStartDate());
+				dateB = Constant.FORMAT_DATE_OUTPUT.format(temp.get(j-1).getStartDate());
 			}
 			
 			if(j == indexForNextLoop || !dateA.equals(dateB)) {
@@ -627,21 +627,21 @@ public class MainController{
 			Date byDate, Date fromDate, Date toDate, Date startDate, HBox hBoxRight, HBox hBoxLeft) {
 		
 		if(taskType.equalsIgnoreCase(TaskType.EVENT.toString())) {
-			addSingleDateTime(onDate, hBoxRight, "", Constant.TIMEOUTPUT);
+			addSingleDateTime(onDate, hBoxRight, "", Constant.FORMAT_TIME_OUTPUT);
 		} else if(taskType.equalsIgnoreCase(TaskType.DATED.toString())) {
-			addSingleDateTime(byDate, hBoxRight, Constant.STR_BEFORE_DATE_BY, Constant.TIMEOUTPUT);
+			addSingleDateTime(byDate, hBoxRight, Constant.STR_BEFORE_DATE_BY, Constant.FORMAT_TIME_OUTPUT);
 		} else if(taskType.equalsIgnoreCase(TaskType.TIMED.toString())) {
 			
 			if(DateParser.compareDate(fromDate, toDate)) {
 				addDoubleDateTime(fromDate, toDate, hBoxRight, Constant.STR_BEFORE_DATE_FROM, Constant.STR_BEFORE_DATE_TO, 
-						Constant.TIMEOUTPUT, displayType);
+						Constant.FORMAT_TIME_OUTPUT, displayType);
 			} else if(DateParser.compareDate(startDate, fromDate)) {
-				addSingleDateTime(fromDate, hBoxRight, Constant.STR_BEFORE_DATE_FROM, Constant.TIMEOUTPUT);
+				addSingleDateTime(fromDate, hBoxRight, Constant.STR_BEFORE_DATE_FROM, Constant.FORMAT_TIME_OUTPUT);
 			} else if(DateParser.compareDate(startDate, toDate)) {
-				addSingleDateTime(toDate, hBoxRight, Constant.STR_BEFORE_DATE_TO, Constant.TIMEOUTPUT);
+				addSingleDateTime(toDate, hBoxRight, Constant.STR_BEFORE_DATE_TO, Constant.FORMAT_TIME_OUTPUT);
 			} else {
 				addDoubleDateTime(fromDate, toDate, hBoxRight, Constant.STR_BEFORE_DATE_FROM, Constant.STR_BEFORE_DATE_TO, 
-						Constant.DATEOUTPUT_FOR_TIMEDTASK, displayType);
+						Constant.FORMAT_DATE_OUTPUT_FOR_TIMED_TASK, displayType);
 			}
 		}
 	}
@@ -650,12 +650,12 @@ public class MainController{
 			Date byDate, Date fromDate, Date toDate, Date startDate, HBox hBoxRight, HBox hBoxLeft) {
 		
 		if(taskType.equalsIgnoreCase(TaskType.EVENT.toString())) {
-			addSingleDateTime(onDate, hBoxRight, "", Constant.DATETIMEOUTPUT);
+			addSingleDateTime(onDate, hBoxRight, "", Constant.FORMAT_DATE_TIME_OUTPUT);
 		} else if(taskType.equalsIgnoreCase(TaskType.DATED.toString())) {
-			addSingleDateTime(byDate, hBoxRight, Constant.STR_BEFORE_DATE_BY, Constant.DATETIMEOUTPUT);
+			addSingleDateTime(byDate, hBoxRight, Constant.STR_BEFORE_DATE_BY, Constant.FORMAT_DATE_TIME_OUTPUT);
 		} else if(taskType.equalsIgnoreCase(TaskType.TIMED.toString())) {
 			addDoubleDateTime(fromDate, toDate, hBoxRight, Constant.STR_BEFORE_DATE_FROM, Constant.STR_BEFORE_DATE_TO, 
-					Constant.DATETIMEOUTPUT, displayType);
+					Constant.FORMAT_DATE_TIME_OUTPUT, displayType);
 		}
 	}
 	
@@ -695,26 +695,26 @@ public class MainController{
 			switch(task.getTaskType()) {
 				case EVENT :
 				case DATED :
-					desc.setMaxWidth(Constant.LABEL_MAX_WIDTH_EVENT_ALL);
+					desc.setMaxWidth(Constant.WIDTH_MAX_LABEL_EVENT_ALL);
 					break;
 				case TIMED :
-					desc.setMaxWidth(Constant.LABEL_MAX_WIDTH_TIMED_ALL);
+					desc.setMaxWidth(Constant.WIDTH_MAX_LABEL_TIMED_ALL);
 					break;
 				default :
-					desc.setMaxWidth(Constant.LABEL_MAX_WIDTH_FLOATING);
+					desc.setMaxWidth(Constant.WIDTH_MAX_LABEL_FLOATING);
 					break;
 			}
 		} else {
 			switch(task.getTaskType()) {
 				case EVENT :
 				case DATED :
-					desc.setMaxWidth(Constant.LABEL_MAX_WIDTH_EVENT_CAT);
+					desc.setMaxWidth(Constant.WIDTH_MAX_LABEL_EVENT_CAT);
 					break;
 				case TIMED :
-					desc.setMaxWidth(Constant.LABEL_MAX_WIDTH_TIMED_CAT);
+					desc.setMaxWidth(Constant.WIDTH_MAX_LABEL_TIMED_CAT);
 					break;
 				default :
-					desc.setMaxWidth(Constant.LABEL_MAX_WIDTH_FLOATING);
+					desc.setMaxWidth(Constant.WIDTH_MAX_LABEL_FLOATING);
 					break;
 			}
 		}

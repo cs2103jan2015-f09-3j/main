@@ -1,11 +1,10 @@
 package controller;
 
 import java.io.IOException;
-
 import org.fxmisc.richtext.StyleClassedTextArea;
-
 import application.Command;
 import application.Constant;
+import application.Execution;
 import application.Main;
 import application.SearchAttribute;
 import javafx.beans.value.ChangeListener;
@@ -18,7 +17,6 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
-import javafx.util.Pair;
 
 public class HeaderController{
 	
@@ -41,7 +39,7 @@ public class HeaderController{
 				return;
 			}
 			
-			String systemMsg = Command.executeUserInput(userInput, this, mainCon);
+			String systemMsg = Execution.executeUserInput(userInput, this, mainCon);
 			if (systemMsg.equals(Constant.MSG_ORIGINAL_NOT_RETRIEVED)) {
 				resetTextArea();
 			}	

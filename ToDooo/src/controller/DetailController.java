@@ -54,12 +54,12 @@ public class DetailController {
 		
 		if(!taskType.equalsIgnoreCase(TaskType.FLOATING.toString())) {
 			if(taskType.equalsIgnoreCase(TaskType.DATED.toString())) {
-				result = Constant.STR_BEFORE_DATE_BY + " " + Constant.DATETIMEOUTPUT.format(task.getBy());
+				result = Constant.STR_BEFORE_DATE_BY + " " + Constant.FORMAT_DATE_TIME_OUTPUT.format(task.getBy());
 			} else if(taskType.equalsIgnoreCase(TaskType.TIMED.toString())) {
-				result = Constant.STR_BEFORE_DATE_FROM + " " + Constant.DATETIMEOUTPUT.format(task.getFrom()) +
-							Constant.STR_BEFORE_DATE_TO + " " + Constant.DATETIMEOUTPUT.format(task.getTo());
+				result = Constant.STR_BEFORE_DATE_FROM + " " + Constant.FORMAT_DATE_TIME_OUTPUT.format(task.getFrom()) +
+							Constant.STR_BEFORE_DATE_TO + " " + Constant.FORMAT_DATE_TIME_OUTPUT.format(task.getTo());
 			} else {
-				result = Constant.DATETIMEOUTPUT.format(task.getOn());
+				result = Constant.FORMAT_DATE_TIME_OUTPUT.format(task.getOn());
 			}
 		}
 		

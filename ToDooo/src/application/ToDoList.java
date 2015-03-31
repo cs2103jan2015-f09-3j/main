@@ -38,7 +38,6 @@ public class ToDoList {
 	private ArrayList<Task> _tasks;
 	private ArrayList<String> _categories;
 	private Task _selectedTask;
-
 	
 	// -----------------------------------------------------------------------------------------------
 	// Constructors
@@ -53,7 +52,9 @@ public class ToDoList {
 		_categories = Main.storage.loadCategoriesToArrayList();
 	}
 	
-	// For testing purpose
+	/*
+	 * Created for unit testing
+	 */
 	public ToDoList(boolean isTest) {
 		String testListPath = ToDoListTest.PATH_TEST_FILE;
 		
@@ -156,19 +157,6 @@ public class ToDoList {
 		return selectedTask;
 	}
 	
-	/*
-	public Task[] deleteMultipleTasksFromList(String userInput) {
-		Task[] removedTask = null;
-		String[] targetIds = InputParser.getTargetIdsFromString(userInput);
-		
-		for (int i = 0; i < targetIds.length; i++) {
-			removedTask[i] = deleteTaskById(targetIds[i]);
-		}
-		
-		return removedTask;
-	}
-	*/
-
 	public Pair<ArrayList<Task>, String> searchTheList(String userInput) {
 		ArrayList<Task> tasks = ToDoList.generateTaskItems(_tasks, Constant.EMPTY_STRING);
 		
@@ -437,40 +425,7 @@ public class ToDoList {
 		
 		return task;
 	}
-	
-	/*
-	public Pair<Task, String> uncompleteTaskOnList(String userInput) {
-		String targetId = InputParser.getTargetIdFromString(userInput);
-		Task uncompletedTask = getTaskById(targetId);
 		
-		if (uncompletedTask != null) {
-			Date endDate = uncompletedTask.getEndDate();
-			Status status = Task.getStatus(endDate);
-			if (status.equals(Status.OVERDUE)) {
-				uncompletedTask.setStatus(Status.OVERDUE);
-			} else {
-				uncompletedTask.setStatus(Status.ONGOING);
-			}
-		}
-		
-		Task originalTask = null;
-		
-		if (uncompletedTask.getIsRecurring()) {
-			originalTask = uncompletedTask.deleteRecurringTaskById(targetId);
-		} else {
-			originalTask = deleteTaskById(targetId);
-		}
-		
-		if (originalTask != null) {
-			AddTaskBackToList(uncompletedTask);
-		}
-		
-		String uncompletedTaskId = uncompletedTask.getId();
-	
-		return new Pair<Task, String>(originalTask, uncompletedTaskId);
-	}
-	*/
-	
 	// -----------------------------------------------------------------------------------------------
 	// Private Methods
 	// -----------------------------------------------------------------------------------------------

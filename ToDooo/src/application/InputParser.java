@@ -13,10 +13,16 @@ public class InputParser {
 	private static InputParser _inputParser;
 	private Parser _parser;
 	
+	// -----------------------------------------------------------------------------------------------
+	// Constructor
+	// -----------------------------------------------------------------------------------------------		
 	private InputParser() {
 		_parser = new Parser();
 	}
 	
+	// -----------------------------------------------------------------------------------------------
+	// Get methods
+	// -----------------------------------------------------------------------------------------------	
 	public static InputParser getInstance() {
 		if (_inputParser == null) {
 			_inputParser = new InputParser();
@@ -24,7 +30,10 @@ public class InputParser {
 		
 		return _inputParser;
 	}
-		
+	
+	// -----------------------------------------------------------------------------------------------
+	// Public methods
+	// -----------------------------------------------------------------------------------------------	
 	public static Command getActionFromString(String userInput) {
 		return Command.verifyCrudCommands(userInput);
 	}
@@ -129,7 +138,7 @@ public class InputParser {
 	}
 	
 	public static String getTargetIdFromUpdateString(String userInput) {
-		int endIndex = userInput.indexOf(Constant.DELIMETER_UPDATE);
+		int endIndex = userInput.indexOf(Constant.DELIMITER_UPDATE);
 		String targetId = getTargetId(userInput, endIndex);
 		
 		if (targetId != null) {
@@ -139,29 +148,6 @@ public class InputParser {
 		}
 	}
 	
-	private static String getTargetId(String userInput, int endIndex) {
-		String targetId = null;
-		
-		try {
-			Command command = getActionFromString(userInput);
-			String basicCommand = command.getBasicCommand();
-			String advancedCommand = command.getAdvancedCommand();
-			int beginIndex = -1;
-			
-			if (userInput.contains(basicCommand)) {
-				beginIndex = basicCommand.length() + 1;
-				targetId = userInput.substring(beginIndex, endIndex);
-			} else if (userInput.contains(advancedCommand)) {
-				beginIndex = advancedCommand.length() + 1;
-				targetId = userInput.substring(beginIndex, endIndex);
-			}
-		} catch (StringIndexOutOfBoundsException exception) {
-			return targetId;
-		}
-				
-		return targetId.toUpperCase();
-	}
-		
 	public static Priority getPriorityFromString(String userInput) {
 		if (Priority.isHigh(userInput)) {
 			return Priority.HIGH;
@@ -216,57 +202,6 @@ public class InputParser {
 		return toDoString;
 	}
 	
-	private static String removeUpdateFromString(String userInput, String id) {
-		if (id == null) {
-			return userInput;
-		}
-		
-		String toDoString = userInput;	
-		String lowerCase = userInput.toLowerCase() + " ";	
-		String updateBasicCmd = Command.UPDATE.getBasicCommand();
-		String updateAdvancedCmd = Command.UPDATE.getAdvancedCommand();
-		
-		String updateBasicString = updateBasicCmd + " " +
-								   id.toLowerCase() + 
-								   Constant.DELIMETER_UPDATE;
-		String updateAdvancedString = updateAdvancedCmd + " " +
-								      id.toLowerCase() + 
-								      Constant.DELIMETER_UPDATE;
-		
-		if ((lowerCase.contains(updateBasicString) &&
-			 lowerCase.indexOf(updateBasicString) == 0) ||
-			(lowerCase.contains(updateAdvancedString) &&
-			 lowerCase.indexOf(updateAdvancedString) == 0)) {
-			
-			int startIndex = userInput.indexOf(Constant.DELIMETER_UPDATE) + 2;
-			int endIndex = userInput.length();			
-			toDoString = userInput.substring(startIndex, endIndex);
-		}
-		
-		return toDoString;
-	}
-
-	private static String removeAddFromString(String userInput) {
-		String lowerCase = userInput.toLowerCase() + " ";
-		String addBasicCmd = Command.ADD.getBasicCommand();
-		String addAdvancedCmd = Command.ADD.getAdvancedCommand();
-		int lengthOfBasicAddCommand = addBasicCmd.length();
-		int lengthOfAdvancedAddCommand = addAdvancedCmd.length();
-		
-		String toDoString = userInput;
-		
-		if (lowerCase.contains(addBasicCmd) &&
-			lowerCase.indexOf(addBasicCmd) == 0){
-			toDoString = userInput.substring(lengthOfBasicAddCommand, 
-						 userInput.length()).trim();
-		} else if (lowerCase.contains(addAdvancedCmd) &&
-				   lowerCase.indexOf(addAdvancedCmd) == 0) {	
-			toDoString = userInput.substring(lengthOfAdvancedAddCommand, 
-						 userInput.length()).trim();
-		}
-		return toDoString;
-	}
-	
 	public static String extractDescriptionFromString(String userInput, TaskType taskType, String id) {
 		String extractedString = InputParser.removeActionFromString(userInput, id);
 		
@@ -306,26 +241,27 @@ public class InputParser {
 				extractedString = extractedString.replace(toBeRemoved, "");
 			}			
 		}		
+		
 		return extractedString;
 	}
 	
 	public static String removeRecurringFromString(String toDoString, 
-											 boolean isRecurring, Frequency repeat) {
+			 boolean isRecurring, Frequency repeat) {
 		if (isRecurring) {
 			Command recurringCommand = repeat.getCommand();
 			String lowerCase = toDoString.toLowerCase() + " ";
 			int endIndex = -1;
-			
-			if (lowerCase.contains(recurringCommand.getBasicCommand())) {
-				endIndex = lowerCase.indexOf(recurringCommand.getBasicCommand());
-			} else if (lowerCase.contains(recurringCommand.getAdvancedCommand())) {
-				endIndex = lowerCase.indexOf(recurringCommand.getAdvancedCommand());
+
+			String basicCommand = recurringCommand.getBasicCommand();
+			String advancedCommand = recurringCommand.getAdvancedCommand();
+
+			if (lowerCase.contains(basicCommand)) {
+				endIndex = lowerCase.indexOf(basicCommand);
+			} else if (lowerCase.contains(advancedCommand)) {
+				endIndex = lowerCase.indexOf(advancedCommand);
 			}
-			
-			boolean canSubstring = (endIndex != -1);
-			if (canSubstring) {
-				toDoString = toDoString.substring(0, endIndex);
-			}
+
+			toDoString = extractFromString(toDoString, endIndex);
 		}
 		return toDoString;
 	}
@@ -338,16 +274,16 @@ public class InputParser {
 			String lowerCase = toDoString.toLowerCase() + " ";
 			int endIndex = -1;
 			
-			if (lowerCase.contains(priorityCommand.getBasicCommand())) {
-				endIndex = lowerCase.indexOf(priorityCommand.getBasicCommand());				
-			} else if (lowerCase.contains(priorityCommand.getAdvancedCommand())) {
-				endIndex = lowerCase.indexOf(priorityCommand.getAdvancedCommand());
+			String basicCommand = priorityCommand.getBasicCommand();
+			String advancedCommand = priorityCommand.getAdvancedCommand();
+			
+			if (lowerCase.contains(basicCommand)) {
+				endIndex = lowerCase.indexOf(basicCommand);				
+			} else if (lowerCase.contains(advancedCommand)) {
+				endIndex = lowerCase.indexOf(advancedCommand);
 			} 
 			
-			boolean canSubstring = (endIndex != -1);
-			if (canSubstring) {
-				toDoString = toDoString.substring(0, endIndex);
-			}
+			toDoString = extractFromString(toDoString, endIndex);
 		}
 		return toDoString;
 	}
@@ -367,44 +303,25 @@ public class InputParser {
 	}
 	
 	public static ArrayList<Pair<SearchAttribute, String>> 
-				  getSearchAttributePairFromString(String userInput) {
+		getSearchAttributePairFromString(String userInput) {
 		
-		ArrayList<Pair<SearchAttribute, String>> attributePairs = 
-				new ArrayList<Pair<SearchAttribute, String>>();
+		ArrayList<Pair<SearchAttribute, String>> attributePairs = new ArrayList<Pair<SearchAttribute, String>>();
 		String searchKey = null;
-		
-		ArrayList<SearchAttribute> attributes = 
-				SearchAttribute.getSearchAttributes(userInput);
-			
+
+		ArrayList<SearchAttribute> attributes = SearchAttribute
+				.getSearchAttributes(userInput);
+
 		for (SearchAttribute attribute : attributes) {
-			searchKey = InputParser.getSearchKeyFromString(userInput, attribute);
-			
+			searchKey = InputParser
+					.getSearchKeyFromString(userInput, attribute);
+
 			if (searchKey != null) {
-				attributePairs.
-				add(new Pair<SearchAttribute, String>(attribute, searchKey));
+				attributePairs.add(new Pair<SearchAttribute, String>(attribute,
+						searchKey));
 			}
 		}
-		
+
 		return attributePairs;
-	}
-	
-	private static String getSearchKeyFromString(String userInput, 
-										   SearchAttribute attribute) {
-		String searchKey = null;
-		String lowerCase = userInput.toLowerCase();
-		String command = attribute.getCommand();
-		
-		if (lowerCase.contains(command)) {		
-			int startIndex = lowerCase.indexOf(command) + command.length();
-			int endIndex = lowerCase.length();
-			
-			String detailString = lowerCase.substring(startIndex, endIndex);
-			endIndex = detailString.indexOf(Constant.DELIMETER_SEARCH);
-			
-			searchKey = detailString.substring(0, endIndex);
-		}
-		
-		return searchKey;
 	}
 	
 	public static String verifyAndCorrectSearchString(String userInput) {
@@ -412,10 +329,10 @@ public class InputParser {
 		userInput = userInput + " ";
 		
 		int expectedPosition = userInput.length() - 2;
-		int actualPosition = userInput.lastIndexOf(Constant.DELIMETER_SEARCH);
+		int actualPosition = userInput.lastIndexOf(Constant.DELIMITER_SEARCH);
 		
 		if (actualPosition != expectedPosition) {
-			userInput += Constant.DELIMETER_SEARCH;
+			userInput += Constant.DELIMITER_SEARCH;
 		}
 		
 		return userInput;
@@ -446,5 +363,110 @@ public class InputParser {
 		String recurringTaskId = targetId.substring(startIndex, endIndex);	
 		
 		return recurringTaskId;
+	}
+	
+	// -----------------------------------------------------------------------------------------------
+	// Private methods
+	// -----------------------------------------------------------------------------------------------	
+	private static String extractFromString(String toDoString, int endIndex) {
+		boolean canSubstring = (endIndex != -1);
+		if (canSubstring) {
+			toDoString = toDoString.substring(0, endIndex);
+		}
+		
+		return toDoString;
+	}
+	
+	private static String getTargetId(String userInput, int endIndex) {
+		String targetId = null;
+		
+		try {
+			Command command = getActionFromString(userInput);
+			String basicCommand = command.getBasicCommand();
+			String advancedCommand = command.getAdvancedCommand();
+			int beginIndex = -1;
+			
+			if (userInput.contains(basicCommand)) {
+				beginIndex = basicCommand.length() + 1;
+				targetId = userInput.substring(beginIndex, endIndex);
+			} else if (userInput.contains(advancedCommand)) {
+				beginIndex = advancedCommand.length() + 1;
+				targetId = userInput.substring(beginIndex, endIndex);
+			}
+		} catch (StringIndexOutOfBoundsException exception) {
+			return targetId;
+		}
+				
+		return targetId.toUpperCase();
+	}
+	
+	private static String removeUpdateFromString(String userInput, String id) {
+		if (id == null) {
+			return userInput;
+		}
+		
+		String toDoString = userInput;	
+		String lowerCase = userInput.toLowerCase() + " ";	
+		String updateBasicCmd = Command.UPDATE.getBasicCommand();
+		String updateAdvancedCmd = Command.UPDATE.getAdvancedCommand();
+		
+		String updateBasicString = updateBasicCmd + " " +
+								   id.toLowerCase() + 
+								   Constant.DELIMITER_UPDATE;
+		String updateAdvancedString = updateAdvancedCmd + " " +
+								      id.toLowerCase() + 
+								      Constant.DELIMITER_UPDATE;
+		
+		if ((lowerCase.contains(updateBasicString) &&
+			 lowerCase.indexOf(updateBasicString) == 0) ||
+			(lowerCase.contains(updateAdvancedString) &&
+			 lowerCase.indexOf(updateAdvancedString) == 0)) {
+			
+			int startIndex = userInput.indexOf(Constant.DELIMITER_UPDATE) + 2;
+			int endIndex = userInput.length();			
+			toDoString = userInput.substring(startIndex, endIndex);
+		}
+		
+		return toDoString;
+	}
+
+	private static String removeAddFromString(String userInput) {
+		String lowerCase = userInput.toLowerCase() + " ";
+		String addBasicCmd = Command.ADD.getBasicCommand() + " ";
+		String addAdvancedCmd = Command.ADD.getAdvancedCommand() + " ";
+		int lengthOfBasicAddCommand = addBasicCmd.length();
+		int lengthOfAdvancedAddCommand = addAdvancedCmd.length();
+		
+		String toDoString = userInput;
+		
+		if (lowerCase.contains(addBasicCmd) &&
+			lowerCase.indexOf(addBasicCmd) == 0){
+			toDoString = userInput.substring(lengthOfBasicAddCommand, 
+						 userInput.length()).trim();
+		} else if (lowerCase.contains(addAdvancedCmd) &&
+				   lowerCase.indexOf(addAdvancedCmd) == 0) {	
+			toDoString = userInput.substring(lengthOfAdvancedAddCommand, 
+						 userInput.length()).trim();
+		}
+		return toDoString;
+	}
+			
+	private static String getSearchKeyFromString(String userInput, 
+										   SearchAttribute attribute) {
+		String searchKey = null;
+		String lowerCase = userInput.toLowerCase();
+		String command = attribute.getCommand();
+		
+		if (lowerCase.contains(command)) {		
+			int startIndex = lowerCase.indexOf(command) + command.length();
+			int endIndex = lowerCase.length();
+			
+			String detailString = lowerCase.substring(startIndex, endIndex);
+			endIndex = detailString.indexOf(Constant.DELIMITER_SEARCH);
+			
+			searchKey = detailString.substring(0, endIndex);
+		}
+		
+		return searchKey;
 	}
 }

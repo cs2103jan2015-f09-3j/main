@@ -49,17 +49,21 @@ public class TaskSorter {
 			int comparison = 0;
 			TaskType taskTypeOfTaskA = taskA.getTaskType();
 			TaskType taskTypeOfTaskB = taskB.getTaskType();
+			
 			for (SortParameter parameter : parameters) {
 				switch (parameter) {
 				case ALPHABETICAL_ORDER:
 					comparison = taskA.getToDo().compareTo(taskB.getToDo());
+					
 					if (comparison != 0) {
 						return comparison;
 					}
+					
 					break;
 				case CATEGORY:
 					String categoryOfTaskA = taskA.getCategory();
 					String categoryOfTaskB = taskB.getCategory();
+					
 					if (!categoryOfTaskA.equals(Constant.CATEGORY_UNCATEGORISED) && !categoryOfTaskB.equals(Constant.CATEGORY_UNCATEGORISED)) {
 						comparison = categoryOfTaskA.compareTo(categoryOfTaskB);
 					} else if (categoryOfTaskA.equals(Constant.CATEGORY_UNCATEGORISED) & !categoryOfTaskB.equals(Constant.CATEGORY_UNCATEGORISED)) {
@@ -69,11 +73,13 @@ public class TaskSorter {
 					} else {
 						comparison = 0;
 					}
+					
 					if (comparison != 0) {
 						return comparison;
 					}
 				case DATE:
 					Date dateOfTaskA, dateOfTaskB;
+					
 					if (!taskTypeOfTaskA.equals(TaskType.FLOATING) && !taskTypeOfTaskB.equals(TaskType.FLOATING)) {
 						dateOfTaskA = taskA.getStartDate();
 						dateOfTaskB = taskB.getStartDate();
@@ -85,9 +91,11 @@ public class TaskSorter {
 					} else {
 						comparison = 0;
 					}
+					
 					if (comparison != 0) {
 						return comparison;
 					}
+					
 					break;
 				case PRIORITY:
 					Priority taskAPriority = taskA.getPriority();
@@ -113,17 +121,21 @@ public class TaskSorter {
 					if (comparison != 0) {
 						return comparison;
 					}
+					
 					break;
 				case TASKTYPE_FLOATING:
 					int lengthOfTaskTypeOfTaskA = taskTypeOfTaskA.toString().length();
 					int lengthOfTaskTypeOfTaskB = taskTypeOfTaskB.toString().length();
 					comparison = lengthOfTaskTypeOfTaskB - lengthOfTaskTypeOfTaskA;
+					
 					if (comparison != 0) {
 						return comparison;
 					}
+					
 					break; 
 				}
 			}
+			
 			return comparison;
 		}
 	}
@@ -131,18 +143,21 @@ public class TaskSorter {
 	public static ArrayList<Task> getTasksSortedByDate(ArrayList<Task> list) {
 		Comparator<Task> comparator = getComparator(parametersForViewAll);
 		Collections.sort(list, comparator);
+		
 		return list;
 	}
 	
 	public static ArrayList<Task> getTasksSortedByCategories(ArrayList<Task> list) {
 		Comparator<Task> CategoryComparator = getComparator(parametersForViewCategory);
 		Collections.sort(list, CategoryComparator);
+		
 		return list;
 	}
 	
 	public static ArrayList<Task> getTasksSortedByPriorities(ArrayList<Task> list) {
 		Comparator<Task> priorityComparator = getComparator(parametersForViewPriority);
 		Collections.sort(list, priorityComparator);
+		
 		return list;
 	}	
 }
