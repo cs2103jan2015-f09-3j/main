@@ -127,7 +127,11 @@ public class ToDoList {
 	}
 		
 	public Pair<String, Task> AddTaskBackToList(Task task) {
-		Task removedTask = deleteTaskById(task.getId());		
+		Task removedTask = null;
+		if (task.getIsRecurring()) {
+			removedTask = deleteTaskById(task.getId());	
+		}
+			
 		String result = addTaskToList(task);
 		
 		return new Pair<String, Task>(result, removedTask);
