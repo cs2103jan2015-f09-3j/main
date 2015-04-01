@@ -105,6 +105,8 @@ public final class Constant {
 	public static final String PATH_UNDO = "undo.xml";
 	public static final String PATH_GET_PROPERTY = "user.dir";
 	public static final String PATH_DETAIL = "/view/Detail.fxml";
+	public static final String PATH_MAIN = "/view/Main.fxml";
+	public static final String PATH_CSS = "application.css";
 	
 	// -----------------------------------------------------------------------------------------------
 	// System messages
@@ -288,6 +290,7 @@ public final class Constant {
     public static final String ICON_ERROR = "images/errorIcon.png";
     public static final String ICON_FEEDBACK = "images/feedbackIcon.png";
     public static final String IMAGE_TUTORIAL = "images/tutorial.png";
+    public static final String IMAGE_LOGO = "images/logo.png";
 
 	// -----------------------------------------------------------------------------------------------
 	// Position values

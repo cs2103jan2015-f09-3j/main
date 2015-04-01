@@ -9,6 +9,7 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 
 
 public class Main extends Application {
@@ -29,9 +30,10 @@ public class Main extends Application {
 		try {
 			priStage = primaryStage;
 			
-			Parent root = FXMLLoader.load(getClass().getResource("/view/Main.fxml"));
+			Parent root = FXMLLoader.load(getClass().getResource(Constant.PATH_MAIN));
 			Scene scene = new Scene(root);
-			scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
+			scene.getStylesheets().add(getClass().getResource(Constant.PATH_CSS).toExternalForm());
+			priStage.getIcons().add(new Image(Constant.IMAGE_LOGO));
 			priStage.setScene(scene);
 			priStage.resizableProperty().setValue(Boolean.FALSE);
 			priStage.setHeight(Constant.HEIGHT_STAGE);
