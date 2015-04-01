@@ -274,7 +274,7 @@ public final class Constant {
     
     public static final String STR_BEFORE_DATE_BY = "by";
     public static final String STR_BEFORE_DATE_ON = "on";
-    public static final String STR_BEFORE_DATE_FROM = "from";
+    public static final String STR_BEFORE_DATE_FROM = "From";
     public static final String STR_BEFORE_DATE_TO = "  to";
     
 	// -----------------------------------------------------------------------------------------------
@@ -321,6 +321,7 @@ public final class Constant {
     public static final String BOOLEAN_STRING_TRUE = "Yes";
     public static final String BOOLEAN_STRING_FALSE = "No";
     public static final String EMPTY_STRING = "";
+    public static final String EMPTY_DATE = "NONE";
     public static final int TIMER_SYSTEM_MSG_DURATION = 2500;
     
 }

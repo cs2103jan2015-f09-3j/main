@@ -283,7 +283,8 @@ public class ToDoList {
 		String taskId = targetId;
 		Task task = null;
 		Task selectedTask = null;
-		Iterator<Task> taskIterator = _tasks.iterator();
+		ArrayList<Task> taskList = generateTaskItems(_tasks, Constant.EMPTY_STRING);
+		Iterator<Task> taskIterator = taskList.iterator();
 		
 		while (taskIterator.hasNext()) {
 			task = taskIterator.next();

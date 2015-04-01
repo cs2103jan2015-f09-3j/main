@@ -7,9 +7,11 @@ import application.TaskType;
 import controller.MainController;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
+import javafx.scene.control.ListView;
 import javafx.scene.control.TextArea;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.Region;
 import javafx.scene.text.TextFlow;
 
 public class DetailController {
@@ -37,7 +39,7 @@ public class DetailController {
 		detailLblId.setText(task.getId());
 		detailTxtAreaDesc.setText(task.getToDo());
 		detailTxtAreaDesc.setEditable(false);
-		detailTxtAreaDesc.getStyleClass().add("txtAreaDesc");
+		detailTxtAreaDesc.getStyleClass().add(Constant.CSS_CLASS_TEXTAREA_DETAIL);
 		detailLblType.setText(task.getTaskType().toString());
 		detailLblCategory.setText(task.getCategory().toUpperCase());
 		detailLblPriority.setText(task.getPriority().toString());
@@ -46,11 +48,10 @@ public class DetailController {
 		detailLblRecurring.setText(getIsRecurring(task));
 		//detailTxtAreaAddition.setText(task.getAddtionalNote());
 		//saveAdditionalNote(detailTxtAreaAddition.getText());
-	
 	}
 	
 	private String getDateFormat(Task task, String taskType) {
-		String result = "";
+		String result = Constant.EMPTY_DATE;
 		
 		if(!taskType.equalsIgnoreCase(TaskType.FLOATING.toString())) {
 			if(taskType.equalsIgnoreCase(TaskType.DATED.toString())) {
