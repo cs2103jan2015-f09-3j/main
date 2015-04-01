@@ -37,10 +37,6 @@
 	-fx-border-width: 1;
 }
 
-.vBoxDetail {
-	-fx-padding: 20 20 20 20;
-}
-
 .bPaneAll {
 	-fx-background-color: linear-gradient(to bottom, derive(#E1F5C4, 20%), #E1F5C4);
 	-fx-background-radius: 10;
@@ -128,20 +124,20 @@
 	-fx-font: bold 12px "Segoe UI";
 }
 
-.dateTitle {
+.labelDateTitle {
 	-fx-font: bold 13px "Segoe UI";
 	-fx-text-fill: #666666;
 	-fx-padding: 20 0 0 5;
 	
 }
 
-.todayTitle {
+.labelTodayTitle {
 	-fx-font: bold 17px "Segoe UI";
 	-fx-text-fill: #666666;
 	-fx-padding: 20 0 0 350;
 }
 
-.overdueTitle {
+.labelOverdueTitle {
 	-fx-font: bold 17px "Segoe UI";
 	-fx-text-fill: #666666;
 	-fx-padding: 0 0 0 340;

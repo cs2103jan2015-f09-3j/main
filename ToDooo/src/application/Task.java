@@ -267,6 +267,7 @@ public class Task implements Cloneable {
 		return copies;
 	}
 	
+	// Creating a repeated task with a different date for recurring task
 	public static Task createRecurringChildItem(Task originalTask, String recurringId, 
 												Status recurringStatus, Date onDate, 
 												Date byDate, Date startDate) {

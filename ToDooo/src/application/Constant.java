@@ -104,6 +104,7 @@ public final class Constant {
 	public static final String PATH_FILE_NAME = "listFile.xml";
 	public static final String PATH_UNDO = "undo.xml";
 	public static final String PATH_GET_PROPERTY = "user.dir";
+	public static final String PATH_DETAIL = "/view/Detail.fxml";
 	
 	// -----------------------------------------------------------------------------------------------
 	// System messages
@@ -178,6 +179,13 @@ public final class Constant {
     public static final String[] SYS_MSG_KEYWORD_SUCCESS = { "successful", "Completed", "saved" , "matches found", "is found" };
     public static final String[] SYS_MSG_KEYWORD_ERROR = { "failed", "Failed", "cannot" , "Invalid", "does not exist",
     														"Unable", "not saved", "not found" };
+    
+    // -----------------------------------------------------------------------------------------------
+ 	// System message types
+ 	// -----------------------------------------------------------------------------------------------
+    public static final int SYS_MSG_TYPE_SUCCESS = 1;
+    public static final int SYS_MSG_TYPE_ERROR = -1;
+    public static final int SYS_MSG_TYPE_FEEDBACK = 0;
 	
 	// -----------------------------------------------------------------------------------------------
 	// Delimeters and symbols
@@ -236,6 +244,25 @@ public final class Constant {
     public static final String CSS_CLASS_PRIORITY = "priority";
     public static final String CSS_CLASS_RECURRING_COMMANDS = "recurringCommands";
     public static final String CSS_CLASS_SEARCH_ATTRIBUTES = "searchAttributes";
+    public static final String CSS_CLASS_ANCHORPANE_DETAIL = "aPaneDetail";
+    public static final String CSS_CLASS_BORDERPANE_ALL = "bPaneAll";
+    public static final String CSS_CLASS_BORDERPANE_OVERDUE = "bPaneOverdue";
+    public static final String CSS_CLASS_BORDERPANE_COMPLETED = "bPaneCompleted";
+    public static final String CSS_CLASS_BORDERPANE_SEARCH_RESULT = "bPaneSearchResult";
+    public static final String CSS_CLASS_PANE_HORIZONTAL_BAR = "paneHBar";
+    public static final String CSS_CLASS_LABEL_TITLE_TODAY = "labelTodayTitle";
+    public static final String CSS_CLASS_LABEL_TITLE_OVERDUE = "labelOverdueTitle";
+    public static final String CSS_CLASS_LABEL_TITLE_DATE = "labelDateTitle";
+    public static final String CSS_CLASS_LABEL_ID = "labelId";
+    public static final String CSS_CLASS_LABEL_DESCRIPTION = "labelDesc";
+    public static final String CSS_CLASS_LABEL_CATEGORY = "labelCategory";
+    public static final String CSS_CLASS_LABEL_BEFORE_TIME = "labelBeforeTime";
+    public static final String CSS_CLASS_LABEL_DATETIME = "labelDateTime";
+    public static final String CSS_CLASS_LABEL_SYSTEM_MSG = "labelSysMsg";
+    public static final String CSS_CLASS_IMAGEVIEW_ICON_IMAGE = "iconImage";
+    public static final String CSS_CLASS_LINE_PRIORITY_BAR = "priorityBar";
+    public static final String CSS_CLASS_LINE_HORIZONTAL_BAR = "hBar";
+    public static final String CSS_CLASS_TEXTAREA_DETAIL = "txtAreaDesc";
     	
 	// -----------------------------------------------------------------------------------------------
 	// View rendering configuration values
@@ -268,6 +295,11 @@ public final class Constant {
     public static final double POSITION_OFFSET_X_POPUP = 15;
     public static final double POSITION_OFFSET_Y_POPUP = 2;
     public static final double POSITION_OFFSET_VERTICAL = 0.2;
+    public static final double POSITION_START_X_HORIZONTAL_BAR = 4.5;
+    public static final double POSITION_START_Y_HORIZONTAL_BAR = 0.5;
+    public static final double POSITION_END_X_HORIZONTAL_BAR = 760;
+    public static final double POSITION_END_Y_HORIZONTAL_BAR = 0;
+    public static final double POSITION_START_Y_PRIORITY_BAR = 18;
 
 	// -----------------------------------------------------------------------------------------------
 	// Size values
@@ -280,6 +312,8 @@ public final class Constant {
     public static final double WIDTH_MAX_LABEL_TIMED_ALL = 430;
     public static final double WIDTH_MAX_LABEL_EVENT_CAT = 500;
     public static final double WIDTH_MAX_LABEL_TIMED_CAT = 380;
+    
+    public static final double FIT_HEIGHT_ICON = 20;
     
 	// -----------------------------------------------------------------------------------------------
 	// Misc
