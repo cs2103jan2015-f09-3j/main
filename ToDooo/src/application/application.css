@@ -208,3 +208,31 @@
 .txtAreaDesc:focused .content {
     -fx-background-color: #fff;
 }
+
+.txtAreaDesc .scroll-bar:vertical .track {
+	-fx-background-color: #FFFFFF;
+	-fx-border-color: #FFFFFF;
+	-fx-background-radius: 0em;
+	-fx-border-radius:2em;
+}
+
+.txtAreaDesc .scroll-bar:vertical .increment-button ,
+.txtAreaDesc .scroll-bar:vertical .decrement-button {
+    -fx-background-color:transparent;
+	-fx-background-radius: 0em;
+	-fx-padding:0 10 0 0;
+
+}
+
+.txtAreaDesc  .scroll-bar .increment-arrow,
+.txtAreaDesc  .scroll-bar .decrement-arrow {
+	-fx-shape: " ";	
+	-fx-padding:0;
+}
+
+.txtAreaDesc .scroll-bar:vertical .thumb {
+    -fx-background-color: derive(#87b763,70%);
+	-fx-background-insets: 2, 0, 0;
+	-fx-background-radius: 2em;
+
+}

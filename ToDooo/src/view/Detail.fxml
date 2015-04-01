@@ -7,13 +7,13 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<AnchorPane prefHeight="324.0" prefWidth="500.0" style="-fx-background-color: #FFFFFF;" stylesheets="@../application/application.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.DetailController">
+<AnchorPane prefHeight="324.0" prefWidth="500.0" style="-fx-background-color: #FFFFFF; -fx-border-color: #D8D8D8;" stylesheets="@../application/application.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.DetailController">
    <children>
       <VBox fx:id="vBoxDetail" layoutX="14.0" layoutY="14.0" prefHeight="295.0" prefWidth="473.0" style="-fx-background-color: #FFFFFF;">
          <children>
             <HBox prefHeight="16.0" prefWidth="473.0">
                <children>
-                  <Label minWidth="100.0" text="Task ID:">
+                  <Label minWidth="100.0" text="Task ID:" textFill="#87b763">
                      <font>
                         <Font name="System Bold" size="12.0" />
                      </font>
@@ -26,7 +26,7 @@
             </HBox>
             <HBox prefHeight="70.0" prefWidth="473.0">
                <children>
-                  <Label minWidth="92.0" text="Description:">
+                  <Label minWidth="92.0" text="Description:" textFill="#87b763">
                      <font>
                         <Font name="System Bold" size="12.0" />
                      </font>
@@ -42,7 +42,7 @@
             </HBox>
             <HBox prefHeight="16.0" prefWidth="473.0">
                <children>
-                  <Label minWidth="100.0" text="Task type:">
+                  <Label minWidth="100.0" text="Task type:" textFill="#87b763">
                      <font>
                         <Font name="System Bold" size="12.0" />
                      </font>
@@ -55,7 +55,7 @@
             </HBox>
             <HBox prefHeight="16.0" prefWidth="473.0">
                <children>
-                  <Label minWidth="100.0" text="Date time:">
+                  <Label minWidth="100.0" text="Date time:" textFill="#87b763">
                      <font>
                         <Font name="System Bold" size="12.0" />
                      </font>
@@ -68,7 +68,7 @@
             </HBox>
             <HBox prefHeight="16.0" prefWidth="473.0">
                <children>
-                  <Label minWidth="100.0" text="Category:">
+                  <Label minWidth="100.0" text="Category:" textFill="#87b763">
                      <font>
                         <Font name="System Bold" size="12.0" />
                      </font>
@@ -81,7 +81,7 @@
             </HBox>
             <HBox prefHeight="16.0" prefWidth="473.0">
                <children>
-                  <Label minWidth="100.0" text="Priority level:">
+                  <Label minWidth="100.0" text="Priority level:" textFill="#87b763">
                      <font>
                         <Font name="System Bold" size="12.0" />
                      </font>
@@ -94,7 +94,7 @@
             </HBox>
             <HBox prefHeight="16.0" prefWidth="473.0">
                <children>
-                  <Label minWidth="100.0" text="Status:">
+                  <Label minWidth="100.0" text="Status:" textFill="#87b763">
                      <font>
                         <Font name="System Bold" size="12.0" />
                      </font>
@@ -107,7 +107,7 @@
             </HBox>
             <HBox prefHeight="16.0" prefWidth="473.0">
                <children>
-                  <Label minWidth="100.0" text="Repeated:">
+                  <Label minWidth="100.0" text="Repeated:" textFill="#87b763">
                      <font>
                         <Font name="System Bold" size="12.0" />
                      </font>
