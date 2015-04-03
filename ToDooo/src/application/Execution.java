@@ -7,25 +7,24 @@ import controller.HeaderController;
 import controller.MainController;
 
 public class Execution {
+	public static MainController mainController;
+	public static HeaderController headerController;
 	
 	// -----------------------------------------------------------------------------------------------
 	// Public methods
 	// -----------------------------------------------------------------------------------------------
-	public static String executeUserInput(String userInput,
-			HeaderController headerController, MainController mainController) {
+	public static String executeUserInput(String userInput) {
 		String systemMsg = "";
 		Command commandType = InputParser.getActionFromString(userInput);
 
 		if (Main.toUpdate && commandType.equals(Command.UPDATE)) {
 			userInput = InputParser.removeLineBreaks(userInput);
-			systemMsg = executeUpdate(userInput, headerController);
+			systemMsg = executeUpdate(userInput);
 
 			Main.toUpdate = false;
 			headerController.textArea.clear();
 		} else {
-			systemMsg = executeCommand(userInput, commandType, 
-													headerController,
-													mainController);
+			systemMsg = executeCommand(userInput, commandType);
 		}
 
 		return systemMsg;
@@ -35,8 +34,7 @@ public class Execution {
 	// -----------------------------------------------------------------------------------------------
 	// Private methods
 	// -----------------------------------------------------------------------------------------------
-	private static String executeCommand(String userInput, Command commandType,
-			HeaderController headerController, MainController mainController) {
+	private static String executeCommand(String userInput, Command commandType) {
 		String systemMsg = null;
 
 		userInput = InputParser.removeLineBreaks(userInput);
@@ -47,8 +45,7 @@ public class Execution {
 			headerController.textArea.clear();
 			break;
 		case UPDATE :
-			systemMsg = Execution.executeRetrieveOriginalText(userInput,
-					headerController);
+			systemMsg = Execution.executeRetrieveOriginalText(userInput);
 			Main.shouldResetCaret = true;
 			break;
 		case DELETE :
@@ -66,7 +63,7 @@ public class Execution {
 			break;
 		case VIEW :
 			systemMsg = Execution.executeView(userInput);
-			displayDetail(mainController, systemMsg);
+			displayDetail(systemMsg);
 			headerController.textArea.clear();
 			break ;
 		default:
@@ -116,8 +113,7 @@ public class Execution {
 		return systemMsg;
 	}
 	
-	private static String executeRetrieveOriginalText(String userInput, 
-			HeaderController headerController) {
+	private static String executeRetrieveOriginalText(String userInput) {
 		
 		String systemMsg = null;
 		String targetId = InputParser.getTargetIdFromString(userInput);
@@ -138,11 +134,11 @@ public class Execution {
 		return systemMsg;
 	}
 	
-	private static String executeUpdate(String userInput, HeaderController headerController) {
+	private static String executeUpdate(String userInput) {
 		String systemMsg = null;
 		
 		if (userInput.indexOf(Constant.DELIMITER_UPDATE) == -1) {
-			systemMsg = executeRetrieveOriginalText(userInput, headerController);
+			systemMsg = executeRetrieveOriginalText(userInput);
 		} else {
 			Pair<Task, String> updatedTasksDetails = Main.list.updateTaskOnList(userInput);
 			if (updatedTasksDetails == null) {
@@ -222,7 +218,7 @@ public class Execution {
 		return systemMsg;
 	}
 	
-	private static void displayDetail(MainController mainController, String systemMsg) {
+	private static void displayDetail(String systemMsg) {
 		if(systemMsg.equalsIgnoreCase(Constant.MSG_VIEW_SUCCESS)) {
 			try {
 				mainController.viewDetails(Main.list.getSelectedTask());

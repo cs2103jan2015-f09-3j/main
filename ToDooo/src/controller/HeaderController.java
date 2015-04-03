@@ -39,7 +39,7 @@ public class HeaderController{
 				return;
 			}
 			
-			String systemMsg = Execution.executeUserInput(userInput, this, mainCon);
+			String systemMsg = Execution.executeUserInput(userInput);
 			if (systemMsg.equals(Constant.MSG_ORIGINAL_NOT_RETRIEVED)) {
 				resetTextArea();
 			}	
