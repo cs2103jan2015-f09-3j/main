@@ -164,6 +164,9 @@ public final class Constant {
 	public static final String MSG_VIEW_SUCCESS = "Item is found.";
 	public static final String MSG_VIEW_FAIL = "Item is not found.";
 	
+	public static final String MSG_MULTIPLE_DELETE_SUCCESS = "Deleted {0}.";
+	public static final String MSG_MULTIPLE_DELETE_FAIL = "Failed to delete {0}";
+	
 	// -----------------------------------------------------------------------------------------------
 	// System messages colors
 	// -----------------------------------------------------------------------------------------------

@@ -147,6 +147,18 @@ public class ToDoList {
 		return removedTask;
 	}
 	
+	public ArrayList<Task> deleteMultipleTasksFromList(String userInput) {
+		ArrayList<Task> removedTasks = new ArrayList<Task>();
+		String[] targetIds = InputParser.getTargetIdsFromString(userInput);
+		
+		for (String targetId : targetIds) {
+			Task removedTask = deleteTaskById(targetId);
+			removedTasks.add(removedTask);
+		}
+		
+		return removedTasks;
+	}
+	
 	public Task selectTaskFromList(String userInput) {
 		Task selectedTask = null;
 		String targetId = InputParser.getTargetIdFromString(userInput);
@@ -398,6 +410,44 @@ public class ToDoList {
 		return new Pair<Task, String>(originalTask, completedTaskId);
 	}
 	
+	public Pair<Task, String> uncompleteTaskOnList(String userInput) {
+		String targetId = InputParser.getTargetIdFromString(userInput);
+		Task uncompletedTask = null;
+		
+		if (!targetId.contains(Constant.PREFIX_RECURRING_ID)) {
+			uncompletedTask = getTaskById(targetId);
+			Date endDate = uncompletedTask.getEndDate();
+			Status status = Status.getTaskStatus(endDate);
+			if (status.equals(Status.OVERDUE)) {
+				uncompletedTask.setStatus(Status.OVERDUE);
+			} else {
+				uncompletedTask.setStatus(Status.ONGOING);
+			}
+		} else {
+			String parentId = InputParser.getTaskIdFromRecurringId(targetId);
+			uncompletedTask = completeRecurringTaskOnList(targetId, parentId);
+			targetId = parentId;
+		}
+		
+		Task originalTask = null;
+		String uncompletedTaskId = null;
+		if (uncompletedTask != null) {
+			originalTask = deleteTaskById(targetId);
+			
+			if (originalTask != null) {
+				AddTaskBackToList(uncompletedTask);
+				String taskId = InputParser.getTargetIdFromString(userInput);
+				if (taskId.contains(Constant.PREFIX_RECURRING_ID)) {
+					uncompletedTaskId = taskId;
+				} else {
+					uncompletedTaskId = uncompletedTask.getId();
+				}
+			}
+		}	
+		
+		return new Pair<Task, String>(originalTask, uncompletedTaskId);
+	}
+
 	public Task completeRecurringTaskOnList(String targetId, String parentId) {
 		Task task = null;
 		boolean isFound = false;
@@ -426,7 +476,7 @@ public class ToDoList {
 		
 		return task;
 	}
-		
+	
 	// -----------------------------------------------------------------------------------------------
 	// Private Methods
 	// -----------------------------------------------------------------------------------------------

@@ -137,6 +137,21 @@ public class InputParser {
 		}
 	}
 	
+	public static String[] getTargetIdsFromString(String userInput) {
+		int endIndex = userInput.length();
+		String targetIdsString = getTargetId(userInput, endIndex);
+		String[] targetIds = targetIdsString.split(Constant.REGEX_SPACE);
+		
+		if (targetIds != null) {
+			for (String id : targetIds) {
+				id.toUpperCase();
+			}
+			return targetIds;
+		} else {
+			return targetIds;
+		}
+	}
+	
 	public static String getTargetIdFromUpdateString(String userInput) {
 		int endIndex = userInput.indexOf(Constant.DELIMITER_UPDATE);
 		String targetId = getTargetId(userInput, endIndex);
