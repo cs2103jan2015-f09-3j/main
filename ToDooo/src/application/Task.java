@@ -375,6 +375,22 @@ public class Task implements Cloneable {
 		return hasMatched;
 	}
 	
+	/*
+	 * Determine the date for start and end date based
+	 * on the task type
+	 */
+	public static void setStartEndDate(Task task, Date date, String text) {
+		if (!text.equals(Constant.XML_TEXT_NIL)) {
+			task.setStartDate(date);
+			
+			if (task.getTaskType().equals(TaskType.TIMED)) {
+				task.setEndDate(task.getTo());
+			} else {
+				task.setEndDate(date);
+			}			
+		}
+	}
+	
 	// -----------------------------------------------------------------------------------------------
 	// Private Methods
 	// -----------------------------------------------------------------------------------------------
