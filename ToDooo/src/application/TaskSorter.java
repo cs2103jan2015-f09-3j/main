@@ -105,7 +105,7 @@ public class TaskSorter {
 			}
 			return comparison;
 		}
-
+		
 		private int dateComparison(Task taskA, Task taskB) {
 			int comparison;
 			Date dateOfTaskA, dateOfTaskB;
@@ -143,10 +143,78 @@ public class TaskSorter {
 		}
 	}
 	
-	public static ArrayList<Task> getTasksSortedByDate(ArrayList<Task> list) {
+	private static ArrayList<Task> reallocateFloatingTasks(ArrayList<Task> list) {
+		ArrayList<Task> floatingList = extractFloatingTasks(list);
+		addFloatingTasksBackIntoList(list, floatingList);
+		
+		return list;
+	}
+	
+	private static ArrayList<Task> extractFloatingTasks(ArrayList<Task> list) {
+		Task task;
+		String taskType;
+		ArrayList<Task> floatingList = new ArrayList<Task>();
+		
+		for(int i = 0; i < list.size(); i++) {
+			task = list.get(i);
+			taskType = task.getTaskType().toString();
+			if(taskType.equalsIgnoreCase(TaskType.FLOATING.toString())) {
+				floatingList.add(list.get(i));
+			} else {
+				break;
+			}
+		}
+		
+		list.removeAll(floatingList);
+		
+		return floatingList;
+	}
+
+	private static void addFloatingTasksBackIntoList(ArrayList<Task> list, ArrayList<Task> floatingList) {
+		Task task;
+		String taskType;
+		Date date, today;
+		
+		if(list.isEmpty()) {
+			for(int k = 0; k < floatingList.size(); k++) {
+				list.add(floatingList.get(k));
+			}
+		} else {
+			for(int j = 0; j < list.size(); j++) {
+				task = list.get(j);
+				taskType = task.getTaskType().toString();
+				date = task.getStartDate();
+				today = DateParser.getTodayDate().getTime();
+				int counter = j;
+				
+				if(!taskType.equalsIgnoreCase(TaskType.FLOATING.toString()) && 
+						DateParser.isAfterDateWithoutTime(date, today)) {
+					for(int k = 0; k < floatingList.size(); k++) {
+						list.add(counter, floatingList.get(k));
+						counter++;
+					}
+					
+					break;
+				} else if(taskType.equalsIgnoreCase(TaskType.FLOATING.toString()) || 
+						j == list.size()-1) {
+					for(int k = 0; k < floatingList.size(); k++) {
+						list.add(floatingList.get(k));
+					}
+					
+					break;
+				}
+			} 
+		}
+	}
+	
+	private static ArrayList<Task> sortByDate(ArrayList<Task> list) {
 		Comparator<Task> comparator = getComparator(parametersForViewAll);
 		Collections.sort(list, comparator);
 		return list;
+	}
+	
+	public static ArrayList<Task> getTasksSortedByDate(ArrayList<Task> list) {
+		return reallocateFloatingTasks(sortByDate(list));
 	}
 	
 	public static ArrayList<Task> getTasksSortedByCategories(ArrayList<Task> list) {
