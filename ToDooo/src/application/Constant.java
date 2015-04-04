@@ -86,7 +86,8 @@ public final class Constant {
 	// -----------------------------------------------------------------------------------------------
 	public static final Command[] COMMAND_ACTIONS = { Command.ADD, Command.DELETE, 
 													  Command.UPDATE, Command.SEARCH,
-													  Command.COMPLETE, Command.VIEW };
+													  Command.COMPLETE, Command.UNCOMPLETE,
+													  Command.VIEW };
 	
 	public static final Command[] COMMAND_DATES = { Command.ON, Command.BY, 
 													Command.FROM, Command.TO };
@@ -160,6 +161,8 @@ public final class Constant {
 	public static final String MSG_COMPLETE_SUCCESS = "Completed {0}.";
 	public static final String MSG_COMPLETE_FAIL = "Failed to complete {0}";
 	public static final String MSG_COMPLETE_INVALID = "TaskID {0} does not exist.";
+	public static final String MSG_UNCOMPLETE_SUCCESS = "Uncompleted {0}.";
+	public static final String MSG_UNCOMPLETE_FAIL = "Failed to uncomplete {0}";
 	
 	public static final String MSG_VIEW_SUCCESS = "Item is found.";
 	public static final String MSG_VIEW_FAIL = "Item is not found.";

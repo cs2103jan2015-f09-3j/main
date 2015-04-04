@@ -8,6 +8,7 @@ public enum Command {
 	UPDATE("update", "-u"),
 	SEARCH("search", "-s"),
 	COMPLETE("complete", "-c"),
+	UNCOMPLETE("uncomplete", "-uc"),
 	VIEW("view", "-v"),
 	FROM("/from", "-f"),
 	TO("/to", "-t"),

@@ -64,6 +64,10 @@ public class Execution {
 			systemMsg = Execution.executeComplete(userInput);
 			headerController.textArea.clear();
 			break;
+		case UNCOMPLETE :
+			systemMsg = Execution.executeUncomplete(userInput);
+			headerController.textArea.clear();
+			break;
 		case VIEW :
 			systemMsg = Execution.executeView(userInput);
 			displayDetail(mainController, systemMsg);
@@ -201,6 +205,28 @@ public class Execution {
 			Main.redos.clear();
 			
 			systemMsg = Constant.MSG_COMPLETE_SUCCESS.
+					replace(Constant.DELIMITER_REPLACE, targetId);
+		} else {
+			systemMsg = Constant.MSG_ITEM_NOT_FOUND;
+		}
+
+		return systemMsg;
+	}
+	
+	private static String executeUncomplete(String userInput) {
+		String systemMsg = null;
+		
+		Pair<Task, String> toUncompleteTask = Main.list.uncompleteTaskOnList(userInput);
+		
+		Task uncompletedTask = toUncompleteTask.getKey();
+		String targetId = toUncompleteTask.getValue();
+		
+		if (uncompletedTask != null) {
+			Undo undo = new Undo(Command.UNCOMPLETE, uncompletedTask, targetId);
+			Main.undos.push(undo);
+			Main.redos.clear();
+			
+			systemMsg = Constant.MSG_UNCOMPLETE_SUCCESS.
 					replace(Constant.DELIMITER_REPLACE, targetId);
 		} else {
 			systemMsg = Constant.MSG_ITEM_NOT_FOUND;
