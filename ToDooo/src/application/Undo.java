@@ -55,6 +55,30 @@ public class Undo {
 	// -----------------------------------------------------------------------------------------------
 	// Undo-related methods
 	// -----------------------------------------------------------------------------------------------
+	public static void prepareUndoAdd(Task task) {
+		Undo undo = new Undo(Command.ADD, task.getId());
+		Main.undos.push(undo);				
+		Main.redos.clear();
+	}	
+	
+	public static void prepareUndoDelete(Task removedTask) {
+		Undo undo = new Undo(Command.DELETE, removedTask);
+		Main.undos.push(undo);			
+		Main.redos.clear();
+	}
+	
+	public static void prepareUndoUpdate(Task originalTask, String targetId) {
+		Undo undo = new Undo(Command.UPDATE, originalTask, targetId);
+		Main.undos.push(undo);
+		Main.redos.clear();
+	}
+	
+	public static void prepareUndoComplete(Task completedTask, String targetId) {
+		Undo undo = new Undo(Command.COMPLETE, completedTask, targetId);
+		Main.undos.push(undo);
+		Main.redos.clear();
+	}
+	
 	public String undoAction() {
 		String systemMsg = null;
 		

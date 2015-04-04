@@ -26,7 +26,6 @@ public class ExecutionTest {
 	public void test() {
 		initTest();
 		testAdd();
-		testUpdate();
 		testDelete();
 		
 		cleanTestFromSystem();
@@ -45,33 +44,6 @@ public class ExecutionTest {
 		String actualResult = invokeMethod(methodName, paramTypes, params);
 		
 		assertEquals(actualResult, expectedResult);
-	}
-	
-	public void testUpdate() {
-		String methodName = "executeUpdate";		
-		Class[] paramTypes = new Class[] {
-				String.class
-		};			
-		
-		// update on an existing task
-		Object[] params = new Object[] { 
-				TEST_UPDATE_COMMAND 		
-		};
-		
-		String expectedResult = Constant.MSG_UPDATE_SUCCESS;
-		String actualResult = invokeMethod(methodName, paramTypes, params);
-		
-		assertEquals(actualResult, expectedResult);
-		
-		// update on a non-existing task
-		params = new Object[] { 
-				TEST_UPDATE_COMMAND_NOT_FOUND 		
-		};
-		expectedResult = Constant.MSG_UPDATE_FAIL;
-		actualResult = invokeMethod(methodName, paramTypes, params);
-		
-		assertEquals(actualResult, expectedResult);
-		
 	}
 	
 	public void testDelete() {

@@ -135,7 +135,19 @@ public enum Command {
 		return isCorrectNum;
 	}
 	
-	
+	public static boolean shouldRetrieveOriginalInput(String commandLine) {		
+		boolean shouldRetrieve = false;
+		
+		boolean hasNoUpdateDelimiter = 
+				(commandLine.indexOf(Constant.DELIMITER_UPDATE) == -1);
+		
+		if (hasNoUpdateDelimiter) {
+			shouldRetrieve = true;
+		}
+		
+		return shouldRetrieve;
+	}
+		
 	// -----------------------------------------------------------------------------------------------
 	// Private methods
 	// -----------------------------------------------------------------------------------------------

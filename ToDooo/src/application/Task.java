@@ -255,6 +255,16 @@ public class Task implements Cloneable {
 		
 		 return clone;
 	}
+	
+	public Task deepCloneTask() {
+		Task copy = this.clone();
+		
+		if (copy.getIsRecurring()) {
+			copy.setRecurringTasks(copy.deepCloneArrayList());
+		}
+		
+		return copy;
+	}
 		
 	public ArrayList<RecurringTask> deepCloneArrayList() {
 		ArrayList<RecurringTask> copies = new ArrayList<RecurringTask>();
@@ -266,7 +276,7 @@ public class Task implements Cloneable {
 		
 		return copies;
 	}
-	
+		
 	// Creating a repeated task with a different date for recurring task
 	public static Task createRecurringChildItem(Task originalTask, String recurringId, 
 												Status recurringStatus, Date onDate, 

@@ -16,21 +16,11 @@ public class Execution {
 	public static String executeUserInput(String userInput) {
 		String systemMsg = "";
 		Command commandType = InputParser.getActionFromString(userInput);
-
-		if (Main.toUpdate && commandType.equals(Command.UPDATE)) {
-			userInput = InputParser.removeLineBreaks(userInput);
-			systemMsg = executeUpdate(userInput);
-
-			Main.toUpdate = false;
-			headerController.textArea.clear();
-		} else {
-			systemMsg = executeCommand(userInput, commandType);
-		}
-
+		systemMsg = executeCommand(userInput, commandType);
+		
 		return systemMsg;
 	}
 
-	
 	// -----------------------------------------------------------------------------------------------
 	// Private methods
 	// -----------------------------------------------------------------------------------------------
@@ -42,10 +32,9 @@ public class Execution {
 		switch (commandType) {
 		case ADD :
 			systemMsg = Execution.executeAdd(userInput);
-			headerController.textArea.clear();
 			break;
 		case UPDATE :
-			systemMsg = Execution.executeRetrieveOriginalText(userInput);
+			systemMsg = Execution.executeUpdate(userInput);
 			Main.shouldResetCaret = true;
 			break;
 		case DELETE :
@@ -82,9 +71,7 @@ public class Execution {
 			systemMsg = Main.list.addTaskToList(task);
 			
 			if (systemMsg.equals(Constant.MSG_ADD_SUCCESS)) {
-				Undo undo = new Undo(Command.ADD, task.getId());
-				Main.undos.push(undo);				
-				Main.redos.clear();
+				Undo.prepareUndoAdd(task);
 			}
 			
 		} else {
@@ -92,16 +79,14 @@ public class Execution {
 		}
 				
 		return systemMsg;
-	}	
+	}
 	
 	private static String executeDelete(String userInput) {
 		String systemMsg= null;
 		Task removedTask = Main.list.deleteTaskFromList(userInput);
 		
 		if (removedTask != null) {
-			Undo undo = new Undo(Command.DELETE, removedTask);
-			Main.undos.push(undo);			
-			Main.redos.clear();
+			Undo.prepareUndoDelete(removedTask);
 			
 			systemMsg = Constant.MSG_DELETE_SUCCESS.
 						replace(Constant.DELIMITER_REPLACE, 
@@ -137,7 +122,7 @@ public class Execution {
 	private static String executeUpdate(String userInput) {
 		String systemMsg = null;
 		
-		if (userInput.indexOf(Constant.DELIMITER_UPDATE) == -1) {
+		if (Command.shouldRetrieveOriginalInput(userInput)) {
 			systemMsg = executeRetrieveOriginalText(userInput);
 		} else {
 			Pair<Task, String> updatedTasksDetails = Main.list.updateTaskOnList(userInput);
@@ -149,11 +134,10 @@ public class Execution {
 			String targetId = updatedTasksDetails.getValue();
 			
 			if (originalTask != null) {
-				Undo undo = new Undo(Command.UPDATE, originalTask, targetId);
-				Main.undos.push(undo);
-				Main.redos.clear();
+				Undo.prepareUndoUpdate(originalTask, targetId);
 				
 				systemMsg = Constant.MSG_UPDATE_SUCCESS;
+				headerController.textArea.clear();
 			} else {
 				systemMsg = Constant.MSG_UPDATE_FAIL;
 			}
@@ -161,7 +145,7 @@ public class Execution {
 		
 		return systemMsg;
 	}
-	
+
 	private static String executeSearch(String userInput) {
 		String systemMsg = null;
 		
@@ -192,9 +176,7 @@ public class Execution {
 		String targetId = toCompleteTask.getValue();
 		
 		if (completedTask != null) {
-			Undo undo = new Undo(Command.COMPLETE, completedTask, targetId);
-			Main.undos.push(undo);
-			Main.redos.clear();
+			Undo.prepareUndoComplete(completedTask, targetId);
 			
 			systemMsg = Constant.MSG_COMPLETE_SUCCESS.
 					replace(Constant.DELIMITER_REPLACE, targetId);
@@ -204,7 +186,7 @@ public class Execution {
 
 		return systemMsg;
 	}
-	
+
 	private static String executeView(String userInput) {
 		String systemMsg = null;
 		Task selectedTask = Main.list.selectTaskFromList(userInput);
