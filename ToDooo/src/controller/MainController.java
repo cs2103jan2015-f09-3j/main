@@ -623,6 +623,13 @@ public class MainController{
 	
 	private void addDateTimeInAllOrSearchResult(String taskType, String status, String displayType, Date onDate, 
 			Date byDate, Date fromDate, Date toDate, Date startDate, HBox hBoxRight, HBox hBoxLeft) {
+		SimpleDateFormat dateFormat;
+		
+		if(status.equalsIgnoreCase(Constant.TITLE_OVERDUE)) {
+			dateFormat = Constant.FORMAT_DATE_TIME_OUTPUT;
+		} else {
+			dateFormat = Constant.FORMAT_TIME_OUTPUT;
+		}
 		
 		if(taskType.equalsIgnoreCase(TaskType.EVENT.toString())) {
 			addSingleDateTime(onDate, hBoxRight, Constant.EMPTY_STRING, Constant.FORMAT_TIME_OUTPUT);

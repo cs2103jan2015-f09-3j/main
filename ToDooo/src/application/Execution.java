@@ -44,7 +44,7 @@ public class Execution {
 			break;
 		case SEARCH :
 			systemMsg = Execution.executeSearch(userInput);
-			mainController.executeSearchResult();
+			displaySearchResult(systemMsg);
 			headerController.textArea.clear();
 			break;
 		case COMPLETE :
@@ -208,6 +208,12 @@ public class Execution {
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
+		}
+	}
+	
+	private static void displaySearchResult(String systemMsg) {
+		if(systemMsg.contains(Constant.SYS_MSG_KEYWORD_SEARCH)) {
+			mainController.executeSearchResult();
 		}
 	}
 }
