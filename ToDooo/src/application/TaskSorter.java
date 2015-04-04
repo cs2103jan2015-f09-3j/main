@@ -94,11 +94,14 @@ public class TaskSorter {
 
 		private int categoryComparison(String categoryOfTaskA, String categoryOfTaskB) {
 			int comparison;
-			if (!categoryOfTaskA.equals(Constant.CATEGORY_UNCATEGORISED) && !categoryOfTaskB.equals(Constant.CATEGORY_UNCATEGORISED)) {
+			if (!categoryOfTaskA.equals(Constant.CATEGORY_UNCATEGORISED) 
+					&& !categoryOfTaskB.equals(Constant.CATEGORY_UNCATEGORISED)) {
 				comparison = categoryOfTaskA.compareTo(categoryOfTaskB);
-			} else if (categoryOfTaskA.equals(Constant.CATEGORY_UNCATEGORISED) & !categoryOfTaskB.equals(Constant.CATEGORY_UNCATEGORISED)) {
+			} else if (categoryOfTaskA.equals(Constant.CATEGORY_UNCATEGORISED) 
+					& !categoryOfTaskB.equals(Constant.CATEGORY_UNCATEGORISED)) {
 				comparison = 1;
-			} else if (!categoryOfTaskA.equals(Constant.CATEGORY_UNCATEGORISED) && categoryOfTaskB.equals(Constant.CATEGORY_UNCATEGORISED)) {
+			} else if (!categoryOfTaskA.equals(Constant.CATEGORY_UNCATEGORISED) 
+					&& categoryOfTaskB.equals(Constant.CATEGORY_UNCATEGORISED)) {
 				comparison = -1;
 			} else {
 				comparison = 0;
@@ -111,13 +114,16 @@ public class TaskSorter {
 			Date dateOfTaskA, dateOfTaskB;
 			TaskType taskTypeOfTaskA = taskA.getTaskType();
 			TaskType taskTypeOfTaskB = taskB.getTaskType();
-			if (!taskTypeOfTaskA.equals(TaskType.FLOATING) && !taskTypeOfTaskB.equals(TaskType.FLOATING)) {
+			if (!taskTypeOfTaskA.equals(TaskType.FLOATING) 
+					&& !taskTypeOfTaskB.equals(TaskType.FLOATING)) {
 				dateOfTaskA = taskA.getStartDate();
 				dateOfTaskB = taskB.getStartDate();
 				comparison = dateOfTaskA.compareTo(dateOfTaskB);
-			} else if (taskTypeOfTaskA.equals(TaskType.FLOATING) && !taskTypeOfTaskB.equals(TaskType.FLOATING)) {
+			} else if (taskTypeOfTaskA.equals(TaskType.FLOATING) 
+					&& !taskTypeOfTaskB.equals(TaskType.FLOATING)) {
 				comparison = 1;
-			} else if (!taskTypeOfTaskA.equals(TaskType.FLOATING) && taskTypeOfTaskB.equals(TaskType.FLOATING)) {
+			} else if (!taskTypeOfTaskA.equals(TaskType.FLOATING) 
+					&& taskTypeOfTaskB.equals(TaskType.FLOATING)) {
 				comparison = -1;
 			} else {
 				comparison = 0;
@@ -128,13 +134,18 @@ public class TaskSorter {
 		private int priorityComparison(Priority taskAPriority, Priority taskBPriority) {
 			int comparison;
 			int priorityLengthOfTaskA, priorityLengthOfTaskB;
-			if (!taskAPriority.equals(Priority.NEUTRAL) && !taskBPriority.equals(Priority.NEUTRAL)) {
-				priorityLengthOfTaskA = taskAPriority.getCommand().getAdvancedCommand().length();
-				priorityLengthOfTaskB = taskBPriority.getCommand().getAdvancedCommand().length();
+			if (!taskAPriority.equals(Priority.NEUTRAL) 
+					&& !taskBPriority.equals(Priority.NEUTRAL)) {
+				priorityLengthOfTaskA = taskAPriority.getCommand().
+						getAdvancedCommand().length();
+				priorityLengthOfTaskB = taskBPriority.getCommand().
+						getAdvancedCommand().length();
 				comparison = priorityLengthOfTaskB - priorityLengthOfTaskA;
-			} else if (taskAPriority.equals(Priority.NEUTRAL) && !taskBPriority.equals(Priority.NEUTRAL)) {
+			} else if (taskAPriority.equals(Priority.NEUTRAL) 
+					&& !taskBPriority.equals(Priority.NEUTRAL)) {
 				comparison = 1;
-			} else if (!taskAPriority.equals(Priority.NEUTRAL) && taskBPriority.equals(Priority.NEUTRAL)) {
+			} else if (!taskAPriority.equals(Priority.NEUTRAL) 
+					&& taskBPriority.equals(Priority.NEUTRAL)) {
 				comparison = -1;
 			} else {
 				comparison = 0;
