@@ -32,6 +32,7 @@ public class Execution {
 		switch (commandType) {
 		case ADD :
 			systemMsg = Execution.executeAdd(userInput);
+			headerController.textArea.clear();
 			break;
 		case UPDATE :
 			systemMsg = Execution.executeUpdate(userInput);
