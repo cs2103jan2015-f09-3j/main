@@ -6,7 +6,6 @@ import java.util.Stack;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.stage.Stage;
-import javafx.stage.StageStyle;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
@@ -49,7 +48,7 @@ public class Main extends Application {
 		launch(args);
 	}
 	
-	private static void initialise() {		
+	public static void initialise() {		
 		Main.storage = Storage.getInstance();
 		Main.inputParser = InputParser.getInstance();
 		

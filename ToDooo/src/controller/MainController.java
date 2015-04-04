@@ -1,19 +1,16 @@
 package controller;
 
 import java.io.IOException;
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.Timer;
 import java.util.TimerTask;
 
 import net.fortuna.ical4j.model.property.Status;
 import application.Constant;
+import application.Execution;
 import application.Main;
-import application.Priority;
 import application.Task;
 import application.TaskSorter;
 import application.TaskType;
@@ -21,7 +18,6 @@ import application.ToDoList;
 import application.Undo;
 import application.DateParser;
 import javafx.application.Platform;
-import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -32,9 +28,6 @@ import javafx.scene.control.ScrollPane;
 import javafx.scene.control.SingleSelectionModel;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyCodeCombination;
-import javafx.scene.input.KeyCombination;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
@@ -44,7 +37,6 @@ import javafx.scene.layout.VBox;
 import javafx.scene.shape.Line;
 import javafx.scene.control.Tab;
 import javafx.stage.Popup;
-import javafx.stage.PopupWindow.AnchorLocation;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import controller.HeaderController;
@@ -90,6 +82,9 @@ public class MainController{
 		headerController.init(this);
 		bodyController.init(this);
 		searchResultController.init(this);
+		
+		Execution.mainController = this;
+		Execution.headerController = headerController;
 	}
 
 	@FXML
@@ -628,6 +623,13 @@ public class MainController{
 	
 	private void addDateTimeInAllOrSearchResult(String taskType, String status, String displayType, Date onDate, 
 			Date byDate, Date fromDate, Date toDate, Date startDate, HBox hBoxRight, HBox hBoxLeft) {
+		SimpleDateFormat dateFormat;
+		
+		if(status.equalsIgnoreCase(Constant.TITLE_OVERDUE)) {
+			dateFormat = Constant.FORMAT_DATE_TIME_OUTPUT;
+		} else {
+			dateFormat = Constant.FORMAT_TIME_OUTPUT;
+		}
 		
 		if(taskType.equalsIgnoreCase(TaskType.EVENT.toString())) {
 			addSingleDateTime(onDate, hBoxRight, Constant.EMPTY_STRING, Constant.FORMAT_TIME_OUTPUT);

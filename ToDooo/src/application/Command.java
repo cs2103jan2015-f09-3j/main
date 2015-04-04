@@ -14,7 +14,7 @@ public enum Command {
 	TO("/to", "-t"),
 	ON("/on", "-o"),
 	BY("/by", "-b"),
-	CATEGORY("//", "//"),
+	CATEGORY("#", "#"),
 	PRIORITY_HIGH("/high", "/***"),
 	PRIORITY_MEDIUM("/medium", "/**"),
 	PRIORITY_LOW("/low", "/*"),
@@ -136,7 +136,19 @@ public enum Command {
 		return isCorrectNum;
 	}
 	
-	
+	public static boolean shouldRetrieveOriginalInput(String commandLine) {		
+		boolean shouldRetrieve = false;
+		
+		boolean hasNoUpdateDelimiter = 
+				(commandLine.indexOf(Constant.DELIMITER_UPDATE) == -1);
+		
+		if (hasNoUpdateDelimiter) {
+			shouldRetrieve = true;
+		}
+		
+		return shouldRetrieve;
+	}
+		
 	// -----------------------------------------------------------------------------------------------
 	// Private methods
 	// -----------------------------------------------------------------------------------------------

@@ -7,36 +7,24 @@ import controller.HeaderController;
 import controller.MainController;
 
 public class Execution {
+	public static MainController mainController;
+	public static HeaderController headerController;
 	
 	// -----------------------------------------------------------------------------------------------
 	// Public methods
 	// -----------------------------------------------------------------------------------------------
-	public static String executeUserInput(String userInput,
-			HeaderController headerController, MainController mainController) {
+	public static String executeUserInput(String userInput) {
 		String systemMsg = "";
 		Command commandType = InputParser.getActionFromString(userInput);
-
-		if (Main.toUpdate && commandType.equals(Command.UPDATE)) {
-			userInput = InputParser.removeLineBreaks(userInput);
-			systemMsg = executeUpdate(userInput, headerController);
-
-			Main.toUpdate = false;
-			headerController.textArea.clear();
-		} else {
-			systemMsg = executeCommand(userInput, commandType, 
-													headerController,
-													mainController);
-		}
-
+		systemMsg = executeCommand(userInput, commandType);
+		
 		return systemMsg;
 	}
 
-	
 	// -----------------------------------------------------------------------------------------------
 	// Private methods
 	// -----------------------------------------------------------------------------------------------
-	private static String executeCommand(String userInput, Command commandType,
-			HeaderController headerController, MainController mainController) {
+	private static String executeCommand(String userInput, Command commandType) {
 		String systemMsg = null;
 
 		userInput = InputParser.removeLineBreaks(userInput);
@@ -47,8 +35,7 @@ public class Execution {
 			headerController.textArea.clear();
 			break;
 		case UPDATE :
-			systemMsg = Execution.executeRetrieveOriginalText(userInput,
-					headerController);
+			systemMsg = Execution.executeUpdate(userInput);
 			Main.shouldResetCaret = true;
 			break;
 		case DELETE :
@@ -57,7 +44,7 @@ public class Execution {
 			break;
 		case SEARCH :
 			systemMsg = Execution.executeSearch(userInput);
-			mainController.executeSearchResult();
+			displaySearchResult(systemMsg);
 			headerController.textArea.clear();
 			break;
 		case COMPLETE :
@@ -70,7 +57,7 @@ public class Execution {
 			break;
 		case VIEW :
 			systemMsg = Execution.executeView(userInput);
-			displayDetail(mainController, systemMsg);
+			displayDetail(systemMsg);
 			headerController.textArea.clear();
 			break ;
 		default:
@@ -89,9 +76,7 @@ public class Execution {
 			systemMsg = Main.list.addTaskToList(task);
 			
 			if (systemMsg.equals(Constant.MSG_ADD_SUCCESS)) {
-				Undo undo = new Undo(Command.ADD, task.getId());
-				Main.undos.push(undo);				
-				Main.redos.clear();
+				Undo.prepareUndoAdd(task);
 			}
 			
 		} else {
@@ -99,16 +84,14 @@ public class Execution {
 		}
 				
 		return systemMsg;
-	}	
+	}
 	
 	private static String executeDelete(String userInput) {
 		String systemMsg= null;
 		Task removedTask = Main.list.deleteTaskFromList(userInput);
 		
 		if (removedTask != null) {
-			Undo undo = new Undo(Command.DELETE, removedTask);
-			Main.undos.push(undo);			
-			Main.redos.clear();
+			Undo.prepareUndoDelete(removedTask);
 			
 			systemMsg = Constant.MSG_DELETE_SUCCESS.
 						replace(Constant.DELIMITER_REPLACE, 
@@ -120,8 +103,7 @@ public class Execution {
 		return systemMsg;
 	}
 	
-	private static String executeRetrieveOriginalText(String userInput, 
-			HeaderController headerController) {
+	private static String executeRetrieveOriginalText(String userInput) {
 		
 		String systemMsg = null;
 		String targetId = InputParser.getTargetIdFromString(userInput);
@@ -142,11 +124,11 @@ public class Execution {
 		return systemMsg;
 	}
 	
-	private static String executeUpdate(String userInput, HeaderController headerController) {
+	private static String executeUpdate(String userInput) {
 		String systemMsg = null;
 		
-		if (userInput.indexOf(Constant.DELIMITER_UPDATE) == -1) {
-			systemMsg = executeRetrieveOriginalText(userInput, headerController);
+		if (Command.shouldRetrieveOriginalInput(userInput)) {
+			systemMsg = executeRetrieveOriginalText(userInput);
 		} else {
 			Pair<Task, String> updatedTasksDetails = Main.list.updateTaskOnList(userInput);
 			if (updatedTasksDetails == null) {
@@ -157,11 +139,10 @@ public class Execution {
 			String targetId = updatedTasksDetails.getValue();
 			
 			if (originalTask != null) {
-				Undo undo = new Undo(Command.UPDATE, originalTask, targetId);
-				Main.undos.push(undo);
-				Main.redos.clear();
+				Undo.prepareUndoUpdate(originalTask, targetId);
 				
 				systemMsg = Constant.MSG_UPDATE_SUCCESS;
+				headerController.textArea.clear();
 			} else {
 				systemMsg = Constant.MSG_UPDATE_FAIL;
 			}
@@ -169,7 +150,7 @@ public class Execution {
 		
 		return systemMsg;
 	}
-	
+
 	private static String executeSearch(String userInput) {
 		String systemMsg = null;
 		
@@ -200,9 +181,7 @@ public class Execution {
 		String targetId = toCompleteTask.getValue();
 		
 		if (completedTask != null) {
-			Undo undo = new Undo(Command.COMPLETE, completedTask, targetId);
-			Main.undos.push(undo);
-			Main.redos.clear();
+			Undo.prepareUndoComplete(completedTask, targetId);
 			
 			systemMsg = Constant.MSG_COMPLETE_SUCCESS.
 					replace(Constant.DELIMITER_REPLACE, targetId);
@@ -222,9 +201,7 @@ public class Execution {
 		String targetId = toUncompleteTask.getValue();
 		
 		if (uncompletedTask != null) {
-			Undo undo = new Undo(Command.UNCOMPLETE, uncompletedTask, targetId);
-			Main.undos.push(undo);
-			Main.redos.clear();
+			Undo.prepareUndoComplete(uncompletedTask, targetId);
 			
 			systemMsg = Constant.MSG_UNCOMPLETE_SUCCESS.
 					replace(Constant.DELIMITER_REPLACE, targetId);
@@ -234,7 +211,7 @@ public class Execution {
 
 		return systemMsg;
 	}
-	
+
 	private static String executeView(String userInput) {
 		String systemMsg = null;
 		Task selectedTask = Main.list.selectTaskFromList(userInput);
@@ -248,13 +225,19 @@ public class Execution {
 		return systemMsg;
 	}
 	
-	private static void displayDetail(MainController mainController, String systemMsg) {
+	private static void displayDetail(String systemMsg) {
 		if(systemMsg.equalsIgnoreCase(Constant.MSG_VIEW_SUCCESS)) {
 			try {
 				mainController.viewDetails(Main.list.getSelectedTask());
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
+		}
+	}
+	
+	private static void displaySearchResult(String systemMsg) {
+		if(systemMsg.contains(Constant.SYS_MSG_KEYWORD_SEARCH)) {
+			mainController.executeSearchResult();
 		}
 	}
 }

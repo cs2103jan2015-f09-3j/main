@@ -20,9 +20,9 @@ import application.ToDoList;
 public class ToDoListTest {
 	private static final String METHOD_NAME_INIT = "initialise";
 	private static final String TEST_ADD_COMMAND = "Have dinner with Amy /on Monday //friend /*";
-	private static final String TEST_DELETE_COMMAND = "delete d1";
-	private static final String TEST_UPDATE_COMMAND = "update e1: Have dinner with Amy /by Monday //friend /*";
-	private static final String TEST_UPDATE_COMMAND_NOT_FOUND = "update d1: Have dinner with Amy /by Monday //friend /*";
+	private static final String TEST_DELETE_COMMAND = "delete 1";
+	private static final String TEST_UPDATE_COMMAND = "update 1: Have dinner with Amy /by Monday //friend /*";
+	private static final String TEST_UPDATE_COMMAND_NOT_FOUND = "update 1: Have dinner with Amy /by Monday //friend /*";
 	public static final String PATH_TEST_FILE = "testFile.xml";
 	
 	private String originalSavePath;
@@ -91,11 +91,7 @@ public class ToDoListTest {
 		
 		// Check that update has been done
 		assertNotNull(resultPair);	
-		
-		// Check update value
-		String expectedID = "D1";
-		assertEquals(resultPair.getValue(), expectedID);
-		
+				
 		//---------------------------------------------------------------------------------
 		resultPair = Main.list.updateTaskOnList(ToDoListTest.
 					TEST_UPDATE_COMMAND_NOT_FOUND);

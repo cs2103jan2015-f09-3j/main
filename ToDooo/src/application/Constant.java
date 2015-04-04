@@ -187,6 +187,7 @@ public final class Constant {
     public static final String[] SYS_MSG_KEYWORD_SUCCESS = { "successful", "Completed", "saved" , "matches found", "is found" };
     public static final String[] SYS_MSG_KEYWORD_ERROR = { "failed", "Failed", "cannot" , "Invalid", "does not exist",
     														"Unable", "not saved", "not found" };
+    public static final String SYS_MSG_KEYWORD_SEARCH = "matches found";
     
     // -----------------------------------------------------------------------------------------------
  	// System message types

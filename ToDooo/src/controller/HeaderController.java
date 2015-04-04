@@ -39,7 +39,7 @@ public class HeaderController{
 				return;
 			}
 			
-			String systemMsg = Execution.executeUserInput(userInput, this, mainCon);
+			String systemMsg = Execution.executeUserInput(userInput);
 			if (systemMsg.equals(Constant.MSG_ORIGINAL_NOT_RETRIEVED)) {
 				resetTextArea();
 			}	
@@ -117,8 +117,8 @@ public class HeaderController{
 		int endIndex = -1;
 		
 		for (Command command : Constant.COMMAND_PRIORITIES) {
-			basicCommand = command.getBasicCommand() + " ";
-			advancedCommand = command.getAdvancedCommand() + " ";
+			basicCommand = command.getBasicCommand();
+			advancedCommand = command.getAdvancedCommand();
 			
 			if (lowerCase.contains(basicCommand)) {
 				startIndex = lowerCase.indexOf(basicCommand);

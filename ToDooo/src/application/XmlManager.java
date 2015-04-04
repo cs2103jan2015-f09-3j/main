@@ -16,6 +16,9 @@ import org.w3c.dom.NodeList;
 import org.w3c.dom.Text;
 
 public class XmlManager {
+	// -----------------------------------------------------------------------------------------------
+	// Public Methods
+	// -----------------------------------------------------------------------------------------------
 	public static DocumentBuilder getNewDocBuilder() {		
 		try {
 			DocumentBuilderFactory documentFactory = 
@@ -35,38 +38,10 @@ public class XmlManager {
         return xpathFactory.newXPath();
 	}
 	
-	public static void createAndAppendChildElement(Document document,
-												Element parentElement, String tag, String content) {
-		Element element = document.createElement(tag);
-		Text text = document.createTextNode(content);
-		element.appendChild(text);
-		parentElement.appendChild(element);
-	}
-
-	public static Element createAndAppendWrapper(Document document,
-										   Element parentElement, String tag) {
-		Element element = document.createElement(tag);
-		parentElement.appendChild(element);
-
-		return element;
-	}
-	
-	public static Document createXmlDocument() {
-		try {
-			DocumentBuilderFactory documentFactory = 
-					DocumentBuilderFactory.newInstance();
-			DocumentBuilder documentBuilder = 
-					documentFactory.newDocumentBuilder();
-			
-			return documentBuilder.newDocument(); 
-			
-		} catch (ParserConfigurationException exception) {
-			exception.printStackTrace();
-		}		
-		
-		return null;
-	}
-	
+	/*
+	 * Create and initialize an XML document 
+	 * with the file's global information tags
+	 */
 	public static Document initDocument() {
 		Document document = XmlManager.createXmlDocument();
 								
@@ -88,7 +63,23 @@ public class XmlManager {
 							   String.valueOf(Constant.TAG_TASKS));
 		return document;
 	}
+	
+	public static void createAndAppendChildElement(Document document,
+												Element parentElement, String tag, String content) {
+		Element element = document.createElement(tag);
+		Text text = document.createTextNode(content);
+		element.appendChild(text);
+		parentElement.appendChild(element);
+	}
 
+	public static Element createAndAppendWrapper(Document document,
+										   Element parentElement, String tag) {
+		Element element = document.createElement(tag);
+		parentElement.appendChild(element);
+
+		return element;
+	}
+	
 	public static Task transformNodeToTask(Node node) {
 		Task task = new Task();		
 		Element element = (Element) node;
@@ -107,18 +98,18 @@ public class XmlManager {
 		
 		text = getTextByTagName(element, Constant.TAG_ON);
 		task.setOn(Main.inputParser.getDateFromString(text));		
-		setStartEndDate(task, task.getOn(), text);
+		Task.setStartEndDate(task, task.getOn(), text);
 				
 		text = getTextByTagName(element, Constant.TAG_FROM);
 		task.setFrom(Main.inputParser.getDateFromString(text));
-		setStartEndDate(task, task.getFrom(), text);
+		Task.setStartEndDate(task, task.getFrom(), text);
 		
 		text = getTextByTagName(element, Constant.TAG_TO);
 		task.setTo(Main.inputParser.getDateFromString(text));
 		
 		text = getTextByTagName(element, Constant.TAG_BY);
 		task.setBy(Main.inputParser.getDateFromString(text));
-		setStartEndDate(task, task.getBy(), text);
+		Task.setStartEndDate(task, task.getBy(), text);
 		
 		text = getTextByTagName(element, Constant.TAG_CATEGORY);
 		task.setCategory(text);
@@ -149,113 +140,7 @@ public class XmlManager {
 		
 		return task;
 	}
-
-	private static void setStartEndDate(Task task, Date date, String text) {
-		if (!text.equals(Constant.XML_TEXT_NIL)) {
-			task.setStartDate(date);
-			
-			if (task.getTaskType().equals(TaskType.TIMED)) {
-				task.setEndDate(task.getTo());
-			} else {
-				task.setEndDate(date);
-			}			
-		}
-	}
 	
-	private static ArrayList<RecurringTask> transformRecurringTasksNodesToArrayList(Element element) {
-		ArrayList<RecurringTask> recurringTasks = new ArrayList<RecurringTask>();
-		
-		Element recurringTasksWrapper = 
-				(Element) element.getElementsByTagName(Constant.TAG_RECURRING_TASKS).
-				item(0);
-		
-		NodeList recurringTasksNodes = recurringTasksWrapper.
-									   getElementsByTagName(Constant.TAG_RECURRING_TASK);
-		
-		Element recurringTaskNode = null;
-		String text = null;
-		for (int i = 0; i < recurringTasksNodes.getLength(); i++) {
-			RecurringTask recurringTask = new RecurringTask();
-			recurringTaskNode = (Element) recurringTasksNodes.item(i);
-			
-			text = recurringTaskNode.getAttribute(Constant.TAG_RECURRING_ID);
-			recurringTask.setRecurringTaskId(text);
-			
-			text = getTextByTagName(recurringTaskNode, Constant.TAG_RECURRING_STATUS);
-			recurringTask.setStatus(Status.valueOf(text));		
-			
-			text = getTextByTagName(recurringTaskNode, Constant.TAG_RECURRING_DATE);
-			recurringTask.setRecurDate(Main.inputParser.getDateFromString(text));
-			
-			recurringTasks.add(recurringTask);
-		}
-				
-		return recurringTasks;
-	}
-	
-	public static void setText(Element parentElement, String tagName, String text) {
-		Element element = (Element) parentElement.
-									  getElementsByTagName(tagName).
-									  item(0);
-		element.setTextContent(text);
-	}
-	
-	public static String getTextByTagName(Element parentElement, String tagName) {
-		return parentElement.getElementsByTagName(tagName).
-			   item(0).
-			   getTextContent();
-	}
-
-	public static Document getUpdatedXmlDocument() {
-		Document document = XmlManager.initDocument();	
-		Element root =  document.getDocumentElement();
-		
-		XmlManager.transformNextIdToXml(document, root);
-		XmlManager.transformCategoriesToXml(document, root);
-		XmlManager.transformTasksToXml(document, root);		
-		
-		return document;
-	}
-	
-	private static void transformNextIdToXml(Document document, Element root) {
-		int nextId = Main.list.getNextId();
-		Element nextIdElement = (Element) root.
-								getElementsByTagName(Constant.TAG_NEXT_ID).
-								item(0);
-		
-		nextIdElement.setTextContent(String.valueOf(nextId));
-	}
-	
-	private static void transformCategoriesToXml(Document document, Element root) {
-		ArrayList<String> categories = Main.list.getCategories();
-		
-		Element categoriesWrapper = (Element) root.
-									getElementsByTagName(Constant.TAG_CATEGORIES).
-				   					item(0);
-		
-		for (String category : categories) {
-			if (category.equals(Constant.CATEGORY_UNCATEGORISED)) {
-				continue;
-			}
-			
-			XmlManager.createAndAppendChildElement(document, categoriesWrapper, 
-												   Constant.TAG_CATEGORY, category);			
-		}
-	}
-
-	private static void transformTasksToXml(Document document, Element root) {
-		ArrayList<Task> tasks = Main.list.getTasks();
-		
-		Element tasksWrapper = (Element) root.
-								getElementsByTagName(Constant.TAG_TASKS).
-							   item(0);
-		for (Task task : tasks) {
-			Element taskTag = transformTaskToXml(document, task);
-			
-			tasksWrapper.appendChild(taskTag);
-		}
-	}
-
 	public static Element transformTaskToXml(Document document, Task task) {
 		Element taskTag = document.createElement(Constant.TAG_TASK);
 		taskTag.setAttribute(Constant.TAG_ATTRIBUTE_ID, task.getId());
@@ -302,12 +187,82 @@ public class XmlManager {
 		XmlManager.createAndAppendChildElement(document, taskTag, Constant.TAG_STATUS, 
 				   							   task.getStatus().toString());
 						
-		createAndAppendRecurringTasks(document, taskTag, task);
+		createAndAppendRecurringTasksNodes(document, taskTag, task);
 		
 		return taskTag;
 	}
 	
-	private static void createAndAppendRecurringTasks(Document document, Element taskTag, Task task) {
+	// -----------------------------------------------------------------------------------------------
+	// Private Methods
+	// -----------------------------------------------------------------------------------------------
+	private static Document createXmlDocument() {
+		try {
+			DocumentBuilderFactory documentFactory = 
+					DocumentBuilderFactory.newInstance();
+			DocumentBuilder documentBuilder = 
+					documentFactory.newDocumentBuilder();
+			
+			return documentBuilder.newDocument(); 
+			
+		} catch (ParserConfigurationException exception) {
+			exception.printStackTrace();
+		}		
+		
+		return null;
+	}	
+	
+	private static String getTextByTagName(Element parentElement, String tagName) {
+		return parentElement.getElementsByTagName(tagName).
+			   item(0).
+			   getTextContent();
+	}
+	
+	/*
+	 * Transform XML node to an arraylist of recurring task objects
+	 */
+	private static ArrayList<RecurringTask> transformRecurringTasksNodesToArrayList(Element element) {
+		ArrayList<RecurringTask> recurringTasks = new ArrayList<RecurringTask>();
+		
+		Element recurringTasksWrapper = 
+				(Element) element.getElementsByTagName(Constant.TAG_RECURRING_TASKS).
+				item(0);
+		
+		NodeList recurringTasksNodes = recurringTasksWrapper.
+									   getElementsByTagName(Constant.TAG_RECURRING_TASK);
+		
+		for (int i = 0; i < recurringTasksNodes.getLength(); i++) {
+			RecurringTask recurringTask = transformNodeToRecurringTask(
+					recurringTasksNodes, i);
+			
+			recurringTasks.add(recurringTask);
+		}
+				
+		return recurringTasks;
+	}
+
+	/*
+	 * Transform XML node to a recurring task object
+	 */
+	private static RecurringTask transformNodeToRecurringTask(
+			NodeList recurringTasksNodes, int i) {
+		RecurringTask recurringTask = new RecurringTask();
+		Element recurringTaskNode = (Element) recurringTasksNodes.item(i);
+		
+		String text = recurringTaskNode.getAttribute(Constant.TAG_RECURRING_ID);
+		recurringTask.setRecurringTaskId(text);
+		
+		text = getTextByTagName(recurringTaskNode, Constant.TAG_RECURRING_STATUS);
+		recurringTask.setStatus(Status.valueOf(text));		
+		
+		text = getTextByTagName(recurringTaskNode, Constant.TAG_RECURRING_DATE);
+		recurringTask.setRecurDate(Main.inputParser.getDateFromString(text));
+		return recurringTask;
+	}
+	
+	/*
+	 * Transform recurring task objects to XML nodes
+	 */
+	private static void createAndAppendRecurringTasksNodes(Document document, Element taskTag, Task task) {
 		if (task.getIsRecurring()) {
 			Element recurringTasksWrapper = XmlManager.createAndAppendWrapper(document, taskTag, 
 					   						String.valueOf(Constant.TAG_RECURRING_TASKS));
@@ -316,31 +271,31 @@ public class XmlManager {
 			
 			
 			for (RecurringTask recurringTask : recurringTasks) {
-				Element recurringTaskTag = document.createElement(Constant.TAG_RECURRING_TASK);
-				recurringTaskTag.setAttribute(Constant.TAG_RECURRING_ID, recurringTask.getRecurringTaskId());
-				
-				XmlManager.createAndAppendChildElement(document, recurringTaskTag, 
-													   Constant.TAG_RECURRING_STATUS, 
-													   recurringTask.getStatus().toString());		
-				
-				XmlManager.createAndAppendChildElement(document, recurringTaskTag, 
-													   Constant.TAG_RECURRING_DATE, 
-													   InputParser.getDateString(recurringTask.getRecurDate()));	
+				Element recurringTaskTag = createRecurringTaskNode(document,
+						recurringTask);	
 				
 				recurringTasksWrapper.appendChild(recurringTaskTag);
 			}
 		}
 	}
-	
-	public static Node removeAllChildNodes(Node parentNode) {
-		NodeList childNodes = parentNode.getChildNodes();
+
+	/*
+	 * Transform recurring task object to XML node
+	 */
+	private static Element createRecurringTaskNode(Document document,
+			RecurringTask recurringTask) {
+		Element recurringTaskTag = document.createElement(Constant.TAG_RECURRING_TASK);
+		recurringTaskTag.setAttribute(Constant.TAG_RECURRING_ID, recurringTask.getRecurringTaskId());
 		
-		Node childNode = null;
-		for (int i = 0; i < childNodes.getLength(); i++) {
-			childNode = childNodes.item(i);
-			parentNode.removeChild(childNode);
-		}
+		XmlManager.createAndAppendChildElement(document, recurringTaskTag, 
+											   Constant.TAG_RECURRING_STATUS, 
+											   recurringTask.getStatus().toString());		
 		
-		return parentNode;
+		XmlManager.createAndAppendChildElement(document, recurringTaskTag, 
+											   Constant.TAG_RECURRING_DATE, 
+											   InputParser.getDateString(recurringTask.getRecurDate()));
+		return recurringTaskTag;
 	}
+	
+	
 }

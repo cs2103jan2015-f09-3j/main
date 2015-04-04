@@ -53,15 +53,26 @@ public class DateParser {
 		return month;
 	}
 	
-	public static boolean compareDate(Date d1, Date d2) {
-		Calendar cal1 = Calendar.getInstance();
-		Calendar cal2 = Calendar.getInstance();
-		cal1.setTime(d1);
-		cal2.setTime(d2);
-		boolean sameDay = cal1.get(Calendar.YEAR) == cal2.get(Calendar.YEAR) &&
-		                  cal1.get(Calendar.DAY_OF_YEAR) == cal2.get(Calendar.DAY_OF_YEAR);
+	public static boolean compareDate(Date dateA, Date dateB) {
+		Calendar calendarA = Calendar.getInstance();
+		Calendar calendarB = Calendar.getInstance();
+		calendarA.setTime(dateA);
+		calendarB.setTime(dateB);
+		boolean sameDay = calendarA.get(Calendar.YEAR) == calendarB.get(Calendar.YEAR) &&
+				calendarA.get(Calendar.DAY_OF_YEAR) == calendarB.get(Calendar.DAY_OF_YEAR);
 		
 		return sameDay;
+	}
+	
+	public static boolean isAfterDateWithoutTime(Date dateA, Date dateB) {
+		Calendar calendarA = Calendar.getInstance();
+		Calendar calendarB = Calendar.getInstance();
+		calendarA.setTime(dateA);
+		calendarB.setTime(dateB);
+		boolean isAfterDay = calendarA.get(Calendar.YEAR) >= calendarB.get(Calendar.YEAR) &&
+				calendarA.get(Calendar.DAY_OF_YEAR) > calendarB.get(Calendar.DAY_OF_YEAR);
+		
+		return isAfterDay;
 	}
 	
 	public static boolean isBeforeDate(Date thisDate, Date thatDate) {
