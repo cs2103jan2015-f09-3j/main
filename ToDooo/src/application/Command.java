@@ -13,7 +13,7 @@ public enum Command {
 	TO("/to", "-t"),
 	ON("/on", "-o"),
 	BY("/by", "-b"),
-	CATEGORY("//", "//"),
+	CATEGORY("#", "#"),
 	PRIORITY_HIGH("/high", "/***"),
 	PRIORITY_MEDIUM("/medium", "/**"),
 	PRIORITY_LOW("/low", "/*"),

@@ -117,8 +117,8 @@ public class HeaderController{
 		int endIndex = -1;
 		
 		for (Command command : Constant.COMMAND_PRIORITIES) {
-			basicCommand = command.getBasicCommand() + " ";
-			advancedCommand = command.getAdvancedCommand() + " ";
+			basicCommand = command.getBasicCommand();
+			advancedCommand = command.getAdvancedCommand();
 			
 			if (lowerCase.contains(basicCommand)) {
 				startIndex = lowerCase.indexOf(basicCommand);
