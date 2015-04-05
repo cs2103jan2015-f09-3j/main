@@ -275,7 +275,8 @@ public class Storage {
 		return null;
 	}
 
-	public void moveFile(String path) {
+	public String moveFile(String path) { 
+		String systemMsg;
 		String pathInSetting = readSavePath();
 		Path oldPath = Paths.get(pathInSetting);
 		Path newPath = Paths.get(path);
@@ -286,21 +287,23 @@ public class Storage {
 			exception.printStackTrace();
 		}
 		
-		updateDirPathInSetting(path);
+		systemMsg = updateDirPathInSetting(path); 
 		
 		Main.list = new ToDoList();
+		
+		return systemMsg;
 	}
 	
 	// -----------------------------------------------------------------------------------------------
 	// Private methods
 	// -----------------------------------------------------------------------------------------------
-	private void updateDirPathInSetting(String dirPath) {
+	private String updateDirPathInSetting(String dirPath) { 
 		Document doc = getSettingDocument();
 
 		Node save = doc.getElementsByTagName(Constant.TAG_SETTING_SAVE).item(0);
 		save.setTextContent(dirPath + "\\" + Constant.PATH_FILE_NAME);
 		
-		writeFile(doc, Constant.PATH_SETTING);
+		return writeFile(doc, Constant.PATH_SETTING);
 	}
 		
 	private void cleanAndWriteFile(Document document) {

@@ -30,5 +30,26 @@
             <Font name="Segoe UI Bold" size="14.0" />
          </font>
       </Label>
+      <Label layoutX="13.0" layoutY="195.0" text="Clean Completed Tasks" textFill="#666666">
+         <font>
+            <Font name="Segoe UI Bold" size="14.0" />
+         </font>
+      </Label>
+      <CheckBox layoutX="13.0" layoutY="226.0" mnemonicParsing="false" text="Weekly" textFill="#666666">
+         <font>
+            <Font name="Segoe UI" size="12.0" />
+         </font></CheckBox>
+      <CheckBox layoutX="89.0" layoutY="226.0" mnemonicParsing="false" text="Monthly" textFill="#666666">
+         <font>
+            <Font name="Segoe UI" size="12.0" />
+         </font></CheckBox>
+      <CheckBox layoutX="174.0" layoutY="226.0" mnemonicParsing="false" text="Yearly" textFill="#666666">
+         <font>
+            <Font name="Segoe UI" size="12.0" />
+         </font></CheckBox>
+      <Label fx:id="lblSysMsgSetting" layoutX="20.0" layoutY="146.0">
+         <font>
+            <Font name="Segoe UI Bold Italic" size="12.0" />
+         </font></Label>
    </children>
 </AnchorPane>

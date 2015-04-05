@@ -82,6 +82,7 @@ public class MainController{
 		headerController.init(this);
 		bodyController.init(this);
 		searchResultController.init(this);
+		settingController.init(this);
 		
 		Execution.mainController = this;
 		Execution.headerController = headerController;
