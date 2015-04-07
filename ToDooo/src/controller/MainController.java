@@ -379,7 +379,13 @@ public class MainController{
 			floating.add(task);
 		} else {
 			if(startDate.before(todayDate)) {
-				overdue.add(task);
+				if(!taskType.equalsIgnoreCase(TaskType.TIMED.toString())) {
+					overdue.add(task);
+				} else {
+					if(DateParser.compareDate(task.getTo(), task.getStartDate())) {
+						overdue.add(task);
+					}
+				}
 			} else if(DateParser.compareDate(todayDate, startDate)) {
 				today.add(task);
 			}
@@ -626,24 +632,23 @@ public class MainController{
 			Date byDate, Date fromDate, Date toDate, Date startDate, HBox hBoxRight, HBox hBoxLeft) {
 		SimpleDateFormat dateFormat;
 		
-		if(status.equalsIgnoreCase(Constant.TITLE_OVERDUE)) {
+		if(DateParser.isAfterDateWithoutTime(todayDate, startDate)) {
 			dateFormat = Constant.FORMAT_DATE_TIME_OUTPUT;
 		} else {
 			dateFormat = Constant.FORMAT_TIME_OUTPUT;
 		}
 		
 		if(taskType.equalsIgnoreCase(TaskType.EVENT.toString())) {
-			addSingleDateTime(onDate, hBoxRight, Constant.EMPTY_STRING, Constant.FORMAT_TIME_OUTPUT);
+			addSingleDateTime(onDate, hBoxRight, Constant.EMPTY_STRING, dateFormat);
 		} else if(taskType.equalsIgnoreCase(TaskType.DATED.toString())) {
-			addSingleDateTime(byDate, hBoxRight, Constant.STR_BEFORE_DATE_BY, Constant.FORMAT_TIME_OUTPUT);
+			addSingleDateTime(byDate, hBoxRight, Constant.STR_BEFORE_DATE_BY, dateFormat);
 		} else if(taskType.equalsIgnoreCase(TaskType.TIMED.toString())) {
-			
 			if(DateParser.compareDate(fromDate, toDate)) {
 				addDoubleDateTime(fromDate, toDate, hBoxRight, Constant.STR_BEFORE_DATE_FROM, Constant.STR_BEFORE_DATE_TO, 
 						Constant.FORMAT_TIME_OUTPUT, displayType);
 			} else if(DateParser.compareDate(startDate, fromDate)) {
 				addSingleDateTime(fromDate, hBoxRight, Constant.STR_BEFORE_DATE_FROM, Constant.FORMAT_TIME_OUTPUT);
-			} else if(DateParser.compareDate(startDate, toDate)) {
+			} else if(DateParser.compareDate(startDate, toDate) && !DateParser.isAfterDateWithoutTime(todayDate, startDate)) {
 				addSingleDateTime(toDate, hBoxRight, Constant.STR_BEFORE_DATE_TO, Constant.FORMAT_TIME_OUTPUT);
 			} else {
 				addDoubleDateTime(fromDate, toDate, hBoxRight, Constant.STR_BEFORE_DATE_FROM, Constant.STR_BEFORE_DATE_TO, 
