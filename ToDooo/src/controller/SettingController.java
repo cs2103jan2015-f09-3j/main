@@ -30,6 +30,7 @@ public class SettingController {
 	@FXML ImageView backIcon;
 	@FXML Label lblSysMsgSetting;
 	
+	//@author A0112537M
 	@FXML 
 	public void openFileDialogKey(KeyEvent e) {
 		if(Constant.SHORTCUT_OPEN_FILE_DIALOG.match(e)) {
@@ -48,15 +49,18 @@ public class SettingController {
 		
 	}
 	
+	//@author A0112498B
 	public void init(MainController mainController) {
 		mainCon = mainController;
 	}
 	
+	//@author A0112537M
 	public void executeSystemMsgTimerTask() {
 		timer = new Timer();
 		timer.schedule(new SystemMsgTimerTask(), Constant.TIMER_SYSTEM_MSG_DURATION);
 	}
 	
+	//@author A0112498B
 	private void openFileDialog() {
 		String systemMsg = "";
 		
@@ -76,6 +80,7 @@ public class SettingController {
 		displaySystemMessage(systemMsg);
 	}
 	
+	//@author A0112537M
 	private void displaySystemMessage(String systemMsg) {
 		lblSysMsgSetting.setText(systemMsg);
 		
@@ -88,6 +93,7 @@ public class SettingController {
 		executeSystemMsgTimerTask();
 	}
 	
+	//@author A0112498B
 	private class SystemMsgTimerTask extends TimerTask {
         public void run() {
     		Platform.runLater(new Runnable() {

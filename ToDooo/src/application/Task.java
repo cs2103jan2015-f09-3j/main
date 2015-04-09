@@ -1,3 +1,4 @@
+//@author A0112498B
 package application;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -276,7 +277,8 @@ public class Task implements Cloneable {
 		
 		return copies;
 	}
-		
+	
+	//@author A0112537M
 	// Creating a repeated task with a different date for recurring task
 	public static Task createRecurringChildItem(Task originalTask, String recurringId, 
 												Status recurringStatus, Date onDate, 
@@ -306,6 +308,7 @@ public class Task implements Cloneable {
 		return task;
 	}
 	
+	//@author A0112498B
 	public void deleteRecurringTaskById(String recurringTaskId) {
 		RecurringTask recurringTask = null;
 		int index = 0;		

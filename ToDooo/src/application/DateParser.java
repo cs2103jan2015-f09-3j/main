@@ -1,3 +1,4 @@
+//@author A0112498B
 package application;
 
 import java.util.Calendar;
@@ -53,6 +54,7 @@ public class DateParser {
 		return month;
 	}
 	
+	//@author A0112537M
 	public static boolean compareDate(Date dateA, Date dateB) {
 		Calendar calendarA = Calendar.getInstance();
 		Calendar calendarB = Calendar.getInstance();
@@ -75,6 +77,7 @@ public class DateParser {
 		return isAfterDay;
 	}
 	
+	//@author A0112498B
 	public static boolean isBeforeDate(Date thisDate, Date thatDate) {
 		Calendar calendarA = DateParser.createCalendar(thisDate);
 		Calendar calendarB = DateParser.createCalendar(thatDate);
@@ -107,6 +110,7 @@ public class DateParser {
 				thisCalendar.get(Calendar.DAY_OF_YEAR) == thatCalendar.get(Calendar.DAY_OF_YEAR));
 	}
 	
+	//@author A0112537M
 	public static Calendar getTodayDate() {
 		Calendar calendar = Calendar.getInstance();
 		calendar.setTimeZone(TimeZone.getDefault());

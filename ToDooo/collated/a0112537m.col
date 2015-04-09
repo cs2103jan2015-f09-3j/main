@@ -1,201 +1,414 @@
-package controller;
+//@author: a0112537m
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.Timer;
-import java.util.TimerTask;
 
-import javax.imageio.ImageIO;
 
-import net.fortuna.ical4j.model.property.Status;
-import application.Constant;
-import application.Execution;
-import application.Main;
-import application.Task;
-import application.TaskSorter;
-import application.TaskType;
-import application.ToDoList;
-import application.Undo;
-import application.DateParser;
-import javafx.application.Platform;
-import javafx.event.EventHandler;
-import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.scene.control.Label;
-import javafx.scene.control.ScrollPane;
-import javafx.scene.control.SingleSelectionModel;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
-import javafx.scene.input.KeyEvent;
-import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
-import javafx.scene.layout.VBox;
-import javafx.scene.shape.Line;
-import javafx.scene.control.Tab;
-import javafx.stage.Popup;
-import javafx.stage.Stage;
-import javafx.stage.StageStyle;
-import controller.HeaderController;
-import controller.BodyController;
+	/**
+	 * origin: C:\Users\Ruyi\Desktop\collate\source\application\DateParser.java
+	 */
 
-public class MainController{
-	
-	@FXML AnchorPane anPaneHeader;
-	@FXML AnchorPane anPaneBody;
-	@FXML HeaderController headerController;
-	@FXML BodyController bodyController;
-	@FXML SettingController settingController;
-	@FXML SearchResultController searchResultController;
-	
-	private Timer timer;
-	private SingleSelectionModel<Tab> selectionModel;
-	private Popup tutorialPopup;
-	private ArrayList<Task> overdue = new ArrayList<>();
-	private ArrayList<Task> today = new ArrayList<>();
-	private ArrayList<Task> floating = new ArrayList<>();
-	private Date todayDate;
-	static Stage detailPopup;
-	
-	//@author A0112498B
-	@FXML
-	public void initialize() {
-		initControllers();
-		loadListsInTabs();
-		initTutorialPopup();
+	public static boolean compareDate(Date dateA, Date dateB) {
+		Calendar calendarA = Calendar.getInstance();
+		Calendar calendarB = Calendar.getInstance();
+		calendarA.setTime(dateA);
+		calendarB.setTime(dateB);
+		boolean sameDay = calendarA.get(Calendar.YEAR) == calendarB.get(Calendar.YEAR) &&
+				calendarA.get(Calendar.DAY_OF_YEAR) == calendarB.get(Calendar.DAY_OF_YEAR);
 		
-		selectionModel = bodyController.tPaneMain.
-						 getSelectionModel();
+		return sameDay;
 	}
 	
-	private void initTutorialPopup() {
-		InputStream inputStream = getClass().getResourceAsStream(Constant.IMAGE_TUTORIAL);
-		Image image = new Image(inputStream);
-		ImageView imageView = new ImageView(image);
+	public static boolean isAfterDateWithoutTime(Date dateA, Date dateB) {
+		Calendar calendarA = Calendar.getInstance();
+		Calendar calendarB = Calendar.getInstance();
+		calendarA.setTime(dateA);
+		calendarB.setTime(dateB);
+		boolean isAfterDay = calendarA.get(Calendar.YEAR) >= calendarB.get(Calendar.YEAR) &&
+				calendarA.get(Calendar.DAY_OF_YEAR) > calendarB.get(Calendar.DAY_OF_YEAR);
 		
-		tutorialPopup = new Popup();
-		tutorialPopup.getContent().add(imageView);
+		return isAfterDay;
 	}
 	
-	private void initControllers() {
-		headerController.init(this);
-		bodyController.init(this);
-		searchResultController.init(this);
-		settingController.init(this);
-		
-		Execution.mainController = this;
-		Execution.headerController = headerController;
-	}
+	// End of segment: C:\Users\Ruyi\Desktop\collate\source\application\DateParser.java
 
-	@FXML
-	public void onShortcutKey(KeyEvent e) {	
-		scrollList(e);		
-		revertAction(e); 		
-		switchTab(e);		
-		navigateView(e);		
-		showTutorial(e);
-		
-	}
 
-	private void scrollList(KeyEvent e) {
-		boolean shouldReturn = !(Constant.SHORTCUT_PAGE_DOWN.match(e) ||
-								 Constant.SHORTCUT_TA_UNFOCUSED_PAGE_DOWN.match(e) ||
-								 Constant.SHORTCUT_PAGE_UP.match(e) ||
-								 Constant.SHORTCUT_TA_UNFOCUSED_PAGE_UP.match(e));
-		if (shouldReturn) {
-			return;
+
+
+
+	/**
+	 * origin: C:\Users\Ruyi\Desktop\collate\source\application\DateParser.java
+	 */
+
+	public static Calendar getTodayDate() {
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTimeZone(TimeZone.getDefault());
+		
+		calendar.set(Calendar.HOUR_OF_DAY, 0); 
+		calendar.set(Calendar.MINUTE, 0);
+		calendar.set(Calendar.SECOND, 0);
+	    
+	    return calendar;
+	}
+}
+
+	// End of segment: C:\Users\Ruyi\Desktop\collate\source\application\DateParser.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Ruyi\Desktop\collate\source\application\Execution.java
+	 */
+
+	private static String executeView(String userInput) {
+		String systemMsg = null;
+		Task selectedTask = Main.list.selectTaskFromList(userInput);
+		
+		if(selectedTask != null) {
+			systemMsg = Constant.MSG_VIEW_SUCCESS;
+		} else {
+			systemMsg = Constant.MSG_VIEW_FAIL;
 		}
 		
-		String tabAllId = bodyController.tabAll.getId();
-		String tabCategoryId = bodyController.tabCategory.getId();
-		String tabPriorityId = bodyController.tabPriority.getId();
-		
-		Tab selectedTab = selectionModel.getSelectedItem();			
-		String selectedTabId = selectedTab.getId();
-		ScrollPane targetScrollPane = null;	
-		
-		if (selectedTabId.equals(tabAllId)) {
-			targetScrollPane = bodyController.sPaneAll;
-		} else if (selectedTabId.equals(tabCategoryId)) {
-			targetScrollPane = bodyController.sPaneCategory;
-		} else if (selectedTabId.equals(tabPriorityId)) {
-			targetScrollPane = bodyController.sPanePriority;
-		}
-		
-		if (targetScrollPane == null) {
-			return;
-		}
-				
-		double currentPosition = targetScrollPane.getVvalue();
-		double newPosition = currentPosition;
-		
-		if (Constant.SHORTCUT_PAGE_DOWN.match(e) || 
-			Constant.SHORTCUT_TA_UNFOCUSED_PAGE_DOWN.match(e)) {
-			
-			newPosition = currentPosition + Constant.POSITION_OFFSET_VERTICAL;
-		} else if (Constant.SHORTCUT_PAGE_UP.match(e) || 
-				   Constant.SHORTCUT_TA_UNFOCUSED_PAGE_UP.match(e)) {
-			
-			newPosition = currentPosition - Constant.POSITION_OFFSET_VERTICAL;
-		}
-		
-		targetScrollPane.setVvalue(newPosition);
+		return systemMsg;
 	}
-
-	private void showTutorial(KeyEvent e) {
-		if (Constant.SHORTCUT_TUTORIAL.match(e)) {
-			if (tutorialPopup.isFocused()) {
-				tutorialPopup.hide();
-			} else {
-				double positionX = Main.priStage.getX() + 
-								   Constant.POSITION_OFFSET_X_POPUP;							
-				double positionY = (Main.priStage.getY() - headerController.textArea.getLayoutY()) * 
-								   Constant.POSITION_OFFSET_Y_POPUP;
-				
-				tutorialPopup.show(Main.priStage, positionX, positionY);
+	
+	private static void displayDetail(String systemMsg) {
+		if(systemMsg.equalsIgnoreCase(Constant.MSG_VIEW_SUCCESS)) {
+			try {
+				mainController.viewDetails(Main.list.getSelectedTask());
+			} catch (IOException e) {
+				e.printStackTrace();
 			}
 		}
 	}
-
-	private void navigateView(KeyEvent e) {
-		if (Constant.SHORTCUT_GO_BACK.match(e)) {
-			executeGoBack();
-		} else if (Constant.SHORTCUT_SETTING.match(e)) {
-			executeSetting();				
+	
+	private static void displaySearchResult(String systemMsg) {
+		if(systemMsg.contains(Constant.SYS_MSG_KEYWORD_SEARCH)) {
+			mainController.executeSearchResult();
 		}
 	}
+}
 
-	private void revertAction(KeyEvent e) {
-		if (Constant.SHORTCUT_UNDO.match(e)) {
-			String systemMsg = executeUndo();
-			
-			loadListsInTabs();
-			setSystemMessage(systemMsg);
-		} else if (Constant.SHORTCUT_REDO.match(e)) {
-			String systemMsg = executeRedo();
-			
-			loadListsInTabs();
-			setSystemMessage(systemMsg);
+	// End of segment: C:\Users\Ruyi\Desktop\collate\source\application\Execution.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Ruyi\Desktop\collate\source\application\Task.java
+	 */
+
+	// Creating a repeated task with a different date for recurring task
+	public static Task createRecurringChildItem(Task originalTask, String recurringId, 
+												Status recurringStatus, Date onDate, 
+												Date byDate, Date startDate) {
+		Task task = new Task();
+		
+		task.setBy(byDate);
+		task.setCategory(originalTask.getCategory());
+		task.setEndDate(originalTask.getEndDate());
+		task.setFrom(originalTask.getFrom());
+		task.setId(recurringId);
+		task.setIsRecurring(originalTask.getIsRecurring());
+		task.setIsValid(originalTask.getIsValid());
+		task.setOn(onDate);
+		task.setOriginalText(originalTask.getOriginalText());
+		task.setPriority(originalTask.getPriority());
+		task.setRecurringTasks(originalTask.getRecurringTasks());
+		task.setRepeat(originalTask.getRepeat());
+		task.setRepeatDay(originalTask.getRepeatDay());
+		task.setRepeatUntil(originalTask.getRepeatUntil());
+		task.setStartDate(startDate);
+		task.setStatus(recurringStatus);
+		task.setTaskType(originalTask.getTaskType());
+		task.setTo(originalTask.getTo());
+		task.setToDo(originalTask.getToDo());
+		
+		return task;
+	}
+	
+	// End of segment: C:\Users\Ruyi\Desktop\collate\source\application\Task.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Ruyi\Desktop\collate\source\application\TaskSorter.java
+	 */
+
+	private static ArrayList<Task> reallocateFloatingTasks(ArrayList<Task> list) {
+		ArrayList<Task> floatingList = extractFloatingTasks(list);
+		addFloatingTasksBackIntoList(list, floatingList);
+		
+		return list;
+	}
+	
+	private static ArrayList<Task> extractFloatingTasks(ArrayList<Task> list) {
+		Task task;
+		String taskType;
+		ArrayList<Task> floatingList = new ArrayList<Task>();
+		
+		for(int i = 0; i < list.size(); i++) {
+			task = list.get(i);
+			taskType = task.getTaskType().toString();
+			if(taskType.equalsIgnoreCase(TaskType.FLOATING.toString())) {
+				floatingList.add(list.get(i));
+			} else {
+				break;
+			}
 		}
+		
+		list.removeAll(floatingList);
+		
+		return floatingList;
 	}
 
-	private void switchTab(KeyEvent e) {
-		if (Constant.SHORTCUT_TAB_ALL.match(e)) {
-			selectionModel.select(Constant.TAB_INDEX_ALL);			
-		} else if (Constant.SHORTCUT_TAB_CATEGORY.match(e)) {
-			selectionModel.select(Constant.TAB_INDEX_CATEGORY);			
-		} else if (Constant.SHORTCUT_TAB_PRIORITY.match(e)) {
-			selectionModel.select(Constant.TAB_INDEX_PRIORITY);			
+	private static void addFloatingTasksBackIntoList(ArrayList<Task> list, ArrayList<Task> floatingList) {
+		Task task;
+		String taskType;
+		Date date, today;
+		
+		if(list.isEmpty()) {
+			for(int k = 0; k < floatingList.size(); k++) {
+				list.add(floatingList.get(k));
+			}
+		} else {
+			for(int j = 0; j < list.size(); j++) {
+				task = list.get(j);
+				taskType = task.getTaskType().toString();
+				date = task.getStartDate();
+				today = DateParser.getTodayDate().getTime();
+				int counter = j;
+				
+				if(!taskType.equalsIgnoreCase(TaskType.FLOATING.toString()) && 
+						DateParser.isAfterDateWithoutTime(date, today)) {
+					for(int k = 0; k < floatingList.size(); k++) {
+						list.add(counter, floatingList.get(k));
+						counter++;
+					}
+					
+					break;
+				} else if(taskType.equalsIgnoreCase(TaskType.FLOATING.toString()) || 
+						j == list.size()-1) {
+					for(int k = 0; k < floatingList.size(); k++) {
+						list.add(floatingList.get(k));
+					}
+					
+					break;
+				}
+			} 
 		}
 	}
 	
-	//@author A0112537M
+	// End of segment: C:\Users\Ruyi\Desktop\collate\source\application\TaskSorter.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Ruyi\Desktop\collate\source\application\TaskSorter.java
+	 */
+
+	public static ArrayList<Task> getTasksSortedByDate(ArrayList<Task> list) {
+		return reallocateFloatingTasks(sortByDate(list));
+	}
+	
+	// End of segment: C:\Users\Ruyi\Desktop\collate\source\application\TaskSorter.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Ruyi\Desktop\collate\source\application\ToDoList.java
+	 */
+
+	public static ArrayList<Task> generateTaskItems(ArrayList<Task> tasks, String displayType) {
+		ArrayList<Task> tempTasks = new ArrayList<>();
+		Task task;
+		Date recurringDate;
+		boolean isRecurring;
+		String taskType;
+		String recurringId;
+		Status recurringStatus;
+		
+		for(int i = 0; i < tasks.size(); i++) {
+			task = tasks.get(i);
+			taskType = task.getTaskType().toString();
+			isRecurring = task.getIsRecurring();
+			
+			if(!taskType.equalsIgnoreCase(TaskType.TIMED.toString())) {
+				if(isRecurring) {
+					for(int j = 0; j < task.getRecurringTasks().size(); j++) {
+						Task taskA = null;
+						recurringDate = task.getRecurringTasks().get(j).getRecurDate();
+						recurringId = task.getId() + Constant.PREFIX_RECURRING_ID + 
+								task.getRecurringTasks().get(j).getRecurringTaskId();
+						recurringStatus = task.getRecurringTasks().get(j).getStatus();
+						taskA = getRecurChildItemForEventOrDated(task, recurringDate, taskType, recurringId,
+								recurringStatus, taskA);
+						tempTasks.add(taskA);
+					}
+				} else {
+					Task t2 = new Task();
+					t2 = task;
+					tempTasks.add(t2);
+				}
+			} else {
+				if(displayType.equalsIgnoreCase(Constant.TAB_NAME_CATEGORY) || 
+						displayType.equalsIgnoreCase(Constant.TAB_NAME_PRIORITY)) {
+					Task t2 = new Task();
+					t2 = task;
+					tempTasks.add(t2);
+				} else {
+					Calendar start = Calendar.getInstance();
+					start.setTime(task.getFrom());
+					Calendar end = Calendar.getInstance();
+					end.setTime(task.getTo());
+					
+					for (Date date = start.getTime(); !start.after(end); start.add(Calendar.DATE, 1), date = start.getTime()) {
+						Task t3 = Task.createRecurringChildItem(task, task.getId(), task.getStatus(), 
+								task.getOn(), task.getBy(), date);
+						tempTasks.add(t3);
+					}
+				}
+			}
+		}
+		
+		return tempTasks;
+	}
+	
+	// End of segment: C:\Users\Ruyi\Desktop\collate\source\application\ToDoList.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Ruyi\Desktop\collate\source\controller\DetailController.java
+	 */
+
+package controller;
+
+import application.Constant;
+import application.Main;
+import application.Task;
+import application.TaskType;
+import controller.MainController;
+import javafx.fxml.FXML;
+import javafx.scene.control.Label;
+import javafx.scene.control.ListView;
+import javafx.scene.control.TextArea;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.Region;
+import javafx.scene.text.TextFlow;
+
+public class DetailController {
+	
+	private MainController mainCon;
+	@FXML Label detailLblId;
+	@FXML Label detailLblType;
+	@FXML Label detailLblDateTime;
+	@FXML Label detailLblCategory;
+	@FXML Label detailLblPriority;
+	@FXML Label detailLblStatus;
+	@FXML Label detailLblRecurring;
+	@FXML TextArea detailTxtAreaDesc;
+	//@FXML TextArea detailTxtAreaAddition;
+	
+	public void init(MainController mainController) {
+		mainCon = mainController;
+	}
+	
+	@FXML
+	public void initialize() {
+		Task task = Main.list.getSelectedTask();
+		String taskType = task.getTaskType().toString();
+		
+		detailLblId.setText(task.getId());
+		detailTxtAreaDesc.setText(task.getToDo());
+		detailTxtAreaDesc.setEditable(false);
+		detailTxtAreaDesc.getStyleClass().add(Constant.CSS_CLASS_TEXTAREA_DETAIL);
+		detailLblType.setText(task.getTaskType().toString());
+		detailLblCategory.setText(task.getCategory().toUpperCase());
+		detailLblPriority.setText(task.getPriority().toString());
+		detailLblStatus.setText(task.getStatus().toString());
+		detailLblDateTime.setText(getDateFormat(task, taskType));
+		detailLblRecurring.setText(getIsRecurring(task));
+		//detailTxtAreaAddition.setText(task.getAddtionalNote());
+		//saveAdditionalNote(detailTxtAreaAddition.getText());
+	}
+	
+	private String getDateFormat(Task task, String taskType) {
+		String result = Constant.EMPTY_DATE;
+		
+		if(!taskType.equalsIgnoreCase(TaskType.FLOATING.toString())) {
+			if(taskType.equalsIgnoreCase(TaskType.DATED.toString())) {
+				result = Constant.STR_BEFORE_DATE_BY + " " + Constant.FORMAT_DATE_TIME_OUTPUT.format(task.getBy());
+			} else if(taskType.equalsIgnoreCase(TaskType.TIMED.toString())) {
+				result = Constant.STR_BEFORE_DATE_FROM + " " + Constant.FORMAT_DATE_TIME_OUTPUT.format(task.getFrom()) +
+							Constant.STR_BEFORE_DATE_TO + " " + Constant.FORMAT_DATE_TIME_OUTPUT.format(task.getTo());
+			} else {
+				result = Constant.FORMAT_DATE_TIME_OUTPUT.format(task.getOn());
+			}
+		}
+		
+		return result;
+	}
+	
+	private String getIsRecurring(Task task) {
+		if(task.getIsRecurring() == true) {
+			return Constant.BOOLEAN_STRING_TRUE;
+		} else {
+			return Constant.BOOLEAN_STRING_FALSE;
+		}
+	}
+	
+	/*private void saveAdditionalNote(String note) {
+		Main.list.getSelectedTask().setAddtionalNote(note);
+	}*/	
+}
+
+	// End of segment: C:\Users\Ruyi\Desktop\collate\source\controller\DetailController.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Ruyi\Desktop\collate\source\controller\HeaderController.java
+	 */
+
+	@FXML
+	public void loadSettingMouse(MouseEvent e) throws IOException {
+		mainCon.executeSetting();
+	}
+	
+	@FXML
+	public void goBackToMainMouse(MouseEvent e) throws IOException {
+		mainCon.executeGoBack();
+	}
+	
+	@FXML
+	public void loadSearchResult(KeyEvent e) throws IOException {
+		mainCon.executeSearchResult();
+	}
+	
+	// End of segment: C:\Users\Ruyi\Desktop\collate\source\controller\HeaderController.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Ruyi\Desktop\collate\source\controller\MainController.java
+	 */
+
 	public void setSystemMessage(String systemMsg) {
 		int sysMsgType = checkSystemMsg(systemMsg);
 		
@@ -215,59 +428,16 @@ public class MainController{
 		executeSystemMsgTimerTask();
 	}
 	
-	//@author A0112498B
-	public void loadListsInTabs() {
-		loadListByDate(Constant.TAB_NAME_ALL);
-		loadListByCategory(Constant.TAB_NAME_CATEGORY);
-		loadListByPriority(Constant.TAB_NAME_PRIORITY);
-	}
-	
-	private String executeUndo() {
-		String systemMsg = null;
-		
-		boolean canUndo = !(Main.undos.isEmpty());
-		if (canUndo) {
-			Undo undo = Main.undos.pop();
-			systemMsg = undo.undoAction();
-		} else {
-			systemMsg = Constant.MSG_NO_UNDO;
-		}
-		
-		return systemMsg;
-	}
-	
-	private String executeRedo() {
-		String systemMsg = null;
-		
-		boolean canRedo = !(Main.redos.isEmpty());
-		if (canRedo) {
-			Undo redo = Main.redos.pop();
-			systemMsg = redo.redoAction();
-		} else {
-			systemMsg = Constant.MSG_NO_REDO;
-		}
-		
-		return systemMsg;
-	}
-	
-	public void executeSystemMsgTimerTask() {
-		timer = new Timer();
-		timer.schedule(new SystemMsgTimerTask(), Constant.TIMER_SYSTEM_MSG_DURATION);
-	}
-	
-	private class SystemMsgTimerTask extends TimerTask {
-        public void run() {
-    		Platform.runLater(new Runnable() {
-    		    @Override
-    		    public void run() {
-    		    	headerController.lblSysMsg.setText(Constant.EMPTY_STRING);	
-    		    	headerController.imgSysMsg.setImage(null);
-    		    }
-    		});
-            timer.cancel();
-        }
-    }
-	//@author A0112537M
+	// End of segment: C:\Users\Ruyi\Desktop\collate\source\controller\MainController.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Ruyi\Desktop\collate\source\controller\MainController.java
+	 */
+
 	public void loadListByDate(String displayType) {
 		int indexForNextLoop = 0;
 		Task task;
@@ -806,3 +976,119 @@ public class MainController{
         detailPopup.show();
 	}
 }
+
+	// End of segment: C:\Users\Ruyi\Desktop\collate\source\controller\MainController.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Ruyi\Desktop\collate\source\controller\SearchResultController.java
+	 */
+
+package controller;
+
+import java.util.ArrayList;
+
+import application.Constant;
+import application.Main;
+import application.Task;
+import javafx.fxml.FXML;
+import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.VBox;
+
+public class SearchResultController {
+	
+	private MainController mainCon;
+	private BodyController bodyCon;
+	private ArrayList<Task> resultList;
+	@FXML AnchorPane anPaneSearchResult;
+	@FXML VBox vBoxSearchResult;
+	
+	/*@FXML
+	public void initialize() {
+		bodyCon = new BodyController();
+	}*/
+	
+	public void init(MainController mainController) {
+		mainCon = mainController;
+	}
+	
+	public void loadSearchList() {
+		vBoxSearchResult.getChildren().clear();
+		mainCon.loadListByDate("searchResult");
+	}
+}
+
+	// End of segment: C:\Users\Ruyi\Desktop\collate\source\controller\SearchResultController.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Ruyi\Desktop\collate\source\controller\SettingController.java
+	 */
+
+	@FXML 
+	public void openFileDialogKey(KeyEvent e) {
+		if(Constant.SHORTCUT_OPEN_FILE_DIALOG.match(e)) {
+			openFileDialog();
+		}
+	}
+	
+	@FXML 
+	public void openFileDialogMouse(MouseEvent e) {
+		openFileDialog();
+	}
+	
+	@FXML
+	public void initialize() {
+		txtPath.setText(Main.storage.readSavePath());
+		
+	}
+	
+	// End of segment: C:\Users\Ruyi\Desktop\collate\source\controller\SettingController.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Ruyi\Desktop\collate\source\controller\SettingController.java
+	 */
+
+	public void executeSystemMsgTimerTask() {
+		timer = new Timer();
+		timer.schedule(new SystemMsgTimerTask(), Constant.TIMER_SYSTEM_MSG_DURATION);
+	}
+	
+	// End of segment: C:\Users\Ruyi\Desktop\collate\source\controller\SettingController.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Ruyi\Desktop\collate\source\controller\SettingController.java
+	 */
+
+	private void displaySystemMessage(String systemMsg) {
+		lblSysMsgSetting.setText(systemMsg);
+		
+		if(systemMsg.contains(Constant.SYS_MSG_KEYWORD_FILE_SAVED)) {
+			lblSysMsgSetting.setTextFill(Constant.COLOR_SUCCESS);
+		} else {
+			lblSysMsgSetting.setTextFill(Constant.COLOR_ERROR);
+		}
+		
+		executeSystemMsgTimerTask();
+	}
+	
+	// End of segment: C:\Users\Ruyi\Desktop\collate\source\controller\SettingController.java
+
+
+
+
+

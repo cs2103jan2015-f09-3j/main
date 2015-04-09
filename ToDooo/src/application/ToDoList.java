@@ -1,3 +1,4 @@
+//@author A0112498B
 package application;
 import java.io.File;
 import java.io.IOException;
@@ -149,6 +150,7 @@ public class ToDoList {
 		return removedTask;
 	}
 	
+	//@author A0112856E
 	public ArrayList<Task> deleteMultipleTasksFromList(String userInput) {
 		ArrayList<Task> removedTasks = new ArrayList<Task>();
 		String[] targetIds = InputParser.getTargetIdsFromString(userInput);
@@ -161,6 +163,7 @@ public class ToDoList {
 		return removedTasks;
 	}
 	
+	//@author A0112498B
 	public Task selectTaskFromList(String userInput) {
 		Task selectedTask = null;
 		String targetId = InputParser.getTargetIdFromString(userInput);
@@ -324,7 +327,8 @@ public class ToDoList {
 		
 		return savePath;
 	}
-			
+	
+	//@author A0112537M
 	public static ArrayList<Task> generateTaskItems(ArrayList<Task> tasks, String displayType) {
 		ArrayList<Task> tempTasks = new ArrayList<>();
 		Task task;
@@ -380,6 +384,7 @@ public class ToDoList {
 		return tempTasks;
 	}
 	
+	//@author A0112856E
 	public Pair<Task, String> completeTaskOnList(String userInput) {
 		String targetId = InputParser.getTargetIdFromString(userInput);
 		Task completedTask = null;
@@ -482,7 +487,7 @@ public class ToDoList {
 	// -----------------------------------------------------------------------------------------------
 	// Private Methods
 	// -----------------------------------------------------------------------------------------------
-	
+	//@author A0112498B
 	private void createListFileIfNotExist() {		
 		File file = new File(_listFilePath);
 		
