@@ -197,7 +197,6 @@ public class Storage {
 			Task task = null;
 			for (int i = 0; i < tasks.size(); i++) {
 				task = tasks.get(i);
-				task.setId(String.valueOf(i + 1));
 				
 				taskNode = XmlManager.transformTaskToXml(document, task);
 				tasksNode.appendChild(taskNode);

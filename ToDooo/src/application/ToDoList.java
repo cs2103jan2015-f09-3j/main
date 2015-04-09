@@ -127,9 +127,9 @@ public class ToDoList {
 		return result;
 	}
 		
-	public Pair<String, Task> AddTaskBackToList(Task task) {
+	public Pair<String, Task> AddTaskBackToList(Task task, boolean isUndo) {
 		Task removedTask = null;
-		if (task.getIsRecurring()) {
+		if (task.getIsRecurring() && isUndo) {
 			removedTask = deleteTaskById(task.getId());	
 		}
 			
@@ -212,7 +212,7 @@ public class ToDoList {
 		Task originalTask = deleteTaskById(targetId);
 		
 		if (originalTask != null) {
-			AddTaskBackToList(updatedTask);
+			AddTaskBackToList(updatedTask, false);
 		}		
 		
 		String updatedId = updatedTask.getId();
@@ -223,7 +223,7 @@ public class ToDoList {
 		Task originalTask = deleteTaskById(targetId);
 		
 		if (originalTask != null) {
-			AddTaskBackToList(taskToUpdateWith);
+			AddTaskBackToList(taskToUpdateWith, false);
 		}
 		
 		return originalTask;
@@ -397,7 +397,7 @@ public class ToDoList {
 			originalTask = deleteTaskById(targetId);
 			
 			if (originalTask != null) {
-				AddTaskBackToList(completedTask);
+				AddTaskBackToList(completedTask, false);
 				String taskId = InputParser.getTargetIdFromString(userInput);
 				if (taskId.contains(Constant.PREFIX_RECURRING_ID)) {
 					completedTaskId = taskId;
@@ -435,7 +435,7 @@ public class ToDoList {
 			originalTask = deleteTaskById(targetId);
 			
 			if (originalTask != null) {
-				AddTaskBackToList(uncompletedTask);
+				AddTaskBackToList(uncompletedTask, false);
 				String taskId = InputParser.getTargetIdFromString(userInput);
 				if (taskId.contains(Constant.PREFIX_RECURRING_ID)) {
 					uncompletedTaskId = taskId;
@@ -518,6 +518,8 @@ public class ToDoList {
 	}
 	
 	private String writeToFile(Task task, ArrayList<Task> backupList) {
+		processTasksID();
+		
 		String result = Main.storage.writeListToFile(_tasks); 
 		
 		if (result.equals(Constant.MSG_ADD_SUCCESS)) {
@@ -567,5 +569,14 @@ public class ToDoList {
 		}
 		
 		return backupList;
+	}
+	
+	private void processTasksID() {
+		Task task = null;
+		
+		for (int i = 0; i < _tasks.size(); i++) {
+			task = _tasks.get(i);
+			task.setId(String.valueOf(i + 1));
+		}
 	}
 }
