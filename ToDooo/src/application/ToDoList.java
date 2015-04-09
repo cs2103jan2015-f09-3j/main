@@ -1,6 +1,8 @@
 package application;
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -42,7 +44,7 @@ public class ToDoList {
 	// -----------------------------------------------------------------------------------------------
 	// Constructors
 	// -----------------------------------------------------------------------------------------------
-	public ToDoList() {		
+	public ToDoList() {				
 		_listFilePath = Main.storage.readSavePath();		
 		
 		createListFileIfNotExist();	
@@ -481,7 +483,7 @@ public class ToDoList {
 	// Private Methods
 	// -----------------------------------------------------------------------------------------------
 	
-	private void createListFileIfNotExist() {
+	private void createListFileIfNotExist() {		
 		File file = new File(_listFilePath);
 		
 		boolean shouldCreate = !(file.exists());

@@ -1,0 +1,253 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<file>
+  <nextid>16</nextid>
+  <categories>
+    <category>Uncategorised</category>
+    <category>homework</category>
+    <category>test</category>
+    <category>testing</category>
+    <category>assignment</category>
+    <category>friend</category>
+    <category>family</category>
+    <category>CS2103</category>
+    <category>Exam</category>
+    <category>NUS</category>
+    <category>CS2106</category>
+  </categories>
+  <tasks>
+    <task id="1">
+      <type>DATED</type>
+      <todo>Do OS homework</todo>
+      <original>Do OS homework /by yesterday 23:59 #assignment /**</original>
+      <on>NIL</on>
+      <from>NIL</from>
+      <to>NIL</to>
+      <by>Fri Apr 03 23:59:00 SGT 2015</by>
+      <category>assignment</category>
+      <recurring>false</recurring>
+      <repeat>NIL</repeat>
+      <repeatDay>-1</repeatDay>
+      <repeatUntil>NIL</repeatUntil>
+      <priority>MEDIUM</priority>
+      <status>COMPLETED</status>
+    </task>
+    <task id="2">
+      <type>DATED</type>
+      <todo>Complete LSM1302 Self Review Question</todo>
+      <original>Complete LSM1302 Self Review Question /by 5 apr 23:59 #assignment</original>
+      <on>NIL</on>
+      <from>NIL</from>
+      <to>NIL</to>
+      <by>Sun Apr 05 23:59:00 SGT 2015</by>
+      <category>assignment</category>
+      <recurring>false</recurring>
+      <repeat>NIL</repeat>
+      <repeatDay>-1</repeatDay>
+      <repeatUntil>NIL</repeatUntil>
+      <priority>NEUTRAL</priority>
+      <status>ONGOING</status>
+    </task>
+    <task id="3">
+      <type>EVENT</type>
+      <todo>Submit self-initiated project application form</todo>
+      <original>Submit self-initiated project application form /on monday 11 am /***</original>
+      <on>Mon Apr 06 11:00:00 SGT 2015</on>
+      <from>NIL</from>
+      <to>NIL</to>
+      <by>NIL</by>
+      <category>Uncategorised</category>
+      <recurring>false</recurring>
+      <repeat>NIL</repeat>
+      <repeatDay>-1</repeatDay>
+      <repeatUntil>NIL</repeatUntil>
+      <priority>HIGH</priority>
+      <status>ONGOING</status>
+    </task>
+    <task id="4">
+      <type>EVENT</type>
+      <todo>Consult lab TA on CS2106 project 3</todo>
+      <original>Consult lab TA on CS2106 project 3 /on Monday 4:00 pm /**</original>
+      <on>Mon Apr 06 16:00:00 SGT 2015</on>
+      <from>NIL</from>
+      <to>NIL</to>
+      <by>NIL</by>
+      <category>Uncategorised</category>
+      <recurring>false</recurring>
+      <repeat>NIL</repeat>
+      <repeatDay>-1</repeatDay>
+      <repeatUntil>NIL</repeatUntil>
+      <priority>MEDIUM</priority>
+      <status>ONGOING</status>
+    </task>
+    <task id="5">
+      <type>EVENT</type>
+      <todo>Meet with Andrea for dinner</todo>
+      <original>Meet with Andrea for dinner /on monday 7:30 pm #friend</original>
+      <on>Mon Apr 06 19:30:00 SGT 2015</on>
+      <from>NIL</from>
+      <to>NIL</to>
+      <by>NIL</by>
+      <category>friend</category>
+      <recurring>false</recurring>
+      <repeat>NIL</repeat>
+      <repeatDay>-1</repeatDay>
+      <repeatUntil>NIL</repeatUntil>
+      <priority>NEUTRAL</priority>
+      <status>ONGOING</status>
+    </task>
+    <task id="6">
+      <type>EVENT</type>
+      <todo>Watch stats webcast</todo>
+      <original>Watch stats webcast /on monday 1000 pm /**</original>
+      <on>Mon Apr 06 22:00:00 SGT 2015</on>
+      <from>NIL</from>
+      <to>NIL</to>
+      <by>NIL</by>
+      <category>Uncategorised</category>
+      <recurring>false</recurring>
+      <repeat>NIL</repeat>
+      <repeatDay>-1</repeatDay>
+      <repeatUntil>NIL</repeatUntil>
+      <priority>MEDIUM</priority>
+      <status>ONGOING</status>
+    </task>
+    <task id="7">
+      <type>DATED</type>
+      <todo>Complete CS2103 Post Lecture Quiz</todo>
+      <original>Complete CS2103 Post Lecture Quiz /by 7 apr 22:00 #assignment</original>
+      <on>NIL</on>
+      <from>NIL</from>
+      <to>NIL</to>
+      <by>Tue Apr 07 22:00:00 SGT 2015</by>
+      <category>assignment</category>
+      <recurring>false</recurring>
+      <repeat>NIL</repeat>
+      <repeatDay>-1</repeatDay>
+      <repeatUntil>NIL</repeatUntil>
+      <priority>NEUTRAL</priority>
+      <status>ONGOING</status>
+    </task>
+    <task id="8">
+      <type>TIMED</type>
+      <todo>Do CS2103 project 3</todo>
+      <original>Do CS2103 project 3 /from wed 2000 /to fri 2200 /** #assignment</original>
+      <on>NIL</on>
+      <from>Wed Apr 08 20:00:00 SGT 2015</from>
+      <to>Fri Apr 10 22:00:00 SGT 2015</to>
+      <by>NIL</by>
+      <category>assignment</category>
+      <recurring>false</recurring>
+      <repeat>NIL</repeat>
+      <repeatDay>-1</repeatDay>
+      <repeatUntil>NIL</repeatUntil>
+      <priority>MEDIUM</priority>
+      <status>ONGOING</status>
+    </task>
+    <task id="10">
+      <type>DATED</type>
+      <todo>Do online student feedback</todo>
+      <original>Do online student feedback /by 10 apr 8am 11:59 pm #NUS /***</original>
+      <on>NIL</on>
+      <from>NIL</from>
+      <to>NIL</to>
+      <by>Fri Apr 10 08:00:00 SGT 2015</by>
+      <category>NUS</category>
+      <recurring>false</recurring>
+      <repeat>NIL</repeat>
+      <repeatDay>-1</repeatDay>
+      <repeatUntil>NIL</repeatUntil>
+      <priority>HIGH</priority>
+      <status>ONGOING</status>
+    </task>
+    <task id="11">
+      <type>EVENT</type>
+      <todo>Do OS homework</todo>
+      <original>Do OS homework /on friday /weekly /until 18 apr 2015 #CS2106 /**</original>
+      <on>Fri Apr 10 15:33:17 SGT 2015</on>
+      <from>NIL</from>
+      <to>NIL</to>
+      <by>NIL</by>
+      <category>CS2106</category>
+      <recurring>true</recurring>
+      <repeat>WEEKLY</repeat>
+      <repeatDay>6</repeatDay>
+      <repeatUntil>Sat Apr 18 15:33:17 SGT 2015</repeatUntil>
+      <priority>MEDIUM</priority>
+      <status>ONGOING</status>
+      <recurringTasks>
+        <recurringTask recurringTaskId="1">
+          <recurringTaskStatus>ONGOING</recurringTaskStatus>
+          <recurDate>Fri Apr 10 15:33:17 SGT 2015</recurDate>
+        </recurringTask>
+        <recurringTask recurringTaskId="2">
+          <recurringTaskStatus>COMPLETED</recurringTaskStatus>
+          <recurDate>Fri Apr 17 15:33:17 SGT 2015</recurDate>
+        </recurringTask>
+      </recurringTasks>
+    </task>
+    <task id="12">
+      <type>TIMED</type>
+      <todo>CS2106 exam</todo>
+      <original>CS2106 exam -f 27 apr 5pm -t 27 apr 7pm #Exam /***</original>
+      <on>NIL</on>
+      <from>Mon Apr 27 17:00:00 SGT 2015</from>
+      <to>Mon Apr 27 19:00:00 SGT 2015</to>
+      <by>NIL</by>
+      <category>Exam</category>
+      <recurring>false</recurring>
+      <repeat>NIL</repeat>
+      <repeatDay>-1</repeatDay>
+      <repeatUntil>NIL</repeatUntil>
+      <priority>HIGH</priority>
+      <status>ONGOING</status>
+    </task>
+    <task id="13">
+      <type>TIMED</type>
+      <todo>ST2334 exam</todo>
+      <original>ST2334 exam -f 30 apr 5pm -t 30 apr 7pm #Exam /***</original>
+      <on>NIL</on>
+      <from>Thu Apr 30 17:00:00 SGT 2015</from>
+      <to>Thu Apr 30 19:00:00 SGT 2015</to>
+      <by>NIL</by>
+      <category>Exam</category>
+      <recurring>false</recurring>
+      <repeat>NIL</repeat>
+      <repeatDay>-1</repeatDay>
+      <repeatUntil>NIL</repeatUntil>
+      <priority>HIGH</priority>
+      <status>ONGOING</status>
+    </task>
+    <task id="14">
+      <type>TIMED</type>
+      <todo>LSM1302 exam</todo>
+      <original>LSM1302 exam /from 4 may 9am /to 4 may 11 am #Exam /***</original>
+      <on>NIL</on>
+      <from>Mon May 04 09:00:00 SGT 2015</from>
+      <to>Mon May 04 11:00:00 SGT 2015</to>
+      <by>NIL</by>
+      <category>Exam</category>
+      <recurring>false</recurring>
+      <repeat>NIL</repeat>
+      <repeatDay>-1</repeatDay>
+      <repeatUntil>NIL</repeatUntil>
+      <priority>HIGH</priority>
+      <status>ONGOING</status>
+    </task>
+    <task id="15">
+      <type>TIMED</type>
+      <todo>CS3223 exam</todo>
+      <original>CS3223 exam /from 6 may 1pm /to 6 may 3pm #Exam /***</original>
+      <on>NIL</on>
+      <from>Wed May 06 13:00:00 SGT 2015</from>
+      <to>Wed May 06 15:00:00 SGT 2015</to>
+      <by>NIL</by>
+      <category>Exam</category>
+      <recurring>false</recurring>
+      <repeat>NIL</repeat>
+      <repeatDay>-1</repeatDay>
+      <repeatUntil>NIL</repeatUntil>
+      <priority>HIGH</priority>
+      <status>ONGOING</status>
+    </task>
+  </tasks>
+</file>

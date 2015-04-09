@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.text.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.layout.AnchorPane?>
+
+<AnchorPane fx:id="anPaneMain" prefHeight="500.0" prefWidth="800.0" stylesheets="@../application/application.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.BodyController">
+   <children>
+      <TabPane fx:id="tPaneMain" layoutY="100.0" maxHeight="-Infinity" maxWidth="-Infinity" side="BOTTOM" style="-fx-background-color: #ffffff;" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+        <tabs>
+            <Tab fx:id="tabAll" closable="false" text="All (F1)">
+               <content>
+                  <ScrollPane fx:id="sPaneAll" fitToWidth="true" hbarPolicy="NEVER" style="-fx-background: #ffffff;">
+                     <content>
+                        <VBox fx:id="vBoxAll" spacing="8.0" style="-fx-background-color: #ffffff;">
+                           <padding>
+                              <Insets bottom="15.0" left="15.0" right="15.0" top="15.0" />
+                           </padding></VBox>
+                     </content>
+                  </ScrollPane>
+               </content>
+            </Tab>
+          <Tab fx:id="tabCategory" closable="false" text="Categories (F2)">
+               <content>
+                  <ScrollPane fx:id="sPaneCategory" fitToWidth="true" hbarPolicy="NEVER" style="-fx-background: #ffffff;">
+                     <content>
+                        <VBox fx:id="vBoxCategory" spacing="8.0" style="-fx-background-color: #ffffff;">
+                           <padding>
+                              <Insets bottom="15.0" left="15.0" right="15.0" top="15.0" />
+                           </padding></VBox>
+                     </content>
+                  </ScrollPane>
+               </content>
+          </Tab>
+            <Tab fx:id="tabPriority" closable="false" text="Priorities (F3)">
+               <content>
+                  <ScrollPane fx:id="sPanePriority" fitToWidth="true" hbarPolicy="NEVER" style="-fx-background: #ffffff;">
+                     <content>
+                        <VBox fx:id="vBoxPriority" spacing="8.0" style="-fx-background-color: #ffffff;">
+                           <padding>
+                              <Insets bottom="15.0" left="15.0" right="15.0" top="15.0" />
+                           </padding></VBox>
+                     </content>
+                  </ScrollPane>
+               </content>
+            </Tab>
+        </tabs>
+         <opaqueInsets>
+            <Insets />
+         </opaqueInsets>
+      </TabPane>
+   </children>
+</AnchorPane>

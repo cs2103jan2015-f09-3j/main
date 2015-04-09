@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.effect.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.paint.*?>
+<?import javafx.scene.shape.*?>
+<?import javafx.scene.text.*?>
+<?import javafx.scene.control.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import org.fxmisc.richtext.StyleClassedTextArea?>
+
+<AnchorPane fx:id="anPaneHeader" prefHeight="125.0" prefWidth="800.0" style="-fx-background-color: #ffffff;" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.HeaderController">
+   <children>
+      <Label fx:id="lblLogo" layoutX="14.0" layoutY="4.0" text="ToDooo" textFill="#87b763">
+         <font>
+            <Font name="Ebrima" size="36.0" />
+         </font></Label>
+		<Pane fx:id="txtAreaPane" layoutX="14.0" layoutY="61.0" prefHeight="40.0" prefWidth="734.0">
+         	<StyleClassedTextArea fx:id="textArea" wrapText="true" onKeyPressed="#processCmd" prefHeight="40.0" prefWidth="734.0" style="-fx-border-radius: 5; -fx-border-color: #D3D4C4; -fx-fill: black; -fx-background-color: #ffffff; -fx-padding: 1 1 1 1;" />
+      	</Pane>
+
+      <Text fill="#87b763" layoutX="124.0" layoutY="37.0" strokeType="OUTSIDE" strokeWidth="0.0" text="✓">
+         <font>
+            <Font size="27.0" />
+         </font>
+      </Text>
+      <Button layoutX="761.0" layoutY="60.0" mnemonicParsing="false" prefHeight="40.0" style="-fx-background-color: #87b763;" text="&gt;" textFill="WHITE">
+         <font>
+            <Font name="Segoe UI" size="12.0" />
+         </font>
+      </Button>
+      <ImageView fx:id="settingIcon" fitHeight="25.0" fitWidth="35.0" layoutX="761.0" layoutY="13.0" onMouseClicked="#loadSettingMouse" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@../images/settingIcon.png" />
+         </image>
+      </ImageView>
+      <ImageView fx:id="backIcon" fitHeight="36.0" fitWidth="27.0" layoutX="759.0" layoutY="14.0" onMouseClicked="#goBackToMainMouse" pickOnBounds="true" preserveRatio="true" visible="false">
+         <image>
+            <Image url="@../images/backIcon.png" />
+         </image>
+      </ImageView>
+      <Label fx:id="lblSysMsg" layoutX="33.0" layoutY="105.0" textFill="#666666">
+         <font>
+            <Font name="Segoe UI" size="12.0" />
+         </font>
+      </Label>
+      <Line endX="700.0" layoutX="100.0" layoutY="125.0" startX="-100.0" stroke="#eeeeee" strokeMiterLimit="5.0">
+         <effect>
+            <DropShadow height="140.84" radius="34.71" width="0.0" />
+         </effect>
+      </Line>
+      <ImageView fx:id="imgSysMsg" fitHeight="15.0" fitWidth="15.0" layoutX="15.0" layoutY="105.0" pickOnBounds="true" preserveRatio="true" />
+   </children>
+   <opaqueInsets>
+      <Insets />
+   </opaqueInsets>
+</AnchorPane>

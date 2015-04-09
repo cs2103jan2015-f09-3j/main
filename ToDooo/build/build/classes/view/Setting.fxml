@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.effect.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.text.*?>
+<?import javafx.scene.control.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.layout.AnchorPane?>
+
+<AnchorPane fx:id="anPaneSetting" prefHeight="500.0" prefWidth="800.0" style="-fx-background-color: #ffffff;" visible="false" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.SettingController">
+   <children>
+      <TextField fx:id="txtPath" layoutX="13.0" layoutY="112.0" onKeyPressed="#openFileDialogKey" prefHeight="25.0" prefWidth="703.0" style="-fx-background-color: #ffffff; -fx-border-color: #D3D4C4; -fx-border-radius: 5;" />
+      <Label layoutX="14.0" layoutY="14.0" prefHeight="23.0" prefWidth="97.0" text="Settings" textFill="#666666">
+         <font>
+            <Font name="Segoe UI Bold" size="18.0" />
+         </font></Label>
+      <Label layoutX="14.0" layoutY="85.0" text="Press F10 or click &quot;Browse&quot; button to open file dialog." textFill="#666666">
+         <font>
+            <Font name="Segoe UI" size="12.0" />
+         </font>
+      </Label>
+      <Button fx:id="btnBrowse" layoutX="731.0" layoutY="113.0" mnemonicParsing="false" onMouseClicked="#openFileDialogMouse" style="-fx-background-color: #87b763;" text="Browse" textFill="WHITE">
+         <font>
+            <Font name="Segoe UI" size="12.0" />
+         </font>
+      </Button>
+      <Label layoutX="14.0" layoutY="58.0" text="File Location" textFill="#666666">
+         <font>
+            <Font name="Segoe UI Bold" size="14.0" />
+         </font>
+      </Label>
+      <Label layoutX="13.0" layoutY="195.0" text="Clean Completed Tasks" textFill="#666666">
+         <font>
+            <Font name="Segoe UI Bold" size="14.0" />
+         </font>
+      </Label>
+      <Label fx:id="lblSysMsgSetting" layoutX="20.0" layoutY="146.0">
+         <font>
+            <Font name="Segoe UI Bold Italic" size="12.0" />
+         </font></Label>
+      <RadioButton fx:id="radioWeekly" layoutX="13.0" layoutY="221.0" mnemonicParsing="false" selected="true" text="Weekly" textFill="#666666">
+         <toggleGroup>
+            <ToggleGroup fx:id="period" />
+         </toggleGroup>
+         <font>
+            <Font name="Segoe UI" size="12.0" />
+         </font>
+      </RadioButton>
+      <RadioButton fx:id="radioMonthly" layoutX="89.0" layoutY="221.0" mnemonicParsing="false" text="Monthly" textFill="#666666" toggleGroup="$period">
+         <font>
+            <Font name="Segoe UI" size="12.0" />
+         </font>
+      </RadioButton>
+      <RadioButton fx:id="radioYearly" layoutX="174.0" layoutY="221.0" mnemonicParsing="false" text="Yearly" textFill="#666666" toggleGroup="$period">
+         <font>
+            <Font name="Segoe UI" size="12.0" />
+         </font>
+      </RadioButton>
+   </children>
+</AnchorPane>

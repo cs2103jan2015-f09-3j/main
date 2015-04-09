@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.image.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.text.*?>
+<?import javafx.scene.control.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.layout.AnchorPane?>
+
+<AnchorPane fx:id="anPaneSearchResult" prefHeight="500.0" prefWidth="800.0" style="-fx-background-color: #ffffff;" visible="false" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.SearchResultController">
+   <children>
+      <Label layoutX="14.0" layoutY="14.0" text="Search Results" textFill="#666666">
+         <font>
+            <Font name="Segoe UI Bold" size="18.0" />
+         </font>
+      </Label>
+      <ScrollPane fx:id="sPane" layoutY="40.0" prefHeight="460.0" prefWidth="800.0" style="-fx-background-color: #ffffff;">
+         <content>
+            <VBox fx:id="vBoxSearchResult" prefHeight="458.0" prefWidth="795.0" spacing="8.0" style="-fx-background-color: #ffffff;">
+               <padding>
+                  <Insets bottom="15.0" left="15.0" right="15.0" top="15.0" />
+               </padding>
+            </VBox>
+         </content>
+      </ScrollPane>
+   </children>
+</AnchorPane>

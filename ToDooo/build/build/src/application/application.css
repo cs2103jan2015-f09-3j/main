@@ -1,0 +1,238 @@
+.tab-pane .tab-header-area .tab-header-background {
+    -fx-background-color: #D3D4C4;
+}
+
+.tab-pane .tab
+{
+    -fx-background-color: #ffffff;
+}
+
+.tab-pane
+{
+    -fx-tab-min-width: 90px;
+}
+
+.tab-pane .tab:selected
+{
+    -fx-background-color: #87b763;
+}
+
+.tab .tab-label { 
+    -fx-alignment: CENTER;
+    -fx-text-fill: #828282;
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+}
+
+.tab:selected .tab-label { 
+    -fx-alignment: CENTER;
+    -fx-text-fill: #ffffff;
+}
+
+.aPaneDetail {
+	-fx-background-color: #FFFFFF;
+	-fx-max-width: 500;
+	-fx-max-height: 400;
+	-fx-border-color: black;
+	-fx-border-width: 1;
+}
+
+.bPaneAll {
+	-fx-background-color: linear-gradient(to bottom, derive(#E1F5C4, 20%), #E1F5C4);
+	-fx-background-radius: 10;
+	-fx-max-width: 760;	
+	-fx-max-height: 40;
+	-fx-min-height: 40;
+	-fx-border-color: black;
+	-fx-border-width: 0;
+	-fx-padding: 10 5 10 10;
+}
+
+.bPaneSearchResult {
+	-fx-background-color: linear-gradient(to bottom, derive(#E7EDEA, 20%), #E7EDEA);
+	-fx-background-radius: 10;
+	-fx-max-width: 760;	
+	-fx-max-height: 40;
+	-fx-min-height: 40;
+	-fx-border-color: black;
+	-fx-border-width: 0;
+	-fx-padding: 10 5 10 10;
+}
+
+.bPaneOverdue {
+	-fx-background-color: linear-gradient(to bottom, derive(#F5DABD, 20%), #F5DABD);
+	-fx-background-radius: 10;
+	-fx-max-width: 760;	
+	-fx-max-height: 40;
+	-fx-min-height: 40;
+	-fx-border-color: black;
+	-fx-border-width: 0;
+	-fx-padding: 10 5 10 10;
+}
+
+.bPaneCompleted {
+	-fx-background-color: linear-gradient(to bottom, derive(#EDEDE1, 20%), #EDEDE1);
+	-fx-background-radius: 10;
+	-fx-max-width: 760;	
+	-fx-max-height: 40;
+	-fx-min-height: 40;
+	-fx-border-color: black;
+	-fx-border-width: 0;
+	-fx-padding: 10 5 10 10;
+	-fx-opacity: 50%;
+}
+
+.paneHBar {
+	-fx-padding: 0 0 0 0;
+}
+
+.labelDateTime {
+	-fx-padding:5 3 5 3;
+	-fx-font: bold 11px "Segoe UI";
+}
+
+.labelBeforeTime {
+	-fx-padding:5 0 5 0;
+	-fx-font: italic 11px "Segoe UI";
+}
+
+.labelDesc {
+	-fx-padding:5 10 5 15;
+	-fx-font: normal 12px "Segoe UI";
+}
+
+.labelId {
+	-fx-padding: 5 5 5 15;
+	-fx-font: bold 12px "Segoe UI";
+	-fx-text-fill: black;
+	-fx-min-width: 60;
+}
+
+.labelCategory {
+	-fx-padding: 2 5 2 5;
+	-fx-background-color: white;
+	-fx-background-radius: 5;
+	-fx-border-width: 2;
+	-fx-border-color: #E8E8E8;
+	-fx-border-radius: 5;
+	-fx-font: bold italic 10px "Segoe UI";
+	-fx-text-fill: black;
+	-fx-opacity: 0.6;
+}
+
+.labelSysMsg {
+	-fx-font: bold 12px "Segoe UI";
+}
+
+.labelDateTitle {
+	-fx-font: bold 13px "Segoe UI";
+	-fx-text-fill: #666666;
+	-fx-padding: 20 0 0 5;
+	
+}
+
+.labelTodayTitle {
+	-fx-font: bold 17px "Segoe UI";
+	-fx-text-fill: #666666;
+	-fx-padding: 20 0 0 350;
+}
+
+.labelOverdueTitle {
+	-fx-font: bold 17px "Segoe UI";
+	-fx-text-fill: #666666;
+	-fx-padding: 0 0 0 340;
+}
+
+.iconImage {
+	-fx-padding:5 5 5 5;
+}
+
+.priorityBar {
+	-fx-smooth: true;
+	-fx-stroke-width: 4;
+}
+
+.hBar {
+	-fx-opacity: 0.5;
+	-fx-stroke: #838689;
+}
+
+.actionCommands { 
+	-fx-fill: #488AE4; 
+	-fx-font-weight: bold;
+	-fx-font-style: italic;
+}
+
+.dateCommands { 
+	-fx-fill: #A045E5; 
+	-fx-font-weight: bold;
+	-fx-font-style: italic;
+}
+
+.category { 
+	-fx-fill: #FF9740; 
+	-fx-font-weight: bold;
+	-fx-font-style: italic;
+	-fx-underline: true;
+}
+
+.priority { 
+	-fx-font-weight: bold;
+	-fx-font-style: italic;
+}
+
+.recurringCommands { 
+	-fx-fill: #DE5480; 
+	-fx-font-weight: bold;
+	-fx-font-style: italic;
+}
+
+.searchAttributes { 
+	-fx-fill: #6D5D50; 
+	-fx-font-weight: bold;
+	-fx-font-style: italic;
+}
+
+.txtAreaDesc {
+	-fx-wrap-text: true;
+	-fx-focus-traversable: false;
+	-fx-max-height: 70;
+	-fx-border-width: 0;
+	-fx-background-color: #fff, #fff;
+}
+
+.txtAreaDesc .content {
+	-fx-background-color: #fff;
+}
+
+.txtAreaDesc:focused .content {
+    -fx-background-color: #fff;
+}
+
+.txtAreaDesc .scroll-bar:vertical .track {
+	-fx-background-color: #FFFFFF;
+	-fx-border-color: #FFFFFF;
+	-fx-background-radius: 0em;
+	-fx-border-radius:2em;
+}
+
+.txtAreaDesc .scroll-bar:vertical .increment-button ,
+.txtAreaDesc .scroll-bar:vertical .decrement-button {
+    -fx-background-color:transparent;
+	-fx-background-radius: 0em;
+	-fx-padding:0 10 0 0;
+
+}
+
+.txtAreaDesc  .scroll-bar .increment-arrow,
+.txtAreaDesc  .scroll-bar .decrement-arrow {
+	-fx-shape: " ";	
+	-fx-padding:0;
+}
+
+.txtAreaDesc .scroll-bar:vertical .thumb {
+    -fx-background-color: derive(#87b763,70%);
+	-fx-background-insets: 2, 0, 0;
+	-fx-background-radius: 2em;
+
+}

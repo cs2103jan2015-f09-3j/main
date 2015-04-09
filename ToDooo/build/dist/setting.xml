@@ -1,4 +1,4 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <setting>
-	<save>listFile.xml</save>
+	<save>/listFile.xml</save>
 </setting>

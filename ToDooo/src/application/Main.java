@@ -1,5 +1,8 @@
 package application;
 
+import java.io.File;
+import java.net.URL;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Stack;
 
@@ -29,7 +32,7 @@ public class Main extends Application {
 		try {
 			priStage = primaryStage;
 			
-			Parent root = FXMLLoader.load(getClass().getResource(Constant.PATH_MAIN));
+			Parent root = FXMLLoader.load(Main.class.getResource(Constant.PATH_MAIN));
 			Scene scene = new Scene(root);
 			scene.getStylesheets().add(getClass().getResource(Constant.PATH_CSS).toExternalForm());
 			priStage.getIcons().add(new Image(Constant.IMAGE_LOGO));
@@ -60,5 +63,19 @@ public class Main extends Application {
 		toUpdate = false;
 		shouldResetCaret = false;
 		systemFeedback = "";
+	}
+	
+	public static String getFolderPath() {
+		URL url = new Main().getClass().getProtectionDomain().getCodeSource().getLocation();
+		
+		String parentPath = null;
+		try {
+			String jarPath = URLDecoder.decode(url.getFile(), "UTF-8"); 
+			parentPath = new File(jarPath).getParentFile().getPath();
+		} catch (Exception e) {
+			
+		}
+		
+		return parentPath;
 	}
 }

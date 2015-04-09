@@ -1,11 +1,14 @@
 package controller;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
+
+import javax.imageio.ImageIO;
 
 import net.fortuna.ical4j.model.property.Status;
 import application.Constant;
@@ -71,7 +74,8 @@ public class MainController{
 	}
 	
 	private void initTutorialPopup() {
-		Image image = new Image(Constant.IMAGE_TUTORIAL);
+		InputStream inputStream = getClass().getResourceAsStream(Constant.IMAGE_TUTORIAL);
+		Image image = new Image(inputStream);
 		ImageView imageView = new ImageView(image);
 		
 		tutorialPopup = new Popup();

@@ -101,9 +101,9 @@ public final class Constant {
 	// -----------------------------------------------------------------------------------------------
 	// File paths
 	// -----------------------------------------------------------------------------------------------
-	public static final String PATH_SETTING = "setting.xml";
+	public static final String PATH_SETTING = "/setting.xml";
 	public static final String PATH_FILE_NAME = "listFile.xml";
-	public static final String PATH_UNDO = "undo.xml";
+	public static final String PATH_DEFAULT = "/listFile.xml";
 	public static final String PATH_GET_PROPERTY = "user.dir";
 	public static final String PATH_DETAIL = "/view/Detail.fxml";
 	public static final String PATH_MAIN = "/view/Main.fxml";
@@ -280,6 +280,7 @@ public final class Constant {
 	// -----------------------------------------------------------------------------------------------
     public static final String TITLE_TODAY = "TODAY";
     public static final String TITLE_OVERDUE = "OVERDUE";    
+    public static final String TITLE_SETTING_DIR = "Choose File Location";    
     
     public static final String VIEW_NAME_SEARCH_RESULT= "searchResult";
     
@@ -298,7 +299,7 @@ public final class Constant {
     public static final String ICON_SUCCESS = "images/successIcon.png";
     public static final String ICON_ERROR = "images/errorIcon.png";
     public static final String ICON_FEEDBACK = "images/feedbackIcon.png";
-    public static final String IMAGE_TUTORIAL = "images/tutorial.png";
+    public static final String IMAGE_TUTORIAL = "/images/Tutorial.png";
     public static final String IMAGE_LOGO = "images/logo.png";
 
 	// -----------------------------------------------------------------------------------------------
