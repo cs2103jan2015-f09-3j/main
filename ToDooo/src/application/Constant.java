@@ -57,6 +57,7 @@ public final class Constant {
 	// ---------------------------------------------------------
 	public static final String TAG_SETTING = "setting";	
 	public static final String TAG_SETTING_SAVE = "save";
+	public static final String TAG_SETTING_CLEAN = "clean";
 	
 	// -----------------------------------------------------------------------------------------------
 	// XML configuration values
@@ -80,6 +81,8 @@ public final class Constant {
 	public static final String XML_XPATH_CATEGORIES = "/" + Constant.TAG_FILE + "/" + Constant.TAG_CATEGORIES;	
 	public static final String XML_XPATH_CATEGORY = "/" + Constant.TAG_FILE + "/" + Constant.TAG_CATEGORIES + "/" +
 			   									    Constant.TAG_CATEGORY;	
+	
+	public static final String XML_XPATH_SETTING_CLEAN = "/" + Constant.TAG_SETTING + "/" + Constant.TAG_SETTING_CLEAN;
 	
 	// -----------------------------------------------------------------------------------------------
 	// Command arrays

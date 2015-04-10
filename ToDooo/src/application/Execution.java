@@ -21,6 +21,23 @@ public class Execution {
 		
 		return systemMsg;
 	}
+	
+	public static void executeCleanCompletedTasks() {
+		ArrayList<Task> taskList = Main.list.getTasks();
+		Task task;
+		String taskId;
+		String taskStatus;
+	
+		for(int i = 0; i < taskList.size(); i++) {
+			task = taskList.get(i);
+			taskId = task.getId();
+			taskStatus = task.getStatus().toString();
+			
+			if(taskStatus.equalsIgnoreCase(Status.COMPLETED.toString())) {
+				Main.list.deleteTaskById(taskId);
+			}
+		}
+	}
 
 	// -----------------------------------------------------------------------------------------------
 	// Private methods

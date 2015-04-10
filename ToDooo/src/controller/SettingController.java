@@ -6,12 +6,14 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import application.Constant;
+import application.Frequency;
 import application.Main;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextField;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
@@ -28,7 +30,10 @@ public class SettingController {
 	@FXML TextField txtPath;
 	@FXML Button btnBrowse;
 	@FXML ImageView backIcon;
-	@FXML Label lblSysMsgSetting;
+	@FXML Label lblSysMsgSettingA;
+	@FXML Label lblSysMsgSettingB;
+	@FXML RadioButton radioWeekly;
+	@FXML RadioButton radioMonthly;
 	
 	//@author A0112537M
 	@FXML 
@@ -43,10 +48,30 @@ public class SettingController {
 		openFileDialog();
 	}
 	
+	@FXML 
+	public void setCleanRecurrenceWeekly(MouseEvent e) {
+		String sysMsg = Main.storage.updateCleanRecurrenceInSetting(Frequency.WEEKLY.toString());
+		
+		displaySysMsgForClean(sysMsg);
+	}
+	
+	@FXML 
+	public void setCleanRecurrenceMonthly(MouseEvent e) {
+		String sysMsg = Main.storage.updateCleanRecurrenceInSetting(Frequency.MONTHLY.toString());
+		
+		displaySysMsgForClean(sysMsg);
+	}
+	
 	@FXML
 	public void initialize() {
-		txtPath.setText(Main.storage.readSavePath());
+		String cleanRecurrence = Main.storage.readSaveCleanRecurrence();
 		
+		txtPath.setText(Main.storage.readSavePath());
+		if(cleanRecurrence.equalsIgnoreCase(Frequency.WEEKLY.toString())) {
+			radioWeekly.setSelected(true);
+		} else if(cleanRecurrence.equalsIgnoreCase(Frequency.MONTHLY.toString())) {
+			radioMonthly.setSelected(true);
+		}
 	}
 	
 	//@author A0112498B
@@ -55,9 +80,14 @@ public class SettingController {
 	}
 	
 	//@author A0112537M
-	public void executeSystemMsgTimerTask() {
+	public void executeSysMsgTimerForSavePath() {
 		timer = new Timer();
-		timer.schedule(new SystemMsgTimerTask(), Constant.TIMER_SYSTEM_MSG_DURATION);
+		timer.schedule(new SysMsgTimerSavePath(), Constant.TIMER_SYSTEM_MSG_DURATION);
+	}
+	
+	public void executeSysMsgTimerForClean() {
+		timer = new Timer();
+		timer.schedule(new SysMsgTimerClean(), Constant.TIMER_SYSTEM_MSG_DURATION);
 	}
 	
 	//@author A0112498B
@@ -77,32 +107,55 @@ public class SettingController {
 			systemMsg = Main.storage.moveFile(newPath);
 		}
 		
-		displaySystemMessage(systemMsg);
+		displaySysMsgForSavePath(systemMsg);
 	}
 	
 	//@author A0112537M
-	private void displaySystemMessage(String systemMsg) {
-		lblSysMsgSetting.setText(systemMsg);
+	private void displaySysMsgForSavePath(String systemMsg) {
+		lblSysMsgSettingA.setText(systemMsg);
 		
 		if(systemMsg.contains(Constant.SYS_MSG_KEYWORD_FILE_SAVED)) {
-			lblSysMsgSetting.setTextFill(Constant.COLOR_SUCCESS);
+			lblSysMsgSettingA.setTextFill(Constant.COLOR_SUCCESS);
 		} else {
-			lblSysMsgSetting.setTextFill(Constant.COLOR_ERROR);
+			lblSysMsgSettingA.setTextFill(Constant.COLOR_ERROR);
 		}
 		
-		executeSystemMsgTimerTask();
+		executeSysMsgTimerForSavePath();
 	}
 	
-	//@author A0112498B
-	private class SystemMsgTimerTask extends TimerTask {
+	private class SysMsgTimerSavePath extends TimerTask {
         public void run() {
     		Platform.runLater(new Runnable() {
     		    @Override
     		    public void run() {
-    		    	lblSysMsgSetting.setText(Constant.EMPTY_STRING);	
+    		    	lblSysMsgSettingA.setText(Constant.EMPTY_STRING);	
     		    }
     		});
             timer.cancel();
         }
     }
+	
+	private void displaySysMsgForClean(String systemMsg) {
+		lblSysMsgSettingB.setText(systemMsg);
+		
+		if(systemMsg.contains(Constant.SYS_MSG_KEYWORD_FILE_SAVED)) {
+			lblSysMsgSettingB.setTextFill(Constant.COLOR_SUCCESS);
+		} else {
+			lblSysMsgSettingB.setTextFill(Constant.COLOR_ERROR);
+		}
+		
+		executeSysMsgTimerForClean();
+	}
+	
+	private class SysMsgTimerClean extends TimerTask {
+        public void run() {
+    		Platform.runLater(new Runnable() {
+    		    @Override
+    		    public void run() {
+    		    	lblSysMsgSettingB.setText(Constant.EMPTY_STRING);	
+    		    }
+    		});
+            timer.cancel();
+        }
+	}
 }

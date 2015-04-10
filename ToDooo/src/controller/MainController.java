@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -13,6 +14,7 @@ import javax.imageio.ImageIO;
 import net.fortuna.ical4j.model.property.Status;
 import application.Constant;
 import application.Execution;
+import application.Frequency;
 import application.Main;
 import application.Task;
 import application.TaskSorter;
@@ -269,6 +271,7 @@ public class MainController{
     }
 	//@author A0112537M
 	public void loadListByDate(String displayType) {
+		cleanCompletedTasks();
 		int indexForNextLoop = 0;
 		Task task;
 	    Date startDate;
@@ -473,13 +476,15 @@ public class MainController{
 			addCategory(task, hBoxLeft);
 		}
 		
-		if(displayType.equalsIgnoreCase(Constant.TAB_NAME_ALL) || 
-				displayType.equalsIgnoreCase(Constant.VIEW_NAME_SEARCH_RESULT)) {
-			addDateTimeInAllOrSearchResult(taskType, status, displayType, onDate, byDate, fromDate, toDate, startDate,
-					hBoxRight, hBoxLeft);
-		} else {
-			addDateTimeInCategoryOrPriority(taskType, status, displayType, onDate, byDate, fromDate, toDate, startDate,
-					hBoxRight, hBoxLeft);
+		if(!taskType.equalsIgnoreCase(TaskType.FLOATING.toString())) {
+			if(displayType.equalsIgnoreCase(Constant.TAB_NAME_ALL) || 
+					displayType.equalsIgnoreCase(Constant.VIEW_NAME_SEARCH_RESULT)) {
+				addDateTimeInAllOrSearchResult(taskType, status, displayType, onDate, byDate, fromDate, toDate, startDate,
+						hBoxRight, hBoxLeft);
+			} else {
+				addDateTimeInCategoryOrPriority(taskType, status, displayType, onDate, byDate, fromDate, toDate, startDate,
+						hBoxRight, hBoxLeft);
+			}
 		}
 		
 		vBox.getChildren().add(bPane);
@@ -804,5 +809,24 @@ public class MainController{
 		detailPopup.initStyle(StageStyle.UNDECORATED);
 		detailPopup.setScene(scene); 
         detailPopup.show();
+	}
+	
+	public void cleanCompletedTasks() {
+		int dayOfWeek;
+		int dayOfMonth;
+		String cleanRecurrence = Main.storage.readSaveCleanRecurrence();
+		Calendar today = DateParser.getTodayDate();
+		
+		if(cleanRecurrence.equalsIgnoreCase(Frequency.WEEKLY.toString())) {
+			dayOfWeek = DateParser.calculateDayOfWeek(today);
+			if(dayOfWeek == 1) {
+				Execution.executeCleanCompletedTasks();
+			}
+		} else if(cleanRecurrence.equalsIgnoreCase(Frequency.MONTHLY.toString())) {
+			dayOfMonth = DateParser.calculateDayOfMonth(today);
+			if(dayOfMonth == 1) {
+				Execution.executeCleanCompletedTasks();
+			}
+		}
 	}
 }

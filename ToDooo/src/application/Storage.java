@@ -274,6 +274,32 @@ public class Storage {
 		
 		return systemMsg;
 	}
+	
+	public String updateCleanRecurrenceInSetting(String recurrence) { 
+		Document doc = getSettingDocument();
+
+		Node clean = doc.getElementsByTagName(Constant.TAG_SETTING_CLEAN).item(0);
+		clean.setTextContent(recurrence);
+		
+		return writeFile(doc, Constant.PATH_SETTING);
+	}
+		
+	public String readSaveCleanRecurrence() {
+		String cleanRecurrence = null;
+		Document settingDoc = getSettingDocument();		
+		
+		try {
+			XPathExpression expression = 
+					_xPath.compile(Constant.XML_XPATH_SETTING_CLEAN);
+			
+			cleanRecurrence = (String) expression.
+					   evaluate(settingDoc, XPathConstants.STRING);
+		} catch (XPathExpressionException exception) {
+			exception.printStackTrace();
+		}
+		
+		return cleanRecurrence;
+	}
 		
 	// -----------------------------------------------------------------------------------------------
 	// Private methods
