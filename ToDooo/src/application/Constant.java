@@ -161,11 +161,11 @@ public final class Constant {
 	public static final String MSG_SEARCH_SUCCESS = "{0} matches found.";
 	public static final String MSG_SEARCH_INVALID = "Invalid format. Please use the search attributes and separate with ;;<space>";
 	
-	public static final String MSG_COMPLETE_SUCCESS = "Completed {0}.";
-	public static final String MSG_COMPLETE_FAIL = "Failed to complete {0}";
+	public static final String MSG_COMPLETE_SUCCESS = "Successfully marked {0} as completed.";
+	public static final String MSG_COMPLETE_FAIL = "Failed to mark {0} as completed.";
 	public static final String MSG_COMPLETE_INVALID = "TaskID {0} does not exist.";
-	public static final String MSG_UNCOMPLETE_SUCCESS = "Uncompleted {0}.";
-	public static final String MSG_UNCOMPLETE_FAIL = "Failed to uncomplete {0}";
+	public static final String MSG_UNCOMPLETE_SUCCESS = "Successfully mark {0} as uncompleted.";
+	public static final String MSG_UNCOMPLETE_FAIL = "Failed to mark {0} as uncompleted.";
 	
 	public static final String MSG_VIEW_SUCCESS = "Item is found.";
 	public static final String MSG_VIEW_FAIL = "Item is not found.";
@@ -187,7 +187,7 @@ public final class Constant {
 	// -----------------------------------------------------------------------------------------------
 	// System message keywords
 	// -----------------------------------------------------------------------------------------------
-    public static final String[] SYS_MSG_KEYWORD_SUCCESS = { "successful", "Completed", "saved" , "matches found", "is found" };
+    public static final String[] SYS_MSG_KEYWORD_SUCCESS = { "Successfully", "successful", "saved" , "matches found", "is found" };
     public static final String[] SYS_MSG_KEYWORD_ERROR = { "failed", "Failed", "cannot" , "Invalid", "does not exist",
     														"Unable", "not saved", "not found" };
     public static final String SYS_MSG_KEYWORD_SEARCH = "matches found";
