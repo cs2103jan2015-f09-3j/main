@@ -340,5 +340,5 @@ public final class Constant {
     public static final String EMPTY_STRING = "";
     public static final String EMPTY_DATE = "NONE";
     public static final int TIMER_SYSTEM_MSG_DURATION = 2500;
-    
+    public static final int MAX_NUM_OF_DATES = 2;
 }

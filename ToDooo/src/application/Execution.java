@@ -197,23 +197,24 @@ public class Execution {
 			String systemMsg = null;
 			int recurId = -1;
 			
-			Pair<Task, String> toCompleteTask = Main.list.completeTaskOnList(userInput);
+			Pair<Task, String> completedTaskDetails = 
+					Main.list.completeTaskOnList(userInput);
 			
-			if(toCompleteTask == null) {
+			if(completedTaskDetails == null) {
 				systemMsg = Constant.MSG_ITEM_NOT_FOUND;
 			} else {
-				Task completedTask = toCompleteTask.getKey();
-				String targetId = toCompleteTask.getValue();
+				Task originalTask = completedTaskDetails.getKey();
+				String targetId = completedTaskDetails.getValue();
 				
-				if(completedTask.getIsRecurring() == true) {
-					recurId = Integer.parseInt(targetId.substring(targetId.indexOf(".")+1));
+				if(originalTask.getIsRecurring() == true) {
+					recurId = Integer.parseInt(targetId.substring(targetId.indexOf(".") + 1));
 				}
 				
-				if(completedTask == null || 
-						(recurId != -1 && completedTask.getRecurringTasks().get(recurId-1).getStatus().equals(TaskStatus.DELETED))) {
+				if(originalTask == null || 
+						(recurId != -1 && originalTask.getRecurringTasks().get(recurId - 1).getStatus().equals(TaskStatus.DELETED))) {
 					systemMsg = Constant.MSG_ITEM_NOT_FOUND;
 				} else {
-					Undo.prepareUndoComplete(completedTask, targetId);
+					Undo.prepareUndoComplete(originalTask, targetId);
 					
 					systemMsg = Constant.MSG_COMPLETE_SUCCESS.
 							replace(Constant.DELIMITER_REPLACE, targetId);
@@ -227,23 +228,23 @@ public class Execution {
 			String systemMsg = null;
 			int recurId = -1;
 			
-			Pair<Task, String> toUncompleteTask = Main.list.uncompleteTaskOnList(userInput);
+			Pair<Task, String> uncompletedTaskDetails = Main.list.uncompleteTaskOnList(userInput);
 			
-			if(toUncompleteTask == null) {
+			if(uncompletedTaskDetails == null) {
 				systemMsg = Constant.MSG_ITEM_NOT_FOUND;
 			} else {
-				Task uncompletedTask = toUncompleteTask.getKey();
-				String targetId = toUncompleteTask.getValue();
+				Task originalTask = uncompletedTaskDetails.getKey();
+				String targetId = uncompletedTaskDetails.getValue();
 				
-				if(uncompletedTask.getIsRecurring() == true) {
+				if(originalTask.getIsRecurring() == true) {
 					recurId = Integer.parseInt(targetId.substring(targetId.indexOf(".")+1));
 				}
 				
-				if(uncompletedTask == null || 
-						(recurId != -1 && uncompletedTask.getRecurringTasks().get(recurId-1).getStatus().equals(TaskStatus.DELETED))) {
+				if(originalTask == null || 
+				  (recurId != -1 && originalTask.getRecurringTasks().get(recurId-1).getStatus().equals(TaskStatus.DELETED))) {
 					systemMsg = Constant.MSG_ITEM_NOT_FOUND;
 				} else {
-					Undo.prepareUndoComplete(uncompletedTask, targetId);
+					Undo.prepareUndoComplete(originalTask, targetId);
 					
 					systemMsg = Constant.MSG_UNCOMPLETE_SUCCESS.
 							replace(Constant.DELIMITER_REPLACE, targetId);

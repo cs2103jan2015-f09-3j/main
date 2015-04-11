@@ -44,6 +44,9 @@ public class Undo {
 			case UPDATE :
 				command = Command.UPDATE;
 				break;
+			case COMPLETE :
+				command = Command.COMPLETE;
+				break;
 			default:
 				// no undo command
 				// return null

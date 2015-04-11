@@ -46,6 +46,7 @@ public class Task implements Cloneable {
 	
 	// used by update function
 	public Task (String userInput, String id, Task originalTask) {
+		_isValid = false;
 		_taskType = InputParser.getTaskTypeFromString(userInput);	
 		
 		if (id == null) {
@@ -56,22 +57,24 @@ public class Task implements Cloneable {
 		
 		_originalText = InputParser.removeActionFromString(userInput, _id);
 		
-		_isValid = Command.hasValidNumOfDateCommands(userInput);
-		if (_isValid) {
+		boolean hasValidDateCount = Command.hasValidNumOfDateCommands(userInput);
+		if (hasValidDateCount) {
 			List<Date> dates = getDates(userInput);
 			
-			int maxNum = 2;
-			if ((_taskType.equals(TaskType.TIMED) && dates.size() < maxNum) ||
-				(!_taskType.equals(TaskType.FLOATING) && dates == null)) {
+			boolean isInvalidFormat = (_taskType.equals(TaskType.TIMED) && 
+									   dates.size() < Constant.MAX_NUM_OF_DATES) ||
+									  (!_taskType.equals(TaskType.FLOATING) && 
+									   dates == null);
+			
+			if (isInvalidFormat) {
 				Main.systemFeedback = Constant.MSG_INVALID_FORMAT;
-				_isValid = false;
 			} else {
 				setDatesForTaskType(dates);			
 				_category = InputParser.getCategoryFromString(userInput);
 				
-				_isValid = processRecurring(dates, userInput, originalTask);
+				boolean isValidOperation = processRecurring(dates, userInput, originalTask);
 				
-				if (_isValid) {
+				if (isValidOperation) {
 					_priority = InputParser.getPriorityFromString(userInput);		
 					_toDo = generateToDoString(userInput);
 					_status = TaskStatus.getTaskStatus(_endDate);
@@ -80,7 +83,10 @@ public class Task implements Cloneable {
 				}
 			}
 		} else {
-			if (Command.verifyRecurringCommands(userInput) != null) {
+			boolean isInvalidRecurring = 
+					Command.verifyRecurringCommands(userInput) != null;
+			
+			if (isInvalidRecurring) {
 				Main.systemFeedback = Constant.MSG_INVALID_RECURRING;
 			} else {
 				Main.systemFeedback = Constant.MSG_INVALID_FORMAT;
