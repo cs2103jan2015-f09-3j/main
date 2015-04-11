@@ -205,22 +205,21 @@ public class ToDoList {
 	
 	public Pair<Task, String> updateTaskOnList(String userInput) {
 		String targetId = InputParser.getTargetIdFromUpdateString(userInput);
-		Task updatedTask = new Task(userInput, targetId);
-		
 		if (targetId == null || 
 			targetId.toLowerCase().
 			contains(Constant.PREFIX_RECURRING_ID)) {
 			Main.systemFeedback = Constant.MSG_ITEM_NOT_FOUND;
 			return null;
-		}
-		
-		Task originalTask = deleteTaskById(targetId);
-		
-		if (originalTask != null) {
-			AddTaskBackToList(updatedTask, false);
 		}		
 		
-		String updatedId = updatedTask.getId();
+		Task originalTask = deleteTaskById(targetId);
+
+		String updatedId = null;
+		if (originalTask != null) {
+			updatedId = addUpdatedTask(userInput, targetId, originalTask);
+		}		
+		
+		
 		return new Pair<Task, String>(originalTask, updatedId);
 	}
 	
@@ -560,6 +559,19 @@ public class ToDoList {
 		_tasks = TaskSorter.getTasksSortedByDate(_tasks);
 		
 		return backupList;
+	}
+	
+	private String addUpdatedTask(String userInput, String targetId,
+								  Task originalTask) {
+		Task updatedTask = new Task(userInput, targetId, originalTask);
+
+		String updatedId = null;
+		if (updatedTask != null) {
+			AddTaskBackToList(updatedTask, false);
+			updatedId = updatedTask.getId();
+		}
+
+		return updatedId;
 	}
 	
 	private ArrayList<Task> deepCloneArrayList(ArrayList<Task> tasks) {

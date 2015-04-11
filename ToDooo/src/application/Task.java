@@ -31,9 +31,9 @@ public class Task implements Cloneable {
 	
 	// -----------------------------------------------------------------------------------------------
 	// Constructors
-	// -----------------------------------------------------------------------------------------------			
-	public Task() {
-		// convert from node
+	// -----------------------------------------------------------------------------------------------		
+	public Task() {		
+		// Attributes are to be occupied by calling set
 	}
 	
 	public Task(String userInput) {
@@ -41,6 +41,11 @@ public class Task implements Cloneable {
 	}
 	
 	public Task(String userInput, String id) {	
+		this(userInput, id, null);
+	}
+	
+	// used by update function
+	public Task (String userInput, String id, Task originalTask) {
 		_taskType = InputParser.getTaskTypeFromString(userInput);	
 		
 		if (id == null) {
@@ -64,7 +69,7 @@ public class Task implements Cloneable {
 				setDatesForTaskType(dates);			
 				_category = InputParser.getCategoryFromString(userInput);
 				
-				_isValid = setRecurringDetails(dates, userInput);
+				_isValid = setRecurringDetails(dates, userInput, originalTask);
 				
 				if (_isValid) {
 					_priority = InputParser.getPriorityFromString(userInput);		
@@ -468,7 +473,7 @@ public class Task implements Cloneable {
 	// ---------------------------------------------------------
 	// Recurring Tasks-related details tags
 	// ---------------------------------------------------------
-	private boolean setRecurringDetails(List<Date> dates, String userInput) {
+	private boolean setRecurringDetails(List<Date> dates, String userInput, Task originalTask) {
 		_recurringTasks = new ArrayList<RecurringTask>();
 		_isRecurring = false;
 		_repeatUntil = null;
@@ -482,6 +487,7 @@ public class Task implements Cloneable {
 			
 			if (recurringCommand == null) {
 				boolean hasRecurringCommands = Command.hasRecurringCommands(userInput);
+				
 				if (hasRecurringCommands && untilDate == null) {
 					isValid = false;
 					Main.systemFeedback = Constant.MSG_NO_UNTIL_DATE;						
@@ -497,7 +503,7 @@ public class Task implements Cloneable {
 					Date startDate = dates.get(0);
 					_repeatDay = DateParser.calculateDayOfWeek(startDate);
 					
-					generateRecurringTasks(startDate);	
+					generateRecurringTasks(startDate, originalTask);	
 					isValid = true;				
 				} else {
 					isValid = false;
@@ -512,28 +518,36 @@ public class Task implements Cloneable {
 		return isValid;
 	}		
 
-	private void generateRecurringTasks(Date startDate) {
+	private void generateRecurringTasks(Date startDate, Task originalTask) {
 		Calendar calendarStart = DateParser.createCalendar(startDate);
 		Calendar calendarEnd = DateParser.createCalendar(_repeatUntil);
 		int startDateDayOfMonth = DateParser.calculateDayOfMonth(calendarStart);
 		int startDateMonth = DateParser.calculateMonth(calendarStart);
 		
-		
+		ArrayList<RecurringTask> recurringTasks = null;
+		if (originalTask != null) {
+			recurringTasks = originalTask.getRecurringTasks();
+		}
+				
 		while (calendarStart.before(calendarEnd) || calendarStart.equals(calendarEnd)) {
 			switch (_repeat) {
 				case WEEKLY :
-					if (hasAddedWeeklyRecurringTask(calendarStart)) {
+					if (hasAddedWeeklyRecurringTask(calendarStart, recurringTasks)) {
 						continue;
 					}
 					break;
 				case MONTHLY :
-					if (hasAddedMonthlyRecurringTask(calendarStart, startDateDayOfMonth)) {
+					if (hasAddedMonthlyRecurringTask(calendarStart, 
+													 startDateDayOfMonth, 
+													 recurringTasks)) {
 						continue;
 					}
 					break;
 				case YEARLY :
 					if (hasAddedYearlyRecurringTask(calendarStart, 
-							startDateDayOfMonth, startDateMonth)) {
+													startDateDayOfMonth, 
+													startDateMonth, 
+													recurringTasks)) {
 						continue;
 					}
 					break;					
@@ -548,7 +562,8 @@ public class Task implements Cloneable {
 
 	private boolean hasAddedYearlyRecurringTask(Calendar calendarStart, 
 												int startDateDayOfMonth, 
-												int startDateMonth) {
+												int startDateMonth,
+												ArrayList<RecurringTask> recurringTasks) {
 		boolean hasAdded = false;
 		int dayOfMonth;
 		int month;
@@ -557,7 +572,7 @@ public class Task implements Cloneable {
 		
 		if (dayOfMonth == startDateDayOfMonth &&
 			month == startDateMonth) {
-			addToRecurringTasks(calendarStart);
+			addToRecurringTasks(calendarStart, recurringTasks);
 			
 			calendarStart.add(Calendar.YEAR, 1);
 			hasAdded = true;
@@ -566,12 +581,13 @@ public class Task implements Cloneable {
 		return hasAdded;
 	}
 
-	private boolean hasAddedMonthlyRecurringTask(Calendar calendarStart, int startDateDayOfMonth) {
+	private boolean hasAddedMonthlyRecurringTask(Calendar calendarStart, int startDateDayOfMonth,
+												 ArrayList<RecurringTask> recurringTasks) {
 		boolean hasAdded = false;
 		int dayOfMonth = DateParser.calculateDayOfMonth(calendarStart);	
 		
 		if (dayOfMonth == startDateDayOfMonth) {
-			addToRecurringTasks(calendarStart);
+			addToRecurringTasks(calendarStart, recurringTasks);
 			
 			calendarStart.add(Calendar.MONTH, 1);
 			hasAdded = true;
@@ -580,12 +596,13 @@ public class Task implements Cloneable {
 		return hasAdded;
 	}
 
-	private boolean hasAddedWeeklyRecurringTask(Calendar calendarStart) {
+	private boolean hasAddedWeeklyRecurringTask(Calendar calendarStart, 
+												ArrayList<RecurringTask> recurringTasks) {
 		boolean hasAdded = false;
 		int dayOfWeek = DateParser.calculateDayOfWeek(calendarStart);
 		
 		if (dayOfWeek == _repeatDay) {
-			addToRecurringTasks(calendarStart);
+			addToRecurringTasks(calendarStart, recurringTasks);
 			
 			calendarStart.add(Calendar.WEEK_OF_YEAR, 1);
 			hasAdded = true;
@@ -594,12 +611,36 @@ public class Task implements Cloneable {
 		return hasAdded;
 	}
 	
-	private void addToRecurringTasks(Calendar calendarStart) {
+	private void addToRecurringTasks(Calendar calendarStart, 
+									 ArrayList<RecurringTask> recurringTasks) {
 		String recurringTaskId = generateRecurringTaskId();
 		RecurringTask recurringTask = 
 				new RecurringTask(recurringTaskId, calendarStart);
 		
+		if (recurringTasks != null) {
+			useOriginalRecurTaskStatus(recurringTasks, recurringTask);
+		}
+		
 		_recurringTasks.add(recurringTask);
+	}
+
+	private void useOriginalRecurTaskStatus(ArrayList<RecurringTask> recurringTasks, 
+											RecurringTask recurringTask) {
+		boolean hasMatched = false;
+		
+		Date thisRecurDate = recurringTask.getRecurDate();
+		Date thatRecurDate = null;
+		
+		for (RecurringTask recTask : recurringTasks) {
+			thatRecurDate = recTask.getRecurDate();
+			hasMatched = DateParser.hasMatchedDateTime(thisRecurDate, thatRecurDate);
+			
+			if (hasMatched) {
+				recurringTask.setStatus(recTask.getStatus());
+				
+				break;
+			}
+		}
 	}
 	
 	private String generateRecurringTaskId() {

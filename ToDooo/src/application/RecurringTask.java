@@ -68,7 +68,7 @@ public class RecurringTask implements Cloneable {
 		return (taskType.equals(TaskType.DATED) ||
 				taskType.equals(TaskType.EVENT));
 	}
-	
+		
 	@Override
 	public RecurringTask clone() {
 		RecurringTask clone = null;

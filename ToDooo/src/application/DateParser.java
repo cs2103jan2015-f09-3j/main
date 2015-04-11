@@ -110,6 +110,20 @@ public class DateParser {
 				thisCalendar.get(Calendar.DAY_OF_YEAR) == thatCalendar.get(Calendar.DAY_OF_YEAR));
 	}
 	
+	public static boolean hasMatchedDateTime(Date thisDate, Date thatDate) {
+		Calendar calendarA = DateParser.createCalendar(thisDate);
+		Calendar calendarB = DateParser.createCalendar(thatDate);
+		
+		return DateParser.hasMatchedDateTime(calendarA, calendarB);
+	}
+	
+	public static boolean hasMatchedDateTime(Calendar thisCalendar, Calendar thatCalendar) {
+		thisCalendar.clear(Calendar.MILLISECOND);
+		thatCalendar.clear(Calendar.MILLISECOND);
+		
+		return thisCalendar.equals(thatCalendar);
+	}
+	
 	//@author A0112537M
 	public static Calendar getTodayDate() {
 		Calendar calendar = Calendar.getInstance();

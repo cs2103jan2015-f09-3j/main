@@ -148,7 +148,9 @@ public class Execution {
 		if (Command.shouldRetrieveOriginalInput(userInput)) {
 			systemMsg = executeRetrieveOriginalText(userInput);
 		} else {
-			Pair<Task, String> updatedTasksDetails = Main.list.updateTaskOnList(userInput);
+			Pair<Task, String> updatedTasksDetails = 
+					Main.list.updateTaskOnList(userInput);
+			
 			if (updatedTasksDetails == null) {
 				return systemMsg = Main.systemFeedback;
 			}
