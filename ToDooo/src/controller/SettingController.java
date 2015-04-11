@@ -1,22 +1,17 @@
 package controller;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.Timer;
-import java.util.TimerTask;
-
 import application.Constant;
+import application.Execution;
 import application.Frequency;
 import application.Main;
-import javafx.application.Platform;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextField;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
@@ -26,15 +21,20 @@ public class SettingController {
 	
 	private Timer timer;
 	private MainController mainCon;
+	
+	@FXML public Label lblSysMsgSettingA;
+	@FXML public Label lblSysMsgSettingB;
+	
 	@FXML AnchorPane anPaneSetting;
 	@FXML TextField txtPath;
 	@FXML Button btnBrowse;
-	@FXML ImageView backIcon;
-	@FXML Label lblSysMsgSettingA;
-	@FXML Label lblSysMsgSettingB;
+	@FXML ImageView backIcon;		
 	@FXML RadioButton radioWeekly;
 	@FXML RadioButton radioMonthly;
 	
+	// -----------------------------------------------------------------------------------------------
+	// Public methods
+	// -----------------------------------------------------------------------------------------------
 	//@author A0112537M
 	@FXML 
 	public void openFileDialogKey(KeyEvent e) {
@@ -50,14 +50,16 @@ public class SettingController {
 	
 	@FXML 
 	public void setCleanRecurrenceWeekly(MouseEvent e) {
-		String sysMsg = Main.storage.updateCleanRecurrenceInSetting(Frequency.WEEKLY.toString());
+		String sysMsg = Main.storage.
+				updateCleanRecurrenceInSetting(Frequency.WEEKLY.toString());
 		
 		displaySysMsgForClean(sysMsg);
 	}
 	
 	@FXML 
 	public void setCleanRecurrenceMonthly(MouseEvent e) {
-		String sysMsg = Main.storage.updateCleanRecurrenceInSetting(Frequency.MONTHLY.toString());
+		String sysMsg = Main.storage.
+				updateCleanRecurrenceInSetting(Frequency.MONTHLY.toString());
 		
 		displaySysMsgForClean(sysMsg);
 	}
@@ -76,23 +78,13 @@ public class SettingController {
 		}
 	}
 	
-	//@author A0112498B
 	public void init(MainController mainController) {
 		mainCon = mainController;
 	}
 	
-	//@author A0112537M
-	public void executeSysMsgTimerForSavePath() {
-		timer = new Timer();
-		timer.schedule(new SysMsgTimerSavePath(), Constant.TIMER_SYSTEM_MSG_DURATION);
-	}
-	
-	public void executeSysMsgTimerForClean() {
-		timer = new Timer();
-		timer.schedule(new SysMsgTimerClean(), Constant.TIMER_SYSTEM_MSG_DURATION);
-	}
-	
-	//@author A0112498B
+	// -----------------------------------------------------------------------------------------------
+	// Private methods
+	// -----------------------------------------------------------------------------------------------
 	private void openFileDialog() {
 		String systemMsg = "";
 		
@@ -112,7 +104,6 @@ public class SettingController {
 		displaySysMsgForSavePath(systemMsg);
 	}
 	
-	//@author A0112537M
 	private void displaySysMsgForSavePath(String systemMsg) {
 		lblSysMsgSettingA.setText(systemMsg);
 		
@@ -122,20 +113,8 @@ public class SettingController {
 			lblSysMsgSettingA.setTextFill(Constant.COLOR_ERROR);
 		}
 		
-		executeSysMsgTimerForSavePath();
+		Execution.executeSysMsgTimerForSavePath();
 	}
-	
-	private class SysMsgTimerSavePath extends TimerTask {
-        public void run() {
-    		Platform.runLater(new Runnable() {
-    		    @Override
-    		    public void run() {
-    		    	lblSysMsgSettingA.setText(Constant.EMPTY_STRING);	
-    		    }
-    		});
-            timer.cancel();
-        }
-    }
 	
 	private void displaySysMsgForClean(String systemMsg) {
 		lblSysMsgSettingB.setText(systemMsg);
@@ -146,18 +125,6 @@ public class SettingController {
 			lblSysMsgSettingB.setTextFill(Constant.COLOR_ERROR);
 		}
 		
-		executeSysMsgTimerForClean();
-	}
-	
-	private class SysMsgTimerClean extends TimerTask {
-        public void run() {
-    		Platform.runLater(new Runnable() {
-    		    @Override
-    		    public void run() {
-    		    	lblSysMsgSettingB.setText(Constant.EMPTY_STRING);	
-    		    }
-    		});
-            timer.cancel();
-        }
+		Execution.executeSysMsgTimerForClean();
 	}
 }

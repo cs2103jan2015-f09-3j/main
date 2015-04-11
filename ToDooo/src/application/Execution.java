@@ -3,14 +3,15 @@ package application;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Timer;
-
 import javafx.util.Pair;
 import controller.HeaderController;
 import controller.MainController;
+import controller.SettingController;
 
 public class Execution {
 	public static MainController mainController;
 	public static HeaderController headerController;
+	public static SettingController settingController;
 	
 	//@author A0112498B
 	// -----------------------------------------------------------------------------------------------
@@ -70,20 +71,48 @@ public class Execution {
 	}
 	
 	public static void executeSystemMsgTimerTask() {
-		SystemMsgTimerTask systemMsgTimerTask = new SystemMsgTimerTask();
+		ExecutionTimer.SystemMsgTimerTask systemMsgTimerTask = 
+				new ExecutionTimer.SystemMsgTimerTask();
 		
 		Timer timer = systemMsgTimerTask.getTimer();
 		timer.schedule(systemMsgTimerTask, Constant.TIMER_SYSTEM_MSG_DURATION);
 	}
 	
 	public static void executeStatusCheckTimerTask() {
-		StatusCheckTimerTask statusCheckTimerTask = new StatusCheckTimerTask();
+		ExecutionTimer.StatusCheckTimerTask statusCheckTimerTask = 
+				new ExecutionTimer.StatusCheckTimerTask();
 		
 		Timer timer = statusCheckTimerTask.getTimer();
 		timer.scheduleAtFixedRate(statusCheckTimerTask, 0, 
 				Constant.TIMER_UPDATE_STATUS_DURATION);
 	}
 	
+	//@author A0112537M
+	public static void executeSysMsgTimerForSavePath() {
+		ExecutionTimer.SystemMsgTimerSavePath sysMsgTimerSavePath = 
+				new ExecutionTimer.SystemMsgTimerSavePath();
+		
+		Timer timer = sysMsgTimerSavePath.getTimer();
+		timer.schedule(sysMsgTimerSavePath, Constant.TIMER_SYSTEM_MSG_DURATION);
+	}
+	
+	public static void executeSysMsgTimerForClean() {
+		ExecutionTimer.SystemMsgTimerCleanSetting systemMsgTimerCleanSetting =
+				new ExecutionTimer.SystemMsgTimerCleanSetting();
+		
+		Timer timer = systemMsgTimerCleanSetting.getTimer();
+		timer.schedule(systemMsgTimerCleanSetting, Constant.TIMER_SYSTEM_MSG_DURATION);
+	}
+	
+	public static void executeClearSavePathMsg() {
+		settingController.lblSysMsgSettingA.setText(Constant.EMPTY_STRING);	
+	}
+	
+	public static void executeClearCleanSettingMsg() {
+		settingController.lblSysMsgSettingB.setText(Constant.EMPTY_STRING);	
+	}
+	
+	//@author A0112498B
 	public static void executeUpdateStatus() {
 		Main.list.checkAndUpdateStatus();
 		mainController.loadListsInTabs();

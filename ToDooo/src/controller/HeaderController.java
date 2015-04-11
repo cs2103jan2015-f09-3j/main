@@ -30,6 +30,9 @@ public class HeaderController{
 	@FXML private Pane txtAreaPane;
 	@FXML public StyleClassedTextArea textArea;
 	
+	// -----------------------------------------------------------------------------------------------
+	// Public methods
+	// -----------------------------------------------------------------------------------------------
 	//@author A0112498B
 	@FXML
 	public void processCmd(KeyEvent e) throws IOException {			
@@ -67,7 +70,40 @@ public class HeaderController{
 		highlightKeyWords();
 	}
 	
+	public void init(MainController mainController) {
+		mainCon = mainController;		
+		addTextAreaListener();		
+	}
 	
+	public void resetTextArea() {
+		Main.toUpdate = false;	
+
+		textArea.clearStyle(0);
+		textArea.clear();
+		textArea.positionCaret(0);		
+	}
+	
+	
+	//@author A0112537M
+	@FXML
+	public void loadSettingMouse(MouseEvent e) throws IOException {
+		mainCon.executeSetting();
+	}
+	
+	@FXML
+	public void goBackToMainMouse(MouseEvent e) throws IOException {
+		mainCon.executeGoBack();
+	}
+	
+	@FXML
+	public void loadSearchResult(KeyEvent e) throws IOException {
+		mainCon.executeSearchResult();
+	}
+	
+	// -----------------------------------------------------------------------------------------------
+	// Private methods
+	// -----------------------------------------------------------------------------------------------
+	//@author A0112498B
 	private void highlightKeyWords() {		
 		String inputString = textArea.getText();
 		String lowerCase = inputString.toLowerCase();
@@ -95,6 +131,7 @@ public class HeaderController{
 			if (lowerCase.contains(basicCommand)) {
 				startIndex = lowerCase.indexOf(basicCommand);
 				endIndex = startIndex + basicCommand.length();
+				
 			} else if (lowerCase.contains(advancedCommand)) {
 				startIndex = lowerCase.indexOf(advancedCommand);
 				endIndex = startIndex + advancedCommand.length();
@@ -124,6 +161,7 @@ public class HeaderController{
 			if (lowerCase.contains(basicCommand)) {
 				startIndex = lowerCase.indexOf(basicCommand);
 				endIndex = startIndex + basicCommand.length();
+				
 			} else if (lowerCase.contains(advancedCommand)) {
 				startIndex = lowerCase.indexOf(advancedCommand);
 				endIndex = startIndex + advancedCommand.length();
@@ -169,6 +207,7 @@ public class HeaderController{
 			if (lowerCase.contains(basicCommand)) {
 				startIndex = lowerCase.indexOf(basicCommand);
 				endIndex = startIndex + basicCommand.length();
+				
 			} else if (lowerCase.contains(advancedCommand)) {
 				startIndex = lowerCase.indexOf(advancedCommand);
 				endIndex = startIndex + advancedCommand.length();
@@ -196,10 +235,13 @@ public class HeaderController{
 			
 			if (lowerCase.contains(basicCommand) && 
 				lowerCase.indexOf(basicCommand) == 0) {
+				
 				startIndex = lowerCase.indexOf(basicCommand);
 				endIndex = startIndex + basicCommand.length();
+				
 			} else if (lowerCase.contains(advancedCommand) &&
 					   lowerCase.indexOf(advancedCommand) == 0) {
+				
 				startIndex = lowerCase.indexOf(advancedCommand);
 				endIndex = startIndex + advancedCommand.length();
 			}
@@ -238,39 +280,13 @@ public class HeaderController{
 		}
 	}
 	
-	//@author A0112537M
-	@FXML
-	public void loadSettingMouse(MouseEvent e) throws IOException {
-		mainCon.executeSetting();
-	}
-	
-	@FXML
-	public void goBackToMainMouse(MouseEvent e) throws IOException {
-		mainCon.executeGoBack();
-	}
-	
-	@FXML
-	public void loadSearchResult(KeyEvent e) throws IOException {
-		mainCon.executeSearchResult();
-	}
-	
-	//@author A0112498B
-	public void init(MainController mainController) {
-		mainCon = mainController;
-		
+	private void addTextAreaListener() {
 		textArea.textProperty().addListener(new ChangeListener<String>() {
 			@Override
-		    public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+		    public void changed(ObservableValue<? extends String> observable, 
+		    					String oldValue, String newValue) {
 				onTextChanged();
 		    }
-		});		
-	}
-	
-	public void resetTextArea() {
-		Main.toUpdate = false;	
-
-		textArea.clearStyle(0);
-		textArea.clear();
-		textArea.positionCaret(0);		
+		});
 	}
 }

@@ -5,7 +5,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
-
 import javafx.util.Pair;
 
 public class Task implements Cloneable {

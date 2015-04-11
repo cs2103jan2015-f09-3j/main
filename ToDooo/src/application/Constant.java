@@ -1,7 +1,6 @@
 package application;
 
 import java.text.SimpleDateFormat;
-
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;

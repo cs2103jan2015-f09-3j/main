@@ -7,7 +7,6 @@ import java.util.Date;
 import java.util.Iterator;
 import javafx.util.Pair;
 import org.w3c.dom.Document;
-
 import test.ToDoListTest;
 
 public class ToDoList {

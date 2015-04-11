@@ -10,7 +10,6 @@ import javafx.scene.control.TabPane;
 public class BodyController{
 
 	private MainController mainCon;
-	private SearchResultController searchResultCon;
 	
 	@FXML AnchorPane anPaneMain;
 	@FXML VBox vBoxAll;

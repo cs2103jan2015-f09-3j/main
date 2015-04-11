@@ -4,9 +4,7 @@ package application;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Date;
-
 import javafx.util.Pair;
-
 import com.joestelmach.natty.DateGroup;
 import com.joestelmach.natty.Parser;
 

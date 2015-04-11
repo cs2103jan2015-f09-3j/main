@@ -6,11 +6,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.Timer;
-import java.util.TimerTask;
-
-import javax.imageio.ImageIO;
-
 import net.fortuna.ical4j.model.property.Status;
 import application.Constant;
 import application.Execution;
@@ -21,9 +16,7 @@ import application.TaskSorter;
 import application.TaskStatus;
 import application.TaskType;
 import application.ToDoList;
-import application.Undo;
 import application.DateParser;
-import javafx.application.Platform;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -65,6 +58,9 @@ public class MainController{
 	private Date todayDate;
 	static Stage detailPopup;
 	
+	// -----------------------------------------------------------------------------------------------
+	// Private methods
+	// -----------------------------------------------------------------------------------------------
 	//@author A0112498B
 	@FXML
 	public void initialize() {
@@ -80,6 +76,213 @@ public class MainController{
 		Execution.executeStatusCheckTimerTask();
 	}
 	
+	@FXML
+	public void onShortcutKey(KeyEvent e) {	
+		scrollList(e);		
+		revertAction(e); 		
+		switchTab(e);		
+		navigateView(e);		
+		showTutorial(e);
+		
+	}
+	
+	//@author A0112537M
+	public void setSystemMessage(String systemMsg) {
+		int sysMsgType = checkSystemMsg(systemMsg);
+		
+		if(sysMsgType == Constant.SYS_MSG_TYPE_SUCCESS) {
+			headerController.imgSysMsg.setImage(new Image(Constant.ICON_SUCCESS));
+			headerController.lblSysMsg.setTextFill(Constant.COLOR_SUCCESS);
+		} else if(sysMsgType == Constant.SYS_MSG_TYPE_ERROR) {
+			headerController.imgSysMsg.setImage(new Image(Constant.ICON_ERROR));
+			headerController.lblSysMsg.setTextFill(Constant.COLOR_ERROR);
+		} else if (sysMsgType == Constant.SYS_MSG_TYPE_FEEDBACK){
+			headerController.imgSysMsg.setImage(new Image(Constant.ICON_FEEDBACK));
+			headerController.lblSysMsg.setTextFill(Constant.COLOR_FEEDBACK);;
+		}
+		
+		headerController.lblSysMsg.setText(systemMsg);	
+		headerController.lblSysMsg.getStyleClass().
+		add(Constant.CSS_CLASS_LABEL_SYSTEM_MSG);
+		Execution.executeSystemMsgTimerTask();
+	}
+
+	public void loadListByDate(String displayType) {
+		int indexForNextLoop = 0;
+		Task task;
+	    Date startDate;
+	    String taskType;
+	    String dateA = Constant.EMPTY_STRING;
+		String dateB = Constant.EMPTY_STRING;
+		VBox vBox = getContainer(displayType);
+		vBox.getChildren().clear();
+		ArrayList<Task> taskList = getList(displayType);
+		ArrayList<Task> temp = getAppropriateList(displayType, taskList);
+		
+		today.clear();
+		overdue.clear();
+		floating.clear();
+		todayDate = DateParser.getTodayDate().getTime();
+		
+	    for(int i = 0; i < temp.size(); i++) {
+			task = temp.get(i);
+			taskType = task.getTaskType().toString();
+			startDate = task.getStartDate();
+	    	
+			if(taskType.equalsIgnoreCase(TaskType.FLOATING.toString())||
+			   DateParser.compareDate(todayDate, startDate) || 
+			   DateParser.isBeforeNow(startDate)) {
+				
+				findFloatingOrOverdueOrTodayTask(task, startDate, taskType);
+				indexForNextLoop = i + 1;
+			} else {
+				indexForNextLoop = i;
+				break;
+			}
+		} 
+		
+	    renderOverdueTask(displayType, vBox);
+	    renderTodayTask(displayType, vBox);
+	    renderFloatingTask(displayType);
+		
+		for(int j = indexForNextLoop; j < temp.size(); j++) {
+			task = temp.get(j);
+			
+			dateA = Constant.FORMAT_DATE_OUTPUT.format(task.getStartDate());
+			
+			if(j != indexForNextLoop) {
+				dateB = Constant.FORMAT_DATE_OUTPUT.format(temp.get(j - 1).getStartDate());
+			}
+			
+			if(j == indexForNextLoop || !dateA.equals(dateB)) {
+				renderTaskItem(dateA, task, displayType);
+			} else {
+				renderTaskItem(Constant.EMPTY_STRING, task, displayType);
+			}
+		}
+	}
+	
+	public void loadListByCategory(String displayType) {
+		bodyController.vBoxCategory.getChildren().clear();
+		
+		Task task;
+		String category;
+		ArrayList<Task> taskList = Main.list.getTasks();
+		ArrayList<Task> temp = getAppropriateList(displayType, taskList);
+		
+		for(int i = 0; i < temp.size(); i++) {
+			task = temp.get(i);
+			category = task.getCategory();
+			
+			if(i == 0 || !category.equalsIgnoreCase(temp.get(i - 1).getCategory())) {
+				renderTaskItem(category.toUpperCase(), task, displayType);
+			} else {
+				renderTaskItem(Constant.EMPTY_STRING, task, displayType);
+			}
+		}
+	}
+	
+	public void loadListByPriority(String displayType) {
+		bodyController.vBoxPriority.getChildren().clear();
+		
+		Task task;
+		String priority;
+		ArrayList<Task> taskList = Main.list.getTasks();
+		ArrayList<Task> temp = getAppropriateList(displayType, taskList);
+		
+		for(int i = 0; i < temp.size(); i++) {
+			task = temp.get(i);
+			priority = task.getPriority().toString();
+			
+			renderTaskItem(Constant.EMPTY_STRING, task, displayType);
+			
+			if(i != temp.size()-1 && 
+			   !priority.equalsIgnoreCase(temp.get(i + 1).getPriority().toString())) {
+				addHorizontalBar(getContainer(displayType));
+			} 
+		}
+	}
+	
+	public void executeSetting() {
+		headerController.settingIcon.setVisible(false);
+		headerController.backIcon.setVisible(true);
+		
+		bodyController.anPaneMain.setVisible(false);
+		
+		settingController.anPaneSetting.setVisible(true);
+		searchResultController.anPaneSearchResult.setVisible(false);
+	}
+	
+	public void executeGoBack() {
+		headerController.settingIcon.setVisible(true);
+		headerController.backIcon.setVisible(false);
+		
+		bodyController.anPaneMain.setVisible(true);
+		
+		settingController.anPaneSetting.setVisible(false);
+		searchResultController.anPaneSearchResult.setVisible(false);
+	}
+	
+	public void executeSearchResult() {
+		headerController.settingIcon.setVisible(false);
+		headerController.backIcon.setVisible(true);
+		
+		bodyController.anPaneMain.setVisible(false);		
+		settingController.anPaneSetting.setVisible(false);
+		
+		searchResultController.anPaneSearchResult.setVisible(true);
+		searchResultController.loadSearchList();
+	}
+	
+	public void viewDetails(Task task) throws IOException {
+		FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource(Constant.PATH_DETAIL));
+        Parent root1 = (Parent) fxmlLoader.load();
+		
+		detailPopup = new Stage();
+		Scene scene = new Scene(root1);
+		
+		scene.setOnKeyPressed(new EventHandler<KeyEvent>() {
+	        public void handle(KeyEvent ke) {
+	            if (Constant.SHORTCUT_DETAIL.match(ke)) {
+	                detailPopup.close();
+	            }
+	        }
+	    });
+		
+		detailPopup.initStyle(StageStyle.UNDECORATED);
+		detailPopup.setScene(scene); 
+        detailPopup.show();
+	}
+	
+	public void cleanCompletedTasks() {
+		int dayOfWeek;
+		int dayOfMonth;
+		String cleanRecurrence = Main.storage.readSaveCleanRecurrence();
+		Calendar today = DateParser.getTodayDate();
+		
+		if(cleanRecurrence.equalsIgnoreCase(Frequency.WEEKLY.toString())) {
+			dayOfWeek = DateParser.calculateDayOfWeek(today);
+			
+			if(dayOfWeek == 1) {
+				Execution.executeCleanCompletedTasks();
+			}
+		} else if(cleanRecurrence.equalsIgnoreCase(Frequency.MONTHLY.toString())) {
+			dayOfMonth = DateParser.calculateDayOfMonth(today);
+			
+			if(dayOfMonth == 1) {
+				Execution.executeCleanCompletedTasks();
+			}
+		}
+	}
+	
+	public void cleanEmptyCategories() {
+		Main.storage.removeEmptyCategory();
+	}
+	
+	// -----------------------------------------------------------------------------------------------
+	// Private methods
+	// -----------------------------------------------------------------------------------------------
+	//@author A0112498B
 	private void initTutorialPopup() {
 		InputStream inputStream = getClass().getResourceAsStream(Constant.IMAGE_TUTORIAL);
 		Image image = new Image(inputStream);
@@ -97,16 +300,7 @@ public class MainController{
 		
 		Execution.mainController = this;
 		Execution.headerController = headerController;
-	}
-
-	@FXML
-	public void onShortcutKey(KeyEvent e) {	
-		scrollList(e);		
-		revertAction(e); 		
-		switchTab(e);		
-		navigateView(e);		
-		showTutorial(e);
-		
+		Execution.settingController = settingController;
 	}
 
 	private void scrollList(KeyEvent e) {
@@ -138,6 +332,10 @@ public class MainController{
 			return;
 		}
 				
+		setScrollPaneVvalue(e, targetScrollPane);
+	}
+
+	private void setScrollPaneVvalue(KeyEvent e, ScrollPane targetScrollPane) {
 		double currentPosition = targetScrollPane.getVvalue();
 		double newPosition = currentPosition;
 		
@@ -161,8 +359,9 @@ public class MainController{
 			} else {
 				double positionX = Main.priStage.getX() + 
 								   Constant.POSITION_OFFSET_X_POPUP;							
-				double positionY = (Main.priStage.getY() - headerController.textArea.getLayoutY()) * 
-								   Constant.POSITION_OFFSET_Y_POPUP;
+				double positionY = (Main.priStage.getY() - 
+									headerController.textArea.getLayoutY()) * 
+								    Constant.POSITION_OFFSET_Y_POPUP;
 				
 				tutorialPopup.show(Main.priStage, positionX, positionY);
 			}
@@ -207,133 +406,27 @@ public class MainController{
 		loadListByPriority(Constant.TAB_NAME_PRIORITY);
 	}
 	
-	//@author A0112537M
-	public void setSystemMessage(String systemMsg) {
-		int sysMsgType = checkSystemMsg(systemMsg);
-		
-		if(sysMsgType == Constant.SYS_MSG_TYPE_SUCCESS) {
-			headerController.imgSysMsg.setImage(new Image(Constant.ICON_SUCCESS));
-			headerController.lblSysMsg.setTextFill(Constant.COLOR_SUCCESS);
-		} else if(sysMsgType == Constant.SYS_MSG_TYPE_ERROR) {
-			headerController.imgSysMsg.setImage(new Image(Constant.ICON_ERROR));
-			headerController.lblSysMsg.setTextFill(Constant.COLOR_ERROR);
-		} else if (sysMsgType == Constant.SYS_MSG_TYPE_FEEDBACK){
-			headerController.imgSysMsg.setImage(new Image(Constant.ICON_FEEDBACK));
-			headerController.lblSysMsg.setTextFill(Constant.COLOR_FEEDBACK);;
-		}
-		
-		headerController.lblSysMsg.setText(systemMsg);	
-		headerController.lblSysMsg.getStyleClass().add(Constant.CSS_CLASS_LABEL_SYSTEM_MSG);
-		Execution.executeSystemMsgTimerTask();
-	}
-
-	public void loadListByDate(String displayType) {
-		int indexForNextLoop = 0;
-		Task task;
-	    Date startDate;
-	    String taskType;
-	    String dateA = Constant.EMPTY_STRING;
-		String dateB = Constant.EMPTY_STRING;
-		VBox vBox = getContainer(displayType);
-		vBox.getChildren().clear();
-		ArrayList<Task> taskList = getList(displayType);
-		ArrayList<Task> temp = getAppropriateList(displayType, taskList);
-		
-		today.clear();
-		overdue.clear();
-		floating.clear();
-		todayDate = DateParser.getTodayDate().getTime();
-		
-	    for(int i = 0; i < temp.size(); i++) {
-			task = temp.get(i);
-			taskType = task.getTaskType().toString();
-			startDate = task.getStartDate();
-	    	
-			if(taskType.equalsIgnoreCase(TaskType.FLOATING.toString())||
-				DateParser.compareDate(todayDate, startDate) || DateParser.isBeforeNow(startDate)) {
-				findFloatingOrOverdueOrTodayTask(task, startDate, taskType);
-				indexForNextLoop = i+1;
-			} else {
-				indexForNextLoop = i;
-				break;
-			}
-		} 
-		
-	    renderOverdueTask(displayType, vBox);
-	    renderTodayTask(displayType, vBox);
-	    renderFloatingTask(displayType);
-		
-		for(int j = indexForNextLoop; j < temp.size(); j++) {
-			task = temp.get(j);
-			
-			dateA = Constant.FORMAT_DATE_OUTPUT.format(task.getStartDate());
-			
-			if(j != indexForNextLoop) {
-				dateB = Constant.FORMAT_DATE_OUTPUT.format(temp.get(j-1).getStartDate());
-			}
-			
-			if(j == indexForNextLoop || !dateA.equals(dateB)) {
-				renderTaskItem(dateA, task, displayType);
-			} else {
-				renderTaskItem(Constant.EMPTY_STRING, task, displayType);
-			}
-		}
-	}
-	
-	public void loadListByCategory(String displayType) {
-		bodyController.vBoxCategory.getChildren().clear();
-		
-		Task task;
-		String category;
-		ArrayList<Task> taskList = Main.list.getTasks();
-		ArrayList<Task> temp = getAppropriateList(displayType, taskList);
-		
-		for(int i = 0; i < temp.size(); i++) {
-			task = temp.get(i);
-			category = task.getCategory();
-			
-			if(i == 0 || !category.equalsIgnoreCase(temp.get(i-1).getCategory())) {
-				renderTaskItem(category.toUpperCase(), task, displayType);
-			} else {
-				renderTaskItem(Constant.EMPTY_STRING, task, displayType);
-			}
-		}
-	}
-	
-	public void loadListByPriority(String displayType) {
-		bodyController.vBoxPriority.getChildren().clear();
-		
-		Task task;
-		String priority;
-		ArrayList<Task> taskList = Main.list.getTasks();
-		ArrayList<Task> temp = getAppropriateList(displayType, taskList);
-		
-		for(int i = 0; i < temp.size(); i++) {
-			task = temp.get(i);
-			priority = task.getPriority().toString();
-			
-			renderTaskItem(Constant.EMPTY_STRING, task, displayType);
-			
-			if(i != temp.size()-1 && !priority.equalsIgnoreCase(temp.get(i+1).getPriority().toString())) {
-				addHorizontalBar(getContainer(displayType));
-			} 
-		}
-	}
-	
+	//@author A0112537M	
 	private ArrayList<Task> getAppropriateList(String displayType,
 			ArrayList<Task> taskList) {
 		ArrayList<Task> temp;
 		
 		if(displayType.equalsIgnoreCase(Constant.VIEW_NAME_SEARCH_RESULT)) {
 			temp = TaskSorter.getTasksSortedByDate(taskList);
+			
 		} else if(displayType.equalsIgnoreCase(Constant.TAB_NAME_ALL)) {
-			ArrayList<Task> unsortedTemp = ToDoList.generateTaskItems(taskList, Constant.TAB_NAME_ALL);
+			ArrayList<Task> unsortedTemp = 
+					ToDoList.generateTaskItems(taskList, Constant.TAB_NAME_ALL);
 			temp = TaskSorter.getTasksSortedByDate(unsortedTemp);
+			
 		} else if(displayType.equalsIgnoreCase(Constant.TAB_NAME_CATEGORY)) {
-			ArrayList<Task> unsortedTemp = ToDoList.generateTaskItems(taskList, Constant.TAB_NAME_CATEGORY);
+			ArrayList<Task> unsortedTemp = 
+					ToDoList.generateTaskItems(taskList, Constant.TAB_NAME_CATEGORY);
 			temp = TaskSorter.getTasksSortedByCategories(unsortedTemp);
+			
 		} else {
-			ArrayList<Task> unsortedTemp = ToDoList.generateTaskItems(taskList, Constant.TAB_NAME_PRIORITY);
+			ArrayList<Task> unsortedTemp = 
+					ToDoList.generateTaskItems(taskList, Constant.TAB_NAME_PRIORITY);
 			temp = TaskSorter.getTasksSortedByPriorities(unsortedTemp);
 		}
 		
@@ -348,10 +441,8 @@ public class MainController{
 			if(DateParser.isBeforeNow(startDate)) {
 				if(!taskType.equalsIgnoreCase(TaskType.TIMED.toString())) {
 					overdue.add(task);
-				} else {
-					if(DateParser.compareDate(task.getTo(), task.getStartDate())) {
-						overdue.add(task);
-					}
+				} else if(DateParser.compareDate(task.getTo(), task.getStartDate())) {
+					overdue.add(task);
 				}
 			} else if(DateParser.compareDate(todayDate, startDate)) {
 				today.add(task);
@@ -438,12 +529,14 @@ public class MainController{
 		
 		if(!taskType.equalsIgnoreCase(TaskType.FLOATING.toString())) {
 			if(displayType.equalsIgnoreCase(Constant.TAB_NAME_ALL) || 
-					displayType.equalsIgnoreCase(Constant.VIEW_NAME_SEARCH_RESULT)) {
-				addDateTimeInAllOrSearchResult(taskType, status, displayType, onDate, byDate, fromDate, toDate, startDate,
-						hBoxRight, hBoxLeft);
+			   displayType.equalsIgnoreCase(Constant.VIEW_NAME_SEARCH_RESULT)) {
+				addDateTimeInAllOrSearchResult(taskType, status, displayType, 
+											   onDate, byDate, fromDate, toDate, 
+											   startDate, hBoxRight, hBoxLeft);
 			} else {
-				addDateTimeInCategoryOrPriority(taskType, status, displayType, onDate, byDate, fromDate, toDate, startDate,
-						hBoxRight, hBoxLeft);
+				addDateTimeInCategoryOrPriority(taskType, status, displayType, 
+												onDate, byDate, fromDate, toDate, 
+												startDate, hBoxRight, hBoxLeft);
 			}
 		}
 		
@@ -544,10 +637,12 @@ public class MainController{
 		
 		Image img = new Image(imgName);
 		ImageView icon = new ImageView();
+		
 		icon.setImage(img);
 		icon.getStyleClass().add(Constant.CSS_CLASS_IMAGEVIEW_ICON_IMAGE);
 		icon.setFitHeight(Constant.FIT_HEIGHT_ICON);
         icon.setPreserveRatio(true);
+        
         hBox.getChildren().add(icon);
 	}
 	
@@ -601,8 +696,10 @@ public class MainController{
 		}
 	}
 	
-	private void addDateTimeInAllOrSearchResult(String taskType, String status, String displayType, Date onDate, 
-			Date byDate, Date fromDate, Date toDate, Date startDate, HBox hBoxRight, HBox hBoxLeft) {
+	private void addDateTimeInAllOrSearchResult(String taskType, String status, 
+												String displayType, Date onDate, 
+												Date byDate, Date fromDate, Date toDate, 
+												Date startDate, HBox hBoxRight, HBox hBoxLeft) {
 		SimpleDateFormat dateFormat;
 		
 		if(DateParser.isAfterDateWithoutTime(todayDate, startDate)) {
@@ -613,37 +710,60 @@ public class MainController{
 		
 		if(taskType.equalsIgnoreCase(TaskType.EVENT.toString())) {
 			addSingleDateTime(onDate, hBoxRight, Constant.EMPTY_STRING, dateFormat);
+			
 		} else if(taskType.equalsIgnoreCase(TaskType.DATED.toString())) {
 			addSingleDateTime(byDate, hBoxRight, Constant.STR_BEFORE_DATE_BY, dateFormat);
+			
 		} else if(taskType.equalsIgnoreCase(TaskType.TIMED.toString())) {
 			if(DateParser.compareDate(fromDate, toDate)) {
-				addDoubleDateTime(fromDate, toDate, hBoxRight, Constant.STR_BEFORE_DATE_FROM, Constant.STR_BEFORE_DATE_TO, 
-						Constant.FORMAT_TIME_OUTPUT, displayType);
+				addDoubleDateTime(fromDate, toDate, hBoxRight, 
+								  Constant.STR_BEFORE_DATE_FROM, 
+								  Constant.STR_BEFORE_DATE_TO, 
+								  Constant.FORMAT_TIME_OUTPUT, displayType);
+				
 			} else if(DateParser.compareDate(startDate, fromDate)) {
-				addSingleDateTime(fromDate, hBoxRight, Constant.STR_BEFORE_DATE_FROM, Constant.FORMAT_TIME_OUTPUT);
-			} else if(DateParser.compareDate(startDate, toDate) && !DateParser.isAfterDateWithoutTime(todayDate, startDate)) {
-				addSingleDateTime(toDate, hBoxRight, Constant.STR_BEFORE_DATE_TO, Constant.FORMAT_TIME_OUTPUT);
+				addSingleDateTime(fromDate, hBoxRight, 
+								  Constant.STR_BEFORE_DATE_FROM, 
+								  Constant.FORMAT_TIME_OUTPUT);
+				
+			} else if(DateParser.compareDate(startDate, toDate) && 
+					  !DateParser.isAfterDateWithoutTime(todayDate, startDate)) {
+				addSingleDateTime(toDate, hBoxRight, 
+								  Constant.STR_BEFORE_DATE_TO, 
+								  Constant.FORMAT_TIME_OUTPUT);
+				
 			} else {
-				addDoubleDateTime(fromDate, toDate, hBoxRight, Constant.STR_BEFORE_DATE_FROM, Constant.STR_BEFORE_DATE_TO, 
-						Constant.FORMAT_DATE_OUTPUT_FOR_TIMED_TASK, displayType);
+				addDoubleDateTime(fromDate, toDate, hBoxRight, 
+								  Constant.STR_BEFORE_DATE_FROM, 
+								  Constant.STR_BEFORE_DATE_TO, 
+								  Constant.FORMAT_DATE_OUTPUT_FOR_TIMED_TASK, displayType);
 			}
 		}
 	}
 	
-	private void addDateTimeInCategoryOrPriority(String taskType, String status, String displayType, Date onDate, 
-			Date byDate, Date fromDate, Date toDate, Date startDate, HBox hBoxRight, HBox hBoxLeft) {
+	private void addDateTimeInCategoryOrPriority(String taskType, String status, 
+												 String displayType, Date onDate, 
+												 Date byDate, Date fromDate, Date toDate, 
+												 Date startDate, HBox hBoxRight, HBox hBoxLeft) {
 		
 		if(taskType.equalsIgnoreCase(TaskType.EVENT.toString())) {
-			addSingleDateTime(onDate, hBoxRight, Constant.EMPTY_STRING, Constant.FORMAT_DATE_TIME_OUTPUT);
+			addSingleDateTime(onDate, hBoxRight, Constant.EMPTY_STRING, 
+							  Constant.FORMAT_DATE_TIME_OUTPUT);
+			
 		} else if(taskType.equalsIgnoreCase(TaskType.DATED.toString())) {
-			addSingleDateTime(byDate, hBoxRight, Constant.STR_BEFORE_DATE_BY, Constant.FORMAT_DATE_TIME_OUTPUT);
+			addSingleDateTime(byDate, hBoxRight, Constant.STR_BEFORE_DATE_BY, 
+							  Constant.FORMAT_DATE_TIME_OUTPUT);
+			
 		} else if(taskType.equalsIgnoreCase(TaskType.TIMED.toString())) {
-			addDoubleDateTime(fromDate, toDate, hBoxRight, Constant.STR_BEFORE_DATE_FROM, Constant.STR_BEFORE_DATE_TO, 
-					Constant.FORMAT_DATE_TIME_OUTPUT, displayType);
+			addDoubleDateTime(fromDate, toDate, hBoxRight, 
+							  Constant.STR_BEFORE_DATE_FROM,
+							  Constant.STR_BEFORE_DATE_TO, 
+							  Constant.FORMAT_DATE_TIME_OUTPUT, displayType);
 		}
 	}
 	
-	private void addSingleDateTime(Date date, HBox hBox, String strBeforeTime, SimpleDateFormat dateFormat) {
+	private void addSingleDateTime(Date date, HBox hBox, String strBeforeTime, 
+								   SimpleDateFormat dateFormat) {
 		Label lbl = new Label(strBeforeTime);
 		lbl.getStyleClass().add(Constant.CSS_CLASS_LABEL_BEFORE_TIME);
 		
@@ -654,8 +774,10 @@ public class MainController{
 		hBox.getChildren().add(lblDateTime);
 	}
 	
-	private void addDoubleDateTime(Date dateA, Date dateB, HBox hBox, String strA, String strB, 
-			SimpleDateFormat dateFormat, String displayType) {
+	private void addDoubleDateTime(Date dateA, Date dateB, HBox hBox, 
+								   String strA, String strB, 
+								   SimpleDateFormat dateFormat, 
+								   String displayType) {
 		
 		Label lblA = new Label(strA);
 		lblA.getStyleClass().add(Constant.CSS_CLASS_LABEL_BEFORE_TIME);
@@ -675,7 +797,8 @@ public class MainController{
 	
 	private void setLengthForDesc(Label desc, Task task, String displayType) {
 		if(displayType.equalsIgnoreCase(Constant.TAB_NAME_ALL) || 
-				displayType.equalsIgnoreCase(Constant.VIEW_NAME_SEARCH_RESULT)) {
+		   displayType.equalsIgnoreCase(Constant.VIEW_NAME_SEARCH_RESULT)) {
+			
 			switch(task.getTaskType()) {
 				case EVENT :
 				case DATED :
@@ -688,6 +811,7 @@ public class MainController{
 					desc.setMaxWidth(Constant.WIDTH_MAX_LABEL_FLOATING);
 					break;
 			}
+			
 		} else {
 			switch(task.getTaskType()) {
 				case EVENT :
@@ -702,37 +826,6 @@ public class MainController{
 					break;
 			}
 		}
-	}
-
-	public void executeSetting() {
-		headerController.settingIcon.setVisible(false);
-		headerController.backIcon.setVisible(true);
-		
-		bodyController.anPaneMain.setVisible(false);
-		
-		settingController.anPaneSetting.setVisible(true);
-		searchResultController.anPaneSearchResult.setVisible(false);
-	}
-	
-	public void executeGoBack() {
-		headerController.settingIcon.setVisible(true);
-		headerController.backIcon.setVisible(false);
-		
-		bodyController.anPaneMain.setVisible(true);
-		
-		settingController.anPaneSetting.setVisible(false);
-		searchResultController.anPaneSearchResult.setVisible(false);
-	}
-	
-	public void executeSearchResult() {
-		headerController.settingIcon.setVisible(false);
-		headerController.backIcon.setVisible(true);
-		
-		bodyController.anPaneMain.setVisible(false);		
-		settingController.anPaneSetting.setVisible(false);
-		
-		searchResultController.anPaneSearchResult.setVisible(true);
-		searchResultController.loadSearchList();
 	}
 	
 	private int checkSystemMsg(String sysMsg) {
@@ -749,48 +842,5 @@ public class MainController{
 		}
 		
 		return Constant.SYS_MSG_TYPE_FEEDBACK;
-	}
-	
-	public void viewDetails(Task task) throws IOException {
-		FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource(Constant.PATH_DETAIL));
-        Parent root1 = (Parent) fxmlLoader.load();
-		
-		detailPopup = new Stage();
-		Scene scene = new Scene(root1);
-		
-		scene.setOnKeyPressed(new EventHandler<KeyEvent>() {
-	        public void handle(KeyEvent ke) {
-	            if (Constant.SHORTCUT_DETAIL.match(ke)) {
-	                detailPopup.close();
-	            }
-	        }
-	    });
-		
-		detailPopup.initStyle(StageStyle.UNDECORATED);
-		detailPopup.setScene(scene); 
-        detailPopup.show();
-	}
-	
-	public void cleanCompletedTasks() {
-		int dayOfWeek;
-		int dayOfMonth;
-		String cleanRecurrence = Main.storage.readSaveCleanRecurrence();
-		Calendar today = DateParser.getTodayDate();
-		
-		if(cleanRecurrence.equalsIgnoreCase(Frequency.WEEKLY.toString())) {
-			dayOfWeek = DateParser.calculateDayOfWeek(today);
-			if(dayOfWeek == 1) {
-				Execution.executeCleanCompletedTasks();
-			}
-		} else if(cleanRecurrence.equalsIgnoreCase(Frequency.MONTHLY.toString())) {
-			dayOfMonth = DateParser.calculateDayOfMonth(today);
-			if(dayOfMonth == 1) {
-				Execution.executeCleanCompletedTasks();
-			}
-		}
-	}
-	
-	public void cleanEmptyCategories() {
-		Main.storage.removeEmptyCategory();
-	}
+	}	
 }
