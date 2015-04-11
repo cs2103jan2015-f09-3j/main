@@ -72,6 +72,7 @@ public class MainController{
 		initControllers();
 		loadListsInTabs();
 		initTutorialPopup();
+		cleanCompletedTasks();
 		
 		selectionModel = bodyController.tPaneMain.
 						 getSelectionModel();
@@ -272,7 +273,6 @@ public class MainController{
     }
 	//@author A0112537M
 	public void loadListByDate(String displayType) {
-		cleanCompletedTasks();
 		int indexForNextLoop = 0;
 		Task task;
 	    Date startDate;
@@ -640,7 +640,7 @@ public class MainController{
 		Label lblCategory;
 		
 		if(!category.equalsIgnoreCase(Constant.CATEGORY_UNCATEGORISED)) {
-			lblCategory = new Label(task.getCategory());
+			lblCategory = new Label(task.getCategory().toUpperCase());
 			lblCategory.getStyleClass().add(Constant.CSS_CLASS_LABEL_CATEGORY);
 			hBox.getChildren().add(lblCategory);
 		}
