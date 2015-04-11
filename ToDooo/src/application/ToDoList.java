@@ -344,38 +344,16 @@ public class ToDoList {
 			
 			if(!taskType.equalsIgnoreCase(TaskType.TIMED.toString())) {
 				if(isRecurring) {
-					for(int j = 0; j < task.getRecurringTasks().size(); j++) {
-						Task taskA = null;
-						recurringDate = task.getRecurringTasks().get(j).getRecurDate();
-						recurringId = task.getId() + Constant.PREFIX_RECURRING_ID + 
-								task.getRecurringTasks().get(j).getRecurringTaskId();
-						recurringStatus = task.getRecurringTasks().get(j).getStatus();
-						taskA = getRecurChildItemForEventOrDated(task, recurringDate, taskType, recurringId,
-								recurringStatus, taskA);
-						tempTasks.add(taskA);
-					}
+					generateRecurChildTasks(tempTasks, task, taskType);
 				} else {
-					Task t2 = new Task();
-					t2 = task;
-					tempTasks.add(t2);
+					copyTask(tempTasks, task);
 				}
 			} else {
 				if(displayType.equalsIgnoreCase(Constant.TAB_NAME_CATEGORY) || 
 						displayType.equalsIgnoreCase(Constant.TAB_NAME_PRIORITY)) {
-					Task t2 = new Task();
-					t2 = task;
-					tempTasks.add(t2);
+					copyTask(tempTasks, task);
 				} else {
-					Calendar start = Calendar.getInstance();
-					start.setTime(task.getFrom());
-					Calendar end = Calendar.getInstance();
-					end.setTime(task.getTo());
-					
-					for (Date date = start.getTime(); !start.after(end); start.add(Calendar.DATE, 1), date = start.getTime()) {
-						Task t3 = Task.createRecurringChildItem(task, task.getId(), task.getStatus(), 
-								task.getOn(), task.getBy(), date);
-						tempTasks.add(t3);
-					}
+					generateRepeatedTimedTask(tempTasks, task);
 				}
 			}
 		}
@@ -529,36 +507,6 @@ public class ToDoList {
 			_tasks = backupList;
 		} 
 	}
-
-	private void updateTaskStatus(Task task) {
-		Date date = task.getEndDate();
-		
-		if (DateParser.isBeforeNow(date)) {
-			task.setStatus(TaskStatus.OVERDUE);
-		}
-	}
-	
-	private void updateRecurringTaskStatus(Task task) {
-		ArrayList<RecurringTask> recurringTasks = task.getRecurringTasks();
-		TaskStatus status = null;
-		Date date = null;
-		
-		for (RecurringTask recurringTask : recurringTasks) {
-			status = recurringTask.getStatus();
-			
-			if (status.equals(TaskStatus.COMPLETED) ||
-				status.equals(TaskStatus.DELETED) ||
-				status.equals(TaskStatus.OVERDUE)) {
-					continue;
-			}
-			
-			date = recurringTask.getRecurDate();
-			
-			if (DateParser.isBeforeNow(date)) {
-				recurringTask.setStatus(TaskStatus.OVERDUE);
-			}
-		}
-	}
 	
 	// -----------------------------------------------------------------------------------------------
 	// Private Methods
@@ -673,6 +621,76 @@ public class ToDoList {
 		for (int i = 0; i < _tasks.size(); i++) {
 			task = _tasks.get(i);
 			task.setId(String.valueOf(i + 1));
+		}
+	}
+	
+	private static void copyTask(ArrayList<Task> tempTasks, Task task) {
+		Task copy = new Task();
+		copy = task;
+		tempTasks.add(copy);
+	}
+
+	private static void generateRepeatedTimedTask(ArrayList<Task> tempTasks,
+			Task task) {
+		Calendar start = Calendar.getInstance();
+		start.setTime(task.getFrom());
+		Calendar end = Calendar.getInstance();
+		end.setTime(task.getTo());
+		
+		for (Date date = start.getTime(); !start.after(end); 
+				start.add(Calendar.DATE, 1), date = start.getTime()) {
+			Task t3 = Task.createRecurringChildItem(task, task.getId(), task.getStatus(), 
+					task.getOn(), task.getBy(), date);
+			
+			tempTasks.add(t3);
+		}
+	}
+
+	private static void generateRecurChildTasks(ArrayList<Task> tempTasks,
+			Task task, String taskType) {
+		Date recurringDate;
+		String recurringId;
+		TaskStatus recurringStatus;
+		for(int j = 0; j < task.getRecurringTasks().size(); j++) {
+			Task taskA = null;
+			recurringDate = task.getRecurringTasks().get(j).getRecurDate();
+			recurringId = task.getId() + Constant.PREFIX_RECURRING_ID + 
+					task.getRecurringTasks().get(j).getRecurringTaskId();
+			recurringStatus = task.getRecurringTasks().get(j).getStatus();
+			taskA = getRecurChildItemForEventOrDated(task, recurringDate, taskType, recurringId,
+					recurringStatus, taskA);
+			
+			tempTasks.add(taskA);
+		}
+	}
+	
+	private void updateTaskStatus(Task task) {
+		Date date = task.getEndDate();
+		
+		if (DateParser.isBeforeNow(date)) {
+			task.setStatus(TaskStatus.OVERDUE);
+		}
+	}
+	
+	private void updateRecurringTaskStatus(Task task) {
+		ArrayList<RecurringTask> recurringTasks = task.getRecurringTasks();
+		TaskStatus status = null;
+		Date date = null;
+		
+		for (RecurringTask recurringTask : recurringTasks) {
+			status = recurringTask.getStatus();
+			
+			if (status.equals(TaskStatus.COMPLETED) ||
+				status.equals(TaskStatus.DELETED) ||
+				status.equals(TaskStatus.OVERDUE)) {
+					continue;
+			}
+			
+			date = recurringTask.getRecurDate();
+			
+			if (DateParser.isBeforeNow(date)) {
+				recurringTask.setStatus(TaskStatus.OVERDUE);
+			}
 		}
 	}
 }

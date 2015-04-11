@@ -432,7 +432,7 @@ public class MainController{
 		addPriorityBar(task, hBoxLeft);
 		addDesc(task, hBoxLeft, displayType);
 		
-		if(!displayType.equalsIgnoreCase(Constant.TAB_NAME_CATEGORY) || status.equalsIgnoreCase(Status.COMPLETED)) {
+		if(!displayType.equalsIgnoreCase(Constant.TAB_NAME_CATEGORY)) {
 			addCategory(task, hBoxLeft);
 		}
 		
