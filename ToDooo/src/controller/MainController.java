@@ -18,6 +18,7 @@ import application.Frequency;
 import application.Main;
 import application.Task;
 import application.TaskSorter;
+import application.TaskStatus;
 import application.TaskType;
 import application.ToDoList;
 import application.Undo;
@@ -459,6 +460,10 @@ public class MainController{
 		Date startDate = task.getStartDate();
 		VBox vBox = getContainer(displayType);
 		String paneColor = getStyle(task, displayType);
+		
+		if(status.equalsIgnoreCase(TaskStatus.DELETED.toString())) {
+			return;
+		}
 		
 		if(!header.equals(Constant.EMPTY_STRING)) {
 			addTitle(header, vBox);
