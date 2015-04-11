@@ -387,9 +387,10 @@ public class ToDoList {
 	public Pair<Task, String> completeTaskOnList(String userInput) {
 		String targetId = InputParser.getTargetIdFromString(userInput);
 		Task completedTask = null;
+		Task originalTask = getTaskById(targetId);
 		
 		if (!targetId.contains(Constant.PREFIX_RECURRING_ID)) {
-			completedTask = getTaskById(targetId);
+			completedTask = originalTask;
 			if(completedTask == null) {
 				return null;
 			}
@@ -400,7 +401,6 @@ public class ToDoList {
 			targetId = parentId;
 		}
 		
-		Task originalTask = null;
 		String completedTaskId = null;
 		if (completedTask != null) {
 			originalTask = deleteTaskById(targetId);
@@ -424,27 +424,27 @@ public class ToDoList {
 	public Pair<Task, String> uncompleteTaskOnList(String userInput) {
 		String targetId = InputParser.getTargetIdFromString(userInput);
 		Task uncompletedTask = null;
+		Task originalTask = getTaskById(targetId);
 		
 		if (!targetId.contains(Constant.PREFIX_RECURRING_ID)) {
 			uncompletedTask = getTaskById(targetId);
 			if(uncompletedTask == null) {
 				return null;
 			}
+			
 			Date endDate = uncompletedTask.getEndDate();
 			TaskStatus status = TaskStatus.getTaskStatus(endDate);
 			if (status.equals(TaskStatus.OVERDUE)) {
 				uncompletedTask.setStatus(TaskStatus.OVERDUE);
 			} else {
 				uncompletedTask.setStatus(TaskStatus.ONGOING);
-			}
-			
+			}	
 		} else {
 			String parentId = InputParser.getTaskIdFromRecurringId(targetId);
 			uncompletedTask = updateStatusOfRecurringTaskOnList(targetId, parentId, TaskStatus.ONGOING);
 			targetId = parentId;
 		}
 		
-		Task originalTask = null;
 		String uncompletedTaskId = null;
 		if (uncompletedTask != null) {
 			originalTask = deleteTaskById(targetId);
