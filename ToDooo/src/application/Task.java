@@ -24,7 +24,7 @@ public class Task implements Cloneable {
 	private Date _repeatUntil;
 	private Priority _priority;
 	private boolean _isValid;
-	private Status _status;
+	private TaskStatus _status;
 	private Date _startDate;
 	private Date _endDate;
 	private ArrayList<RecurringTask> _recurringTasks;
@@ -69,7 +69,7 @@ public class Task implements Cloneable {
 				if (_isValid) {
 					_priority = InputParser.getPriorityFromString(userInput);		
 					_toDo = generateToDoString(userInput);
-					_status = Status.getTaskStatus(_endDate);
+					_status = TaskStatus.getTaskStatus(_endDate);
 					
 					_isValid = true;
 				}
@@ -150,7 +150,7 @@ public class Task implements Cloneable {
 		return _endDate;
 	}
 
-	public Status getStatus() {
+	public TaskStatus getStatus() {
 		return _status;
 	}
 
@@ -229,7 +229,7 @@ public class Task implements Cloneable {
 		_endDate = endDate;
 	}
 
-	public void setStatus(Status status) {
+	public void setStatus(TaskStatus status) {
 		_status = status;
 	}
 
@@ -281,7 +281,7 @@ public class Task implements Cloneable {
 	//@author A0112537M
 	// Creating a repeated task with a different date for recurring task
 	public static Task createRecurringChildItem(Task originalTask, String recurringId, 
-												Status recurringStatus, Date onDate, 
+												TaskStatus recurringStatus, Date onDate, 
 												Date byDate, Date startDate) {
 		Task task = new Task();
 		
@@ -322,7 +322,12 @@ public class Task implements Cloneable {
 					   equals(recurringTaskId));
 			
 			if (isFound) {
-				_recurringTasks.remove(index);				
+				/*
+				 * Setting the status to Status.DELETED instead of deleting
+				 * the task from the xml in order for the update function
+				 * to work correctly when updating recurring tasks
+				 */
+				recurringTask.setStatus(TaskStatus.DELETED);
 				break;
 			}
 			

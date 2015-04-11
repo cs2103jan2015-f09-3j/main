@@ -131,7 +131,7 @@ public class XmlManager {
 		task.setPriority(Priority.valueOf(text));
 		
 		text = getTextByTagName(element, Constant.TAG_STATUS);
-		task.setStatus(Status.valueOf(text));
+		task.setStatus(TaskStatus.valueOf(text));
 				
 		if (task.getIsRecurring()) {
 			ArrayList<RecurringTask> recurringTasks = 
@@ -253,7 +253,7 @@ public class XmlManager {
 		recurringTask.setRecurringTaskId(text);
 		
 		text = getTextByTagName(recurringTaskNode, Constant.TAG_RECURRING_STATUS);
-		recurringTask.setStatus(Status.valueOf(text));		
+		recurringTask.setStatus(TaskStatus.valueOf(text));		
 		
 		text = getTextByTagName(recurringTaskNode, Constant.TAG_RECURRING_DATE);
 		recurringTask.setRecurDate(Main.inputParser.getDateFromString(text));

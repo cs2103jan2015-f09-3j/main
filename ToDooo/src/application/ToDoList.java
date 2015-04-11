@@ -336,7 +336,7 @@ public class ToDoList {
 		boolean isRecurring;
 		String taskType;
 		String recurringId;
-		Status recurringStatus;
+		TaskStatus recurringStatus;
 		
 		for(int i = 0; i < tasks.size(); i++) {
 			task = tasks.get(i);
@@ -391,7 +391,7 @@ public class ToDoList {
 		
 		if (!targetId.contains(Constant.PREFIX_RECURRING_ID)) {
 			completedTask = getTaskById(targetId);
-			completedTask.setStatus(Status.COMPLETED);
+			completedTask.setStatus(TaskStatus.COMPLETED);
 		} else {
 			String parentId = InputParser.getTaskIdFromRecurringId(targetId);
 			completedTask = completeRecurringTaskOnList(targetId, parentId);
@@ -424,11 +424,11 @@ public class ToDoList {
 		if (!targetId.contains(Constant.PREFIX_RECURRING_ID)) {
 			uncompletedTask = getTaskById(targetId);
 			Date endDate = uncompletedTask.getEndDate();
-			Status status = Status.getTaskStatus(endDate);
-			if (status.equals(Status.OVERDUE)) {
-				uncompletedTask.setStatus(Status.OVERDUE);
+			TaskStatus status = TaskStatus.getTaskStatus(endDate);
+			if (status.equals(TaskStatus.OVERDUE)) {
+				uncompletedTask.setStatus(TaskStatus.OVERDUE);
 			} else {
-				uncompletedTask.setStatus(Status.ONGOING);
+				uncompletedTask.setStatus(TaskStatus.ONGOING);
 			}
 		} else {
 			String parentId = InputParser.getTaskIdFromRecurringId(targetId);
@@ -471,7 +471,7 @@ public class ToDoList {
 				recurTasks = task.getRecurringTasks();
 				for (RecurringTask recurTask : recurTasks) {					
 					if (recurTask.getRecurringTaskId().equals(recurringTaskId)) {
-						recurTask.setStatus(Status.COMPLETED);
+						recurTask.setStatus(TaskStatus.COMPLETED);
 						
 						break;
 					}
@@ -542,7 +542,7 @@ public class ToDoList {
 	
 	private static Task getRecurChildItemForEventOrDated(Task task,
 			Date recurringDate, String taskType, String recurringId,
-			Status recurringStatus, Task taskA) {
+			TaskStatus recurringStatus, Task taskA) {
 		if(taskType.equalsIgnoreCase(TaskType.EVENT.toString())) {
 			taskA = Task.createRecurringChildItem(task, recurringId, recurringStatus, 
 					recurringDate, task.getBy(), recurringDate);

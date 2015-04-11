@@ -33,7 +33,7 @@ public class Execution {
 			taskId = task.getId();
 			taskStatus = task.getStatus().toString();
 			
-			if(taskStatus.equalsIgnoreCase(Status.COMPLETED.toString())) {
+			if(taskStatus.equalsIgnoreCase(TaskStatus.COMPLETED.toString())) {
 				Main.list.deleteTaskById(taskId);
 			}
 		}

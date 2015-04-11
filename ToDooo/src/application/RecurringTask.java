@@ -6,7 +6,7 @@ import java.util.Date;
 
 public class RecurringTask implements Cloneable {
 	private String _recurringTaskId;
-	private Status _status;
+	private TaskStatus _status;
 	private Date _recurDate;
 	
 	// -----------------------------------------------------------------------------------------------
@@ -18,7 +18,7 @@ public class RecurringTask implements Cloneable {
 	
 	public RecurringTask(String recurringTaskId, Date recurDate) {
 		_recurringTaskId = recurringTaskId;
-		_status = Status.getTaskStatus(recurDate);
+		_status = TaskStatus.getTaskStatus(recurDate);
 		_recurDate = recurDate;
 	}
 	
@@ -26,7 +26,7 @@ public class RecurringTask implements Cloneable {
 		_recurringTaskId = recurringTaskId;
 		
 		Date recurDate = recurDateCalendar.getTime();
-		_status = Status.getTaskStatus(recurDate);
+		_status = TaskStatus.getTaskStatus(recurDate);
 		
 		_recurDate = recurDate;
 	}
@@ -38,7 +38,7 @@ public class RecurringTask implements Cloneable {
 		return _recurringTaskId;
 	}
 
-	public Status getStatus() {
+	public TaskStatus getStatus() {
 		return _status;
 	}
 
@@ -53,7 +53,7 @@ public class RecurringTask implements Cloneable {
 		_recurringTaskId = recurringTaskId;
 	}
 
-	public void setStatus(Status status) {
+	public void setStatus(TaskStatus status) {
 		_status = status;
 	}
 
