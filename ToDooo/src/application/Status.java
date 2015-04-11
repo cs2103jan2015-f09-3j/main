@@ -8,12 +8,10 @@ public enum Status {
 	COMPLETED,
 	ONGOING,
 	OVERDUE,
-	SUCCESS,
-	FEEDBACK;
+	DELETED;
 	
 	public static Status getTaskStatus(Date endDate) {
-		Status status = Status.OVERDUE;
-		
+		Status status = Status.OVERDUE;		
 		
 		if (endDate == null) { // floating task
 			return Status.ONGOING;

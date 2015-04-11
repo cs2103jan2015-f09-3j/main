@@ -66,7 +66,9 @@ public class SettingController {
 	public void initialize() {
 		String cleanRecurrence = Main.storage.readSaveCleanRecurrence();
 		
-		txtPath.setText(Main.storage.readSavePath());
+		String savePath = Main.storage.
+				readSavePath().replace("/","\\");
+		txtPath.setText(savePath);
 		if(cleanRecurrence.equalsIgnoreCase(Frequency.WEEKLY.toString())) {
 			radioWeekly.setSelected(true);
 		} else if(cleanRecurrence.equalsIgnoreCase(Frequency.MONTHLY.toString())) {
