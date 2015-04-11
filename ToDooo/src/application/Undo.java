@@ -145,7 +145,7 @@ public class Undo {
 	private String undoDelete() {
 		String systemMsg;
 		Pair<String, Task> systemMsgWithRemovedTaskPair = 
-						   Main.list.AddTaskBackToList(_originalTask, true);		
+						   Main.list.addTaskBackToList(_originalTask, true);		
 		
 		systemMsg = systemMsgWithRemovedTaskPair.getKey();
 		if (systemMsg.equals(Constant.MSG_ADD_SUCCESS)) {
@@ -231,7 +231,7 @@ public class Undo {
 	private String redoAdd() {
 		String systemMsg;
 		Pair<String, Task> systemMsgWithRemovedTaskPair = 
-		   				   Main.list.AddTaskBackToList(_originalTask, true);		
+		   				   Main.list.addTaskBackToList(_originalTask, true);		
 
 		systemMsg = systemMsgWithRemovedTaskPair.getKey();			
 		if (systemMsg.equals(Constant.MSG_ADD_SUCCESS)) {

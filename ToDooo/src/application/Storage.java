@@ -36,9 +36,9 @@ import org.xml.sax.SAXException;
 
 public class Storage {
 	private static Storage _storage;
-	private static Transformer _transformer;
-	private static XPath _xPath;
-	private static DocumentBuilder _documentBuilder;
+	private Transformer _transformer;
+	private XPath _xPath;
+	private DocumentBuilder _documentBuilder;
 	
 	// -----------------------------------------------------------------------------------------------
 	// Constructor

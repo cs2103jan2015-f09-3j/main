@@ -103,10 +103,10 @@ public class XmlManager {
 				
 		text = getTextByTagName(element, Constant.TAG_FROM);
 		task.setFrom(Main.inputParser.getDateFromString(text));
-		Task.setStartEndDate(task, task.getFrom(), text);
 		
 		text = getTextByTagName(element, Constant.TAG_TO);
 		task.setTo(Main.inputParser.getDateFromString(text));
+		Task.setStartEndDate(task, task.getFrom(), text);
 		
 		text = getTextByTagName(element, Constant.TAG_BY);
 		task.setBy(Main.inputParser.getDateFromString(text));

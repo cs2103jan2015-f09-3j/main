@@ -2,6 +2,8 @@ package application;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Timer;
+
 import javafx.util.Pair;
 import controller.HeaderController;
 import controller.MainController;
@@ -37,6 +39,59 @@ public class Execution {
 				Main.list.deleteTaskById(taskId);
 			}
 		}
+	}
+	
+	public static String executeUndo() {
+		String systemMsg = null;
+		
+		boolean canUndo = !(Main.undos.isEmpty());
+		if (canUndo) {
+			Undo undo = Main.undos.pop();
+			systemMsg = undo.undoAction();
+		} else {
+			systemMsg = Constant.MSG_NO_UNDO;
+		}
+		
+		return systemMsg;
+	}
+	
+	public static String executeRedo() {
+		String systemMsg = null;
+		
+		boolean canRedo = !(Main.redos.isEmpty());
+		if (canRedo) {
+			Undo redo = Main.redos.pop();
+			systemMsg = redo.redoAction();
+		} else {
+			systemMsg = Constant.MSG_NO_REDO;
+		}
+		
+		return systemMsg;
+	}
+	
+	public static void executeSystemMsgTimerTask() {
+		SystemMsgTimerTask systemMsgTimerTask = new SystemMsgTimerTask();
+		
+		Timer timer = systemMsgTimerTask.getTimer();
+		timer.schedule(systemMsgTimerTask, Constant.TIMER_SYSTEM_MSG_DURATION);
+	}
+	
+	public static void executeStatusCheckTimerTask() {
+		StatusCheckTimerTask statusCheckTimerTask = new StatusCheckTimerTask();
+		
+		Timer timer = statusCheckTimerTask.getTimer();
+		timer.scheduleAtFixedRate(statusCheckTimerTask, 0, 
+				Constant.TIMER_UPDATE_STATUS_DURATION);
+	}
+	
+	public static void executeUpdateStatus() {
+		Main.list.checkAndUpdateStatus();
+		mainController.loadListsInTabs();
+	}
+	
+	public static void executeClearSystemMsg() {
+		headerController.lblSysMsg.setText(Constant.EMPTY_STRING);	
+    	headerController.imgSysMsg.setImage(null);
 	}
 
 	// -----------------------------------------------------------------------------------------------

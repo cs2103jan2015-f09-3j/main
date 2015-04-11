@@ -56,8 +56,7 @@ public class MainController{
 	@FXML BodyController bodyController;
 	@FXML SettingController settingController;
 	@FXML SearchResultController searchResultController;
-	
-	private Timer timer;
+
 	private SingleSelectionModel<Tab> selectionModel;
 	private Popup tutorialPopup;
 	private ArrayList<Task> overdue = new ArrayList<>();
@@ -76,6 +75,8 @@ public class MainController{
 		
 		selectionModel = bodyController.tPaneMain.
 						 getSelectionModel();
+		
+		Execution.executeStatusCheckTimerTask();
 	}
 	
 	private void initTutorialPopup() {
@@ -177,12 +178,12 @@ public class MainController{
 
 	private void revertAction(KeyEvent e) {
 		if (Constant.SHORTCUT_UNDO.match(e)) {
-			String systemMsg = executeUndo();
+			String systemMsg = Execution.executeUndo();
 			
 			loadListsInTabs();
 			setSystemMessage(systemMsg);
 		} else if (Constant.SHORTCUT_REDO.match(e)) {
-			String systemMsg = executeRedo();
+			String systemMsg = Execution.executeRedo();
 			
 			loadListsInTabs();
 			setSystemMessage(systemMsg);
@@ -197,6 +198,12 @@ public class MainController{
 		} else if (Constant.SHORTCUT_TAB_PRIORITY.match(e)) {
 			selectionModel.select(Constant.TAB_INDEX_PRIORITY);			
 		}
+	}
+	
+	public void loadListsInTabs() {
+		loadListByDate(Constant.TAB_NAME_ALL);
+		loadListByCategory(Constant.TAB_NAME_CATEGORY);
+		loadListByPriority(Constant.TAB_NAME_PRIORITY);
 	}
 	
 	//@author A0112537M
@@ -216,62 +223,9 @@ public class MainController{
 		
 		headerController.lblSysMsg.setText(systemMsg);	
 		headerController.lblSysMsg.getStyleClass().add(Constant.CSS_CLASS_LABEL_SYSTEM_MSG);
-		executeSystemMsgTimerTask();
+		Execution.executeSystemMsgTimerTask();
 	}
-	
-	//@author A0112498B
-	public void loadListsInTabs() {
-		loadListByDate(Constant.TAB_NAME_ALL);
-		loadListByCategory(Constant.TAB_NAME_CATEGORY);
-		loadListByPriority(Constant.TAB_NAME_PRIORITY);
-	}
-	
-	private String executeUndo() {
-		String systemMsg = null;
-		
-		boolean canUndo = !(Main.undos.isEmpty());
-		if (canUndo) {
-			Undo undo = Main.undos.pop();
-			systemMsg = undo.undoAction();
-		} else {
-			systemMsg = Constant.MSG_NO_UNDO;
-		}
-		
-		return systemMsg;
-	}
-	
-	private String executeRedo() {
-		String systemMsg = null;
-		
-		boolean canRedo = !(Main.redos.isEmpty());
-		if (canRedo) {
-			Undo redo = Main.redos.pop();
-			systemMsg = redo.redoAction();
-		} else {
-			systemMsg = Constant.MSG_NO_REDO;
-		}
-		
-		return systemMsg;
-	}
-	
-	public void executeSystemMsgTimerTask() {
-		timer = new Timer();
-		timer.schedule(new SystemMsgTimerTask(), Constant.TIMER_SYSTEM_MSG_DURATION);
-	}
-	
-	private class SystemMsgTimerTask extends TimerTask {
-        public void run() {
-    		Platform.runLater(new Runnable() {
-    		    @Override
-    		    public void run() {
-    		    	headerController.lblSysMsg.setText(Constant.EMPTY_STRING);	
-    		    	headerController.imgSysMsg.setImage(null);
-    		    }
-    		});
-            timer.cancel();
-        }
-    }
-	//@author A0112537M
+
 	public void loadListByDate(String displayType) {
 		int indexForNextLoop = 0;
 		Task task;

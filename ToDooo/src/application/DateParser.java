@@ -15,6 +15,13 @@ public class DateParser {
 		return calendar;
 	}
 	
+	public static Calendar getTodayCalendar() {
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTimeZone(TimeZone.getDefault());
+		
+		return calendar;
+	}
+	
 	public static int calculateDayOfWeek(Date date) {
 		Calendar calendar = DateParser.createCalendar(date);
 		int dayOfWeek = calculateDayOfWeek(calendar);
@@ -78,6 +85,18 @@ public class DateParser {
 	}
 	
 	//@author A0112498B
+	public static boolean isAfterNow(Date date) {
+		Calendar calendar = DateParser.createCalendar(date);
+		
+		return isAfterNow(calendar);
+	}
+	
+	public static boolean isAfterNow(Calendar calendar) {
+		Calendar nowCalendar = DateParser.getTodayCalendar();
+		
+		return nowCalendar.before(calendar);
+	}
+	
 	public static boolean isBeforeDate(Date thisDate, Date thatDate) {
 		Calendar calendarA = DateParser.createCalendar(thisDate);
 		Calendar calendarB = DateParser.createCalendar(thatDate);
@@ -126,8 +145,7 @@ public class DateParser {
 	
 	//@author A0112537M
 	public static Calendar getTodayDate() {
-		Calendar calendar = Calendar.getInstance();
-		calendar.setTimeZone(TimeZone.getDefault());
+		Calendar calendar = DateParser.getTodayCalendar();
 		
 		calendar.set(Calendar.HOUR_OF_DAY, 0); 
 		calendar.set(Calendar.MINUTE, 0);
