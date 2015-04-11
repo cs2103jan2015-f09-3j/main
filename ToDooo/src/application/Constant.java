@@ -132,6 +132,7 @@ public final class Constant {
 	public static final String MSG_UPDATE_SUCCESS = "Update successful. " + Constant.MSG_TO_UNDO;
 	public static final String MSG_INVALID_FORMAT = "Invalid format. Unable to extract dates.";
     public static final String MSG_NO_UNTIL_DATE = "Please follow the following format: e.g. /weekly /until 2 November 2015";
+    public static final String MSG_NO_INVALID_UNTIL_DATE = "Invalid recurring end date";
 	public static final String MSG_INVALID_RECURRING = "Unable to create recurring task. " + 
 													   "Only /on and /by tasks can " + 
 													   "become recurring tasks.";

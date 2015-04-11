@@ -69,7 +69,7 @@ public class Task implements Cloneable {
 				setDatesForTaskType(dates);			
 				_category = InputParser.getCategoryFromString(userInput);
 				
-				_isValid = setRecurringDetails(dates, userInput, originalTask);
+				_isValid = processRecurring(dates, userInput, originalTask);
 				
 				if (_isValid) {
 					_priority = InputParser.getPriorityFromString(userInput);		
@@ -473,7 +473,7 @@ public class Task implements Cloneable {
 	// ---------------------------------------------------------
 	// Recurring Tasks-related details tags
 	// ---------------------------------------------------------
-	private boolean setRecurringDetails(List<Date> dates, String userInput, Task originalTask) {
+	private boolean processRecurring(List<Date> dates, String userInput, Task originalTask) {
 		_recurringTasks = new ArrayList<RecurringTask>();
 		_isRecurring = false;
 		_repeatUntil = null;
@@ -485,25 +485,26 @@ public class Task implements Cloneable {
 		if (RecurringTask.isValidRecurringTaskType(_taskType)) {
 			Date untilDate = InputParser.getUntilDateFromString(userInput);
 			
-			if (recurringCommand == null) {
+			if (DateParser.isBeforeDate(untilDate, _endDate)) { 
+				// user attempted to create a recurring task with invaid until date
+				isValid = false;
+				Main.systemFeedback = Constant.MSG_NO_INVALID_UNTIL_DATE;				
+				
+			} else if (recurringCommand == null) { 				
 				boolean hasRecurringCommands = Command.hasRecurringCommands(userInput);
 				
 				if (hasRecurringCommands && untilDate == null) {
+					// user attempted to create a recurring task without supplying until date
 					isValid = false;
 					Main.systemFeedback = Constant.MSG_NO_UNTIL_DATE;						
-				} else if (!hasRecurringCommands && untilDate == null) {
-					isValid = true;
-				}
+				} else if (!hasRecurringCommands && untilDate == null) { 
+					// not a recurring task
+					isValid = true; 
+				}				
+				
 			} else {
 				if (dates != null) {
-					_isRecurring = true;
-					_repeatUntil = untilDate;
-					_repeat = Frequency.getFrequency(recurringCommand);	
-					
-					Date startDate = dates.get(0);
-					_repeatDay = DateParser.calculateDayOfWeek(startDate);
-					
-					generateRecurringTasks(startDate, originalTask);	
+					setRecurringDetails(dates, originalTask, recurringCommand, untilDate);	
 					isValid = true;				
 				} else {
 					isValid = false;
@@ -516,6 +517,18 @@ public class Task implements Cloneable {
 		}
 				
 		return isValid;
+	}
+
+	private void setRecurringDetails(List<Date> dates, Task originalTask,
+									 Command recurringCommand, Date untilDate) {
+		_isRecurring = true;
+		_repeatUntil = untilDate;
+		_repeat = Frequency.getFrequency(recurringCommand);	
+		
+		Date startDate = dates.get(0);
+		_repeatDay = DateParser.calculateDayOfWeek(startDate);
+		
+		generateRecurringTasks(startDate, originalTask);
 	}		
 
 	private void generateRecurringTasks(Date startDate, Task originalTask) {
