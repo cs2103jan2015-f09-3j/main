@@ -283,7 +283,7 @@ public final class Constant {
 	// View rendering configuration values
 	// -----------------------------------------------------------------------------------------------
     public static final String TITLE_TODAY = "TODAY";
-    public static final String TITLE_OVERDUE = "OVERDUE";    
+    public static final String TITLE_OVERDUE = "PAST TASKS";    
     public static final String TITLE_SETTING_DIR = "Choose File Location";    
     
     public static final String VIEW_NAME_SEARCH_RESULT= "searchResult";

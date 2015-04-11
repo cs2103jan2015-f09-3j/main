@@ -300,6 +300,30 @@ public class Storage {
 		
 		return cleanRecurrence;
 	}
+	
+	public void removeEmptyCategory() {
+		Document document = getFileDocument();
+		
+		Element root = document.getDocumentElement();
+		NodeList categoryNodes = root.getElementsByTagName(Constant.TAG_CATEGORY);
+		
+		Node categoryNode = null;
+		String categoryString = null;
+		boolean isEmpty;
+		
+		for (int i = 0; i < categoryNodes.getLength(); i++) {
+			categoryNode = categoryNodes.item(i);
+			categoryString = categoryNode.getTextContent();
+			isEmpty = isEmptyCategory(categoryString);
+			
+			if(!categoryString.equalsIgnoreCase("Uncategorised") && isEmpty == true) {
+				Main.list.getCategories().remove(categoryString);
+				categoryNode.getParentNode().removeChild(categoryNode);
+			}	
+		}
+		
+		cleanAndWriteFile(document);
+	}
 		
 	// -----------------------------------------------------------------------------------------------
 	// Private methods
@@ -364,5 +388,20 @@ public class Storage {
 		} catch (TransformerConfigurationException exception) {
 			exception.printStackTrace();
 		}
+	}
+	
+	private boolean isEmptyCategory(String category) {
+		boolean isEmpty = true;
+		
+		ArrayList<Task> taskList = Main.list.getTasks();
+		
+		for(int i = 0; i < taskList.size(); i++) {
+			if(taskList.get(i).getCategory().equalsIgnoreCase(category)) {
+				isEmpty = false;
+				break;
+			}
+		}
+		
+		return isEmpty;
 	}
 }
