@@ -1,3 +1,4 @@
+//@author A0112498B
 package test;
 
 import static org.junit.Assert.*;
@@ -16,8 +17,6 @@ import application.ToDoList;
 public class ExecutionTest {
 	private static final String TEST_ADD_COMMAND = "Have dinner with Amy /on Monday //friend /*";
 	private static final String TEST_DELETE_COMMAND = "delete 1";
-	private static final String TEST_UPDATE_COMMAND = "update 1: Have dinner with Amy /by Monday //friend /*";
-	private static final String TEST_UPDATE_COMMAND_NOT_FOUND = "update 10: Have dinner with Amy /by Monday //friend /*";
 	public static final String PATH_TEST_FILE = "testFile.xml";
 	
 	private String originalSavePath;
@@ -26,6 +25,8 @@ public class ExecutionTest {
 	public void test() {
 		initTest();
 		testAdd();
+		testUndo();
+		testRedo();
 		testDelete();
 		
 		cleanTestFromSystem();
@@ -47,6 +48,7 @@ public class ExecutionTest {
 	}
 	
 	public void testDelete() {
+		// delete existing item
 		String methodName = "executeDelete";
 		Class[] paramTypes = new Class[] {
 				String.class
@@ -59,6 +61,48 @@ public class ExecutionTest {
 		String actualResult = invokeMethod(methodName, paramTypes, params);
 		
 		assertEquals(actualResult, expectedResult);
+		
+		// delete non-existing item
+		expectedResult = Constant.MSG_ITEM_NOT_FOUND;
+		actualResult = invokeMethod(methodName, paramTypes, params);
+		
+		assertEquals(actualResult, expectedResult);		
+	}
+	
+	public void testUndo() {
+		// undo add
+		String actualResult = Execution.executeUndo();
+		String expectedResult = Constant.MSG_UNDO_ADD_SUCCESS;
+		
+		int expectedSize = 0;
+		int actualSize = Main.list.getTasks().size();
+		
+		assertEquals(actualSize, expectedSize);
+		assertEquals(actualResult, expectedResult);
+		
+		// attempt to undo with an empty undo stack
+		actualResult = Execution.executeUndo();
+		expectedResult = Constant.MSG_NO_UNDO;
+		
+		assertEquals(actualResult, expectedResult);		
+	}
+	
+	public void testRedo() {
+		// redo add
+		String actualResult = Execution.executeRedo();
+		String expectedResult = Constant.MSG_REDO_ADD_SUCCESS;
+				
+		int expectedSize = 1;
+		int actualSize = Main.list.getTasks().size();
+				
+		assertEquals(actualSize, expectedSize);
+		assertEquals(actualResult, expectedResult);
+			
+		// attempt to redo with an empty redo stack
+		actualResult = Execution.executeRedo();
+		expectedResult = Constant.MSG_NO_REDO;
+				
+		assertEquals(actualResult, expectedResult);		
 	}
 	
 	private String invokeMethod(String methodName, Class[] paramTypes, Object[] params) {
