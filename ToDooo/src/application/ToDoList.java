@@ -1,37 +1,12 @@
 //@author A0112498B
 package application;
 import java.io.File;
-import java.io.IOException;
-import java.net.URL;
-import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Iterator;
-import java.util.List;
-
 import javafx.util.Pair;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathConstants;
-import javax.xml.xpath.XPathExpression;
-import javax.xml.xpath.XPathExpressionException;
-import javax.xml.xpath.XPathFactory;
-
 import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import org.w3c.dom.Text;
-import org.xml.sax.SAXException;
 
 import test.ToDoListTest;
 
@@ -252,21 +227,18 @@ public class ToDoList {
 	public Task deleteTaskById(String targetId) {
 		String taskId = targetId;
 		String recurringTaskId = null;
-		
-		boolean isRecurringTaskId = 
-				targetId.contains(Constant.PREFIX_RECURRING_ID);			
-		
-		if (isRecurringTaskId) {
-			
-			recurringTaskId = InputParser.getChildIdFromRecurringId(targetId);			
-			taskId = InputParser.getTaskIdFromRecurringId(targetId);
-		}
-		
 		Task task = null;
 		Task removedTask = null;
 		int index = 0;		
 		boolean isFound = false;
 		Iterator<Task> taskIterator = _tasks.iterator();
+		
+		boolean isRecurringTaskId = 
+				targetId.contains(Constant.PREFIX_RECURRING_ID);					
+		if (isRecurringTaskId) {			
+			recurringTaskId = InputParser.getChildIdFromRecurringId(targetId);			
+			taskId = InputParser.getTaskIdFromRecurringId(targetId);
+		}
 		
 		while (taskIterator.hasNext()) {
 			task = taskIterator.next();
@@ -331,11 +303,8 @@ public class ToDoList {
 	public static ArrayList<Task> generateTaskItems(ArrayList<Task> tasks, String displayType) {
 		ArrayList<Task> tempTasks = new ArrayList<>();
 		Task task;
-		Date recurringDate;
 		boolean isRecurring;
 		String taskType;
-		String recurringId;
-		TaskStatus recurringStatus;
 		
 		for(int i = 0; i < tasks.size(); i++) {
 			task = tasks.get(i);
@@ -477,6 +446,7 @@ public class ToDoList {
 		return task;
 	}
 	
+	//@author A0112498B
 	public void checkAndUpdateStatus() {
 		ArrayList<Task> backupList = deepCloneArrayList(_tasks);
 		TaskStatus status = null;
@@ -511,7 +481,6 @@ public class ToDoList {
 	// -----------------------------------------------------------------------------------------------
 	// Private Methods
 	// -----------------------------------------------------------------------------------------------
-	//@author A0112498B
 	private void createListFileIfNotExist() {		
 		File file = new File(_listFilePath);
 		
@@ -555,25 +524,29 @@ public class ToDoList {
 		
 		if (result.equals(Constant.MSG_ADD_SUCCESS)) {
 			_nextId = _tasks.size() + 1;
-			Main.storage.writeNextIdInFile(_nextId);
 			
+			Main.storage.writeNextIdInFile(_nextId);			
 			addCategoryToList(task.getCategory());
 		} else {
 			_tasks = backupList;
 		}
+		
 		return result;
 	}
 	
 	private static Task getRecurChildItemForEventOrDated(Task task,
 			Date recurringDate, String taskType, String recurringId,
 			TaskStatus recurringStatus, Task taskA) {
+		
 		if(taskType.equalsIgnoreCase(TaskType.EVENT.toString())) {
 			taskA = Task.createRecurringChildItem(task, recurringId, recurringStatus, 
 					recurringDate, task.getBy(), recurringDate);
+			
 		} else if(taskType.equalsIgnoreCase(TaskType.DATED.toString())) {
 			taskA = Task.createRecurringChildItem(task, recurringId, recurringStatus, 
 					task.getOn(), recurringDate, recurringDate);
 		}
+		
 		return taskA;
 	}	
 
@@ -624,6 +597,7 @@ public class ToDoList {
 		}
 	}
 	
+	//@author A0112537M
 	private static void copyTask(ArrayList<Task> tempTasks, Task task) {
 		Task copy = new Task();
 		copy = task;
@@ -631,34 +605,40 @@ public class ToDoList {
 	}
 
 	private static void generateRepeatedTimedTask(ArrayList<Task> tempTasks,
-			Task task) {
+												  Task task) {
 		Calendar start = Calendar.getInstance();
 		start.setTime(task.getFrom());
 		Calendar end = Calendar.getInstance();
 		end.setTime(task.getTo());
 		
 		for (Date date = start.getTime(); !start.after(end); 
-				start.add(Calendar.DATE, 1), date = start.getTime()) {
+			 start.add(Calendar.DATE, 1), date = start.getTime()) {
+			
 			Task t3 = Task.createRecurringChildItem(task, task.getId(), task.getStatus(), 
-					task.getOn(), task.getBy(), date);
+													task.getOn(), task.getBy(), date);
 			
 			tempTasks.add(t3);
 		}
 	}
 
 	private static void generateRecurChildTasks(ArrayList<Task> tempTasks,
-			Task task, String taskType) {
+												Task task, String taskType) {
 		Date recurringDate;
 		String recurringId;
 		TaskStatus recurringStatus;
 		for(int j = 0; j < task.getRecurringTasks().size(); j++) {
 			Task taskA = null;
+			
 			recurringDate = task.getRecurringTasks().get(j).getRecurDate();
+			
 			recurringId = task.getId() + Constant.PREFIX_RECURRING_ID + 
 					task.getRecurringTasks().get(j).getRecurringTaskId();
-			recurringStatus = task.getRecurringTasks().get(j).getStatus();
-			taskA = getRecurChildItemForEventOrDated(task, recurringDate, taskType, recurringId,
-					recurringStatus, taskA);
+			
+			recurringStatus = task.getRecurringTasks().get(j).getStatus();		
+			
+			taskA = getRecurChildItemForEventOrDated(task, recurringDate, 
+													 taskType, recurringId,
+													 recurringStatus, taskA);
 			
 			tempTasks.add(taskA);
 		}

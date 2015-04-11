@@ -279,17 +279,7 @@ public class InputParser {
 			 									   boolean isRecurring, Frequency repeat) {
 		if (isRecurring) {
 			Command recurringCommand = repeat.getCommand();
-			String lowerCase = toDoString.toLowerCase() + " ";
-			int endIndex = -1;
-
-			String basicCommand = recurringCommand.getBasicCommand();
-			String advancedCommand = recurringCommand.getAdvancedCommand();
-
-			if (lowerCase.contains(basicCommand)) {
-				endIndex = lowerCase.indexOf(basicCommand);
-			} else if (lowerCase.contains(advancedCommand)) {
-				endIndex = lowerCase.indexOf(advancedCommand);
-			}
+			int endIndex = recurringCommand.getIndexOfCommand(toDoString);
 
 			toDoString = extractFromString(toDoString, endIndex);
 		}

@@ -216,7 +216,6 @@ public class Storage {
 				   Constant.TAG_CATEGORY, category);	
 
 		writeFile(document);
-
 		hasWritten = true;
 		
 		return hasWritten;
@@ -311,12 +310,16 @@ public class Storage {
 		String categoryString = null;
 		boolean isEmpty;
 		
+		boolean isNotEqual = false;
 		for (int i = 0; i < categoryNodes.getLength(); i++) {
 			categoryNode = categoryNodes.item(i);
 			categoryString = categoryNode.getTextContent();
 			isEmpty = isEmptyCategory(categoryString);
 			
-			if(!categoryString.equalsIgnoreCase("Uncategorised") && isEmpty == true) {
+			isNotEqual = !categoryString.
+						 equalsIgnoreCase(Constant.CATEGORY_UNCATEGORISED);
+			
+			if(isNotEqual && isEmpty == true) {
 				Main.list.getCategories().remove(categoryString);
 				categoryNode.getParentNode().removeChild(categoryNode);
 			}	

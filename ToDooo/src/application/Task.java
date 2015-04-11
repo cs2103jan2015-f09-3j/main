@@ -44,7 +44,6 @@ public class Task implements Cloneable {
 		this(userInput, id, null);
 	}
 	
-	// used by update function
 	public Task (String userInput, String id, Task originalTask) {
 		_isValid = false;
 		_taskType = InputParser.getTaskTypeFromString(userInput);	
@@ -69,18 +68,7 @@ public class Task implements Cloneable {
 			if (isInvalidFormat) {
 				Main.systemFeedback = Constant.MSG_INVALID_FORMAT;
 			} else {
-				setDatesForTaskType(dates);			
-				_category = InputParser.getCategoryFromString(userInput);
-				
-				boolean isValidOperation = processRecurring(dates, userInput, originalTask);
-				
-				if (isValidOperation) {
-					_priority = InputParser.getPriorityFromString(userInput);		
-					_toDo = generateToDoString(userInput);
-					_status = TaskStatus.getTaskStatus(_endDate);
-					
-					_isValid = true;
-				}
+				setTaskContentAttributes(userInput, originalTask, dates);
 			}
 		} else {
 			boolean isInvalidRecurring = 
@@ -346,6 +334,10 @@ public class Task implements Cloneable {
 		}
 	}
 	
+	/*
+	 * return true when the start date of the calling task matches
+	 * with the search key
+	 */
 	public boolean hasDateMatch(SearchAttribute attribute, String searchKey) {
 		boolean hasMatched = false;
 		Date dateKey = Main.inputParser.getSearchDateFromString(searchKey);
@@ -475,6 +467,22 @@ public class Task implements Cloneable {
 				break;
 		}
 	}
+	
+	private void setTaskContentAttributes(String userInput, Task originalTask,
+			  							  List<Date> dates) {
+		setDatesForTaskType(dates);
+		_category = InputParser.getCategoryFromString(userInput);
+
+		boolean isValidOperation = processRecurring(dates, userInput,
+								   originalTask);
+		if (isValidOperation) {
+			_priority = InputParser.getPriorityFromString(userInput);
+			_toDo = generateToDoString(userInput);
+			_status = TaskStatus.getTaskStatus(_endDate);
+
+			_isValid = true;
+		}
+	}
 		
 	// ---------------------------------------------------------
 	// Recurring Tasks-related details tags
@@ -492,27 +500,18 @@ public class Task implements Cloneable {
 			Date untilDate = InputParser.getUntilDateFromString(userInput);
 			
 			if (untilDate != null && DateParser.isBeforeDate(untilDate, _endDate)) { 
-				// user attempted to create a recurring task with invaid until date
+				// user attempted to create a recurring task with invalid until date
 				isValid = false;
-				Main.systemFeedback = Constant.MSG_NO_INVALID_UNTIL_DATE;				
+				Main.systemFeedback = Constant.MSG_INVALID_UNTIL_DATE;				
 				
-			} else if (recurringCommand == null) { 				
-				boolean hasRecurringCommands = Command.hasRecurringCommands(userInput);
-				
-				if (hasRecurringCommands && untilDate == null) {
-					// user attempted to create a recurring task without supplying until date
-					isValid = false;
-					Main.systemFeedback = Constant.MSG_NO_UNTIL_DATE;
-					
-				} else if (!hasRecurringCommands && untilDate == null) { 
-					// not a recurring task
-					isValid = true; 
-				}				
+			} if (recurringCommand == null) { 				
+				isValid = verifyUserInputForRecurrence(userInput, isValid,
+						  untilDate);				
 				
 			} else {
 				if (dates != null) {
-					setRecurringDetails(dates, originalTask, recurringCommand, untilDate);	
-					isValid = true;				
+					isValid = true;	
+					setRecurringDetails(dates, originalTask, recurringCommand, untilDate);									
 				} else {
 					isValid = false;
 					Main.systemFeedback = Constant.MSG_INVALID_RECURRING;
@@ -523,6 +522,23 @@ public class Task implements Cloneable {
 			Main.systemFeedback = Constant.MSG_INVALID_RECURRING;
 		}
 				
+		return isValid;
+	}
+
+	/*
+	 * returns true if the user input is a valid operation
+	 * returns false if it is a recurrence type command but has no until date
+	 */
+	private boolean verifyUserInputForRecurrence(String userInput,
+												 boolean isValid, Date untilDate) {
+		boolean hasRecurringCommands = Command.hasRecurringCommands(userInput);
+		
+		if (hasRecurringCommands && untilDate == null) {
+			isValid = false;
+			Main.systemFeedback = Constant.MSG_NO_UNTIL_DATE;			
+		} else if (!hasRecurringCommands && untilDate == null) { 
+			isValid = true; 
+		}
 		return isValid;
 	}
 
@@ -644,6 +660,10 @@ public class Task implements Cloneable {
 		_recurringTasks.add(recurringTask);
 	}
 
+	/*
+	 * If the date and time of the new recurring task is a match
+	 * to the original entry, take the original status.
+	 */
 	private void useOriginalRecurTaskStatus(ArrayList<RecurringTask> recurringTasks, 
 											RecurringTask recurringTask) {
 		boolean hasMatched = false;
