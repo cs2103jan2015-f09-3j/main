@@ -368,7 +368,7 @@ public class ToDoList {
 		Task originalTask = getTaskById(targetId);
 		
 		if (!targetId.contains(Constant.PREFIX_RECURRING_ID)) {
-			completedTask = originalTask;
+			completedTask = originalTask.deepCloneTask();
 			if(completedTask == null) {
 				return null;
 			}
@@ -405,7 +405,7 @@ public class ToDoList {
 		Task originalTask = getTaskById(targetId);
 		
 		if (!targetId.contains(Constant.PREFIX_RECURRING_ID)) {
-			uncompletedTask = getTaskById(targetId);
+			uncompletedTask = originalTask.deepCloneTask();
 			if(uncompletedTask == null) {
 				return null;
 			}
