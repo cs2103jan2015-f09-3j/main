@@ -1,3 +1,4 @@
+//@author A0112498B
 package application;
 public enum Frequency {
 	NIL(null),

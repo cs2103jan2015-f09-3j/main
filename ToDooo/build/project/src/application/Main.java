@@ -32,7 +32,7 @@ public class Main extends Application {
 		try {
 			priStage = primaryStage;
 			
-			Parent root = FXMLLoader.load(this.getClass().getClassLoader().getResource(Constant.PATH_MAIN));
+			Parent root = FXMLLoader.load(Main.class.getResource(Constant.PATH_MAIN));
 			Scene scene = new Scene(root);
 			scene.getStylesheets().add(getClass().getResource(Constant.PATH_CSS).toExternalForm());
 			priStage.getIcons().add(new Image(Constant.IMAGE_LOGO));

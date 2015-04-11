@@ -502,7 +502,8 @@ public class Task implements Cloneable {
 				if (hasRecurringCommands && untilDate == null) {
 					// user attempted to create a recurring task without supplying until date
 					isValid = false;
-					Main.systemFeedback = Constant.MSG_NO_UNTIL_DATE;						
+					Main.systemFeedback = Constant.MSG_NO_UNTIL_DATE;
+					
 				} else if (!hasRecurringCommands && untilDate == null) { 
 					// not a recurring task
 					isValid = true; 

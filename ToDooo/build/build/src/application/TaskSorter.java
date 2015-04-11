@@ -1,3 +1,4 @@
+//@author A0112856E
 package application;
 
 import java.util.ArrayList;
@@ -154,6 +155,7 @@ public class TaskSorter {
 		}
 	}
 	
+	//@author A0112537M
 	private static ArrayList<Task> reallocateFloatingTasks(ArrayList<Task> list) {
 		ArrayList<Task> floatingList = extractFloatingTasks(list);
 		addFloatingTasksBackIntoList(list, floatingList);
@@ -218,16 +220,19 @@ public class TaskSorter {
 		}
 	}
 	
+	//@author A0112856E
 	private static ArrayList<Task> sortByDate(ArrayList<Task> list) {
 		Comparator<Task> comparator = getComparator(parametersForViewAll);
 		Collections.sort(list, comparator);
 		return list;
 	}
 	
+	//@author A0112537M
 	public static ArrayList<Task> getTasksSortedByDate(ArrayList<Task> list) {
 		return reallocateFloatingTasks(sortByDate(list));
 	}
 	
+	//@author A0112856E
 	public static ArrayList<Task> getTasksSortedByCategories(ArrayList<Task> list) {
 		Comparator<Task> CategoryComparator = getComparator(parametersForViewCategory);
 		Collections.sort(list, CategoryComparator);

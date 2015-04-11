@@ -1,18 +1,24 @@
 package controller;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import javax.imageio.ImageIO;
+
 import net.fortuna.ical4j.model.property.Status;
 import application.Constant;
 import application.Execution;
+import application.Frequency;
 import application.Main;
 import application.Task;
 import application.TaskSorter;
+import application.TaskStatus;
 import application.TaskType;
 import application.ToDoList;
 import application.Undo;
@@ -50,8 +56,7 @@ public class MainController{
 	@FXML BodyController bodyController;
 	@FXML SettingController settingController;
 	@FXML SearchResultController searchResultController;
-	
-	private Timer timer;
+
 	private SingleSelectionModel<Tab> selectionModel;
 	private Popup tutorialPopup;
 	private ArrayList<Task> overdue = new ArrayList<>();
@@ -60,18 +65,23 @@ public class MainController{
 	private Date todayDate;
 	static Stage detailPopup;
 	
+	//@author A0112498B
 	@FXML
 	public void initialize() {
 		initControllers();
 		loadListsInTabs();
 		initTutorialPopup();
+		cleanCompletedTasks();
 		
 		selectionModel = bodyController.tPaneMain.
 						 getSelectionModel();
+		
+		Execution.executeStatusCheckTimerTask();
 	}
 	
 	private void initTutorialPopup() {
-		Image image = new Image(Constant.IMAGE_TUTORIAL);
+		InputStream inputStream = getClass().getResourceAsStream(Constant.IMAGE_TUTORIAL);
+		Image image = new Image(inputStream);
 		ImageView imageView = new ImageView(image);
 		
 		tutorialPopup = new Popup();
@@ -168,12 +178,12 @@ public class MainController{
 
 	private void revertAction(KeyEvent e) {
 		if (Constant.SHORTCUT_UNDO.match(e)) {
-			String systemMsg = executeUndo();
+			String systemMsg = Execution.executeUndo();
 			
 			loadListsInTabs();
 			setSystemMessage(systemMsg);
 		} else if (Constant.SHORTCUT_REDO.match(e)) {
-			String systemMsg = executeRedo();
+			String systemMsg = Execution.executeRedo();
 			
 			loadListsInTabs();
 			setSystemMessage(systemMsg);
@@ -189,6 +199,14 @@ public class MainController{
 			selectionModel.select(Constant.TAB_INDEX_PRIORITY);			
 		}
 	}
+	
+	public void loadListsInTabs() {
+		loadListByDate(Constant.TAB_NAME_ALL);
+		loadListByCategory(Constant.TAB_NAME_CATEGORY);
+		loadListByPriority(Constant.TAB_NAME_PRIORITY);
+	}
+	
+	//@author A0112537M
 	public void setSystemMessage(String systemMsg) {
 		int sysMsgType = checkSystemMsg(systemMsg);
 		
@@ -205,60 +223,8 @@ public class MainController{
 		
 		headerController.lblSysMsg.setText(systemMsg);	
 		headerController.lblSysMsg.getStyleClass().add(Constant.CSS_CLASS_LABEL_SYSTEM_MSG);
-		executeSystemMsgTimerTask();
+		Execution.executeSystemMsgTimerTask();
 	}
-	
-	public void loadListsInTabs() {
-		loadListByDate(Constant.TAB_NAME_ALL);
-		loadListByCategory(Constant.TAB_NAME_CATEGORY);
-		loadListByPriority(Constant.TAB_NAME_PRIORITY);
-	}
-	
-	private String executeUndo() {
-		String systemMsg = null;
-		
-		boolean canUndo = !(Main.undos.isEmpty());
-		if (canUndo) {
-			Undo undo = Main.undos.pop();
-			systemMsg = undo.undoAction();
-		} else {
-			systemMsg = Constant.MSG_NO_UNDO;
-		}
-		
-		return systemMsg;
-	}
-	
-	private String executeRedo() {
-		String systemMsg = null;
-		
-		boolean canRedo = !(Main.redos.isEmpty());
-		if (canRedo) {
-			Undo redo = Main.redos.pop();
-			systemMsg = redo.redoAction();
-		} else {
-			systemMsg = Constant.MSG_NO_REDO;
-		}
-		
-		return systemMsg;
-	}
-	
-	public void executeSystemMsgTimerTask() {
-		timer = new Timer();
-		timer.schedule(new SystemMsgTimerTask(), Constant.TIMER_SYSTEM_MSG_DURATION);
-	}
-	
-	private class SystemMsgTimerTask extends TimerTask {
-        public void run() {
-    		Platform.runLater(new Runnable() {
-    		    @Override
-    		    public void run() {
-    		    	headerController.lblSysMsg.setText(Constant.EMPTY_STRING);	
-    		    	headerController.imgSysMsg.setImage(null);
-    		    }
-    		});
-            timer.cancel();
-        }
-    }
 
 	public void loadListByDate(String displayType) {
 		int indexForNextLoop = 0;
@@ -449,6 +415,10 @@ public class MainController{
 		VBox vBox = getContainer(displayType);
 		String paneColor = getStyle(task, displayType);
 		
+		if(status.equalsIgnoreCase(TaskStatus.DELETED.toString())) {
+			return;
+		}
+		
 		if(!header.equals(Constant.EMPTY_STRING)) {
 			addTitle(header, vBox);
 		}
@@ -465,13 +435,15 @@ public class MainController{
 			addCategory(task, hBoxLeft);
 		}
 		
-		if(displayType.equalsIgnoreCase(Constant.TAB_NAME_ALL) || 
-				displayType.equalsIgnoreCase(Constant.VIEW_NAME_SEARCH_RESULT)) {
-			addDateTimeInAllOrSearchResult(taskType, status, displayType, onDate, byDate, fromDate, toDate, startDate,
-					hBoxRight, hBoxLeft);
-		} else {
-			addDateTimeInCategoryOrPriority(taskType, status, displayType, onDate, byDate, fromDate, toDate, startDate,
-					hBoxRight, hBoxLeft);
+		if(!taskType.equalsIgnoreCase(TaskType.FLOATING.toString())) {
+			if(displayType.equalsIgnoreCase(Constant.TAB_NAME_ALL) || 
+					displayType.equalsIgnoreCase(Constant.VIEW_NAME_SEARCH_RESULT)) {
+				addDateTimeInAllOrSearchResult(taskType, status, displayType, onDate, byDate, fromDate, toDate, startDate,
+						hBoxRight, hBoxLeft);
+			} else {
+				addDateTimeInCategoryOrPriority(taskType, status, displayType, onDate, byDate, fromDate, toDate, startDate,
+						hBoxRight, hBoxLeft);
+			}
 		}
 		
 		vBox.getChildren().add(bPane);
@@ -622,7 +594,7 @@ public class MainController{
 		Label lblCategory;
 		
 		if(!category.equalsIgnoreCase(Constant.CATEGORY_UNCATEGORISED)) {
-			lblCategory = new Label(task.getCategory());
+			lblCategory = new Label(task.getCategory().toUpperCase());
 			lblCategory.getStyleClass().add(Constant.CSS_CLASS_LABEL_CATEGORY);
 			hBox.getChildren().add(lblCategory);
 		}
@@ -796,5 +768,24 @@ public class MainController{
 		detailPopup.initStyle(StageStyle.UNDECORATED);
 		detailPopup.setScene(scene); 
         detailPopup.show();
+	}
+	
+	public void cleanCompletedTasks() {
+		int dayOfWeek;
+		int dayOfMonth;
+		String cleanRecurrence = Main.storage.readSaveCleanRecurrence();
+		Calendar today = DateParser.getTodayDate();
+		
+		if(cleanRecurrence.equalsIgnoreCase(Frequency.WEEKLY.toString())) {
+			dayOfWeek = DateParser.calculateDayOfWeek(today);
+			if(dayOfWeek == 1) {
+				Execution.executeCleanCompletedTasks();
+			}
+		} else if(cleanRecurrence.equalsIgnoreCase(Frequency.MONTHLY.toString())) {
+			dayOfMonth = DateParser.calculateDayOfMonth(today);
+			if(dayOfMonth == 1) {
+				Execution.executeCleanCompletedTasks();
+			}
+		}
 	}
 }

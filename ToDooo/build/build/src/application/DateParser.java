@@ -1,3 +1,4 @@
+//@author A0112498B
 package application;
 
 import java.util.Calendar;
@@ -10,6 +11,13 @@ public class DateParser {
 		Calendar calendar = Calendar.getInstance();
 		calendar.setTimeZone(TimeZone.getDefault());
 		calendar.setTime(date);
+		
+		return calendar;
+	}
+	
+	public static Calendar getTodayCalendar() {
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTimeZone(TimeZone.getDefault());
 		
 		return calendar;
 	}
@@ -53,6 +61,7 @@ public class DateParser {
 		return month;
 	}
 	
+	//@author A0112537M
 	public static boolean compareDate(Date dateA, Date dateB) {
 		Calendar calendarA = Calendar.getInstance();
 		Calendar calendarB = Calendar.getInstance();
@@ -73,6 +82,19 @@ public class DateParser {
 				calendarA.get(Calendar.DAY_OF_YEAR) > calendarB.get(Calendar.DAY_OF_YEAR);
 		
 		return isAfterDay;
+	}
+	
+	//@author A0112498B
+	public static boolean isBeforeNow(Date date) {
+		Calendar calendar = DateParser.createCalendar(date);
+		
+		return isBeforeNow(calendar);
+	}
+	
+	public static boolean isBeforeNow(Calendar calendar) {
+		Calendar nowCalendar = DateParser.getTodayCalendar();
+		
+		return calendar.before(nowCalendar);
 	}
 	
 	public static boolean isBeforeDate(Date thisDate, Date thatDate) {
@@ -107,9 +129,23 @@ public class DateParser {
 				thisCalendar.get(Calendar.DAY_OF_YEAR) == thatCalendar.get(Calendar.DAY_OF_YEAR));
 	}
 	
+	public static boolean hasMatchedDateTime(Date thisDate, Date thatDate) {
+		Calendar calendarA = DateParser.createCalendar(thisDate);
+		Calendar calendarB = DateParser.createCalendar(thatDate);
+		
+		return DateParser.hasMatchedDateTime(calendarA, calendarB);
+	}
+	
+	public static boolean hasMatchedDateTime(Calendar thisCalendar, Calendar thatCalendar) {
+		thisCalendar.clear(Calendar.MILLISECOND);
+		thatCalendar.clear(Calendar.MILLISECOND);
+		
+		return thisCalendar.equals(thatCalendar);
+	}
+	
+	//@author A0112537M
 	public static Calendar getTodayDate() {
-		Calendar calendar = Calendar.getInstance();
-		calendar.setTimeZone(TimeZone.getDefault());
+		Calendar calendar = DateParser.getTodayCalendar();
 		
 		calendar.set(Calendar.HOUR_OF_DAY, 0); 
 		calendar.set(Calendar.MINUTE, 0);

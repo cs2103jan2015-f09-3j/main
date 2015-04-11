@@ -57,6 +57,7 @@ public final class Constant {
 	// ---------------------------------------------------------
 	public static final String TAG_SETTING = "setting";	
 	public static final String TAG_SETTING_SAVE = "save";
+	public static final String TAG_SETTING_CLEAN = "clean";
 	
 	// -----------------------------------------------------------------------------------------------
 	// XML configuration values
@@ -81,6 +82,8 @@ public final class Constant {
 	public static final String XML_XPATH_CATEGORY = "/" + Constant.TAG_FILE + "/" + Constant.TAG_CATEGORIES + "/" +
 			   									    Constant.TAG_CATEGORY;	
 	
+	public static final String XML_XPATH_SETTING_CLEAN = "/" + Constant.TAG_SETTING + "/" + Constant.TAG_SETTING_CLEAN;
+	
 	// -----------------------------------------------------------------------------------------------
 	// Command arrays
 	// -----------------------------------------------------------------------------------------------
@@ -101,12 +104,12 @@ public final class Constant {
 	// -----------------------------------------------------------------------------------------------
 	// File paths
 	// -----------------------------------------------------------------------------------------------
-	public static final String PATH_SETTING = "\\setting.xml";
+	public static final String PATH_SETTING = "/setting.xml";
 	public static final String PATH_FILE_NAME = "listFile.xml";
-	public static final String PATH_DEFAULT_PATH = "listFile.xml";
+	public static final String PATH_DEFAULT = "/listFile.xml";
 	public static final String PATH_GET_PROPERTY = "user.dir";
 	public static final String PATH_DETAIL = "/view/Detail.fxml";
-	public static final String PATH_MAIN = "view/Main.fxml";
+	public static final String PATH_MAIN = "/view/Main.fxml";
 	public static final String PATH_CSS = "application.css";
 	
 	// -----------------------------------------------------------------------------------------------
@@ -129,6 +132,7 @@ public final class Constant {
 	public static final String MSG_UPDATE_SUCCESS = "Update successful. " + Constant.MSG_TO_UNDO;
 	public static final String MSG_INVALID_FORMAT = "Invalid format. Unable to extract dates.";
     public static final String MSG_NO_UNTIL_DATE = "Please follow the following format: e.g. /weekly /until 2 November 2015";
+    public static final String MSG_NO_INVALID_UNTIL_DATE = "Invalid recurring end date";
 	public static final String MSG_INVALID_RECURRING = "Unable to create recurring task. " + 
 													   "Only /on and /by tasks can " + 
 													   "become recurring tasks.";
@@ -158,11 +162,11 @@ public final class Constant {
 	public static final String MSG_SEARCH_SUCCESS = "{0} matches found.";
 	public static final String MSG_SEARCH_INVALID = "Invalid format. Please use the search attributes and separate with ;;<space>";
 	
-	public static final String MSG_COMPLETE_SUCCESS = "Completed {0}.";
-	public static final String MSG_COMPLETE_FAIL = "Failed to complete {0}";
+	public static final String MSG_COMPLETE_SUCCESS = "Successfully marked {0} as completed.";
+	public static final String MSG_COMPLETE_FAIL = "Failed to mark {0} as completed.";
 	public static final String MSG_COMPLETE_INVALID = "TaskID {0} does not exist.";
-	public static final String MSG_UNCOMPLETE_SUCCESS = "Uncompleted {0}.";
-	public static final String MSG_UNCOMPLETE_FAIL = "Failed to uncomplete {0}";
+	public static final String MSG_UNCOMPLETE_SUCCESS = "Successfully mark {0} as uncompleted.";
+	public static final String MSG_UNCOMPLETE_FAIL = "Failed to mark {0} as uncompleted.";
 	
 	public static final String MSG_VIEW_SUCCESS = "Item is found.";
 	public static final String MSG_VIEW_FAIL = "Item is not found.";
@@ -184,7 +188,7 @@ public final class Constant {
 	// -----------------------------------------------------------------------------------------------
 	// System message keywords
 	// -----------------------------------------------------------------------------------------------
-    public static final String[] SYS_MSG_KEYWORD_SUCCESS = { "successful", "Completed", "saved" , "matches found", "is found" };
+    public static final String[] SYS_MSG_KEYWORD_SUCCESS = { "Successfully", "successful", "saved" , "matches found", "is found" };
     public static final String[] SYS_MSG_KEYWORD_ERROR = { "failed", "Failed", "cannot" , "Invalid", "does not exist",
     														"Unable", "not saved", "not found" };
     public static final String SYS_MSG_KEYWORD_SEARCH = "matches found";
@@ -280,6 +284,7 @@ public final class Constant {
 	// -----------------------------------------------------------------------------------------------
     public static final String TITLE_TODAY = "TODAY";
     public static final String TITLE_OVERDUE = "OVERDUE";    
+    public static final String TITLE_SETTING_DIR = "Choose File Location";    
     
     public static final String VIEW_NAME_SEARCH_RESULT= "searchResult";
     
@@ -298,7 +303,7 @@ public final class Constant {
     public static final String ICON_SUCCESS = "images/successIcon.png";
     public static final String ICON_ERROR = "images/errorIcon.png";
     public static final String ICON_FEEDBACK = "images/feedbackIcon.png";
-    public static final String IMAGE_TUTORIAL = "images/tutorial.png";
+    public static final String IMAGE_TUTORIAL = "/images/Tutorial.png";
     public static final String IMAGE_LOGO = "images/logo.png";
 
 	// -----------------------------------------------------------------------------------------------
@@ -332,8 +337,12 @@ public final class Constant {
 	// -----------------------------------------------------------------------------------------------   
     public static final String BOOLEAN_STRING_TRUE = "Yes";
     public static final String BOOLEAN_STRING_FALSE = "No";
+    
     public static final String EMPTY_STRING = "";
     public static final String EMPTY_DATE = "NONE";
-    public static final int TIMER_SYSTEM_MSG_DURATION = 2500;
     
+    public static final int TIMER_SYSTEM_MSG_DURATION = 2500;
+    public static final long TIMER_UPDATE_STATUS_DURATION = 60000;   
+    
+    public static final int MAX_NUM_OF_DATES = 2;
 }

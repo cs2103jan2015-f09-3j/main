@@ -337,9 +337,14 @@ public final class Constant {
 	// -----------------------------------------------------------------------------------------------   
     public static final String BOOLEAN_STRING_TRUE = "Yes";
     public static final String BOOLEAN_STRING_FALSE = "No";
+    
     public static final String EMPTY_STRING = "";
     public static final String EMPTY_DATE = "NONE";
+    
     public static final int TIMER_SYSTEM_MSG_DURATION = 2500;
-    public static final long TIMER_UPDATE_STATUS_DURATION = 60000;
+    public static final long TIMER_UPDATE_STATUS_DURATION = 60000;   
+    
     public static final int MAX_NUM_OF_DATES = 2;
+    public static final int MAX_NUM_OF_FROM_TO_DATES = 2;
+    public static final int MAX_NUM_OF_DATE_IN_COMMAND = 1;
 }

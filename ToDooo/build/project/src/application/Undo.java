@@ -1,3 +1,4 @@
+//@author A0112498B
 package application;
 
 import javafx.util.Pair;
@@ -42,6 +43,9 @@ public class Undo {
 				break;
 			case UPDATE :
 				command = Command.UPDATE;
+				break;
+			case COMPLETE :
+				command = Command.COMPLETE;
 				break;
 			default:
 				// no undo command
@@ -141,7 +145,7 @@ public class Undo {
 	private String undoDelete() {
 		String systemMsg;
 		Pair<String, Task> systemMsgWithRemovedTaskPair = 
-						   Main.list.AddTaskBackToList(_originalTask, true);		
+						   Main.list.addTaskBackToList(_originalTask, true);		
 		
 		systemMsg = systemMsgWithRemovedTaskPair.getKey();
 		if (systemMsg.equals(Constant.MSG_ADD_SUCCESS)) {
@@ -227,7 +231,7 @@ public class Undo {
 	private String redoAdd() {
 		String systemMsg;
 		Pair<String, Task> systemMsgWithRemovedTaskPair = 
-		   				   Main.list.AddTaskBackToList(_originalTask, true);		
+		   				   Main.list.addTaskBackToList(_originalTask, true);		
 
 		systemMsg = systemMsgWithRemovedTaskPair.getKey();			
 		if (systemMsg.equals(Constant.MSG_ADD_SUCCESS)) {

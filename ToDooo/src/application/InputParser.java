@@ -276,7 +276,7 @@ public class InputParser {
 	}
 	
 	public static String removeRecurringFromString(String toDoString, 
-			 boolean isRecurring, Frequency repeat) {
+			 									   boolean isRecurring, Frequency repeat) {
 		if (isRecurring) {
 			Command recurringCommand = repeat.getCommand();
 			String lowerCase = toDoString.toLowerCase() + " ";
@@ -301,17 +301,7 @@ public class InputParser {
 		
 		if (isPrioritised) {
 			Command priorityCommand = priority.getCommand();
-			String lowerCase = toDoString.toLowerCase() + " ";
-			int endIndex = -1;
-			
-			String basicCommand = priorityCommand.getBasicCommand();
-			String advancedCommand = priorityCommand.getAdvancedCommand();
-			
-			if (lowerCase.contains(basicCommand)) {
-				endIndex = lowerCase.indexOf(basicCommand);				
-			} else if (lowerCase.contains(advancedCommand)) {
-				endIndex = lowerCase.indexOf(advancedCommand);
-			} 
+			int endIndex = priorityCommand.getIndexOfCommand(toDoString);
 			
 			toDoString = extractFromString(toDoString, endIndex);
 		}
@@ -332,10 +322,15 @@ public class InputParser {
 		return toDoString;
 	}
 	
+	/*
+	 * returns a list of search attribute pairs consisting
+	 * of the attribute to search by and the key to match with
+	 */
 	public static ArrayList<Pair<SearchAttribute, String>> 
 		getSearchAttributePairFromString(String userInput) {
 		
-		ArrayList<Pair<SearchAttribute, String>> attributePairs = new ArrayList<Pair<SearchAttribute, String>>();
+		ArrayList<Pair<SearchAttribute, String>> attributePairs = 
+				new ArrayList<Pair<SearchAttribute, String>>();
 		String searchKey = null;
 
 		ArrayList<SearchAttribute> attributes = SearchAttribute
@@ -346,8 +341,8 @@ public class InputParser {
 					.getSearchKeyFromString(userInput, attribute);
 
 			if (searchKey != null) {
-				attributePairs.add(new Pair<SearchAttribute, String>(attribute,
-						searchKey));
+				attributePairs.
+				add(new Pair<SearchAttribute, String>(attribute, searchKey));
 			}
 		}
 
@@ -375,6 +370,10 @@ public class InputParser {
 		return userInput;
 	}
 	
+	/*
+	 * Get the task id of the task which carries the
+	 * recurring child task item
+	 */
 	public static String getTaskIdFromRecurringId(String targetId) {
 		int prefixIndex = targetId.
 		   		  indexOf(Constant.PREFIX_RECURRING_ID);
@@ -477,10 +476,13 @@ public class InputParser {
 		
 		if (lowerCase.contains(addBasicCmd) &&
 			lowerCase.indexOf(addBasicCmd) == 0){
+			
 			toDoString = userInput.substring(lengthOfBasicAddCommand, 
 						 userInput.length()).trim();
+			
 		} else if (lowerCase.contains(addAdvancedCmd) &&
-				   lowerCase.indexOf(addAdvancedCmd) == 0) {	
+				   lowerCase.indexOf(addAdvancedCmd) == 0) {
+			
 			toDoString = userInput.substring(lengthOfAdvancedAddCommand, 
 						 userInput.length()).trim();
 		}
