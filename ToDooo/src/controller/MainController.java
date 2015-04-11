@@ -70,8 +70,9 @@ public class MainController{
 	public void initialize() {
 		initControllers();
 		loadListsInTabs();
-		initTutorialPopup();
 		cleanCompletedTasks();
+		cleanEmptyCategories();
+		initTutorialPopup();
 		
 		selectionModel = bodyController.tPaneMain.
 						 getSelectionModel();
@@ -249,7 +250,7 @@ public class MainController{
 			startDate = task.getStartDate();
 	    	
 			if(taskType.equalsIgnoreCase(TaskType.FLOATING.toString())||
-				DateParser.compareDate(todayDate, startDate) || startDate.before(todayDate)) {
+				DateParser.compareDate(todayDate, startDate) || DateParser.isBeforeNow(startDate)) {
 				findFloatingOrOverdueOrTodayTask(task, startDate, taskType);
 				indexForNextLoop = i+1;
 			} else {
@@ -344,7 +345,7 @@ public class MainController{
 		if(taskType.equalsIgnoreCase(TaskType.FLOATING.toString())) {
 			floating.add(task);
 		} else {
-			if(startDate.before(todayDate)) {
+			if(DateParser.isBeforeNow(startDate)) {
 				if(!taskType.equalsIgnoreCase(TaskType.TIMED.toString())) {
 					overdue.add(task);
 				} else {
@@ -787,5 +788,9 @@ public class MainController{
 				Execution.executeCleanCompletedTasks();
 			}
 		}
+	}
+	
+	public void cleanEmptyCategories() {
+		Main.storage.removeEmptyCategory();
 	}
 }
