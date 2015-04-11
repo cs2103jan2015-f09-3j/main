@@ -501,7 +501,6 @@ public class ToDoList {
 	
 	public void checkAndUpdateStatus() {
 		ArrayList<Task> backupList = deepCloneArrayList(_tasks);
-		Date date = null;
 		TaskStatus status = null;
 		TaskType type = null;
 		
@@ -516,11 +515,11 @@ public class ToDoList {
 				continue;
 			}
 			
-			date = task.getEndDate();
-			
-			if (DateParser.isAfterNow(date)) {
-				task.setStatus(TaskStatus.OVERDUE);
-			}
+			if (task.getIsRecurring()) {
+				updateRecurringTaskStatus(task);				
+			} 
+
+			updateTaskStatus(task);
 		}
 		
 		_tasks = TaskSorter.getTasksSortedByDate(_tasks);
@@ -529,6 +528,36 @@ public class ToDoList {
 		if (!result.equals(Constant.MSG_ADD_SUCCESS)) {
 			_tasks = backupList;
 		} 
+	}
+
+	private void updateTaskStatus(Task task) {
+		Date date = task.getEndDate();
+		
+		if (DateParser.isBeforeNow(date)) {
+			task.setStatus(TaskStatus.OVERDUE);
+		}
+	}
+	
+	private void updateRecurringTaskStatus(Task task) {
+		ArrayList<RecurringTask> recurringTasks = task.getRecurringTasks();
+		TaskStatus status = null;
+		Date date = null;
+		
+		for (RecurringTask recurringTask : recurringTasks) {
+			status = recurringTask.getStatus();
+			
+			if (status.equals(TaskStatus.COMPLETED) ||
+				status.equals(TaskStatus.DELETED) ||
+				status.equals(TaskStatus.OVERDUE)) {
+					continue;
+			}
+			
+			date = recurringTask.getRecurDate();
+			
+			if (DateParser.isBeforeNow(date)) {
+				recurringTask.setStatus(TaskStatus.OVERDUE);
+			}
+		}
 	}
 	
 	// -----------------------------------------------------------------------------------------------

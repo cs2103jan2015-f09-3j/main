@@ -85,16 +85,16 @@ public class DateParser {
 	}
 	
 	//@author A0112498B
-	public static boolean isAfterNow(Date date) {
+	public static boolean isBeforeNow(Date date) {
 		Calendar calendar = DateParser.createCalendar(date);
 		
-		return isAfterNow(calendar);
+		return isBeforeNow(calendar);
 	}
 	
-	public static boolean isAfterNow(Calendar calendar) {
+	public static boolean isBeforeNow(Calendar calendar) {
 		Calendar nowCalendar = DateParser.getTodayCalendar();
 		
-		return nowCalendar.before(calendar);
+		return calendar.before(nowCalendar);
 	}
 	
 	public static boolean isBeforeDate(Date thisDate, Date thatDate) {
