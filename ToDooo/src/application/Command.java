@@ -89,6 +89,11 @@ public enum Command {
 		return hasFound;
 	}
 			
+	/*
+	 * Returns true if:
+	 * 1) has category command #
+	 * 2) category name behind # is not empty
+	 */
 	public static boolean hasCategoryCommand(String commandLine) {
 		String lowerCase = commandLine.toLowerCase() + " ";
 		String basicCmd = Command.CATEGORY.getBasicCommand();
@@ -121,16 +126,19 @@ public enum Command {
 		
 		for (Command command : Constant.COMMAND_DATES) {
 			if (command.hasCommand(commandLine)) {
-				isValidTimed = !(((command.name().equals(Command.FROM) ||
-						 		command.name().equals(Command.TO)) && count >= 2) ||
-						 		(!(command.name().equals(Command.FROM) ||
-								command.name().equals(Command.TO)) && count >= 1));
+				isValidTimed = !(((command.name().equals(Command.FROM) || 
+								   command.name().equals(Command.TO)) && 
+								   count >= Constant.MAX_NUM_OF_FROM_TO_DATES) ||
+						 		(!(command.name().equals(Command.FROM) || 
+						 		   command.name().equals(Command.TO)) && 
+						 		   count >= Constant.MAX_NUM_OF_DATE_IN_COMMAND));
 				
 				count++;
 			}
 		}
 		
-		if (count == 1 || (count == 2 && isValidTimed)) {
+		if (count == Constant.MAX_NUM_OF_DATE_IN_COMMAND || 
+		   (count == Constant.MAX_NUM_OF_FROM_TO_DATES && isValidTimed)) {
 			isCorrectNum = true;
 		}
 		
@@ -148,6 +156,21 @@ public enum Command {
 		}
 		
 		return shouldRetrieve;
+	}
+	
+	public int getIndexOfCommand(String commandLine) {
+		String lowerCase = commandLine.toLowerCase() + " ";
+		String basicCmd = _COMMAND_BASIC + " ";
+		String advancedCmd = _COMMAND_ADVANCED + " ";
+		int endIndex = -1;
+				
+		if (lowerCase.contains(basicCmd)) {
+			endIndex = lowerCase.indexOf(basicCmd);				
+		} else if (lowerCase.contains(advancedCmd)) {
+			endIndex = lowerCase.indexOf(advancedCmd);
+		} 
+		
+		return endIndex;
 	}
 		
 	// -----------------------------------------------------------------------------------------------

@@ -30,6 +30,7 @@ public class HeaderController{
 	@FXML private Pane txtAreaPane;
 	@FXML public StyleClassedTextArea textArea;
 	
+	//@author A0112498B
 	@FXML
 	public void processCmd(KeyEvent e) throws IOException {			
 		if (e.getCode() == KeyCode.ENTER) {
@@ -237,6 +238,7 @@ public class HeaderController{
 		}
 	}
 	
+	//@author A0112537M
 	@FXML
 	public void loadSettingMouse(MouseEvent e) throws IOException {
 		mainCon.executeSetting();
@@ -251,7 +253,8 @@ public class HeaderController{
 	public void loadSearchResult(KeyEvent e) throws IOException {
 		mainCon.executeSearchResult();
 	}
-
+	
+	//@author A0112498B
 	public void init(MainController mainController) {
 		mainCon = mainController;
 		
@@ -263,7 +266,6 @@ public class HeaderController{
 		});		
 	}
 	
-
 	public void resetTextArea() {
 		Main.toUpdate = false;	
 
@@ -271,6 +273,4 @@ public class HeaderController{
 		textArea.clear();
 		textArea.positionCaret(0);		
 	}
-	
-
 }

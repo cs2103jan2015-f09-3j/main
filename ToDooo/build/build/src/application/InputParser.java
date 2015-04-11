@@ -1,3 +1,4 @@
+//@author A0112498B
 package application;
 
 import java.util.ArrayList;
@@ -153,9 +154,23 @@ public class InputParser {
 	}
 	
 	public static String getTargetIdFromUpdateString(String userInput) {
-		int endIndex = userInput.indexOf(Constant.DELIMITER_UPDATE);
-		String targetId = getTargetId(userInput, endIndex);
+		String targetId = null;
 		
+		int endIndex = userInput.indexOf(Constant.DELIMITER_UPDATE + " ");
+		
+		if (endIndex == -1) {
+			int minLength = 2;
+			int idIndex = 1;
+			
+			String[] words = userInput.split(" ");
+			
+			if (words.length == minLength) {
+				targetId = words[idIndex];
+			}
+		} else {
+			targetId = getTargetId(userInput, endIndex);
+		}
+						
 		if (targetId != null) {
 			return targetId.toUpperCase();
 		} else {
@@ -437,9 +452,15 @@ public class InputParser {
 			(lowerCase.contains(updateAdvancedString) &&
 			 lowerCase.indexOf(updateAdvancedString) == 0)) {
 			
-			int startIndex = userInput.indexOf(Constant.DELIMITER_UPDATE) + 2;
-			int endIndex = userInput.length();			
-			toDoString = userInput.substring(startIndex, endIndex);
+			int delimeterIndex = userInput.indexOf(Constant.DELIMITER_UPDATE);			
+			int startIndex = delimeterIndex + 2;
+			int endIndex = userInput.length();
+					
+			if (startIndex < endIndex) {
+				toDoString = userInput.substring(startIndex, endIndex);
+			} else {
+				toDoString = "-";
+			}			
 		}
 		
 		return toDoString;

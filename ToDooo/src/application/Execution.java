@@ -210,6 +210,7 @@ public class Execution {
 				return systemMsg = Main.systemFeedback;
 			}
 			
+			// ----------------------------------------------
 			Task originalTask = updatedTasksDetails.getKey();
 			String targetId = updatedTasksDetails.getValue();
 			
@@ -248,66 +249,66 @@ public class Execution {
 	}
 	
 	//@author A0112856E
-		private static String executeComplete(String userInput) {
-			String systemMsg = null;
-			int recurId = -1;
-			
-			Pair<Task, String> completedTaskDetails = 
-					Main.list.completeTaskOnList(userInput);
-			
-			if(completedTaskDetails == null) {
-				systemMsg = Constant.MSG_ITEM_NOT_FOUND;
-			} else {
-				Task originalTask = completedTaskDetails.getKey();
-				String targetId = completedTaskDetails.getValue();
-				
-				if(originalTask.getIsRecurring() == true) {
-					recurId = Integer.parseInt(targetId.substring(targetId.indexOf(".") + 1));
-				}
-				
-				if(originalTask == null || 
-						(recurId != -1 && originalTask.getRecurringTasks().get(recurId - 1).getStatus().equals(TaskStatus.DELETED))) {
-					systemMsg = Constant.MSG_ITEM_NOT_FOUND;
-				} else {
-					Undo.prepareUndoComplete(originalTask, targetId);
-					
-					systemMsg = Constant.MSG_COMPLETE_SUCCESS.
-							replace(Constant.DELIMITER_REPLACE, targetId);
-				}
-			}
+	private static String executeComplete(String userInput) {
+		String systemMsg = null;
+		int recurId = -1;
 		
-			return systemMsg;
-		}
+		Pair<Task, String> completedTaskDetails = 
+				Main.list.completeTaskOnList(userInput);
 		
-		private static String executeUncomplete(String userInput) {
-			String systemMsg = null;
-			int recurId = -1;
+		if(completedTaskDetails == null) {
+			systemMsg = Constant.MSG_ITEM_NOT_FOUND;
+		} else {
+			Task originalTask = completedTaskDetails.getKey();
+			String targetId = completedTaskDetails.getValue();
 			
-			Pair<Task, String> uncompletedTaskDetails = Main.list.uncompleteTaskOnList(userInput);
-			
-			if(uncompletedTaskDetails == null) {
-				systemMsg = Constant.MSG_ITEM_NOT_FOUND;
-			} else {
-				Task originalTask = uncompletedTaskDetails.getKey();
-				String targetId = uncompletedTaskDetails.getValue();
-				
-				if(originalTask.getIsRecurring() == true) {
-					recurId = Integer.parseInt(targetId.substring(targetId.indexOf(".")+1));
-				}
-				
-				if(originalTask == null || 
-				  (recurId != -1 && originalTask.getRecurringTasks().get(recurId-1).getStatus().equals(TaskStatus.DELETED))) {
-					systemMsg = Constant.MSG_ITEM_NOT_FOUND;
-				} else {
-					Undo.prepareUndoComplete(originalTask, targetId);
-					
-					systemMsg = Constant.MSG_UNCOMPLETE_SUCCESS.
-							replace(Constant.DELIMITER_REPLACE, targetId);
-				}
+			if(originalTask.getIsRecurring() == true) {
+				recurId = Integer.parseInt(targetId.substring(targetId.indexOf(".") + 1));
 			}
 			
-			return systemMsg;
+			if(originalTask == null || 
+					(recurId != -1 && originalTask.getRecurringTasks().get(recurId - 1).getStatus().equals(TaskStatus.DELETED))) {
+				systemMsg = Constant.MSG_ITEM_NOT_FOUND;
+			} else {
+				Undo.prepareUndoComplete(originalTask, targetId);
+				
+				systemMsg = Constant.MSG_COMPLETE_SUCCESS.
+						replace(Constant.DELIMITER_REPLACE, targetId);
+			}
 		}
+	
+		return systemMsg;
+	}
+		
+	private static String executeUncomplete(String userInput) {
+		String systemMsg = null;
+		int recurId = -1;
+		
+		Pair<Task, String> uncompletedTaskDetails = Main.list.uncompleteTaskOnList(userInput);
+		
+		if(uncompletedTaskDetails == null) {
+			systemMsg = Constant.MSG_ITEM_NOT_FOUND;
+		} else {
+			Task originalTask = uncompletedTaskDetails.getKey();
+			String targetId = uncompletedTaskDetails.getValue();
+			
+			if(originalTask.getIsRecurring() == true) {
+				recurId = Integer.parseInt(targetId.substring(targetId.indexOf(".")+1));
+			}
+			
+			if(originalTask == null || 
+			  (recurId != -1 && originalTask.getRecurringTasks().get(recurId-1).getStatus().equals(TaskStatus.DELETED))) {
+				systemMsg = Constant.MSG_ITEM_NOT_FOUND;
+			} else {
+				Undo.prepareUndoComplete(originalTask, targetId);
+				
+				systemMsg = Constant.MSG_UNCOMPLETE_SUCCESS.
+						replace(Constant.DELIMITER_REPLACE, targetId);
+			}
+		}
+		
+		return systemMsg;
+	}
 	
 	//@author A0112537M
 	private static String executeView(String userInput) {

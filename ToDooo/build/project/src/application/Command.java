@@ -1,3 +1,4 @@
+//@author A0112498B
 package application;
 
 import java.util.Date;
@@ -88,6 +89,11 @@ public enum Command {
 		return hasFound;
 	}
 			
+	/*
+	 * Returns true if:
+	 * 1) has category command #
+	 * 2) category name behind # is not empty
+	 */
 	public static boolean hasCategoryCommand(String commandLine) {
 		String lowerCase = commandLine.toLowerCase() + " ";
 		String basicCmd = Command.CATEGORY.getBasicCommand();

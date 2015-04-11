@@ -61,29 +61,6 @@ public class DateParser {
 		return month;
 	}
 	
-	//@author A0112537M
-	public static boolean compareDate(Date dateA, Date dateB) {
-		Calendar calendarA = Calendar.getInstance();
-		Calendar calendarB = Calendar.getInstance();
-		calendarA.setTime(dateA);
-		calendarB.setTime(dateB);
-		boolean sameDay = calendarA.get(Calendar.YEAR) == calendarB.get(Calendar.YEAR) &&
-				calendarA.get(Calendar.DAY_OF_YEAR) == calendarB.get(Calendar.DAY_OF_YEAR);
-		
-		return sameDay;
-	}
-	
-	public static boolean isAfterDateWithoutTime(Date dateA, Date dateB) {
-		Calendar calendarA = Calendar.getInstance();
-		Calendar calendarB = Calendar.getInstance();
-		calendarA.setTime(dateA);
-		calendarB.setTime(dateB);
-		boolean isAfterDay = calendarA.get(Calendar.YEAR) >= calendarB.get(Calendar.YEAR) &&
-				calendarA.get(Calendar.DAY_OF_YEAR) > calendarB.get(Calendar.DAY_OF_YEAR);
-		
-		return isAfterDay;
-	}
-	
 	//@author A0112498B
 	public static boolean isBeforeNow(Date date) {
 		Calendar calendar = DateParser.createCalendar(date);
@@ -152,5 +129,31 @@ public class DateParser {
 		calendar.set(Calendar.SECOND, 0);
 	    
 	    return calendar;
+	}
+	
+	public static boolean compareDate(Date dateA, Date dateB) {
+		Calendar calendarA = Calendar.getInstance();
+		Calendar calendarB = Calendar.getInstance();
+		
+		calendarA.setTime(dateA);
+		calendarB.setTime(dateB);
+		
+		boolean sameDay = calendarA.get(Calendar.YEAR) == calendarB.get(Calendar.YEAR) &&
+				calendarA.get(Calendar.DAY_OF_YEAR) == calendarB.get(Calendar.DAY_OF_YEAR);
+		
+		return sameDay;
+	}
+	
+	public static boolean isAfterDateWithoutTime(Date dateA, Date dateB) {
+		Calendar calendarA = Calendar.getInstance();
+		Calendar calendarB = Calendar.getInstance();
+		
+		calendarA.setTime(dateA);
+		calendarB.setTime(dateB);
+		
+		boolean isAfterDay = calendarA.get(Calendar.YEAR) >= calendarB.get(Calendar.YEAR) &&
+				calendarA.get(Calendar.DAY_OF_YEAR) > calendarB.get(Calendar.DAY_OF_YEAR);
+		
+		return isAfterDay;
 	}
 }
