@@ -334,129 +334,98 @@ public class ToDoList {
 	}
 	
 	//@author A0112856E
-	public Pair<Task, String> completeTaskOnList(String userInput) {
-		String targetId = InputParser.getTargetIdFromString(userInput);
+	public Pair<Task, String> completeTaskOnList(String userInput) {		
+		String taskId = InputParser.getTargetIdFromString(userInput);
+		
+		String parentId = null;
+		String targetId = null;		
+		if (taskId.contains(Constant.PREFIX_RECURRING_ID)) {
+			parentId = InputParser.getTaskIdFromRecurringId(taskId);
+			targetId = parentId;
+		} else {
+			targetId = taskId;
+		}
+		
+		
+		//-------------------------------------------------------------------------------
 		Task completedTask = null;
-		Task originalTask = getTaskById(targetId);
+		
+		Pair<Task, String> deleteDetailsPair = deleteTaskById(targetId);
+		Task originalTask = deleteDetailsPair.getKey();
+		String completedTaskId = null;
 		
 		if (originalTask != null) {
-			if (!targetId.contains(Constant.PREFIX_RECURRING_ID)) {
-				completedTask = originalTask.deepCloneTask();
-				if(completedTask == null) {
-					return null;
-				}
-				completedTask.setStatus(TaskStatus.COMPLETED);
-			} else {
-				String parentId = InputParser.getTaskIdFromRecurringId(targetId);
-				completedTask = updateStatusOfRecurringTaskOnList(targetId, parentId, TaskStatus.COMPLETED);
-				targetId = parentId;
-			}
-		} else {
-			return null;
-		}
-		
-		String completedTaskId = null;
-		if (completedTask != null) {
-			Pair<Task, String> deleteDetailsPair = deleteTaskById(targetId);
-			originalTask = deleteDetailsPair.getKey();
+			completedTask = originalTask.deepCloneTask();
 			
-			if (originalTask != null) {
-				addTaskBackToList(completedTask, false);
-				String taskId = InputParser.getTargetIdFromString(userInput);
-				if (taskId.contains(Constant.PREFIX_RECURRING_ID)) {
-					completedTaskId = taskId;
-				} else {
-					completedTaskId = completedTask.getId();
-				}
+			if (parentId != null) {
+				boolean hasSet = updateStatusOfRecurringChildTask(taskId, completedTask, TaskStatus.COMPLETED);
+				
+				if (hasSet) {
+					completedTaskId = parentId;
+				}				
+			} else {
+				completedTask.setStatus(TaskStatus.COMPLETED);
+				completedTaskId = targetId;
 			}
+			
+			addTaskBackToList(completedTask, false);		
+			
 		} else {
 			return null;
-		}
+		}		
 		
 		return new Pair<Task, String>(originalTask, completedTaskId);
 	}
 		
 	public Pair<Task, String> uncompleteTaskOnList(String userInput) {
-		String targetId = InputParser.getTargetIdFromString(userInput);
-		Task uncompletedTask = null;				
-		Task originalTask = getTaskById(targetId);
+//		String targetId = InputParser.getTargetIdFromString(userInput);
+//		Task uncompletedTask = null;				
+//		Task originalTask = getTaskById(targetId);
+//		
+//		if (originalTask != null) {
+//			if (!targetId.contains(Constant.PREFIX_RECURRING_ID)) {
+//				uncompletedTask = originalTask.deepCloneTask();
+//				if(uncompletedTask == null) {
+//					return null;
+//				}
+//				
+//				Date endDate = uncompletedTask.getEndDate();
+//				TaskStatus status = TaskStatus.getTaskStatus(endDate);
+//				if (status.equals(TaskStatus.OVERDUE)) {
+//					uncompletedTask.setStatus(TaskStatus.OVERDUE);
+//				} else {
+//					uncompletedTask.setStatus(TaskStatus.ONGOING);
+//				}	
+//			} else {
+//				String parentId = InputParser.getTaskIdFromRecurringId(targetId);
+//				uncompletedTask = updateStatusOfRecurringTaskOnList(targetId, parentId, TaskStatus.ONGOING);
+//				targetId = parentId;
+//			}
+//		} else {
+//			return null;
+//		}
+//		
+//		String uncompletedTaskId = null;
+//		if (uncompletedTask != null) {
+//			Pair<Task, String> deleteDetailsPair = deleteTaskById(targetId);
+//			originalTask = deleteDetailsPair.getKey();
+//			
+//			if (originalTask != null) {
+//				addTaskBackToList(uncompletedTask, false);
+//				String taskId = InputParser.getTargetIdFromString(userInput);
+//				if (taskId.contains(Constant.PREFIX_RECURRING_ID)) {
+//					uncompletedTaskId = taskId;
+//				} else {
+//					uncompletedTaskId = uncompletedTask.getId();
+//				}
+//			}
+//		} else {
+//			return null;
+//		}
 		
-		if (originalTask != null) {
-			if (!targetId.contains(Constant.PREFIX_RECURRING_ID)) {
-				uncompletedTask = originalTask.deepCloneTask();
-				if(uncompletedTask == null) {
-					return null;
-				}
-				
-				Date endDate = uncompletedTask.getEndDate();
-				TaskStatus status = TaskStatus.getTaskStatus(endDate);
-				if (status.equals(TaskStatus.OVERDUE)) {
-					uncompletedTask.setStatus(TaskStatus.OVERDUE);
-				} else {
-					uncompletedTask.setStatus(TaskStatus.ONGOING);
-				}	
-			} else {
-				String parentId = InputParser.getTaskIdFromRecurringId(targetId);
-				uncompletedTask = updateStatusOfRecurringTaskOnList(targetId, parentId, TaskStatus.ONGOING);
-				targetId = parentId;
-			}
-		} else {
-			return null;
-		}
+//		return new Pair<Task, String>(originalTask, uncompletedTaskId);
 		
-		String uncompletedTaskId = null;
-		if (uncompletedTask != null) {
-			Pair<Task, String> deleteDetailsPair = deleteTaskById(targetId);
-			originalTask = deleteDetailsPair.getKey();
-			
-			if (originalTask != null) {
-				addTaskBackToList(uncompletedTask, false);
-				String taskId = InputParser.getTargetIdFromString(userInput);
-				if (taskId.contains(Constant.PREFIX_RECURRING_ID)) {
-					uncompletedTaskId = taskId;
-				} else {
-					uncompletedTaskId = uncompletedTask.getId();
-				}
-			}
-		} else {
-			return null;
-		}
-		
-		return new Pair<Task, String>(originalTask, uncompletedTaskId);
-	}
-
-	public Task updateStatusOfRecurringTaskOnList(String targetId, String parentId, TaskStatus newStatus) {
-		Task task = null;
-		boolean isFound = false;
-		Iterator<Task> taskIterator = _tasks.iterator();
-		ArrayList<RecurringTask> recurTasks = new ArrayList<RecurringTask>();
-		
-		String recurringTaskId = InputParser.getChildIdFromRecurringId(targetId);		
-		
-		while (taskIterator.hasNext()) {
-			task = taskIterator.next();
-			isFound = task.getId().equals(parentId);
-			
-			if (isFound) {
-				recurTasks = task.getRecurringTasks();
-				if(recurTasks != null) {
-					for (RecurringTask recurTask : recurTasks) {					
-						if (recurTask.getRecurringTaskId().equals(recurringTaskId) && 
-								!recurTask.getStatus().equals(TaskStatus.DELETED)) {
-							recurTask.setStatus(newStatus);
-							
-							break;
-						}
-					}
-				} else {
-					return null;
-				}
-				
-				break;
-			}
-		}
-		
-		return task;
+		return null;
 	}
 	
 	//@author A0112498B
@@ -477,10 +446,10 @@ public class ToDoList {
 			}
 			
 			if (task.getIsRecurring()) {
-				updateRecurringTaskStatus(task);				
+				updateOverdueRecurringTaskStatus(task);				
 			} 
 
-			updateTaskStatus(task);
+			updateOverdueTaskStatus(task);
 		}
 		
 		_tasks = TaskSorter.getTasksSortedByDate(_tasks);
@@ -657,7 +626,7 @@ public class ToDoList {
 		}
 	}
 	
-	private void updateTaskStatus(Task task) {
+	private void updateOverdueTaskStatus(Task task) {
 		Date date = task.getEndDate();
 		
 		if (DateParser.isBeforeNow(date)) {
@@ -665,7 +634,12 @@ public class ToDoList {
 		}
 	}
 	
-	private void updateRecurringTaskStatus(Task task) {
+	//@author A0112498B
+	/*
+	 * Update status of all recurring tasks whose date
+	 * has past.
+	 */
+	private void updateOverdueRecurringTaskStatus(Task task) {
 		ArrayList<RecurringTask> recurringTasks = task.getRecurringTasks();
 		TaskStatus status = null;
 		Date date = null;
@@ -685,5 +659,31 @@ public class ToDoList {
 				recurringTask.setStatus(TaskStatus.OVERDUE);
 			}
 		}
+	}
+
+	//@author A0112856E
+	/*
+	 * Update status of the recurring child task of a recurring task
+	 * with the new status
+	 */
+	private boolean updateStatusOfRecurringChildTask(String targetId, Task parentTask, 
+												  TaskStatus newStatus) {
+		boolean hasSet = false;		
+		ArrayList<RecurringTask> recurTasks = new ArrayList<RecurringTask>();		
+		String recurringTaskId = InputParser.getChildIdFromRecurringId(targetId);		
+			
+		
+		recurTasks = parentTask.getRecurringTasks();
+		for (RecurringTask recurTask : recurTasks) {					
+			if (recurTask.getRecurringTaskId().equals(recurringTaskId) && 
+				!recurTask.getStatus().equals(TaskStatus.DELETED)) {
+				
+				recurTask.setStatus(newStatus);	
+				hasSet = true;			
+				break;
+			}
+		} 
+		
+		return hasSet;
 	}
 }

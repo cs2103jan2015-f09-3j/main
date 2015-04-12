@@ -284,8 +284,6 @@ public class Execution {
 	//@author A0112856E
 	private static String executeComplete(String userInput) {
 		String systemMsg = null;
-		int recurId = -1;
-		
 		Pair<Task, String> completedTaskDetails = 
 				Main.list.completeTaskOnList(userInput);
 		
@@ -295,19 +293,14 @@ public class Execution {
 			Task originalTask = completedTaskDetails.getKey();
 			String targetId = completedTaskDetails.getValue();
 			
-			if(originalTask.getIsRecurring() == true) {
-				recurId = Integer.parseInt(targetId.substring(targetId.indexOf(".") + 1));
-			}
-			
-			if(originalTask == null || 
-					(recurId != -1 && originalTask.getRecurringTasks().get(recurId - 1).getStatus().equals(TaskStatus.DELETED))) {
-				systemMsg = Constant.MSG_ITEM_NOT_FOUND;
-			} else {
+			if (originalTask != null && targetId != null) {
 				Undo.prepareUndoComplete(originalTask, targetId);
 				
 				systemMsg = Constant.MSG_COMPLETE_SUCCESS.
-						replace(Constant.DELIMITER_REPLACE, targetId);
-			}
+							replace(Constant.DELIMITER_REPLACE, targetId);
+			} else {
+				systemMsg = Constant.MSG_ITEM_NOT_FOUND;
+			}			
 		}
 	
 		return systemMsg;
@@ -326,7 +319,8 @@ public class Execution {
 			String targetId = uncompletedTaskDetails.getValue();
 			
 			if(originalTask.getIsRecurring() == true) {
-				recurId = Integer.parseInt(targetId.substring(targetId.indexOf(".")+1));
+				int startIndex = targetId.indexOf(Constant.PREFIX_RECURRING_ID) + 1;
+				recurId = Integer.parseInt(targetId.substring(startIndex));
 			}
 			
 			if(originalTask == null || 
