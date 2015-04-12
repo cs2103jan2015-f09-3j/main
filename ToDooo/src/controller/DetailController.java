@@ -21,7 +21,6 @@ public class DetailController {
 	@FXML Label detailLblStatus;
 	@FXML Label detailLblRecurring;
 	@FXML TextArea detailTxtAreaDesc;
-	//@FXML TextArea detailTxtAreaAddition;
 	
 	public void init(MainController mainController) {
 		mainCon = mainController;
@@ -40,13 +39,11 @@ public class DetailController {
 		detailLblCategory.setText(task.getCategory().toUpperCase());
 		detailLblPriority.setText(task.getPriority().toString());
 		detailLblStatus.setText(task.getStatus().toString());
-		detailLblDateTime.setText(getDateFormat(task, taskType));
-		detailLblRecurring.setText(getIsRecurring(task));
-		//detailTxtAreaAddition.setText(task.getAddtionalNote());
-		//saveAdditionalNote(detailTxtAreaAddition.getText());
+		detailLblDateTime.setText(formatDateByTaskType(task, taskType));
+		detailLblRecurring.setText(String.valueOf(task.getIsRecurring()));
 	}
 	
-	private String getDateFormat(Task task, String taskType) {
+	private String formatDateByTaskType(Task task, String taskType) {
 		String result = Constant.EMPTY_DATE;
 		
 		if(!taskType.equalsIgnoreCase(TaskType.FLOATING.toString())) {
@@ -67,16 +64,4 @@ public class DetailController {
 		
 		return result;
 	}
-	
-	private String getIsRecurring(Task task) {
-		if(task.getIsRecurring() == true) {
-			return Constant.BOOLEAN_STRING_TRUE;
-		} else {
-			return Constant.BOOLEAN_STRING_FALSE;
-		}
-	}
-	
-	/*private void saveAdditionalNote(String note) {
-		Main.list.getSelectedTask().setAddtionalNote(note);
-	}*/	
 }

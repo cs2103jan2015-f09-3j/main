@@ -63,7 +63,8 @@ public class XmlManager {
 	}
 	
 	public static void createAndAppendChildElement(Document document,
-												Element parentElement, String tag, String content) {
+												   Element parentElement, 
+												   String tag, String content) {
 		Element element = document.createElement(tag);
 		Text text = document.createTextNode(content);
 		element.appendChild(text);
@@ -71,7 +72,8 @@ public class XmlManager {
 	}
 
 	public static Element createAndAppendWrapper(Document document,
-										   Element parentElement, String tag) {
+										   		 Element parentElement, 
+										   		 String tag) {
 		Element element = document.createElement(tag);
 		parentElement.appendChild(element);
 

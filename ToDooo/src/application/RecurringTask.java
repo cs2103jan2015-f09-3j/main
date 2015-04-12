@@ -13,7 +13,9 @@ public class RecurringTask implements Cloneable {
 	// Constructors
 	// -----------------------------------------------------------------------------------------------	
 	public RecurringTask() {
-		
+		/*
+		 * attributes to be filled up by XmlManager
+		 */
 	}
 	
 	public RecurringTask(String recurringTaskId, Date recurDate) {

@@ -1,4 +1,3 @@
-//@author A0112498B
 package application;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -28,6 +27,7 @@ public class Task implements Cloneable {
 	private Date _endDate;
 	private ArrayList<RecurringTask> _recurringTasks;
 	
+	//@author A0112498B
 	// -----------------------------------------------------------------------------------------------
 	// Constructors
 	// -----------------------------------------------------------------------------------------------		
@@ -419,7 +419,7 @@ public class Task implements Cloneable {
 		
 		toDoString = InputParser.removeCategoryFromString(toDoString, _category);		
 		toDoString = InputParser.removePriorityFromString(toDoString, _priority);		
-		toDoString = InputParser.removeRecurringFromString(toDoString, _isRecurring, _repeat);
+		toDoString = InputParser.removeRecurrenceFromString(toDoString, _isRecurring, _repeat);
 		toDoString = InputParser.extractDescriptionFromString(toDoString, _taskType, _id);	
 		
 		return toDoString.trim(); 
@@ -472,7 +472,7 @@ public class Task implements Cloneable {
 		setDatesForTaskType(dates);
 		_category = InputParser.getCategoryFromString(userInput);
 
-		boolean isValidOperation = processRecurring(dates, userInput,
+		boolean isValidOperation = processRecurrence(dates, userInput,
 								   originalTask);
 		if (isValidOperation) {
 			_priority = InputParser.getPriorityFromString(userInput);
@@ -486,7 +486,7 @@ public class Task implements Cloneable {
 	// ---------------------------------------------------------
 	// Recurring Tasks-related details tags
 	// ---------------------------------------------------------
-	private boolean processRecurring(List<Date> dates, String userInput, Task originalTask) {
+	private boolean processRecurrence(List<Date> dates, String userInput, Task originalTask) {
 		_recurringTasks = new ArrayList<RecurringTask>();
 		_isRecurring = false;
 		_repeatUntil = null;
@@ -505,14 +505,13 @@ public class Task implements Cloneable {
 				isValid = false;
 				Main.systemFeedback = Constant.MSG_INVALID_UNTIL_DATE;				
 				
-			} if (recurringCommand == null) { 				
+			} else if (recurringCommand == null) { 				
 				isValid = verifyUserInputForRecurrence(userInput, isValid,
-						  untilDate);				
-				
+						  untilDate);
 			} else {
 				if (dates != null) {
 					isValid = true;	
-					setRecurringDetails(dates, originalTask, recurringCommand, untilDate);									
+					setRecurrenceDetails(dates, originalTask, recurringCommand, untilDate);									
 				} else {
 					isValid = false;
 					Main.systemFeedback = Constant.MSG_INVALID_RECURRING;
@@ -543,7 +542,7 @@ public class Task implements Cloneable {
 		return isValid;
 	}
 
-	private void setRecurringDetails(List<Date> dates, Task originalTask,
+	private void setRecurrenceDetails(List<Date> dates, Task originalTask,
 									 Command recurringCommand, Date untilDate) {
 		_isRecurring = true;
 		_repeatUntil = untilDate;
@@ -555,6 +554,9 @@ public class Task implements Cloneable {
 		generateRecurringTasks(startDate, originalTask);
 	}		
 
+	/*
+	 * Generate recurring child tasks based on the frequency chosen
+	 */
 	private void generateRecurringTasks(Date startDate, Task originalTask) {
 		Calendar calendarStart = DateParser.createCalendar(startDate);
 		Calendar calendarEnd = DateParser.createCalendar(_repeatUntil);
@@ -574,17 +576,14 @@ public class Task implements Cloneable {
 					}
 					break;
 				case MONTHLY :
-					if (hasAddedMonthlyRecurringTask(calendarStart, 
-													 startDateDayOfMonth, 
+					if (hasAddedMonthlyRecurringTask(calendarStart, startDateDayOfMonth, 
 													 recurringTasks)) {
 						continue;
 					}
 					break;
 				case YEARLY :
-					if (hasAddedYearlyRecurringTask(calendarStart, 
-													startDateDayOfMonth, 
-													startDateMonth, 
-													recurringTasks)) {
+					if (hasAddedYearlyRecurringTask(calendarStart, startDateDayOfMonth, 
+													startDateMonth, recurringTasks)) {
 						continue;
 					}
 					break;					

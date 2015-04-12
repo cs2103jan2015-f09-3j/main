@@ -1,8 +1,6 @@
 package controller;
 
 import java.io.File;
-import java.util.Timer;
-
 import application.Constant;
 import application.Execution;
 import application.Frequency;
@@ -19,8 +17,6 @@ import javafx.scene.layout.AnchorPane;
 import javafx.stage.DirectoryChooser;
 
 public class SettingController {
-	
-	private Timer timer;
 	private MainController mainCon;
 	
 	@FXML public Label lblSysMsgSettingA;
@@ -38,45 +34,37 @@ public class SettingController {
 	// -----------------------------------------------------------------------------------------------
 	//@author A0112537M
 	@FXML 
-	public void openFileDialogKey(KeyEvent e) {
-		if(Constant.SHORTCUT_OPEN_FILE_DIALOG.match(e)) {
+	public void openFileDialogKey(KeyEvent keyEvent) {
+		if(Constant.SHORTCUT_OPEN_FILE_DIALOG.match(keyEvent)) {
 			openFileDialog();
 		}
 	}
 	
 	@FXML 
-	public void openFileDialogMouse(MouseEvent e) {
+	public void openFileDialogMouse(MouseEvent mouseEvent) {
 		openFileDialog();
 	}
 	
 	@FXML 
-	public void setCleanRecurrenceWeekly(MouseEvent e) {
+	public void setCleanRecurrenceWeekly(MouseEvent mouseEvent) {
 		String sysMsg = Main.storage.
-				updateCleanRecurrenceInSetting(Frequency.WEEKLY.toString());
+						updateCleanRecurrenceInSetting(Frequency.WEEKLY.toString());
 		
 		displaySysMsgForClean(sysMsg);
 	}
 	
 	@FXML 
-	public void setCleanRecurrenceMonthly(MouseEvent e) {
+	public void setCleanRecurrenceMonthly(MouseEvent mouseEvent) {
 		String sysMsg = Main.storage.
-				updateCleanRecurrenceInSetting(Frequency.MONTHLY.toString());
+						updateCleanRecurrenceInSetting(Frequency.MONTHLY.toString());
 		
 		displaySysMsgForClean(sysMsg);
 	}
 	
 	@FXML
-	public void initialize() {
-		String cleanRecurrence = Main.storage.readSaveCleanRecurrence();
-		
-		String savePath = Main.storage.
-				readSavePath().replace("/","\\");
-		txtPath.setText(savePath);
-		if(cleanRecurrence.equalsIgnoreCase(Frequency.WEEKLY.toString())) {
-			radioWeekly.setSelected(true);
-		} else if(cleanRecurrence.equalsIgnoreCase(Frequency.MONTHLY.toString())) {
-			radioMonthly.setSelected(true);
-		}
+	public void initialize() {		
+		initCleanSetting();		
+		initSavePathSetting();
 	}
 	
 	public void init(MainController mainController) {
@@ -104,6 +92,22 @@ public class SettingController {
 	// -----------------------------------------------------------------------------------------------
 	// Private methods
 	// -----------------------------------------------------------------------------------------------
+	private void initSavePathSetting() {
+		String savePath = Main.storage.
+				readSavePath().replace("/","\\");
+		
+		txtPath.setText(savePath);
+	}
+
+	private void initCleanSetting() {
+		String cleanRecurrence = Execution.getCleanFrequencySetting();
+		
+		if(cleanRecurrence.equalsIgnoreCase(Frequency.WEEKLY.toString())) {
+			radioWeekly.setSelected(true);
+		} else if(cleanRecurrence.equalsIgnoreCase(Frequency.MONTHLY.toString())) {
+			radioMonthly.setSelected(true);
+		}
+	}
 	
 	private void displaySysMsgForSavePath(String systemMsg) {
 		lblSysMsgSettingA.setText(systemMsg);

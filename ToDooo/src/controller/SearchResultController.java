@@ -11,10 +11,6 @@ public class SearchResultController {
 	@FXML AnchorPane anPaneSearchResult;
 	@FXML VBox vBoxSearchResult;
 	
-	/*@FXML
-	public void initialize() {
-		bodyCon = new BodyController();
-	}*/
 	
 	public void init(MainController mainController) {
 		mainCon = mainController;

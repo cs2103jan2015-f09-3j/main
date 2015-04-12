@@ -69,7 +69,7 @@ public class Main extends Application {
 		
 		String parentPath = null;
 		try {
-			String jarPath = URLDecoder.decode(url.getFile(), "UTF-8"); 
+			String jarPath = URLDecoder.decode(url.getFile(), Constant.DECODE_SETTING); 
 			parentPath = new File(jarPath).getParentFile().getPath();
 		} catch (Exception e) {
 			

@@ -34,13 +34,17 @@ public class HeaderController{
 	// Public methods
 	// -----------------------------------------------------------------------------------------------
 	//@author A0112498B
+	public void init(MainController mainController) {
+		mainCon = mainController;		
+		addTextAreaListener();		
+	}
+	
 	@FXML
-	public void processCmd(KeyEvent e) throws IOException {			
-		if (e.getCode() == KeyCode.ENTER) {		
+	public void processCmd(KeyEvent keyEvent) throws IOException {			
+		if (keyEvent.getCode() == KeyCode.ENTER) {		
 			mainCon.showCorrectView();
 			
-			String userInput = textArea.getText();
-							   
+			String userInput = textArea.getText();							   
 			if (userInput.equals("")) {
 				return;
 			}
@@ -71,12 +75,7 @@ public class HeaderController{
 		
 		highlightKeyWords();
 	}
-	
-	public void init(MainController mainController) {
-		mainCon = mainController;		
-		addTextAreaListener();		
-	}
-	
+		
 	public void resetTextArea() {
 		Main.toUpdate = false;	
 
@@ -84,21 +83,20 @@ public class HeaderController{
 		textArea.clear();
 		textArea.positionCaret(0);		
 	}
-	
-	
+		
 	//@author A0112537M
 	@FXML
-	public void loadSettingMouse(MouseEvent e) throws IOException {
+	public void loadSettingMouse(MouseEvent mouseEvent) throws IOException {
 		mainCon.executeSetting();
 	}
 	
 	@FXML
-	public void goBackToMainMouse(MouseEvent e) throws IOException {
+	public void goBackToMainMouse(MouseEvent mouseEvent) throws IOException {
 		mainCon.executeGoBack();
 	}
 	
 	@FXML
-	public void loadSearchResult(KeyEvent e) throws IOException {
+	public void loadSearchResult(KeyEvent mouseEvent) throws IOException {
 		mainCon.executeSearchResult();
 	}
 	
@@ -160,12 +158,10 @@ public class HeaderController{
 			basicCommand = command.getBasicCommand();
 			advancedCommand = command.getAdvancedCommand();
 			
+			startIndex = command.getIndexOfCommand(lowerCase);
 			if (lowerCase.contains(basicCommand)) {
-				startIndex = lowerCase.indexOf(basicCommand);
-				endIndex = startIndex + basicCommand.length();
-				
+				endIndex = startIndex + basicCommand.length();				
 			} else if (lowerCase.contains(advancedCommand)) {
-				startIndex = lowerCase.indexOf(advancedCommand);
 				endIndex = startIndex + advancedCommand.length();
 			}
 			
@@ -206,12 +202,11 @@ public class HeaderController{
 			basicCommand = command.getBasicCommand() + " ";
 			advancedCommand = command.getAdvancedCommand() + " ";
 			
+			startIndex = command.getIndexOfCommand(lowerCase);
 			if (lowerCase.contains(basicCommand)) {
-				startIndex = lowerCase.indexOf(basicCommand);
 				endIndex = startIndex + basicCommand.length();
 				
 			} else if (lowerCase.contains(advancedCommand)) {
-				startIndex = lowerCase.indexOf(advancedCommand);
 				endIndex = startIndex + advancedCommand.length();
 			}
 			
@@ -235,16 +230,13 @@ public class HeaderController{
 			basicCommand = command.getBasicCommand() + " ";
 			advancedCommand = command.getAdvancedCommand() + " ";
 			
+			startIndex = lowerCase.indexOf(basicCommand);
 			if (lowerCase.contains(basicCommand) && 
-				lowerCase.indexOf(basicCommand) == 0) {
-				
-				startIndex = lowerCase.indexOf(basicCommand);
+				startIndex == 0) {
 				endIndex = startIndex + basicCommand.length();
 				
 			} else if (lowerCase.contains(advancedCommand) &&
-					   lowerCase.indexOf(advancedCommand) == 0) {
-				
-				startIndex = lowerCase.indexOf(advancedCommand);
+					   startIndex == 0) {
 				endIndex = startIndex + advancedCommand.length();
 			}
 			

@@ -25,8 +25,8 @@ public class ToDoList {
 		createListFileIfNotExist();	
 		
 		_nextId = Main.storage.readNextId();
-		_tasks = Main.storage.loadXmlToArrayList();
-		_categories = Main.storage.loadCategoriesToArrayList();
+		_tasks = Main.storage.loadTasksXmlToArrayList();
+		_categories = Main.storage.loadCategoriesXmlToArrayList();
 	}
 	
 	/*
@@ -41,8 +41,8 @@ public class ToDoList {
 			createListFileIfNotExist();	
 			
 			_nextId = Main.storage.readNextId();
-			_tasks = Main.storage.loadXmlToArrayList();
-			_categories = Main.storage.loadCategoriesToArrayList();
+			_tasks = Main.storage.loadTasksXmlToArrayList();
+			_categories = Main.storage.loadCategoriesXmlToArrayList();
 		}
 	}
 	
@@ -97,9 +97,12 @@ public class ToDoList {
 	// -----------------------------------------------------------------------------------------------
 	// Public Methods
 	// -----------------------------------------------------------------------------------------------
+	// ---------------------------------------------------------
+	// Add-related methods
+	// ---------------------------------------------------------
 	public String addTaskToList(Task task) {	
 		ArrayList<Task> backupList = addToArrayListAndBackup(task);		
-		String result = writeToFile(task, backupList);
+		String result = writeListToFile(task, backupList);
 		
 		return result;
 	}
@@ -116,6 +119,9 @@ public class ToDoList {
 		return new Pair<String, Task>(result, removedTask);
 	}
 	
+	// ---------------------------------------------------------
+	// Delete-related methods
+	// ---------------------------------------------------------
 	public Pair<Task, String> deleteTaskFromList(String userInput) {
 		String targetId = InputParser.getTargetIdFromString(userInput);
 				
@@ -124,7 +130,59 @@ public class ToDoList {
 		return deleteDetailsPair;
 	}
 	
-	//@author A0112856E
+	public Pair<Task, String> deleteTaskById(String targetId) {
+		if (targetId == null) {
+			return null;
+		}
+		
+		String taskId = targetId;
+		String recurringTaskId = null;
+		Task task = null;
+		Task removedTask = null;
+		int index = 0;		
+		boolean isFound = false;
+		Iterator<Task> taskIterator = _tasks.iterator();
+		
+		boolean isRecurringTaskId = targetId.contains(Constant.PREFIX_RECURRING_ID);					
+		if (isRecurringTaskId) {			
+			recurringTaskId = InputParser.getChildIdFromRecurringId(targetId);			
+			taskId = InputParser.getTaskIdFromRecurringId(targetId);
+		}
+		
+		while (taskIterator.hasNext()) {
+			task = taskIterator.next();
+			
+			isFound = (task.getId().equals(taskId));
+			
+			if (isFound) {			
+				ArrayList<Task> backupList = deepCloneArrayList(_tasks);
+				removedTask = backupList.get(index);
+				
+				if (isRecurringTaskId) {
+					task.deleteRecurringTaskById(recurringTaskId);
+				} else {
+					_tasks.remove(index);
+				}
+				
+				_tasks = TaskSorter.getTasksSortedByDate(_tasks);
+				writeListToFile(task, backupList);
+				
+				break;
+			}
+			
+			index++;
+		}
+		
+		return new Pair<Task, String>(removedTask, recurringTaskId);
+	}
+	
+	//@author A0112856E-unused
+	/*
+	 * We have decided to give up on this feature as there 
+	 * were other more pressing bugs to fix and we feel that
+	 * we will not have the time to do testing and bug fixing
+	 * on this feature.
+	 */
 	public ArrayList<Task> deleteMultipleTasksFromList(String userInput) {
 		ArrayList<Task> removedTasks = new ArrayList<Task>();
 		String[] targetIds = InputParser.getTargetIdsFromString(userInput);
@@ -139,46 +197,10 @@ public class ToDoList {
 		return removedTasks;
 	}
 	
-	//@author A0112498B
-	public Task selectTaskFromList(String userInput) {
-		Task selectedTask = null;
-		String targetId = InputParser.getTargetIdFromString(userInput);
-		
-		selectedTask = selectTaskById(targetId);
-		_selectedTask = selectedTask;
-		
-		return selectedTask;
-	}
-	
-	public Pair<ArrayList<Task>, String> searchTheList(String userInput) {
-		ArrayList<Task> tasks = ToDoList.generateTaskItems(_tasks, Constant.EMPTY_STRING);
-		
-		userInput = InputParser.verifyAndCorrectSearchString(userInput);
-		
-		ArrayList<Task> searchResults = new ArrayList<Task>();
-		String systemMsg = null;	
-		ArrayList<Pair<SearchAttribute, String>> attributePairs =
-				InputParser.getSearchAttributePairFromString(userInput);
-				
-		if (attributePairs.isEmpty()) {
-			systemMsg = Constant.MSG_SEARCH_INVALID;
-		} else {
-			boolean hasMatched = false;
-			for (Task task : tasks) {
-				hasMatched = task.hasMatchedAllAttributes(attributePairs);
-				
-				if (hasMatched) {
-					searchResults.add(task);
-				}
-			}
-		}	
-		
-		Pair<ArrayList<Task>, String> searchResultsPair = new
-				Pair<ArrayList<Task>, String>(searchResults, systemMsg);
-		
-		return searchResultsPair;
-	}
-	
+	// ---------------------------------------------------------
+	// Update-related methods
+	// ---------------------------------------------------------
+	//@author A0112498B	
 	public Pair<Task, String> updateTaskOnList(String userInput) {
 		String targetId = InputParser.getTargetIdFromUpdateString(userInput);
 		if (targetId == null || 
@@ -211,6 +233,69 @@ public class ToDoList {
 		return originalTask;
 	}
 	
+	public void checkAndUpdateStatus() {
+		ArrayList<Task> backupList = deepCloneArrayList(_tasks);
+		TaskStatus status = null;
+		TaskType type = null;
+		
+		for (Task task : _tasks) {
+			type = task.getTaskType();
+			status = task.getStatus();
+			
+			if (type.equals(TaskType.FLOATING) ||
+				status.equals(TaskStatus.COMPLETED) ||
+				status.equals(TaskStatus.DELETED) ||
+				status.equals(TaskStatus.OVERDUE)) {
+				continue;
+			}
+			
+			if (task.getIsRecurring()) {
+				updateOverdueRecurringTaskStatus(task);				
+			} 
+
+			updateOverdueTaskStatus(task);
+		}
+		
+		_tasks = TaskSorter.getTasksSortedByDate(_tasks);
+		String result = Main.storage.writeListToFile(_tasks); 
+		
+		if (!result.equals(Constant.MSG_ADD_SUCCESS)) {
+			_tasks = backupList;
+		} 
+	}
+	
+	// ---------------------------------------------------------
+	// Search-related methods
+	// ---------------------------------------------------------
+	public Pair<ArrayList<Task>, String> searchTheList(String userInput) {
+		ArrayList<Task> tasks = ToDoList.generateTaskItems(_tasks, Constant.EMPTY_STRING);
+		
+		userInput = InputParser.verifyAndCorrectSearchString(userInput);
+		
+		ArrayList<Task> searchResults = new ArrayList<Task>();
+		String systemMsg = null;	
+		ArrayList<Pair<SearchAttribute, String>> attributePairs =
+				InputParser.getSearchAttributePairFromString(userInput);
+				
+		if (attributePairs.isEmpty()) {
+			systemMsg = Constant.MSG_SEARCH_INVALID;
+		} else {
+			boolean hasMatched = false;
+			for (Task task : tasks) {
+				hasMatched = task.hasMatchedAllAttributes(attributePairs);
+				
+				if (hasMatched) {
+					searchResults.add(task);
+				}
+			}
+		}	
+		
+		Pair<ArrayList<Task>, String> searchResultsPair = new
+				Pair<ArrayList<Task>, String>(searchResults, systemMsg);
+		
+		return searchResultsPair;
+	}
+	
 	public Task getTaskById(String targetId) {		
 		Task targetTask = null;
 		boolean isFound = false;
@@ -227,87 +312,29 @@ public class ToDoList {
 		return targetTask;
 	}
 	
-	public Pair<Task, String> deleteTaskById(String targetId) {
-		String taskId = targetId;
-		String recurringTaskId = null;
-		Task task = null;
-		Task removedTask = null;
-		int index = 0;		
-		boolean isFound = false;
-		Iterator<Task> taskIterator = _tasks.iterator();
-		
-		boolean isRecurringTaskId = 
-				targetId.contains(Constant.PREFIX_RECURRING_ID);					
-		if (isRecurringTaskId) {			
-			recurringTaskId = InputParser.getChildIdFromRecurringId(targetId);			
-			taskId = InputParser.getTaskIdFromRecurringId(targetId);
-		}
-		
-		while (taskIterator.hasNext()) {
-			task = taskIterator.next();
-			
-			isFound = (task.getId().equals(taskId));
-			
-			if (isFound) {			
-				ArrayList<Task> backupList = deepCloneArrayList(_tasks);
-				removedTask = backupList.get(index);
-				
-				if (isRecurringTaskId) {
-					task.deleteRecurringTaskById(recurringTaskId);
-				} else {
-					_tasks.remove(index);
-				}
-				
-				_tasks = TaskSorter.getTasksSortedByDate(_tasks);
-				writeToFile(task, backupList);
-				
-				break;
-			}
-			
-			index++;
-		}
-		
-		return new Pair<Task, String>(removedTask, recurringTaskId);
-	}
-	
-	public Task selectTaskById(String targetId) {
-		String taskId = targetId;
-		Task task = null;
+	//@author A0112537M
+	public Task selectTaskFromList(String userInput) {
 		Task selectedTask = null;
-		ArrayList<Task> taskList = generateTaskItems(_tasks, Constant.EMPTY_STRING);
-		Iterator<Task> taskIterator = taskList.iterator();
+		String targetId = InputParser.getTargetIdFromString(userInput);
 		
-		while (taskIterator.hasNext()) {
-			task = taskIterator.next();
-			
-			if(task.getId().equals(taskId)) {
-				selectedTask = task;
-				break;
-			}
-		}
+		selectedTask = selectTaskById(targetId);
+		_selectedTask = selectedTask;
 		
 		return selectedTask;
 	}
-			
-	public static String getSavePathDirectory() {
-		String savePath = Main.storage.readSavePath();
-		
-		if (savePath.equals(Constant.PATH_FILE_NAME)) {
-			String workingDirectory = 
-					System.getProperty(Constant.PATH_GET_PROPERTY);
-			
-			savePath = (workingDirectory + "\\" + savePath);
-		}
-		
-		return savePath;
-	}
 	
-	//@author A0112537M
+	// ---------------------------------------------------------
+	// Methods used for rendering view
+	// ---------------------------------------------------------				
+	/*
+	 * Generates a list that consist of Task objects and child task items 
+	 * represented as Task objects.
+	 */
 	public static ArrayList<Task> generateTaskItems(ArrayList<Task> tasks, String displayType) {
 		ArrayList<Task> tempTasks = new ArrayList<>();
-		Task task;
-		boolean isRecurring;
-		String taskType;
+		Task task = null;
+		boolean isRecurring = false;
+		String taskType = null;
 		
 		for(int i = 0; i < tasks.size(); i++) {
 			task = tasks.get(i);
@@ -318,12 +345,12 @@ public class ToDoList {
 				if(isRecurring) {
 					generateRecurChildTasks(tempTasks, task, taskType);
 				} else {
-					copyTask(tempTasks, task);
+					tempTasks.add(task);
 				}
 			} else {
 				if(displayType.equalsIgnoreCase(Constant.TAB_NAME_CATEGORY) || 
-						displayType.equalsIgnoreCase(Constant.TAB_NAME_PRIORITY)) {
-					copyTask(tempTasks, task);
+					displayType.equalsIgnoreCase(Constant.TAB_NAME_PRIORITY)) {
+					tempTasks.add(task);
 				} else {
 					generateRepeatedTimedTask(tempTasks, task);
 				}
@@ -333,6 +360,9 @@ public class ToDoList {
 		return tempTasks;
 	}
 	
+	// ---------------------------------------------------------
+	// Complete/Uncomplete -related methods
+	// ---------------------------------------------------------
 	//@author A0112856E
 	public Pair<Task, String> completeTaskOnList(String userInput) {		
 		String taskId = InputParser.getTargetIdFromString(userInput);
@@ -345,10 +375,8 @@ public class ToDoList {
 		} else {
 			targetId = taskId;
 		}
-		
-		Task completedTask = null;
 		//-------------------------------------------------------------------------------		
-		
+		Task completedTask = null;
 		Pair<Task, String> deleteDetailsPair = deleteTaskById(targetId);
 		Task originalTask = deleteDetailsPair.getKey();
 		String completedTaskId = null;
@@ -387,10 +415,9 @@ public class ToDoList {
 		} else {
 			targetId = taskId;
 		}
-		
-		Task uncompletedTask = null;
+				
 		//-------------------------------------------------------------------------------		
-		
+		Task uncompletedTask = null;
 		Pair<Task, String> deleteDetailsPair = deleteTaskById(targetId);
 		Task originalTask = deleteDetailsPair.getKey();
 		String completedTaskId = null;
@@ -417,57 +444,14 @@ public class ToDoList {
 		
 		return new Pair<Task, String>(originalTask, completedTaskId);
 	}
-	
-	//@author A0112498B
-	public void checkAndUpdateStatus() {
-		ArrayList<Task> backupList = deepCloneArrayList(_tasks);
-		TaskStatus status = null;
-		TaskType type = null;
-		
-		for (Task task : _tasks) {
-			type = task.getTaskType();
-			status = task.getStatus();
 			
-			if (type.equals(TaskType.FLOATING) ||
-				status.equals(TaskStatus.COMPLETED) ||
-				status.equals(TaskStatus.DELETED) ||
-				status.equals(TaskStatus.OVERDUE)) {
-				continue;
-			}
-			
-			if (task.getIsRecurring()) {
-				updateOverdueRecurringTaskStatus(task);				
-			} 
-
-			updateOverdueTaskStatus(task);
-		}
-		
-		_tasks = TaskSorter.getTasksSortedByDate(_tasks);
-		String result = Main.storage.writeListToFile(_tasks); 
-		
-		if (!result.equals(Constant.MSG_ADD_SUCCESS)) {
-			_tasks = backupList;
-		} 
-	}
-	
 	// -----------------------------------------------------------------------------------------------
 	// Private Methods
-	// -----------------------------------------------------------------------------------------------
-	private void createListFileIfNotExist() {		
-		File file = new File(_listFilePath);
-		
-		boolean shouldCreate = !(file.exists());
-		if (shouldCreate) {
-			prepareNewList();
-		}
-	}
-		
-	private void prepareNewList() {
-		Document document = XmlManager.initDocument();
-		
-		Main.storage.writeFile(document, _listFilePath);
-	}
-	
+	// -----------------------------------------------------------------------------------------------	
+	// ---------------------------------------------------------
+	// Add-related methods
+	// ---------------------------------------------------------
+	//@author A0112498B	
 	private void addCategoryToList(String category) {
 		boolean shouldAdd = true;
 		
@@ -489,39 +473,6 @@ public class ToDoList {
 		}
 	}
 	
-	private String writeToFile(Task task, ArrayList<Task> backupList) {
-		processTasksID();
-		
-		String result = Main.storage.writeListToFile(_tasks); 
-		
-		if (result.equals(Constant.MSG_ADD_SUCCESS)) {
-			_nextId = _tasks.size() + 1;
-			
-			Main.storage.writeNextIdInFile(_nextId);			
-			addCategoryToList(task.getCategory());
-		} else {
-			_tasks = backupList;
-		}
-		
-		return result;
-	}
-	
-	private static Task getRecurChildItemForEventOrDated(Task task,
-			Date recurringDate, String taskType, String recurringId,
-			TaskStatus recurringStatus, Task taskA) {
-		
-		if(taskType.equalsIgnoreCase(TaskType.EVENT.toString())) {
-			taskA = Task.createRecurringChildItem(task, recurringId, recurringStatus, 
-					recurringDate, task.getBy(), recurringDate);
-			
-		} else if(taskType.equalsIgnoreCase(TaskType.DATED.toString())) {
-			taskA = Task.createRecurringChildItem(task, recurringId, recurringStatus, 
-					task.getOn(), recurringDate, recurringDate);
-		}
-		
-		return taskA;
-	}	
-
 	private ArrayList<Task> addToArrayListAndBackup(Task task) {
 		ArrayList<Task> backupList = deepCloneArrayList(_tasks);
 		
@@ -532,7 +483,7 @@ public class ToDoList {
 	}
 	
 	private String addUpdatedTask(String userInput, String targetId,
-								  Task originalTask) {
+			  					  Task originalTask) {
 		Task updatedTask = new Task(userInput, targetId, originalTask);
 
 		String updatedId = null;
@@ -544,41 +495,31 @@ public class ToDoList {
 		return updatedId;
 	}
 	
-	private ArrayList<Task> deepCloneArrayList(ArrayList<Task> tasks) {
-		ArrayList<Task> backupList = new ArrayList<Task>();
-		Iterator<Task> iterator = tasks.iterator();
-		
-		while(iterator.hasNext()){
-			Task copy = iterator.next().clone();
-			if (copy.getIsRecurring()) {
-				copy.setRecurringTasks(copy.deepCloneArrayList());
-			}
-						
-			backupList.add(copy);
-		}
-		
-		return backupList;
-	}
-	
-	private void processTasksID() {
-		Task task = null;
-		
-		for (int i = 0; i < _tasks.size(); i++) {
-			task = _tasks.get(i);
-			task.setId(String.valueOf(i + 1));
-		}
-	}
-	
+	// ---------------------------------------------------------
+	// Methods used for rendering view
+	// ---------------------------------------------------------	
 	//@author A0112537M
-	private static void copyTask(ArrayList<Task> tempTasks, Task task) {
-		Task copy = new Task();
-		copy = task;
-		tempTasks.add(copy);
+	private static Task getRecurChildItemForEventOrDated(Task task,
+														 Date recurringDate, 
+														 String taskType, 
+														 String recurringId,
+														 TaskStatus recurringStatus, Task taskA) {
+		
+		if(taskType.equalsIgnoreCase(TaskType.EVENT.toString())) {
+			taskA = Task.createRecurringChildItem(task, recurringId, recurringStatus, 
+					recurringDate, task.getBy(), recurringDate);
+			
+		} else if(taskType.equalsIgnoreCase(TaskType.DATED.toString())) {
+			taskA = Task.createRecurringChildItem(task, recurringId, recurringStatus, 
+					task.getOn(), recurringDate, recurringDate);
+		}
+		
+		return taskA;
 	}
-
+	
 	private static void generateRepeatedTimedTask(ArrayList<Task> tempTasks,
-			  Task task) {
-		Task t3;
+			  									  Task task) {
+		Task newTask = null;
 		Calendar originalStart = Calendar.getInstance();
 		originalStart.setTime(task.getFrom());
 		Calendar start = Calendar.getInstance();
@@ -587,22 +528,22 @@ public class ToDoList {
 		end.setTime(task.getTo());
 
 		for (Date date = start.getTime(); !start.after(end); 
-				start.add(Calendar.DATE, 1), date = start.getTime()) {
+			 start.add(Calendar.DATE, 1), date = start.getTime()) {
 
 			if(DateParser.hasMatchedDateOnly(start, end)) {
 				if(DateParser.hasMatchedDateOnly(originalStart, end)) {
-					t3 = Task.createRecurringChildItem(task, task.getId(), task.getStatus(), 
+					newTask = Task.createRecurringChildItem(task, task.getId(), task.getStatus(), 
 							task.getOn(), task.getBy(), originalStart.getTime());
 				} else {
-					t3 = Task.createRecurringChildItem(task, task.getId(), task.getStatus(), 
+					newTask = Task.createRecurringChildItem(task, task.getId(), task.getStatus(), 
 							task.getOn(), task.getBy(), end.getTime());
 				}
 			} else {
-				t3 = Task.createRecurringChildItem(task, task.getId(), task.getStatus(), 
+				newTask = Task.createRecurringChildItem(task, task.getId(), task.getStatus(), 
 						task.getOn(), task.getBy(), date);
 			}
 
-			tempTasks.add(t3);
+			tempTasks.add(newTask);
 		}
 	}
 
@@ -628,16 +569,35 @@ public class ToDoList {
 			tempTasks.add(taskA);
 		}
 	}
-	
-	private void updateOverdueTaskStatus(Task task) {
-		Date date = task.getEndDate();
+
+	/*
+	 * Note: different from getTaskById
+	 * Selects the task from the newly generated task items
+	 * by matching the id
+	 */
+	private Task selectTaskById(String targetId) {
+		String taskId = targetId;
+		Task task = null;
+		Task selectedTask = null;
+		ArrayList<Task> taskList = generateTaskItems(_tasks, Constant.EMPTY_STRING);
+		Iterator<Task> taskIterator = taskList.iterator();
 		
-		if (DateParser.isBeforeNow(date)) {
-			task.setStatus(TaskStatus.OVERDUE);
+		while (taskIterator.hasNext()) {
+			task = taskIterator.next();
+			
+			if(task.getId().equals(taskId)) {
+				selectedTask = task;
+				break;
+			}
 		}
+		
+		return selectedTask;
 	}
-	
-	//@author A0112498B
+			
+	// ---------------------------------------------------------
+	// Update-related methods
+	// ---------------------------------------------------------	
+	//@author A0112498B	
 	/*
 	 * Update status of all recurring tasks whose date
 	 * has past.
@@ -662,9 +622,42 @@ public class ToDoList {
 				recurringTask.setStatus(TaskStatus.OVERDUE);
 			}
 		}
-	}
+	}	
 
+	private void updateOverdueTaskStatus(Task task) {
+		Date date = task.getEndDate();
+		
+		if (DateParser.isBeforeNow(date)) {
+			task.setStatus(TaskStatus.OVERDUE);
+		}
+	}
+	
 	//@author A0112856E
+	/*
+	 * Cannot be used for uncomplete function because parent
+	 * and child tasks may have different status
+	 */
+	private void updateParentAndChildTaskStatus(Task task, TaskStatus status) {
+		if (task.getIsRecurring()) {
+			ArrayList<RecurringTask> recurringTasks = 
+					task.getRecurringTasks();
+			
+			for (RecurringTask recurTask : recurringTasks) {
+				if (recurTask.getStatus().
+					equals(TaskStatus.DELETED)) {
+					continue;
+				}
+				
+				recurTask.setStatus(status);
+			}
+		}
+		
+		task.setStatus(status);
+	}
+	
+	// ---------------------------------------------------------
+	// Complete/Uncomplete -related methods
+	// ---------------------------------------------------------		
 	private boolean completeRecurringChildTask(String targetId, Task parentTask) {
 		boolean hasSet = false;		
 		String recurringTaskId = InputParser.getChildIdFromRecurringId(targetId);		
@@ -750,31 +743,6 @@ public class ToDoList {
 		return hasSet;
 	}
 	
-	/*
-	 * Cannot be used for uncomplete function because parent
-	 * and child tasks may have different status
-	 */
-	private void updateParentAndChildTaskStatus(Task task, TaskStatus status) {
-		if (task.getIsRecurring()) {
-			ArrayList<RecurringTask> recurringTasks = 
-					task.getRecurringTasks();
-			
-			for (RecurringTask recurTask : recurringTasks) {
-				if (recurTask.getStatus().
-					equals(TaskStatus.DELETED)) {
-					continue;
-				}
-				
-				recurTask.setStatus(status);
-			}
-		}
-		
-		task.setStatus(status);
-	}
-	
-	/*
-	 * Used for uncomplete function
-	 */
 	private void uncompleteParentAndChildTask(Task task) {
 		Date endDate = null;
 		
@@ -795,5 +763,66 @@ public class ToDoList {
 		
 		endDate = task.getEndDate();
 		task.setStatus(TaskStatus.getTaskStatus(endDate));
+	}
+		
+	// ---------------------------------------------------------
+	// Misc
+	// ---------------------------------------------------------	
+	//@author A0112498B	
+	private String writeListToFile(Task task, ArrayList<Task> backupList) {
+		processTasksID();
+		
+		String result = Main.storage.writeListToFile(_tasks); 
+		
+		if (result.equals(Constant.MSG_ADD_SUCCESS)) {
+			_nextId = _tasks.size() + 1;
+			
+			Main.storage.writeNextIdInFile(_nextId);			
+			addCategoryToList(task.getCategory());
+		} else {
+			_tasks = backupList;
+		}
+		
+		return result;
+	}
+	
+	private ArrayList<Task> deepCloneArrayList(ArrayList<Task> tasks) {
+		ArrayList<Task> backupList = new ArrayList<Task>();
+		Iterator<Task> iterator = tasks.iterator();
+		
+		while(iterator.hasNext()){
+			Task copy = iterator.next().clone();
+			if (copy.getIsRecurring()) {
+				copy.setRecurringTasks(copy.deepCloneArrayList());
+			}
+						
+			backupList.add(copy);
+		}
+		
+		return backupList;
+	}
+	
+	private void processTasksID() {
+		Task task = null;
+		
+		for (int i = 0; i < _tasks.size(); i++) {
+			task = _tasks.get(i);
+			task.setId(String.valueOf(i + 1));
+		}
+	}
+	
+	private void createListFileIfNotExist() {		
+		File file = new File(_listFilePath);
+		
+		boolean shouldCreate = !(file.exists());
+		if (shouldCreate) {
+			prepareNewList();
+		}
+	}
+		
+	private void prepareNewList() {
+		Document document = XmlManager.initDocument();
+		
+		Main.storage.writeFile(document, _listFilePath);
 	}
 }

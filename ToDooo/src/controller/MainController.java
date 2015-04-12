@@ -6,7 +6,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import net.fortuna.ical4j.model.property.Status;
 import application.Constant;
 import application.Execution;
 import application.Frequency;
@@ -66,7 +65,7 @@ public class MainController{
 	public void initialize() {
 		initControllers();
 		cleanCompletedTasks();
-		cleanEmptyCategories();
+		Execution.executeCleanCategories();
 		loadListsInTabs();
 		initTutorialPopup();
 		
@@ -77,13 +76,13 @@ public class MainController{
 	}
 	
 	@FXML
-	public void onShortcutKey(KeyEvent e) {	
-		scrollList(e);		
-		revertAction(e); 		
-		switchTab(e);		
-		navigateView(e);		
-		showTutorial(e);
-		showOpenFileDialog(e);
+	public void onShortcutKey(KeyEvent keyEvent) {	
+		scrollList(keyEvent);		
+		revertAction(keyEvent); 		
+		switchTab(keyEvent);		
+		navigateView(keyEvent);		
+		showTutorial(keyEvent);
+		showOpenFileDialog(keyEvent);
 	}
 	
 	public void showCorrectView() {
@@ -116,21 +115,17 @@ public class MainController{
 
 	public void loadListByDate(String displayType) {
 		int indexForNextLoop = 0;
-		Task task;
-	    Date startDate;
-	    String taskType;
 		VBox vBox = getContainer(displayType);
 		vBox.getChildren().clear();
-		ArrayList<Task> taskList = getList(displayType);
-		ArrayList<Task> temp = getAppropriateList(displayType, taskList);
+		ArrayList<Task> taskList = getListForDisplay(displayType);
+		ArrayList<Task> temp = getListForDisplay(displayType, taskList);
 		
 		today.clear();
 		overdue.clear();
 		floating.clear();
 		todayDate = DateParser.getTodayDate().getTime();
 		
-	    indexForNextLoop = extractFloatingOrOverdueOrTodayTasks(
-				indexForNextLoop, temp); 
+	    indexForNextLoop = organiseTasks(indexForNextLoop, temp); 
 		
 	    renderOverdueTask(displayType, vBox);
 	    renderTodayTask(displayType, vBox);
@@ -145,7 +140,7 @@ public class MainController{
 		Task task;
 		String category;
 		ArrayList<Task> taskList = Main.list.getTasks();
-		ArrayList<Task> temp = getAppropriateList(displayType, taskList);
+		ArrayList<Task> temp = getListForDisplay(displayType, taskList);
 		
 		for(int i = 0; i < temp.size(); i++) {
 			task = temp.get(i);
@@ -165,7 +160,7 @@ public class MainController{
 		Task task;
 		String priority;
 		ArrayList<Task> taskList = Main.list.getTasks();
-		ArrayList<Task> temp = getAppropriateList(displayType, taskList);
+		ArrayList<Task> temp = getListForDisplay(displayType, taskList);
 		
 		for(int i = 0; i < temp.size(); i++) {
 			task = temp.get(i);
@@ -251,11 +246,7 @@ public class MainController{
 			}
 		}
 	}
-	
-	public void cleanEmptyCategories() {
-		Main.storage.removeEmptyCategory();
-	}
-	
+		
 	public void loadListsInTabs() {		
 		loadListByDate(Constant.TAB_NAME_ALL);
 		loadListByCategory(Constant.TAB_NAME_CATEGORY);
@@ -286,11 +277,11 @@ public class MainController{
 		Execution.settingController = settingController;
 	}
 
-	private void scrollList(KeyEvent e) {
-		boolean shouldReturn = !(Constant.SHORTCUT_PAGE_DOWN.match(e) ||
-								 Constant.SHORTCUT_TA_UNFOCUSED_PAGE_DOWN.match(e) ||
-								 Constant.SHORTCUT_PAGE_UP.match(e) ||
-								 Constant.SHORTCUT_TA_UNFOCUSED_PAGE_UP.match(e));
+	private void scrollList(KeyEvent keyEvent) {
+		boolean shouldReturn = !(Constant.SHORTCUT_PAGE_DOWN.match(keyEvent) ||
+								 Constant.SHORTCUT_TA_UNFOCUSED_PAGE_DOWN.match(keyEvent) ||
+								 Constant.SHORTCUT_PAGE_UP.match(keyEvent) ||
+								 Constant.SHORTCUT_TA_UNFOCUSED_PAGE_UP.match(keyEvent));
 		if (shouldReturn) {
 			return;
 		}
@@ -315,19 +306,23 @@ public class MainController{
 			return;
 		}
 				
-		setScrollPaneVvalue(e, targetScrollPane);
+		setScrollPaneVvalue(keyEvent, targetScrollPane);
 	}
 
-	private void setScrollPaneVvalue(KeyEvent e, ScrollPane targetScrollPane) {
+	/*
+	 * Set the position of the scroll pane based on
+	 * the key pressed
+	 */
+	private void setScrollPaneVvalue(KeyEvent keyEvent, ScrollPane targetScrollPane) {
 		double currentPosition = targetScrollPane.getVvalue();
 		double newPosition = currentPosition;
 		
-		if (Constant.SHORTCUT_PAGE_DOWN.match(e) || 
-			Constant.SHORTCUT_TA_UNFOCUSED_PAGE_DOWN.match(e)) {
+		if (Constant.SHORTCUT_PAGE_DOWN.match(keyEvent) || 
+			Constant.SHORTCUT_TA_UNFOCUSED_PAGE_DOWN.match(keyEvent)) {
 			
 			newPosition = currentPosition + Constant.POSITION_OFFSET_VERTICAL;
-		} else if (Constant.SHORTCUT_PAGE_UP.match(e) || 
-				   Constant.SHORTCUT_TA_UNFOCUSED_PAGE_UP.match(e)) {
+		} else if (Constant.SHORTCUT_PAGE_UP.match(keyEvent) || 
+				   Constant.SHORTCUT_TA_UNFOCUSED_PAGE_UP.match(keyEvent)) {
 			
 			newPosition = currentPosition - Constant.POSITION_OFFSET_VERTICAL;
 		}
@@ -335,8 +330,8 @@ public class MainController{
 		targetScrollPane.setVvalue(newPosition);
 	}
 
-	private void showOpenFileDialog(KeyEvent e) {
-		if (Constant.SHORTCUT_OPEN_FILE_DIALOG.match(e)) {
+	private void showOpenFileDialog(KeyEvent keyEvent) {
+		if (Constant.SHORTCUT_OPEN_FILE_DIALOG.match(keyEvent)) {
 			if (settingController.anPaneSetting.isVisible()) {
 				settingController.openFileDialog();
 			}
@@ -344,8 +339,8 @@ public class MainController{
 		}
 	}
 	
-	private void showTutorial(KeyEvent e) {
-		if (Constant.SHORTCUT_TUTORIAL.match(e)) {
+	private void showTutorial(KeyEvent keyEvent) {
+		if (Constant.SHORTCUT_TUTORIAL.match(keyEvent)) {
 			if (tutorialPopup.isFocused()) {
 				tutorialPopup.hide();
 			} else {
@@ -360,42 +355,48 @@ public class MainController{
 		}
 	}
 
-	private void navigateView(KeyEvent e) {
-		if (Constant.SHORTCUT_GO_BACK.match(e)) {
+	private void navigateView(KeyEvent keyEvent) {
+		if (Constant.SHORTCUT_GO_BACK.match(keyEvent)) {
 			executeGoBack();
-		} else if (Constant.SHORTCUT_SETTING.match(e)) {
+		} else if (Constant.SHORTCUT_SETTING.match(keyEvent)) {
 			executeSetting();				
 		}
 	}
+	
 
-	private void revertAction(KeyEvent e) {
-		if (Constant.SHORTCUT_UNDO.match(e)) {
+	private void revertAction(KeyEvent keyEvent) {
+		if (Constant.SHORTCUT_UNDO.match(keyEvent)) {
 			String systemMsg = Execution.executeUndo();
 			
 			loadListsInTabs();
 			setSystemMessage(systemMsg);
-		} else if (Constant.SHORTCUT_REDO.match(e)) {
+		} else if (Constant.SHORTCUT_REDO.match(keyEvent)) {
 			String systemMsg = Execution.executeRedo();
 			
 			loadListsInTabs();
 			setSystemMessage(systemMsg);
 		}
 	}
+		
 
-	private void switchTab(KeyEvent e) {
-		if (Constant.SHORTCUT_TAB_ALL.match(e)) {
-			selectionModel.select(Constant.TAB_INDEX_ALL);			
-		} else if (Constant.SHORTCUT_TAB_CATEGORY.match(e)) {
-			selectionModel.select(Constant.TAB_INDEX_CATEGORY);			
-		} else if (Constant.SHORTCUT_TAB_PRIORITY.match(e)) {
+	private void switchTab(KeyEvent keyEvent) {
+		if (Constant.SHORTCUT_TAB_ALL.match(keyEvent)) {
+			selectionModel.select(Constant.TAB_INDEX_ALL);	
+			
+		} else if (Constant.SHORTCUT_TAB_CATEGORY.match(keyEvent)) {
+			selectionModel.select(Constant.TAB_INDEX_CATEGORY);		
+			
+		} else if (Constant.SHORTCUT_TAB_PRIORITY.match(keyEvent)) {
 			selectionModel.select(Constant.TAB_INDEX_PRIORITY);			
 		}
 	}
 	
+	//@author A0112537M
+	
 	//@author A0112537M	
-	private ArrayList<Task> getAppropriateList(String displayType,
-			ArrayList<Task> taskList) {
-		ArrayList<Task> temp;
+	private ArrayList<Task> getListForDisplay(String displayType,
+											  ArrayList<Task> taskList) {
+		ArrayList<Task> temp = null;
 		
 		if(displayType.equalsIgnoreCase(Constant.VIEW_NAME_SEARCH_RESULT)) {
 			temp = TaskSorter.getTasksSortedByDate(taskList);
@@ -419,9 +420,10 @@ public class MainController{
 		return temp;
 	}
 	
+	
 	private void renderTasksWithDate(String displayType,
-			int indexForNextLoop, ArrayList<Task> temp) {
-		Task task;
+									 int indexForNextLoop, ArrayList<Task> temp) {
+		Task task = null;
 		String dateA = Constant.EMPTY_STRING;
 		String dateB = Constant.EMPTY_STRING;
 		
@@ -441,14 +443,16 @@ public class MainController{
 			}
 		}
 	}
+	
 
-	private int extractFloatingOrOverdueOrTodayTasks(int indexForNextLoop,
-			ArrayList<Task> temp) {
-		Task task;
-		Date startDate;
-		String taskType;
-		for(int i = 0; i < temp.size(); i++) {
-			task = temp.get(i);
+	private int organiseTasks(int indexForNextLoop,
+										ArrayList<Task> tempList) {
+		Task task = null;
+		Date startDate = null;
+		String taskType = null;
+		
+		for(int i = 0; i < tempList.size(); i++) {
+			task = tempList.get(i);
 			taskType = task.getTaskType().toString();
 			startDate = task.getStartDate();
 	    	
@@ -456,7 +460,7 @@ public class MainController{
 			   DateParser.hasMatchedDateOnly(todayDate, startDate) || 
 			   DateParser.isBeforeNow(startDate)) {
 				
-				findFloatingOrOverdueOrTodayTask(task, startDate, taskType);
+				organiseTasksByTaskType(task, startDate, taskType);
 				indexForNextLoop = i + 1;
 			} else {
 				indexForNextLoop = i;
@@ -466,8 +470,8 @@ public class MainController{
 		return indexForNextLoop;
 	}
 
-	private void findFloatingOrOverdueOrTodayTask(Task task, Date startDate,
-			String taskType) {
+	private void organiseTasksByTaskType(Task task, Date startDate,
+							   			 String taskType) {
 		boolean isRecurring = task.getIsRecurring();
 		TaskStatus taskStatus = task.getStatus();
 		
@@ -475,12 +479,15 @@ public class MainController{
 			floating.add(task);
 		} else {
 			if(!taskStatus.equals(TaskStatus.OVERDUE) && 
-					DateParser.hasMatchedDateOnly(startDate, todayDate)) {
+			   DateParser.hasMatchedDateOnly(startDate, todayDate)) {
+				
 				if(isRecurring && !taskStatus.equals(TaskStatus.DELETED) || !isRecurring) {
 					today.add(task);
 				}
 			} else if(taskStatus.equals(TaskStatus.OVERDUE) || DateParser.isBeforeNow(startDate)) {
+				
 				if(!taskType.equalsIgnoreCase(TaskType.TIMED.toString())) {
+					
 					if(isRecurring && !taskStatus.equals(TaskStatus.DELETED) || !isRecurring) {
 						overdue.add(task);
 					}
@@ -496,6 +503,7 @@ public class MainController{
 			renderLists(floating, Constant.EMPTY_STRING, displayType);
 		}
 	}
+	
 
 	private void renderTodayTask(String displayType, VBox vBox) {
 		if(!today.isEmpty()) {
@@ -506,6 +514,7 @@ public class MainController{
 			}
 		}
 	}
+	
 
 	private void renderOverdueTask(String displayType, VBox vBox) {
 		if(!overdue.isEmpty()) {
@@ -516,6 +525,7 @@ public class MainController{
 			}
 		}
 	}
+	
 	
 	private VBox getContainer(String displayType) {
 		if(displayType.equalsIgnoreCase(Constant.TAB_NAME_ALL)) {
@@ -529,13 +539,15 @@ public class MainController{
 		}
 	}
 	
-	private ArrayList<Task> getList(String type) {
+	
+	private ArrayList<Task> getListForDisplay(String type) {
 		if(type.equalsIgnoreCase(Constant.VIEW_NAME_SEARCH_RESULT)) {
 			return Main.searchResults;
 		} else {
 			return Main.list.getTasks();
 		}
 	}
+	
 	
 	private void renderTaskItem(String header, Task task, String displayType) {
 		String taskType = task.getTaskType().toString();
@@ -556,13 +568,25 @@ public class MainController{
 			addTitle(header, vBox);
 		}
 		
+		BorderPane bPane = renderTaskItemContents(task, displayType, taskType,
+						  						  status, onDate, byDate, fromDate, 
+						  						  toDate, startDate, paneColor);
+		
+		vBox.getChildren().add(bPane);
+	}
+
+	private BorderPane renderTaskItemContents(Task task, String displayType,
+											  String taskType, String status, 
+											  Date onDate, Date byDate,
+											  Date fromDate, Date toDate, 
+											  Date startDate, String paneColor) {
 		BorderPane bPane = addBorderPane(paneColor);
 		HBox hBoxLeft = addLeftHBox(bPane);
 		HBox hBoxRight = addRightHBox(bPane);
 		addIcon(task, hBoxLeft);
 		addId(task, hBoxLeft);
 		addPriorityBar(task, hBoxLeft);
-		addDesc(task, hBoxLeft, displayType);
+		addDescription(task, hBoxLeft, displayType);
 		
 		if(!displayType.equalsIgnoreCase(Constant.TAB_NAME_CATEGORY)) {
 			addCategory(task, hBoxLeft);
@@ -571,6 +595,7 @@ public class MainController{
 		if(!taskType.equalsIgnoreCase(TaskType.FLOATING.toString())) {
 			if(displayType.equalsIgnoreCase(Constant.TAB_NAME_ALL) || 
 			   displayType.equalsIgnoreCase(Constant.VIEW_NAME_SEARCH_RESULT)) {
+				
 				addDateTimeInAllOrSearchResult(taskType, status, displayType, 
 											   onDate, byDate, fromDate, toDate, 
 											   startDate, hBoxRight, hBoxLeft);
@@ -580,27 +605,30 @@ public class MainController{
 												startDate, hBoxRight, hBoxLeft);
 			}
 		}
-		
-		vBox.getChildren().add(bPane);
+		return bPane;
 	}
+	
 
 	private HBox addRightHBox(BorderPane bPane) {
 		HBox hBox = new HBox();
 		bPane.setRight(hBox);
 		return hBox;
 	}
+	
 
 	private HBox addLeftHBox(BorderPane bPane) {
 		HBox hBox = new HBox();
 		bPane.setLeft(hBox);
 		return hBox;
 	}
+	
 
 	private BorderPane addBorderPane(String paneColor) {
 		BorderPane bPane = new BorderPane();
 		bPane.getStyleClass().add(paneColor);
 		return bPane;
 	}
+	
 	
 	private void renderLists(ArrayList<Task> taskList, String title, String displayType) {
 		for(int i = 0; i < taskList.size(); i++) {
@@ -611,6 +639,7 @@ public class MainController{
 			}
 		}
 	}
+	
 	
 	private String getStyle(Task task, String displayType) {
 		TaskStatus status = task.getStatus();
@@ -631,6 +660,7 @@ public class MainController{
 		}
 	}
 	
+	
 	private void addHorizontalBar(VBox vBox) {
 		Line hBar = new Line();	
 		
@@ -646,34 +676,44 @@ public class MainController{
 		vBox.getChildren().add(paneHBar);
 	}
 	
+	
 	private void addTitle(String header, VBox container) {
 		Label lblTitle = new Label();
+		
 		if(header.equals(Constant.TITLE_TODAY)) {
 			lblTitle.getStyleClass().add(Constant.CSS_CLASS_LABEL_TITLE_TODAY);
+			
 		} else if(header.equals(Constant.TITLE_OVERDUE)) {
 			lblTitle.getStyleClass().add(Constant.CSS_CLASS_LABEL_TITLE_OVERDUE);
 		} else {
 			lblTitle.getStyleClass().add(Constant.CSS_CLASS_LABEL_TITLE_DATE);
 		}
+		
 		lblTitle.setText(header);
 		container.getChildren().add(lblTitle);
 	}
 	
+	
 	private void addIcon(Task task, HBox hBox) {
 		String imgName = Constant.EMPTY_STRING;
+		
 		switch (task.getTaskType()) {
 			case EVENT : 
 				imgName = Constant.ICON_EVENT;
-			break;
+				break;
 			case FLOATING : 
 				imgName = Constant.ICON_FLOATING;
-			break;
+				break;
 			case TIMED : 
 				imgName = Constant.ICON_TIMED;
-			break;
+				break;
 			case DATED : 
 				imgName = Constant.ICON_DATED;
-			break;
+				break;
+			default :
+				// invalid task type
+				// do nothing
+				break;
 		}
 		
 		Image img = new Image(imgName);
@@ -687,11 +727,13 @@ public class MainController{
         hBox.getChildren().add(icon);
 	}
 	
+	
 	private void addId(Task task, HBox hBox) {
 		Label lblId = new Label(task.getId());
 		lblId.getStyleClass().add(Constant.CSS_CLASS_LABEL_ID);
 		hBox.getChildren().add(lblId);
 	}
+	
 	
 	private void addPriorityBar(Task task, HBox hBox) {
 		Line priorityBar = new Line();
@@ -717,7 +759,8 @@ public class MainController{
 		hBox.getChildren().add(priorityBar);
 	}
 	
-	private void addDesc(Task task, HBox hBox, String displayType) {
+	
+	private void addDescription(Task task, HBox hBox, String displayType) {
 		Label lblDesc = new Label(task.getToDo());
 		
 		setLengthForDesc(lblDesc, task, displayType);
@@ -725,6 +768,7 @@ public class MainController{
 		lblDesc.getStyleClass().add(Constant.CSS_CLASS_LABEL_DESCRIPTION);
 		hBox.getChildren().add(lblDesc);
 	}
+	
 	
 	private void addCategory(Task task, HBox hBox) {
 		String category = task.getCategory();
@@ -737,11 +781,12 @@ public class MainController{
 		}
 	}
 	
+	
 	private void addDateTimeInAllOrSearchResult(String taskType, String status, 
-			String displayType, Date onDate, 
-			Date byDate, Date fromDate, Date toDate, 
-			Date startDate, HBox hBoxRight, HBox hBoxLeft) {
-		SimpleDateFormat dateFormat;
+												String displayType, Date onDate, 
+												Date byDate, Date fromDate, Date toDate, 
+												Date startDate, HBox hBoxRight, HBox hBoxLeft) {
+		SimpleDateFormat dateFormat = null;
 
 		if(DateParser.isAfterDate(todayDate, startDate)) {
 			dateFormat = Constant.FORMAT_DATE_TIME_OUTPUT;
@@ -758,28 +803,30 @@ public class MainController{
 		} else if(taskType.equalsIgnoreCase(TaskType.TIMED.toString())) {
 			if(DateParser.compareDate(fromDate, toDate)) {
 				addDoubleDateTime(fromDate, toDate, hBoxRight, 
-						Constant.STR_BEFORE_DATE_FROM, 
-						Constant.STR_BEFORE_DATE_TO, 
-						dateFormat, displayType);
+								  Constant.STR_BEFORE_DATE_FROM, 
+								  Constant.STR_BEFORE_DATE_TO, 
+								  dateFormat, displayType);
 
 			} else if(DateParser.compareDate(startDate, fromDate)) {
 				addSingleDateTime(fromDate, hBoxRight, 
-						Constant.STR_BEFORE_DATE_FROM, 
-						dateFormat);
+								  Constant.STR_BEFORE_DATE_FROM, 
+								  dateFormat);
 
 			} else if(DateParser.compareDate(startDate, toDate)) {
 				addSingleDateTime(toDate, hBoxRight, 
-						Constant.STR_BEFORE_DATE_TO, 
-						dateFormat);
+								  Constant.STR_BEFORE_DATE_TO, 
+								  dateFormat);
 
 			} else {
 				addDoubleDateTime(fromDate, toDate, hBoxRight, 
-						Constant.STR_BEFORE_DATE_FROM, 
-						Constant.STR_BEFORE_DATE_TO, 
-						Constant.FORMAT_DATE_OUTPUT_FOR_TIMED_TASK, displayType);
+								  Constant.STR_BEFORE_DATE_FROM, 
+								  Constant.STR_BEFORE_DATE_TO, 
+								  Constant.FORMAT_DATE_OUTPUT_FOR_TIMED_TASK, 
+								  displayType);
 			}
 		}
 	}
+	
 	
 	private void addDateTimeInCategoryOrPriority(String taskType, String status, 
 												 String displayType, Date onDate, 
@@ -802,6 +849,7 @@ public class MainController{
 		}
 	}
 	
+	
 	private void addSingleDateTime(Date date, HBox hBox, String strBeforeTime, 
 								   SimpleDateFormat dateFormat) {
 		Label lbl = new Label(strBeforeTime);
@@ -813,6 +861,7 @@ public class MainController{
 		hBox.getChildren().add(lbl);
 		hBox.getChildren().add(lblDateTime);
 	}
+	
 	
 	private void addDoubleDateTime(Date dateA, Date dateB, HBox hBox, 
 								   String strA, String strB, 
@@ -834,6 +883,7 @@ public class MainController{
 		hBox.getChildren().add(lblB);
 		hBox.getChildren().add(lblDateTime2);
 	}
+	
 	
 	private void setLengthForDesc(Label desc, Task task, String displayType) {
 		if(displayType.equalsIgnoreCase(Constant.TAB_NAME_ALL) || 
@@ -867,6 +917,7 @@ public class MainController{
 			}
 		}
 	}
+	
 	
 	private int checkSystemMsg(String sysMsg) {
 		for(int i = 0; i < Constant.SYS_MSG_KEYWORD_SUCCESS.length; i++) {

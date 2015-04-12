@@ -26,41 +26,6 @@ public class Execution {
 		return systemMsg;
 	}
 	
-	public static void executeCleanCompletedTasks() {
-		ArrayList<Task> taskList = Main.list.getTasks();
-		ArrayList<RecurringTask> recurringList;
-		Task task;
-		RecurringTask recurringTask;
-		TaskStatus taskStatus;
-		String taskId;
-		String recurringId;
-		int restartIndex = -1;
-		boolean isRecurring;
-	
-		for(int i = 0; i < taskList.size(); i++) {
-			task = taskList.get(i);
-			taskId = task.getId();
-			taskStatus = task.getStatus();
-			isRecurring = task.getIsRecurring();
-			
-			if(isRecurring == false) {
-				if(taskStatus.equals(TaskStatus.COMPLETED)) {
-					Main.list.deleteTaskById(taskId);
-					i = restartIndex;
-				}
-			} else {
-				recurringList = task.getRecurringTasks();
-				for(int j = 0; j < recurringList.size(); j++) {
-					recurringTask = recurringList.get(j);
-					if(recurringTask.getStatus().equals(TaskStatus.COMPLETED)) {
-						recurringId = taskId + "." + recurringTask.getRecurringTaskId();
-						Main.list.deleteTaskById(recurringId);
-					}
-				}
-			}
-		}
-	}
-	
 	public static String executeUndo() {
 		String systemMsg = null;
 		
@@ -89,6 +54,9 @@ public class Execution {
 		return systemMsg;
 	}
 	
+	/*
+	 * Timer task to clear system message in header
+	 */
 	public static void executeSystemMsgTimerTask() {
 		ExecutionTimer.SystemMsgTimerTask systemMsgTimerTask = 
 				new ExecutionTimer.SystemMsgTimerTask();
@@ -97,16 +65,57 @@ public class Execution {
 		timer.schedule(systemMsgTimerTask, Constant.TIMER_SYSTEM_MSG_DURATION);
 	}
 	
+	/*
+	 * Timer task to check for overdue items and updates
+	 * the status of those items
+	 */
 	public static void executeStatusCheckTimerTask() {
 		ExecutionTimer.StatusCheckTimerTask statusCheckTimerTask = 
 				new ExecutionTimer.StatusCheckTimerTask();
 		
 		Timer timer = statusCheckTimerTask.getTimer();
 		timer.scheduleAtFixedRate(statusCheckTimerTask, 0, 
-				Constant.TIMER_UPDATE_STATUS_DURATION);
+								  Constant.TIMER_UPDATE_STATUS_DURATION);
 	}
 	
 	//@author A0112537M
+	public static String getCleanFrequencySetting() {
+		return Main.storage.readSaveCleanRecurrence().toString();
+	}
+	
+	public static void executeCleanCompletedTasks() {
+		ArrayList<Task> taskList = Main.list.getTasks();
+		Task task;
+		TaskStatus taskStatus;
+		String taskId;
+		int restartIndex = -1;
+		boolean isRecurring;
+	
+		for(int i = 0; i < taskList.size(); i++) {
+			task = taskList.get(i);
+			taskId = task.getId();
+			taskStatus = task.getStatus();
+			isRecurring = task.getIsRecurring();
+			
+			if(isRecurring == false) {
+				if(taskStatus.equals(TaskStatus.COMPLETED)) {
+					Main.list.deleteTaskById(taskId);
+					i = restartIndex;
+				}
+			} else {
+				cleanCompletedRecurringTask(task, taskId);
+			}
+		}
+	}
+	
+	public static void executeCleanCategories() {
+		Main.storage.removeEmptyCategory();
+	}
+	
+	/*
+	 * TimerTask to clear system message for
+	 * change save path function in setting
+	 */
 	public static void executeSysMsgTimerForSavePath() {
 		ExecutionTimer.SystemMsgTimerSavePath sysMsgTimerSavePath = 
 				new ExecutionTimer.SystemMsgTimerSavePath();
@@ -115,6 +124,10 @@ public class Execution {
 		timer.schedule(sysMsgTimerSavePath, Constant.TIMER_SYSTEM_MSG_DURATION);
 	}
 	
+	/*
+	 * TimerTask to clear system message for
+	 * change clean completed task duration in setting
+	 */
 	public static void executeSysMsgTimerForClean() {
 		ExecutionTimer.SystemMsgTimerCleanSetting systemMsgTimerCleanSetting =
 				new ExecutionTimer.SystemMsgTimerCleanSetting();
@@ -223,13 +236,18 @@ public class Execution {
 		String systemMsg= null;
 		Pair<Task, String> deleteDetailsPair = 
 				Main.list.deleteTaskFromList(userInput);
-		Task removedTask = deleteDetailsPair.getKey();
-		String removedTaskId = deleteDetailsPair.getValue();
 		
-		if (removedTask != null) {
-			Undo.prepareUndoDelete(removedTask, removedTaskId);
+		if (deleteDetailsPair != null) {
+			Task removedTask = deleteDetailsPair.getKey();
+			String removedTaskId = deleteDetailsPair.getValue();
 			
-			systemMsg = Constant.MSG_DELETE_SUCCESS;
+			if (removedTask != null) {
+				Undo.prepareUndoDelete(removedTask, removedTaskId);
+				
+				systemMsg = Constant.MSG_DELETE_SUCCESS;
+			} else {
+				systemMsg = Constant.MSG_ITEM_NOT_FOUND;
+			}
 		} else {
 			systemMsg = Constant.MSG_ITEM_NOT_FOUND;
 		}
@@ -384,6 +402,23 @@ public class Execution {
 	private static void displaySearchResult(String systemMsg) {
 		if(systemMsg.contains(Constant.SYS_MSG_KEYWORD_SEARCH)) {
 			mainController.executeSearchResult();
+		}
+	}
+	
+	private static void cleanCompletedRecurringTask(Task task, String taskId) {
+		RecurringTask recurringTask = null;
+		String recurringId = null;
+		ArrayList<RecurringTask> recurringList = task.getRecurringTasks();
+		
+		for(int j = 0; j < recurringList.size(); j++) {
+			recurringTask = recurringList.get(j);
+			
+			if(recurringTask.getStatus().equals(TaskStatus.COMPLETED)) {
+				recurringId = taskId + Constant.PREFIX_RECURRING_ID + 
+							  recurringTask.getRecurringTaskId();
+				
+				Main.list.deleteTaskById(recurringId);
+			}
 		}
 	}
 }

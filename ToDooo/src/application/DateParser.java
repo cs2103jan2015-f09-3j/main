@@ -1,4 +1,3 @@
-//@author A0112498B
 package application;
 
 import java.util.Calendar;
@@ -6,6 +5,7 @@ import java.util.Date;
 import java.util.TimeZone;
 
 public class DateParser {
+	//@author A0112498B
 	public static Calendar createCalendar(Date date) {
 		Calendar calendar = Calendar.getInstance();
 		calendar.setTimeZone(TimeZone.getDefault());
@@ -60,7 +60,6 @@ public class DateParser {
 		return month;
 	}
 	
-	//@author A0112498B
 	public static boolean isBeforeNow(Date date) {
 		Calendar calendar = DateParser.createCalendar(date);
 		
@@ -132,6 +131,9 @@ public class DateParser {
 	}
 	
 	//@author A0112537M
+	/*
+	 * Gets today's date portion only
+	 */
 	public static Calendar getTodayDate() {
 		Calendar calendar = DateParser.getTodayCalendar();
 		
@@ -142,6 +144,9 @@ public class DateParser {
 	    return calendar;
 	}
 	
+	/*
+	 * Compares date portion only
+	 */
 	public static boolean compareDate(Date dateA, Date dateB) {
 		Calendar calendarA = Calendar.getInstance();
 		Calendar calendarB = Calendar.getInstance();

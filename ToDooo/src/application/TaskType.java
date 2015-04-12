@@ -56,4 +56,26 @@ public enum TaskType {
 		return (!(isEvent(commandLine) && isTimedTask(commandLine) &&
 				 isDatedTask(commandLine)));
 	}
+	
+	public Command getDateCommand() {
+		Command dateCommand = null;
+		
+		switch(this) {
+			case EVENT :	
+				dateCommand = Command.ON;
+				break;
+			case TIMED :				
+				dateCommand = Command.FROM;
+				break;
+			case DATED :
+				dateCommand = Command.BY;
+				break;
+			default :
+				// floating task
+				// no need to do anything since there is no date
+				break;
+		}
+		
+		return dateCommand;
+	}
 }

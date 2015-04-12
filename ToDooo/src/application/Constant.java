@@ -6,10 +6,7 @@ import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.paint.Color;
 
-public final class Constant {
-	public static final int START_ID = 1;	
-	public static final String CATEGORY_UNCATEGORISED = "Uncategorised";
-	
+public final class Constant {	
 	// -----------------------------------------------------------------------------------------------
 	// XML tags
 	// -----------------------------------------------------------------------------------------------	
@@ -338,6 +335,7 @@ public final class Constant {
     public static final String BOOLEAN_STRING_FALSE = "No";
     
     public static final String EMPTY_STRING = "";
+    public static final String EMPTY_DESCRIPTION = "-";
     public static final String EMPTY_DATE = "NONE";
     
     public static final int TIMER_SYSTEM_MSG_DURATION = 2500;
@@ -345,5 +343,10 @@ public final class Constant {
     
     public static final int MAX_NUM_OF_DATES = 2;
     public static final int MAX_NUM_OF_FROM_TO_DATES = 2;
-    public static final int MAX_NUM_OF_DATE_IN_COMMAND = 1;
+    public static final int MAX_NUM_OF_DATE_IN_COMMAND = 1;    
+
+	public static final int START_ID = 1;	
+	public static final String CATEGORY_UNCATEGORISED = "Uncategorised";
+	
+	public static final String DECODE_SETTING = "UTF-8";
 }

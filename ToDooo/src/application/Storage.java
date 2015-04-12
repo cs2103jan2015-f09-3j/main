@@ -1,4 +1,3 @@
-//@author A0112498B
 package application;
 
 import java.io.File;
@@ -34,6 +33,7 @@ public class Storage {
 	private XPath _xPath;
 	private DocumentBuilder _documentBuilder;
 	
+	//@author A0112498B
 	// -----------------------------------------------------------------------------------------------
 	// Constructor
 	// -----------------------------------------------------------------------------------------------		
@@ -138,7 +138,8 @@ public class Storage {
 		return Constant.MSG_SAVE_SUCCESS;
 	}
 
-	public ArrayList<Task> loadXmlToArrayList() {
+
+	public ArrayList<Task> loadTasksXmlToArrayList() {
 		Document document = getFileDocument();
 		ArrayList<Task> tasks = new ArrayList<Task>();
 		
@@ -157,7 +158,7 @@ public class Storage {
 		return tasks;
 	}
 
-	public ArrayList<String> loadCategoriesToArrayList() {
+	public ArrayList<String> loadCategoriesXmlToArrayList() {
 		Document document = getFileDocument();
 		ArrayList<String> categories = new ArrayList<String>();
 		
@@ -256,7 +257,7 @@ public class Storage {
 		
 		try {
 			Files.move(oldPath, newPath.resolve(oldPath.getFileName()), 
-					StandardCopyOption.REPLACE_EXISTING);
+					   StandardCopyOption.REPLACE_EXISTING);
 		} catch (IOException exception) {
 			exception.printStackTrace();
 		}
@@ -268,6 +269,11 @@ public class Storage {
 		return systemMsg;
 	}
 	
+	//@author A0112537M
+	/*
+	 * Update setting.xml with the period of 
+	 * removing completed task from listFile.xml
+	 */
 	public String updateCleanRecurrenceInSetting(String recurrence) { 
 		Document doc = getSettingDocument();
 
@@ -277,6 +283,9 @@ public class Storage {
 		return writeFile(doc, Constant.PATH_SETTING);
 	}
 		
+	/*
+	 * Read the setting of the clean recurrence function
+	 */
 	public String readSaveCleanRecurrence() {
 		String cleanRecurrence = null;
 		Document settingDoc = getSettingDocument();		
@@ -327,6 +336,7 @@ public class Storage {
 	// -----------------------------------------------------------------------------------------------
 	// Private methods
 	// -----------------------------------------------------------------------------------------------
+	//@author A0112856E
 	private String updateDirPathInSetting(String dirPath) { 
 		Document doc = getSettingDocument();
 
@@ -336,6 +346,7 @@ public class Storage {
 		return writeFile(doc, Constant.PATH_SETTING);
 	}
 		
+	//@author A0112498B
 	private void cleanAndWriteFile(Document document) {
 		try {
 			NodeList nodes = (NodeList) _xPath.

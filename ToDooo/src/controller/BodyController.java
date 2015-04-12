@@ -1,3 +1,4 @@
+//@author A0112537M
 package controller;
 
 import javafx.fxml.FXML;
@@ -26,6 +27,4 @@ public class BodyController{
 	public void init(MainController mainController) {
 		mainCon = mainController;
 	}
-	
-	
 }
