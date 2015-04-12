@@ -157,7 +157,7 @@ public class ExecutionTest {
 	
 	private void cleanTestFromSystem() {
 		deleteTestFile();
-		Main.storage.updateFilePathInSetting(originalSavePath);
+		Main.storage.updateFilePathInSetting(Constant.PATH_DEFAULT);
 	}
 	
 	private void deleteTestFile() {

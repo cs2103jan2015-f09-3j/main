@@ -3,6 +3,7 @@ package application;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Timer;
+
 import javafx.util.Pair;
 import controller.HeaderController;
 import controller.MainController;
@@ -190,10 +191,13 @@ public class Execution {
 	
 	private static String executeDelete(String userInput) {
 		String systemMsg= null;
-		Task removedTask = Main.list.deleteTaskFromList(userInput);
+		Pair<Task, String> deleteDetailsPair = 
+				Main.list.deleteTaskFromList(userInput);
+		Task removedTask = deleteDetailsPair.getKey();
+		String removedTaskId = deleteDetailsPair.getValue();
 		
 		if (removedTask != null) {
-			Undo.prepareUndoDelete(removedTask);
+			Undo.prepareUndoDelete(removedTask, removedTaskId);
 			
 			systemMsg = Constant.MSG_DELETE_SUCCESS.
 						replace(Constant.DELIMITER_REPLACE, 

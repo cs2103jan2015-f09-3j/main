@@ -60,7 +60,9 @@ public class ToDoListTest {
 	 */
 	public void testDeleteTaskFromList() {
 		int expectedSize = Main.list.getTasks().size() - 1;		
-		Task removedTask = Main.list.deleteTaskFromList(ToDoListTest.TEST_DELETE_COMMAND);
+		Pair<Task, String> deleteDetailsPair = 
+				Main.list.deleteTaskFromList(ToDoListTest.TEST_DELETE_COMMAND);
+		Task removedTask = deleteDetailsPair.getKey();
 		
 		// Check that task is removed
 		assertNotNull(removedTask);
@@ -71,7 +73,8 @@ public class ToDoListTest {
 		
 		// Delete the same item again
 		expectedSize = afterSize;
-		removedTask = Main.list.deleteTaskFromList(ToDoListTest.TEST_DELETE_COMMAND);
+		deleteDetailsPair = Main.list.deleteTaskFromList(ToDoListTest.TEST_DELETE_COMMAND);
+		removedTask = deleteDetailsPair.getKey();
 		
 		// Check that task is not found
 		assertNull(removedTask);	

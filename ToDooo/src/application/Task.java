@@ -498,7 +498,9 @@ public class Task implements Cloneable {
 		if (RecurringTask.isValidRecurringTaskType(_taskType)) {
 			Date untilDate = InputParser.getUntilDateFromString(userInput);
 			
-			if (untilDate != null && DateParser.isBeforeDate(untilDate, _endDate)) { 
+			if (recurringCommand != null &&
+				untilDate != null && 
+				DateParser.isBeforeDate(untilDate, _endDate)) { 
 				// user attempted to create a recurring task with invalid until date
 				isValid = false;
 				Main.systemFeedback = Constant.MSG_INVALID_UNTIL_DATE;				

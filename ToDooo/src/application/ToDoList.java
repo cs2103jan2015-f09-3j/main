@@ -107,7 +107,8 @@ public class ToDoList {
 	public Pair<String, Task> addTaskBackToList(Task task, boolean isUndo) {
 		Task removedTask = null;
 		if (task.getIsRecurring() && isUndo) {
-			removedTask = deleteTaskById(task.getId());	
+			Pair<Task, String> deleteDetailsPair = deleteTaskById(task.getId());
+			removedTask = deleteDetailsPair.getKey();
 		}
 			
 		String result = addTaskToList(task);
@@ -115,13 +116,12 @@ public class ToDoList {
 		return new Pair<String, Task>(result, removedTask);
 	}
 	
-	public Task deleteTaskFromList(String userInput) {
-		Task removedTask = null;
+	public Pair<Task, String> deleteTaskFromList(String userInput) {
 		String targetId = InputParser.getTargetIdFromString(userInput);
 				
-		removedTask = deleteTaskById(targetId);
+		Pair<Task, String> deleteDetailsPair = deleteTaskById(targetId);
 		
-		return removedTask;
+		return deleteDetailsPair;
 	}
 	
 	//@author A0112856E
@@ -130,7 +130,9 @@ public class ToDoList {
 		String[] targetIds = InputParser.getTargetIdsFromString(userInput);
 		
 		for (String targetId : targetIds) {
-			Task removedTask = deleteTaskById(targetId);
+			Pair<Task, String> deleteDetailsPair = deleteTaskById(targetId);
+			Task removedTask = deleteDetailsPair.getKey();
+			
 			removedTasks.add(removedTask);
 		}
 		
@@ -185,8 +187,9 @@ public class ToDoList {
 			Main.systemFeedback = Constant.MSG_ITEM_NOT_FOUND;
 			return null;
 		}		
-		
-		Task originalTask = deleteTaskById(targetId);
+				
+		Pair<Task, String> deleteDetailsPair = deleteTaskById(targetId);
+		Task originalTask = deleteDetailsPair.getKey();
 
 		String updatedId = null;
 		if (originalTask != null) {
@@ -198,7 +201,8 @@ public class ToDoList {
 	}
 	
 	public Task replaceTaskOnList(Task taskToUpdateWith, String targetId) {		
-		Task originalTask = deleteTaskById(targetId);
+		Pair<Task, String> deleteDetailsPair = deleteTaskById(targetId);
+		Task originalTask = deleteDetailsPair.getKey();
 		
 		if (originalTask != null) {
 			addTaskBackToList(taskToUpdateWith, false);
@@ -223,7 +227,7 @@ public class ToDoList {
 		return targetTask;
 	}
 	
-	public Task deleteTaskById(String targetId) {
+	public Pair<Task, String> deleteTaskById(String targetId) {
 		String taskId = targetId;
 		String recurringTaskId = null;
 		Task task = null;
@@ -263,7 +267,7 @@ public class ToDoList {
 			index++;
 		}
 		
-		return removedTask;
+		return new Pair<Task, String>(removedTask, recurringTaskId);
 	}
 	
 	public Task selectTaskById(String targetId) {
@@ -353,7 +357,8 @@ public class ToDoList {
 		
 		String completedTaskId = null;
 		if (completedTask != null) {
-			originalTask = deleteTaskById(targetId);
+			Pair<Task, String> deleteDetailsPair = deleteTaskById(targetId);
+			originalTask = deleteDetailsPair.getKey();
 			
 			if (originalTask != null) {
 				addTaskBackToList(completedTask, false);
@@ -373,7 +378,7 @@ public class ToDoList {
 		
 	public Pair<Task, String> uncompleteTaskOnList(String userInput) {
 		String targetId = InputParser.getTargetIdFromString(userInput);
-		Task uncompletedTask = null;
+		Task uncompletedTask = null;				
 		Task originalTask = getTaskById(targetId);
 		
 		if (originalTask != null) {
@@ -401,7 +406,8 @@ public class ToDoList {
 		
 		String uncompletedTaskId = null;
 		if (uncompletedTask != null) {
-			originalTask = deleteTaskById(targetId);
+			Pair<Task, String> deleteDetailsPair = deleteTaskById(targetId);
+			originalTask = deleteDetailsPair.getKey();
 			
 			if (originalTask != null) {
 				addTaskBackToList(uncompletedTask, false);

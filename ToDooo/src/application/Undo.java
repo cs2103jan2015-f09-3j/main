@@ -21,7 +21,7 @@ public class Undo {
 		this(toUndo, null, targetId);
 	}
 	
-	// to undo update / complete
+	// to undo update / complete / deletion of recurring task
 	public Undo(Command toUndo, Task originalTask, String targetId) {
 		_undoCommand = getUndoCommand(toUndo);
 		_originalTask = originalTask;
@@ -65,8 +65,14 @@ public class Undo {
 		Main.redos.clear();
 	}	
 	
-	public static void prepareUndoDelete(Task removedTask) {
-		Undo undo = new Undo(Command.DELETE, removedTask);
+	public static void prepareUndoDelete(Task removedTask, String targetId) {
+		Undo undo = null;
+		if (targetId == null) {
+			undo = new Undo(Command.DELETE, removedTask);
+		} else {
+			undo = new Undo(Command.DELETE, removedTask, targetId);
+		}
+		
 		Main.undos.push(undo);			
 		Main.redos.clear();
 	}
@@ -129,7 +135,9 @@ public class Undo {
 
 	private String undoAdd() {
 		String systemMsg;
-		Task removedTask = Main.list.deleteTaskById(_targetId);
+		Pair<Task, String> deleteDetailsPair = 
+				Main.list.deleteTaskById(_targetId);
+		Task removedTask = deleteDetailsPair.getKey();
 		
 		if (removedTask != null) {
 			Undo redo = new Undo(Command.DELETE, removedTask);
@@ -144,8 +152,16 @@ public class Undo {
 
 	private String undoDelete() {
 		String systemMsg;
-		Pair<String, Task> systemMsgWithRemovedTaskPair = 
-						   Main.list.addTaskBackToList(_originalTask, true);		
+		
+		Pair<String, Task> systemMsgWithRemovedTaskPair = null;
+		if (_targetId == null) {
+			systemMsgWithRemovedTaskPair = Main.list.	
+										   addTaskBackToList(_originalTask, false);	
+		} else {
+			systemMsgWithRemovedTaskPair = Main.list.	
+					      				   addTaskBackToList(_originalTask, true);	
+		}
+			
 		
 		systemMsg = systemMsgWithRemovedTaskPair.getKey();
 		if (systemMsg.equals(Constant.MSG_ADD_SUCCESS)) {
@@ -215,7 +231,9 @@ public class Undo {
 
 	private String redoDelete() {
 		String systemMsg;
-		Task removedTask = Main.list.deleteTaskById(_targetId);
+		Pair<Task, String> deleteDetailsPair = 
+				Main.list.deleteTaskById(_targetId);
+		Task removedTask = deleteDetailsPair.getKey();
 		
 		if (removedTask != null) {
 			Undo undo = new Undo(Command.DELETE, removedTask);
@@ -231,7 +249,7 @@ public class Undo {
 	private String redoAdd() {
 		String systemMsg;
 		Pair<String, Task> systemMsgWithRemovedTaskPair = 
-		   				   Main.list.addTaskBackToList(_originalTask, true);		
+		   				   Main.list.addTaskBackToList(_originalTask, false);		
 
 		systemMsg = systemMsgWithRemovedTaskPair.getKey();			
 		if (systemMsg.equals(Constant.MSG_ADD_SUCCESS)) {
