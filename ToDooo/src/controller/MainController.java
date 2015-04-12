@@ -83,7 +83,14 @@ public class MainController{
 		switchTab(e);		
 		navigateView(e);		
 		showTutorial(e);
-		
+		showOpenFileDialog(e);
+	}
+	
+	public void showCorrectView() {
+		if (settingController.anPaneSetting.isVisible() ||
+			searchResultController.anPaneSearchResult.isVisible()) {
+			executeGoBack();
+		}
 	}
 	
 	//@author A0112537M
@@ -249,6 +256,12 @@ public class MainController{
 		Main.storage.removeEmptyCategory();
 	}
 	
+	public void loadListsInTabs() {		
+		loadListByDate(Constant.TAB_NAME_ALL);
+		loadListByCategory(Constant.TAB_NAME_CATEGORY);
+		loadListByPriority(Constant.TAB_NAME_PRIORITY);
+	}
+	
 	// -----------------------------------------------------------------------------------------------
 	// Private methods
 	// -----------------------------------------------------------------------------------------------
@@ -322,6 +335,15 @@ public class MainController{
 		targetScrollPane.setVvalue(newPosition);
 	}
 
+	private void showOpenFileDialog(KeyEvent e) {
+		if (Constant.SHORTCUT_OPEN_FILE_DIALOG.match(e)) {
+			if (settingController.anPaneSetting.isVisible()) {
+				settingController.openFileDialog();
+			}
+			
+		}
+	}
+	
 	private void showTutorial(KeyEvent e) {
 		if (Constant.SHORTCUT_TUTORIAL.match(e)) {
 			if (tutorialPopup.isFocused()) {
@@ -368,12 +390,6 @@ public class MainController{
 		} else if (Constant.SHORTCUT_TAB_PRIORITY.match(e)) {
 			selectionModel.select(Constant.TAB_INDEX_PRIORITY);			
 		}
-	}
-	
-	public void loadListsInTabs() {
-		loadListByDate(Constant.TAB_NAME_ALL);
-		loadListByCategory(Constant.TAB_NAME_CATEGORY);
-		loadListByPriority(Constant.TAB_NAME_PRIORITY);
 	}
 	
 	//@author A0112537M	

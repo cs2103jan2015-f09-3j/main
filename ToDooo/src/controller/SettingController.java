@@ -82,16 +82,17 @@ public class SettingController {
 		mainCon = mainController;
 	}
 	
-	// -----------------------------------------------------------------------------------------------
-	// Private methods
-	// -----------------------------------------------------------------------------------------------
-	private void openFileDialog() {
+	public void openFileDialog() {
 		String systemMsg = "";
 		
 		DirectoryChooser dirChooser = new DirectoryChooser();
 		dirChooser.setTitle(Constant.TITLE_SETTING_DIR);
 		
-		File selectedDir = dirChooser.showDialog(anPaneSetting.getScene().getWindow());		
+		File selectedDir = dirChooser.showDialog(anPaneSetting.getScene().getWindow());				
+		if (selectedDir == null) {
+			return;
+		}
+		
 		txtPath.setText(selectedDir.getAbsolutePath());
 		
 		String newPath = txtPath.getText();
@@ -103,6 +104,10 @@ public class SettingController {
 		
 		displaySysMsgForSavePath(systemMsg);
 	}
+	
+	// -----------------------------------------------------------------------------------------------
+	// Private methods
+	// -----------------------------------------------------------------------------------------------
 	
 	private void displaySysMsgForSavePath(String systemMsg) {
 		lblSysMsgSettingA.setText(systemMsg);

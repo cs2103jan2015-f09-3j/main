@@ -36,7 +36,9 @@ public class HeaderController{
 	//@author A0112498B
 	@FXML
 	public void processCmd(KeyEvent e) throws IOException {			
-		if (e.getCode() == KeyCode.ENTER) {
+		if (e.getCode() == KeyCode.ENTER) {		
+			mainCon.showCorrectView();
+			
 			String userInput = textArea.getText();
 							   
 			if (userInput.equals("")) {
@@ -47,7 +49,7 @@ public class HeaderController{
 			if (systemMsg.equals(Constant.MSG_ORIGINAL_NOT_RETRIEVED)) {
 				resetTextArea();
 			}	
-			
+									
 			mainCon.loadListsInTabs();
 			mainCon.setSystemMessage(systemMsg);
 		} 			
