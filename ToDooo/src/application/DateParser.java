@@ -73,6 +73,18 @@ public class DateParser {
 		return calendar.before(nowCalendar);
 	}
 	
+	public static boolean isAfterNow(Date date) {
+		Calendar calendar = DateParser.createCalendar(date);
+		
+		return isAfterNow(calendar);
+	}
+	
+	public static boolean isAfterNow(Calendar calendar) {
+		Calendar nowCalendar = DateParser.getTodayCalendar();
+		
+		return calendar.after(nowCalendar);
+	}
+	
 	public static boolean isBeforeDate(Date thisDate, Date thatDate) {
 		Calendar calendarA = DateParser.createCalendar(thisDate);
 		Calendar calendarB = DateParser.createCalendar(thatDate);

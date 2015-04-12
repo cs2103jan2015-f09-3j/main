@@ -577,18 +577,31 @@ public class ToDoList {
 	}
 
 	private static void generateRepeatedTimedTask(ArrayList<Task> tempTasks,
-												  Task task) {
+			  Task task) {
+		Task t3;
+		Calendar originalStart = Calendar.getInstance();
+		originalStart.setTime(task.getFrom());
 		Calendar start = Calendar.getInstance();
 		start.setTime(task.getFrom());
 		Calendar end = Calendar.getInstance();
 		end.setTime(task.getTo());
-		
+
 		for (Date date = start.getTime(); !start.after(end); 
-			 start.add(Calendar.DATE, 1), date = start.getTime()) {
-			
-			Task t3 = Task.createRecurringChildItem(task, task.getId(), task.getStatus(), 
-													task.getOn(), task.getBy(), date);
-			
+				start.add(Calendar.DATE, 1), date = start.getTime()) {
+
+			if(DateParser.hasMatchedDateOnly(start, end)) {
+				if(DateParser.hasMatchedDateOnly(originalStart, end)) {
+					t3 = Task.createRecurringChildItem(task, task.getId(), task.getStatus(), 
+							task.getOn(), task.getBy(), originalStart.getTime());
+				} else {
+					t3 = Task.createRecurringChildItem(task, task.getId(), task.getStatus(), 
+							task.getOn(), task.getBy(), end.getTime());
+				}
+			} else {
+				t3 = Task.createRecurringChildItem(task, task.getId(), task.getStatus(), 
+						task.getOn(), task.getBy(), date);
+			}
+
 			tempTasks.add(t3);
 		}
 	}
