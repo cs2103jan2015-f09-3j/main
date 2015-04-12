@@ -141,6 +141,18 @@ public class Execution {
 		headerController.lblSysMsg.setText(Constant.EMPTY_STRING);	
     	headerController.imgSysMsg.setImage(null);
 	}
+	
+	//@author A0112856E
+	public static String executeChangeSavePath(String newPath) {
+		String systemMsg = "";
+		String pathInSetting = Main.storage.readSavePath();
+		
+		if (!pathInSetting.equals(newPath)) {
+			systemMsg = Main.storage.moveFile(newPath);
+		}
+				
+		return systemMsg;
+	}
 
 	// -----------------------------------------------------------------------------------------------
 	// Private methods
