@@ -140,7 +140,7 @@
 .labelOverdueTitle {
 	-fx-font: bold 17px "Segoe UI";
 	-fx-text-fill: #666666;
-	-fx-padding: 0 0 0 330;
+	-fx-padding: 20 0 0 330;
 }
 
 .iconImage {

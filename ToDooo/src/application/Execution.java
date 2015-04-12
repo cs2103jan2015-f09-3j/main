@@ -28,17 +28,35 @@ public class Execution {
 	
 	public static void executeCleanCompletedTasks() {
 		ArrayList<Task> taskList = Main.list.getTasks();
+		ArrayList<RecurringTask> recurringList;
 		Task task;
+		RecurringTask recurringTask;
+		TaskStatus taskStatus;
 		String taskId;
-		String taskStatus;
+		String recurringId;
+		int restartIndex = -1;
+		boolean isRecurring;
 	
 		for(int i = 0; i < taskList.size(); i++) {
 			task = taskList.get(i);
 			taskId = task.getId();
-			taskStatus = task.getStatus().toString();
+			taskStatus = task.getStatus();
+			isRecurring = task.getIsRecurring();
 			
-			if(taskStatus.equalsIgnoreCase(TaskStatus.COMPLETED.toString())) {
-				Main.list.deleteTaskById(taskId);
+			if(isRecurring == false) {
+				if(taskStatus.equals(TaskStatus.COMPLETED)) {
+					Main.list.deleteTaskById(taskId);
+					i = restartIndex;
+				}
+			} else {
+				recurringList = task.getRecurringTasks();
+				for(int j = 0; j < recurringList.size(); j++) {
+					recurringTask = recurringList.get(j);
+					if(recurringTask.getStatus().equals(TaskStatus.COMPLETED)) {
+						recurringId = taskId + "." + recurringTask.getRecurringTaskId();
+						Main.list.deleteTaskById(recurringId);
+					}
+				}
 			}
 		}
 	}

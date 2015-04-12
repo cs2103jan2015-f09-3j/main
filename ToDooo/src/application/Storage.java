@@ -299,6 +299,7 @@ public class Storage {
 		Node categoryNode = null;
 		String categoryString = null;
 		boolean isEmpty;
+		int restartIndex = -1;
 		
 		boolean isNotEqual = false;
 		for (int i = 0; i < categoryNodes.getLength(); i++) {
@@ -309,9 +310,10 @@ public class Storage {
 			isNotEqual = !categoryString.
 						 equalsIgnoreCase(Constant.CATEGORY_UNCATEGORISED);
 			
-			if(isNotEqual && isEmpty == true) {
-				Main.list.getCategories().remove(categoryString);
+			if(isNotEqual && isEmpty) {
 				categoryNode.getParentNode().removeChild(categoryNode);
+				Main.list.getCategories().remove(categoryString);
+				i = restartIndex;
 			}	
 		}
 		

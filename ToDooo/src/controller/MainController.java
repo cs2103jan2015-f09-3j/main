@@ -65,9 +65,9 @@ public class MainController{
 	@FXML
 	public void initialize() {
 		initControllers();
-		loadListsInTabs();
 		cleanCompletedTasks();
 		cleanEmptyCategories();
+		loadListsInTabs();
 		initTutorialPopup();
 		
 		selectionModel = bodyController.tPaneMain.
@@ -112,8 +112,6 @@ public class MainController{
 		Task task;
 	    Date startDate;
 	    String taskType;
-	    String dateA = Constant.EMPTY_STRING;
-		String dateB = Constant.EMPTY_STRING;
 		VBox vBox = getContainer(displayType);
 		vBox.getChildren().clear();
 		ArrayList<Task> taskList = getList(displayType);
@@ -124,42 +122,14 @@ public class MainController{
 		floating.clear();
 		todayDate = DateParser.getTodayDate().getTime();
 		
-	    for(int i = 0; i < temp.size(); i++) {
-			task = temp.get(i);
-			taskType = task.getTaskType().toString();
-			startDate = task.getStartDate();
-	    	
-			if(taskType.equalsIgnoreCase(TaskType.FLOATING.toString())||
-			   DateParser.compareDate(todayDate, startDate) || 
-			   DateParser.isBeforeNow(startDate)) {
-				
-				findFloatingOrOverdueOrTodayTask(task, startDate, taskType);
-				indexForNextLoop = i + 1;
-			} else {
-				indexForNextLoop = i;
-				break;
-			}
-		} 
+	    indexForNextLoop = extractFloatingOrOverdueOrTodayTasks(
+				indexForNextLoop, temp); 
 		
 	    renderOverdueTask(displayType, vBox);
 	    renderTodayTask(displayType, vBox);
 	    renderFloatingTask(displayType);
 		
-		for(int j = indexForNextLoop; j < temp.size(); j++) {
-			task = temp.get(j);
-			
-			dateA = Constant.FORMAT_DATE_OUTPUT.format(task.getStartDate());
-			
-			if(j != indexForNextLoop) {
-				dateB = Constant.FORMAT_DATE_OUTPUT.format(temp.get(j - 1).getStartDate());
-			}
-			
-			if(j == indexForNextLoop || !dateA.equals(dateB)) {
-				renderTaskItem(dateA, task, displayType);
-			} else {
-				renderTaskItem(Constant.EMPTY_STRING, task, displayType);
-			}
-		}
+		renderTasksWithDate(displayType, indexForNextLoop, temp);
 	}
 	
 	public void loadListByCategory(String displayType) {
@@ -432,20 +402,74 @@ public class MainController{
 		
 		return temp;
 	}
+	
+	private void renderTasksWithDate(String displayType,
+			int indexForNextLoop, ArrayList<Task> temp) {
+		Task task;
+		String dateA = Constant.EMPTY_STRING;
+		String dateB = Constant.EMPTY_STRING;
+		
+		for(int j = indexForNextLoop; j < temp.size(); j++) {
+			task = temp.get(j);
+			
+			dateA = Constant.FORMAT_DATE_OUTPUT.format(task.getStartDate());
+			
+			if(j != indexForNextLoop) {
+				dateB = Constant.FORMAT_DATE_OUTPUT.format(temp.get(j - 1).getStartDate());
+			}
+			
+			if(j == indexForNextLoop || !dateA.equals(dateB)) {
+				renderTaskItem(dateA, task, displayType);
+			} else {
+				renderTaskItem(Constant.EMPTY_STRING, task, displayType);
+			}
+		}
+	}
+
+	private int extractFloatingOrOverdueOrTodayTasks(int indexForNextLoop,
+			ArrayList<Task> temp) {
+		Task task;
+		Date startDate;
+		String taskType;
+		for(int i = 0; i < temp.size(); i++) {
+			task = temp.get(i);
+			taskType = task.getTaskType().toString();
+			startDate = task.getStartDate();
+	    	
+			if(taskType.equalsIgnoreCase(TaskType.FLOATING.toString())||
+			   DateParser.compareDate(todayDate, startDate) || 
+			   DateParser.isBeforeNow(startDate)) {
+				
+				findFloatingOrOverdueOrTodayTask(task, startDate, taskType);
+				indexForNextLoop = i + 1;
+			} else {
+				indexForNextLoop = i;
+				break;
+			}
+		}
+		return indexForNextLoop;
+	}
 
 	private void findFloatingOrOverdueOrTodayTask(Task task, Date startDate,
 			String taskType) {
+		boolean isRecurring = task.getIsRecurring();
+		TaskStatus taskStatus = task.getStatus();
+		
 		if(taskType.equalsIgnoreCase(TaskType.FLOATING.toString())) {
 			floating.add(task);
 		} else {
-			if(DateParser.isBeforeNow(startDate)) {
+			if(DateParser.compareDate(todayDate, startDate)) {
+				if(isRecurring && !taskStatus.equals(TaskStatus.DELETED) || !isRecurring) {
+					today.add(task);
+				}
+			} else if(DateParser.isBeforeNow(startDate)) {
 				if(!taskType.equalsIgnoreCase(TaskType.TIMED.toString())) {
 					overdue.add(task);
 				} else if(DateParser.compareDate(task.getTo(), task.getStartDate())) {
-					overdue.add(task);
+					if(isRecurring && !taskStatus.equals(TaskStatus.DELETED) || !isRecurring) {
+						overdue.add(task);
+					}
 				}
-			} else if(DateParser.compareDate(todayDate, startDate)) {
-				today.add(task);
 			}
 		}
 	}
