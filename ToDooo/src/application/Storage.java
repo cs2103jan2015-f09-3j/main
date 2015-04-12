@@ -7,7 +7,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
-
+import java.util.logging.Level;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
@@ -73,7 +73,10 @@ public class Storage {
 			
 			nextId = value.intValue();
 		} catch (XPathExpressionException exception) {
-			exception.printStackTrace();
+			Main.LOGGER.logp(Level.SEVERE, 
+							 Storage.class.getName(), 
+							 "readNextId", 
+							 exception.getMessage());
 		}
 		
 		return nextId;
@@ -95,7 +98,10 @@ public class Storage {
 
 			}
 		} catch (XPathExpressionException exception) {
-			exception.printStackTrace();
+			Main.LOGGER.logp(Level.SEVERE, 
+							 Storage.class.getName(), 
+							 "readSavePath", 
+							 exception.getMessage());
 		}
 		
 		return savePath;
@@ -132,7 +138,10 @@ public class Storage {
 			streamResult = new StreamResult(new File(savePath));
 			_transformer.transform(domSource, streamResult);
 		} catch (TransformerException exception) {
-			exception.printStackTrace();
+			Main.LOGGER.logp(Level.SEVERE, 
+							 Storage.class.getName(), 
+							 "writeFile", 
+							 exception.getMessage());
 		}
 		
 		return Constant.MSG_SAVE_SUCCESS;
@@ -234,16 +243,23 @@ public class Storage {
 		try {
 			return _documentBuilder.parse(Main.storage.readSavePath()); 			
 		} catch (SAXException | IOException exception) {
-			exception.printStackTrace();
+			Main.LOGGER.logp(Level.SEVERE, 
+							 Storage.class.getName(), 
+							 "getFileDocument", 
+							 exception.getMessage());
 		}			
 		return null;
 	}
 	
 	public Document getSettingDocument() {
 		try {						
-			return _documentBuilder.parse(Main.getFolderPath() + Constant.PATH_SETTING); 			
+			return _documentBuilder.parse(Main.getFolderPath() + 
+										  Constant.PATH_SETTING); 			
 		} catch (SAXException | IOException exception) {
-			exception.printStackTrace();
+			Main.LOGGER.logp(Level.SEVERE, 
+							 Storage.class.getName(), 
+							 "getSettingDocument", 
+							 exception.getMessage());
 		}			
 		return null;
 	}
@@ -295,9 +311,13 @@ public class Storage {
 					_xPath.compile(Constant.XML_XPATH_SETTING_CLEAN);
 			
 			cleanRecurrence = (String) expression.
-					   evaluate(settingDoc, XPathConstants.STRING);
+					   		  evaluate(settingDoc, XPathConstants.STRING);
+			
 		} catch (XPathExpressionException exception) {
-			exception.printStackTrace();
+			Main.LOGGER.logp(Level.SEVERE, 
+							 Storage.class.getName(), 
+							 "readSaveCleanRecurrence", 
+							 exception.getMessage());
 		}
 		
 		return cleanRecurrence;
@@ -360,7 +380,10 @@ public class Storage {
 			
 			writeFile(document);
 		} catch (XPathExpressionException exception) {
-			exception.printStackTrace();
+			Main.LOGGER.logp(Level.SEVERE, 
+							 Storage.class.getName(), 
+							 "cleanAndWriteFile", 
+							 exception.getMessage());
 		}
 	}
 	
@@ -381,7 +404,10 @@ public class Storage {
 			
 			cleanAndWriteFile(document);
 		} catch (Exception exception) {
-			exception.printStackTrace();
+			Main.LOGGER.logp(Level.SEVERE, 
+							 Storage.class.getName(), 
+							 "removeAllTaskNodesFromFile", 
+							 exception.getMessage());
 		}
 	}
 		
@@ -396,7 +422,10 @@ public class Storage {
 			_transformer.setOutputProperty(Constant.XML_OUTPUT_INDENT_PROPERTY, 
 										   Constant.XML_OUTPUT_INDENT_AMOUNT);
 		} catch (TransformerConfigurationException exception) {
-			exception.printStackTrace();
+			Main.LOGGER.logp(Level.SEVERE, 
+							 Storage.class.getName(), 
+							 "initTransformer", 
+							 exception.getMessage());
 		}
 	}
 	

@@ -101,6 +101,7 @@ public final class Constant {
 	// File paths
 	// -----------------------------------------------------------------------------------------------
 	public static final String PATH_SETTING = "/setting.xml";
+	public static final String PATH_LOG = "/logFile.log";
 	public static final String PATH_FILE_NAME = "listFile.xml";
 	public static final String PATH_DEFAULT = "/listFile.xml";
 	public static final String PATH_GET_PROPERTY = "user.dir";

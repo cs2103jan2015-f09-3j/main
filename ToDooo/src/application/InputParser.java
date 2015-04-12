@@ -4,7 +4,10 @@ package application;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Date;
+import java.util.logging.Level;
+
 import javafx.util.Pair;
+
 import com.joestelmach.natty.DateGroup;
 import com.joestelmach.natty.Parser;
 
@@ -371,6 +374,10 @@ public class InputParser {
 				targetId = userInput.substring(beginIndex, endIndex);
 			}
 		} catch (StringIndexOutOfBoundsException exception) {
+			Main.LOGGER.logp(Level.WARNING, 
+							 InputParser.class.getName(), 
+							 "getTargetId", 
+							 exception.getMessage());
 			return targetId;
 		}
 				
@@ -423,6 +430,11 @@ public class InputParser {
 		
 		String toDoString = userInput;
 		
+		if (lengthOfBasicAddCommand >= userInput.length() ||
+			lengthOfAdvancedAddCommand >= userInput.length()) {
+			return "";
+		}
+				
 		if (lowerCase.contains(addBasicCmd) &&
 			lowerCase.indexOf(addBasicCmd) == 0){
 			
@@ -435,6 +447,7 @@ public class InputParser {
 			toDoString = userInput.substring(lengthOfAdvancedAddCommand, 
 						 					  userInput.length()).trim();
 		}
+		
 		return toDoString;
 	}
 			

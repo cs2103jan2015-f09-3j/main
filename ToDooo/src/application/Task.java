@@ -4,6 +4,8 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.logging.Level;
+
 import javafx.util.Pair;
 
 public class Task implements Cloneable {
@@ -248,8 +250,12 @@ public class Task implements Cloneable {
 		
 		try {
 			clone = (Task) super.clone();
-		} catch(CloneNotSupportedException e){
-            throw new RuntimeException(e); 
+		} catch(CloneNotSupportedException exception) {
+			Main.LOGGER.logp(Level.WARNING, 
+							 Task.class.getName(), 
+							 "clone", 
+							 exception.getMessage());
+            throw new RuntimeException(exception); 
         }
 		
 		 return clone;
@@ -269,7 +275,7 @@ public class Task implements Cloneable {
 		ArrayList<RecurringTask> copies = new ArrayList<RecurringTask>();
 		Iterator<RecurringTask> iterator = _recurringTasks.iterator();
 		
-		while(iterator.hasNext()){
+		while(iterator.hasNext()) {
 			copies.add(iterator.next().clone());
 		}
 		

@@ -1,10 +1,16 @@
 package application;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Stack;
+import java.util.logging.FileHandler;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.logging.SimpleFormatter;
+
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.stage.Stage;
@@ -14,6 +20,9 @@ import javafx.scene.image.Image;
 
 
 public class Main extends Application {
+	public static final Logger LOGGER = 
+			 				   Logger.getLogger(Main.class.getName());
+	
 	public static Storage storage;
 	public static ToDoList list;
 	public static InputParser inputParser;
@@ -59,11 +68,13 @@ public class Main extends Application {
 		Main.redos = new Stack<Undo>();
 		Main.searchResults = new ArrayList<Task>();
 		
+		initLogger();
+		
 		toUpdate = false;
 		shouldResetCaret = false;
 		systemFeedback = "";
 	}
-	
+			
 	public static String getFolderPath() {
 		URL url = new Main().getClass().getProtectionDomain().getCodeSource().getLocation();
 		
@@ -71,10 +82,30 @@ public class Main extends Application {
 		try {
 			String jarPath = URLDecoder.decode(url.getFile(), Constant.DECODE_SETTING); 
 			parentPath = new File(jarPath).getParentFile().getPath();
-		} catch (Exception e) {
-			
+		} catch (Exception exception) {
+			Main.LOGGER.logp(Level.SEVERE, 
+							 Main.class.getName(), 
+							 "getFolderPath", 
+							 exception.getMessage());
 		}
 		
 		return parentPath;
+	}
+	
+	private static void initLogger() {
+		try {
+			FileHandler fileHandler = 
+					new FileHandler(getFolderPath() + Constant.PATH_LOG);
+			
+			Main.LOGGER.addHandler(fileHandler);
+			
+			SimpleFormatter formatter = new SimpleFormatter();  
+			fileHandler.setFormatter(formatter);			
+		} catch (SecurityException | IOException exception) {
+			Main.LOGGER.logp(Level.SEVERE, 
+							 Main.class.getName(), 
+							 "initLogger", 
+							 exception.getMessage());
+		} 
 	}
 }

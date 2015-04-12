@@ -366,6 +366,9 @@ public class ToDoList {
 	//@author A0112856E
 	public Pair<Task, String> completeTaskOnList(String userInput) {		
 		String taskId = InputParser.getTargetIdFromString(userInput);
+		if (taskId == null) {
+			return null;
+		}
 		
 		String parentId = null;
 		String targetId = null;		
@@ -405,8 +408,11 @@ public class ToDoList {
 	}
 	
 	public Pair<Task, String> uncompleteTaskOnList(String userInput) {
-		String taskId = InputParser.getTargetIdFromString(userInput);
-		
+		String taskId = InputParser.getTargetIdFromString(userInput);		
+		if (taskId == null) {
+			return null;
+		}
+				
 		String parentId = null;
 		String targetId = null;		
 		if (taskId.contains(Constant.PREFIX_RECURRING_ID)) {

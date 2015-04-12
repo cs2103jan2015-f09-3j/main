@@ -2,11 +2,14 @@
 package application;
 
 import java.util.ArrayList;
+import java.util.logging.Level;
+
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathFactory;
+
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -24,7 +27,10 @@ public class XmlManager {
 			
 			return documentFactory.newDocumentBuilder();
 		} catch (ParserConfigurationException exception) {
-			exception.printStackTrace();
+			Main.LOGGER.logp(Level.SEVERE, 
+							 XmlManager.class.getName(), 
+							 "getNewDocBuilder", 
+							 exception.getMessage());
 		}
 		
 		return null;
@@ -205,7 +211,10 @@ public class XmlManager {
 			return documentBuilder.newDocument(); 
 			
 		} catch (ParserConfigurationException exception) {
-			exception.printStackTrace();
+			Main.LOGGER.logp(Level.SEVERE, 
+							 XmlManager.class.getName(), 
+							 "createXmlDocument", 
+							 exception.getMessage());
 		}		
 		
 		return null;

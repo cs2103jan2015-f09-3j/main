@@ -296,10 +296,12 @@ public class Execution {
 				Undo.prepareUndoUpdate(originalTask, targetId);
 				
 				systemMsg = Constant.MSG_UPDATE_SUCCESS;
-				headerController.textArea.clear();
 			} else {
 				systemMsg = Constant.MSG_UPDATE_FAIL;
+				
 			}
+			
+			headerController.textArea.clear();
 		}
 		
 		return systemMsg;
