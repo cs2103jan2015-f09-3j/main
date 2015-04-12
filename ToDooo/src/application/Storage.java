@@ -3,9 +3,12 @@ package application;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
+
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
@@ -18,6 +21,7 @@ import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
+
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -250,12 +254,12 @@ public class Storage {
 		Path oldPath = Paths.get(pathInSetting);		
 		Path newPath = Paths.get(path); 
 		
-//		try {
-//			Files.move(oldPath, newPath.resolve(oldPath.getFileName()), 
-//					StandardCopyOption.REPLACE_EXISTING);
-//		} catch (IOException exception) {
-//			exception.printStackTrace();
-//		}
+		try {
+			Files.move(oldPath, newPath.resolve(oldPath.getFileName()), 
+					StandardCopyOption.REPLACE_EXISTING);
+		} catch (IOException exception) {
+			exception.printStackTrace();
+		}
 		
 		systemMsg = updateDirPathInSetting(path); 
 		

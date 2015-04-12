@@ -660,15 +660,16 @@ public class ToDoList {
 		}
 	}
 
+	//@author A0112856E
 	private boolean completeRecurringChildTask(String targetId, Task parentTask) {
 		boolean hasSet = false;		
-		ArrayList<RecurringTask> recurTasks = new ArrayList<RecurringTask>();		
 		String recurringTaskId = InputParser.getChildIdFromRecurringId(targetId);		
 			
 		int count = 0;
 		String recurTaskId = "-1";
 		TaskStatus status = null;
-		recurTasks = parentTask.getRecurringTasks();
+		ArrayList<RecurringTask> recurTasks = parentTask.getRecurringTasks();
+		
 		for (RecurringTask recurTask : recurTasks) {	
 			recurTaskId = recurTask.getRecurringTaskId();
 			status = recurTask.getStatus();
