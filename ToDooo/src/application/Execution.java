@@ -217,9 +217,7 @@ public class Execution {
 		if (removedTask != null) {
 			Undo.prepareUndoDelete(removedTask, removedTaskId);
 			
-			systemMsg = Constant.MSG_DELETE_SUCCESS.
-						replace(Constant.DELIMITER_REPLACE, 
-								removedTask.getId());
+			systemMsg = Constant.MSG_DELETE_SUCCESS;
 		} else {
 			systemMsg = Constant.MSG_ITEM_NOT_FOUND;
 		}
@@ -239,8 +237,7 @@ public class Execution {
 					   originalTask.getOriginalText());						
 			
 			Main.toUpdate = true;
-			systemMsg = Constant.MSG_ORIGINAL_RETRIEVED.
-						replace(Constant.DELIMITER_REPLACE, targetId);
+			systemMsg = Constant.MSG_ORIGINAL_RETRIEVED;
 		} else {
 			systemMsg = Constant.MSG_ORIGINAL_NOT_RETRIEVED;
 		}
@@ -326,32 +323,25 @@ public class Execution {
 		
 	private static String executeUncomplete(String userInput) {
 		String systemMsg = null;
-		int recurId = -1;
+		Pair<Task, String> completedTaskDetails = 
+				Main.list.uncompleteTaskOnList(userInput);
 		
-		Pair<Task, String> uncompletedTaskDetails = Main.list.uncompleteTaskOnList(userInput);
-		
-		if(uncompletedTaskDetails == null) {
+		if(completedTaskDetails == null) {
 			systemMsg = Constant.MSG_ITEM_NOT_FOUND;
 		} else {
-			Task originalTask = uncompletedTaskDetails.getKey();
-			String targetId = uncompletedTaskDetails.getValue();
+			Task originalTask = completedTaskDetails.getKey();
+			String targetId = completedTaskDetails.getValue();
 			
-			if(originalTask.getIsRecurring() == true) {
-				int startIndex = targetId.indexOf(Constant.PREFIX_RECURRING_ID) + 1;
-				recurId = Integer.parseInt(targetId.substring(startIndex));
-			}
-			
-			if(originalTask == null || 
-			  (recurId != -1 && originalTask.getRecurringTasks().get(recurId-1).getStatus().equals(TaskStatus.DELETED))) {
-				systemMsg = Constant.MSG_ITEM_NOT_FOUND;
-			} else {
+			if (originalTask != null && targetId != null) {
 				Undo.prepareUndoComplete(originalTask, targetId);
 				
 				systemMsg = Constant.MSG_UNCOMPLETE_SUCCESS.
-						replace(Constant.DELIMITER_REPLACE, targetId);
-			}
+							replace(Constant.DELIMITER_REPLACE, targetId);
+			} else {
+				systemMsg = Constant.MSG_ITEM_NOT_FOUND;
+			}			
 		}
-		
+	
 		return systemMsg;
 	}
 	
