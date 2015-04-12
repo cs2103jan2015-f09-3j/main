@@ -2,6 +2,7 @@ package controller;
 
 import java.io.File;
 import java.util.Timer;
+
 import application.Constant;
 import application.Execution;
 import application.Frequency;
@@ -94,14 +95,9 @@ public class SettingController {
 		}
 		
 		txtPath.setText(selectedDir.getAbsolutePath());
-		
 		String newPath = txtPath.getText();
-		String pathInSetting = Main.storage.readSavePath();
-		
-		if (!pathInSetting.equals(newPath)) {
-			systemMsg = Main.storage.moveFile(newPath);
-		}
-		
+
+		systemMsg = Execution.executeChangeSavePath(newPath);
 		displaySysMsgForSavePath(systemMsg);
 	}
 	
