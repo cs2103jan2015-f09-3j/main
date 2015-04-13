@@ -27,7 +27,7 @@
             <Font size="27.0" />
          </font>
       </Text>
-      <Button layoutX="761.0" layoutY="60.0" mnemonicParsing="false" prefHeight="40.0" style="-fx-background-color: #87b763;" text="&gt;" textFill="WHITE">
+      <Button layoutX="761.0" layoutY="60.0" mnemonicParsing="false" onMouseClicked="#processCmdMouse" prefHeight="40.0" style="-fx-background-color: #87b763;" text="&gt;" textFill="WHITE">
          <font>
             <Font name="Segoe UI" size="12.0" />
          </font>

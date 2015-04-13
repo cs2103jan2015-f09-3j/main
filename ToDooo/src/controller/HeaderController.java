@@ -59,6 +59,24 @@ public class HeaderController{
 		} 			
 	}
 	
+	@FXML
+	public void processCmdMouse(MouseEvent mouseEvent) throws IOException {			
+		mainCon.showCorrectView();
+		
+		String userInput = textArea.getText();							   
+		if (userInput.equals("")) {
+			return;
+		}
+		
+		String systemMsg = Execution.executeUserInput(userInput);
+		if (systemMsg.equals(Constant.MSG_ORIGINAL_NOT_RETRIEVED)) {
+			resetTextArea();
+		}	
+								
+		mainCon.loadListsInTabs();
+		mainCon.setSystemMessage(systemMsg);			
+	}
+	
 	public void onTextChanged() {	
 		textArea.clearStyle(0);		
 		String textAreaText = textArea.getText();
