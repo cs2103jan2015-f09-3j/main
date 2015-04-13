@@ -130,13 +130,6 @@ public class DateParser {
 		return thisCalendar.equals(thatCalendar);
 	}
 	
-	public static boolean isAfterDateOnly(Calendar thisCalendar, Calendar thatCalendar) {
-		thisCalendar = getDateWithoutTime(thisCalendar.getTime());
-		thatCalendar = getDateWithoutTime(thatCalendar.getTime());
-		
-		return isAfterDate(thisCalendar, thatCalendar);
-	}
-	
 	//@author A0112537M
 	/*
 	 * Gets today's date portion only
@@ -191,5 +184,12 @@ public class DateParser {
 				calendarA.get(Calendar.DAY_OF_YEAR) > calendarB.get(Calendar.DAY_OF_YEAR);
 		
 		return isAfterDay;
+	}
+	
+	public static boolean isAfterDateOnly(Calendar thisCalendar, Calendar thatCalendar) {
+		thisCalendar = getDateWithoutTime(thisCalendar.getTime());
+		thatCalendar = getDateWithoutTime(thatCalendar.getTime());
+		
+		return isAfterDate(thisCalendar, thatCalendar);
 	}
 }
