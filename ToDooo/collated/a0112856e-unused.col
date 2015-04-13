@@ -1,0 +1,37 @@
+//@author: a0112856e-unused
+
+
+
+	/**
+	 * origin: C:\Users\Ruyi\Desktop\collate\source\application\ToDoList.java
+	 */
+
+	/*
+	 * We have decided to give up on this feature as there 
+	 * were other more pressing bugs to fix and we feel that
+	 * we will not have the time to do testing and bug fixing
+	 * on this feature.
+	 */
+	public ArrayList<Task> deleteMultipleTasksFromList(String userInput) {
+		ArrayList<Task> removedTasks = new ArrayList<Task>();
+		String[] targetIds = InputParser.getTargetIdsFromString(userInput);
+		
+		for (String targetId : targetIds) {
+			Pair<Task, String> deleteDetailsPair = deleteTaskById(targetId);
+			Task removedTask = deleteDetailsPair.getKey();
+			
+			removedTasks.add(removedTask);
+		}
+		
+		return removedTasks;
+	}
+	
+	// ---------------------------------------------------------
+	// Update-related methods
+	// ---------------------------------------------------------
+	// End of segment: C:\Users\Ruyi\Desktop\collate\source\application\ToDoList.java
+
+
+
+
+

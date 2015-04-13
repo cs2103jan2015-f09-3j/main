@@ -6,47 +6,256 @@
 	 * origin: C:\Users\Ruyi\Desktop\collate\source\application\Execution.java
 	 */
 
-	private static String executeComplete(String userInput) {
+	public static String executeChangeSavePath(String newPath) {
+		String systemMsg = "";
+		String pathInSetting = Main.storage.readSavePath();
+		
+		if (!pathInSetting.equals(newPath)) {
+			systemMsg = Main.storage.moveFile(newPath);
+		}
+				
+		return systemMsg;
+	}
+
+	// -----------------------------------------------------------------------------------------------
+	// Private methods
+	// -----------------------------------------------------------------------------------------------
+	private static String executeCommand(String userInput, Command commandType) {
 		String systemMsg = null;
-		
-		Pair<Task, String> toCompleteTask = Main.list.completeTaskOnList(userInput);
-		
-		Task completedTask = toCompleteTask.getKey();
-		String targetId = toCompleteTask.getValue();
-		
-		if (completedTask != null) {
-			Undo.prepareUndoComplete(completedTask, targetId);
-			
-			systemMsg = Constant.MSG_COMPLETE_SUCCESS.
-					replace(Constant.DELIMITER_REPLACE, targetId);
-		} else {
-			systemMsg = Constant.MSG_ITEM_NOT_FOUND;
+
+		userInput = InputParser.removeLineBreaks(userInput);
+
+		switch (commandType) {
+		case ADD :
+			systemMsg = Execution.executeAdd(userInput);
+			headerController.textArea.clear();
+			break;
+		case UPDATE :
+			systemMsg = Execution.executeUpdate(userInput);
+			Main.shouldResetCaret = true;
+			break;
+		case DELETE :
+			systemMsg = Execution.executeDelete(userInput);
+			headerController.textArea.clear();
+			break;
+		case SEARCH :
+			systemMsg = Execution.executeSearch(userInput);
+			displaySearchResult(systemMsg);
+			headerController.textArea.clear();
+			break;
+		case COMPLETE :
+			systemMsg = Execution.executeComplete(userInput);
+			headerController.textArea.clear();
+			break;
+		case UNCOMPLETE :
+			systemMsg = Execution.executeUncomplete(userInput);
+			headerController.textArea.clear();
+			break;
+		case VIEW :
+			systemMsg = Execution.executeView(userInput);
+			displayDetail(systemMsg);
+			headerController.textArea.clear();
+			break ;
+		default:
+			// invalid command
+			break;
 		}
 
 		return systemMsg;
 	}
 	
-	private static String executeUncomplete(String userInput) {
+	private static String executeAdd(String userInput) {
+		Task task = new Task(userInput);	
+		
 		String systemMsg = null;
-		
-		Pair<Task, String> toUncompleteTask = Main.list.uncompleteTaskOnList(userInput);
-		
-		Task uncompletedTask = toUncompleteTask.getKey();
-		String targetId = toUncompleteTask.getValue();
-		
-		if (uncompletedTask != null) {
-			Undo.prepareUndoComplete(uncompletedTask, targetId);
+		if (task.getIsValid()) {
+			systemMsg = Main.list.addTaskToList(task);
 			
-			systemMsg = Constant.MSG_UNCOMPLETE_SUCCESS.
-					replace(Constant.DELIMITER_REPLACE, targetId);
+			if (systemMsg.equals(Constant.MSG_ADD_SUCCESS)) {
+				Undo.prepareUndoAdd(task);
+			}
+			
+		} else {
+			systemMsg = Main.systemFeedback;
+		}
+				
+		return systemMsg;
+	}
+	
+	private static String executeDelete(String userInput) {
+		String systemMsg= null;
+		Pair<Task, String> deleteDetailsPair = 
+				Main.list.deleteTaskFromList(userInput);
+		
+		if (deleteDetailsPair != null) {
+			Task removedTask = deleteDetailsPair.getKey();
+			String removedTaskId = deleteDetailsPair.getValue();
+			
+			if (removedTask != null) {
+				Undo.prepareUndoDelete(removedTask, removedTaskId);
+				
+				systemMsg = Constant.MSG_DELETE_SUCCESS;
+			} else {
+				systemMsg = Constant.MSG_ITEM_NOT_FOUND;
+			}
 		} else {
 			systemMsg = Constant.MSG_ITEM_NOT_FOUND;
 		}
+		
+		return systemMsg;
+	}
+	
+	private static String executeRetrieveOriginalText(String userInput) {
+		
+		String systemMsg = null;
+		String targetId = InputParser.getTargetIdFromString(userInput);
+		Task originalTask = Main.list.getTaskById(targetId);
+				
+		if (originalTask != null) {		
+			headerController.textArea.
+			appendText(Constant.DELIMITER_UPDATE + " " + 
+					   originalTask.getOriginalText());						
+			
+			Main.toUpdate = true;
+			systemMsg = Constant.MSG_ORIGINAL_RETRIEVED;
+		} else {
+			systemMsg = Constant.MSG_ORIGINAL_NOT_RETRIEVED;
+		}
+		
+		return systemMsg;
+	}
+	
+	private static String executeUpdate(String userInput) {
+		String systemMsg = null;
+		
+		if (Command.shouldRetrieveOriginalInput(userInput)) {
+			systemMsg = executeRetrieveOriginalText(userInput);
+		} else {
+			Pair<Task, String> updatedTasksDetails = 
+					Main.list.updateTaskOnList(userInput);
+			
+			if (updatedTasksDetails == null) {
+				return systemMsg = Main.systemFeedback;
+			}
+			
+			// ----------------------------------------------
+			Task originalTask = updatedTasksDetails.getKey();
+			String targetId = updatedTasksDetails.getValue();
+			
+			if (originalTask != null) {
+				Undo.prepareUndoUpdate(originalTask, targetId);
+				
+				systemMsg = Constant.MSG_UPDATE_SUCCESS;
+			} else {
+				systemMsg = Constant.MSG_UPDATE_FAIL;
+				
+			}
+			
+			headerController.textArea.clear();
+		}
+		
+		return systemMsg;
+	}
 
+	private static String executeSearch(String userInput) {
+		String systemMsg = null;
+		
+		Pair<ArrayList<Task>, String> searchResultsPair = 
+				Main.list.searchTheList(userInput);
+		Main.searchResults = searchResultsPair.getKey();
+		systemMsg = searchResultsPair.getValue();		
+		
+		if (Main.searchResults.isEmpty() && systemMsg == null) {
+			systemMsg = Constant.MSG_NO_RESULTS;
+		} else if (systemMsg != null) {
+			systemMsg = Constant.MSG_SEARCH_INVALID;
+		} else {
+			systemMsg = Constant.MSG_SEARCH_SUCCESS.
+						replace(Constant.DELIMITER_REPLACE, 
+								String.valueOf(Main.searchResults.size()));
+		}
+		
 		return systemMsg;
 	}
 	
 	// End of segment: C:\Users\Ruyi\Desktop\collate\source\application\Execution.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Ruyi\Desktop\collate\source\application\Execution.java
+	 */
+
+	private static String executeComplete(String userInput) {
+		String systemMsg = null;
+		Pair<Task, String> completedTaskDetails = 
+				Main.list.completeTaskOnList(userInput);
+		
+		if(completedTaskDetails == null) {
+			systemMsg = Constant.MSG_ITEM_NOT_FOUND;
+		} else {
+			Task originalTask = completedTaskDetails.getKey();
+			String targetId = completedTaskDetails.getValue();
+			
+			if (originalTask != null && targetId != null) {
+				Undo.prepareUndoComplete(originalTask, targetId);
+				
+				systemMsg = Constant.MSG_COMPLETE_SUCCESS.
+							replace(Constant.DELIMITER_REPLACE, targetId);
+			} else {
+				systemMsg = Constant.MSG_ITEM_NOT_FOUND;
+			}			
+		}
+	
+		return systemMsg;
+	}
+		
+	private static String executeUncomplete(String userInput) {
+		String systemMsg = null;
+		Pair<Task, String> completedTaskDetails = 
+				Main.list.uncompleteTaskOnList(userInput);
+		
+		if(completedTaskDetails == null) {
+			systemMsg = Constant.MSG_ITEM_NOT_FOUND;
+		} else {
+			Task originalTask = completedTaskDetails.getKey();
+			String targetId = completedTaskDetails.getValue();
+			
+			if (originalTask != null && targetId != null) {
+				Undo.prepareUndoComplete(originalTask, targetId);
+				
+				systemMsg = Constant.MSG_UNCOMPLETE_SUCCESS.
+							replace(Constant.DELIMITER_REPLACE, targetId);
+			} else {
+				systemMsg = Constant.MSG_ITEM_NOT_FOUND;
+			}			
+		}
+	
+		return systemMsg;
+	}
+	
+	// End of segment: C:\Users\Ruyi\Desktop\collate\source\application\Execution.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Ruyi\Desktop\collate\source\application\Storage.java
+	 */
+
+	private String updateDirPathInSetting(String dirPath) { 
+		Document doc = getSettingDocument();
+
+		Node save = doc.getElementsByTagName(Constant.TAG_SETTING_SAVE).item(0);
+		save.setTextContent(dirPath + "\\" + Constant.PATH_FILE_NAME);
+		
+		return writeFile(doc, Constant.PATH_SETTING);
+	}
+		
+	// End of segment: C:\Users\Ruyi\Desktop\collate\source\application\Storage.java
 
 
 
@@ -92,12 +301,63 @@ public class TaskSorter {
 			SortParameter.ALPHABETICAL_ORDER
 	};
 	
+	
+	// -----------------------------------------------------------------------------------------------
+	// Public methods
+	// -----------------------------------------------------------------------------------------------
 	public static Comparator<Task> getComparator(SortParameter[] sortParameters) {
 		return new TaskComparator(sortParameters);
 	}
+	
+	// End of segment: C:\Users\Ruyi\Desktop\collate\source\application\TaskSorter.java
 
+
+
+
+
+	/**
+	 * origin: C:\Users\Ruyi\Desktop\collate\source\application\TaskSorter.java
+	 */
+
+	public static ArrayList<Task> getTasksSortedByCategories(ArrayList<Task> list) {
+		Comparator<Task> CategoryComparator = getComparator(parametersForViewCategory);
+		Collections.sort(list, CategoryComparator);
+		
+		return list;
+	}
+	
+	public static ArrayList<Task> getTasksSortedByPriorities(ArrayList<Task> list) {
+		Comparator<Task> priorityComparator = getComparator(parametersForViewPriority);
+		Collections.sort(list, priorityComparator);
+		
+		return list;
+	}	
+	
+	
+	// -----------------------------------------------------------------------------------------------
+	// Private methods
+	// -----------------------------------------------------------------------------------------------
+	// End of segment: C:\Users\Ruyi\Desktop\collate\source\application\TaskSorter.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Ruyi\Desktop\collate\source\application\TaskSorter.java
+	 */
+
+		private static ArrayList<Task> sortByDate(ArrayList<Task> list) {
+			Comparator<Task> comparator = getComparator(parametersForViewAll);
+			Collections.sort(list, comparator);
+			return list;
+		}
+		
+	// -----------------------------------------------------------------------------------------------
+	// TaskComparator
+	// -----------------------------------------------------------------------------------------------
 	private static class TaskComparator implements Comparator<Task> {
-		private SortParameter[] parameters;
+		private SortParameter[] parameters = null;
 		
 		private TaskComparator(SortParameter[] parameters) {
 			this.parameters = parameters;
@@ -151,104 +411,83 @@ public class TaskSorter {
 		}
 
 		private int categoryComparison(String categoryOfTaskA, String categoryOfTaskB) {
-			int comparison;
+			int comparison = 0;
+			
 			if (!categoryOfTaskA.equals(Constant.CATEGORY_UNCATEGORISED) 
-					&& !categoryOfTaskB.equals(Constant.CATEGORY_UNCATEGORISED)) {
-				comparison = categoryOfTaskA.compareTo(categoryOfTaskB);
-			} else if (categoryOfTaskA.equals(Constant.CATEGORY_UNCATEGORISED) 
-					& !categoryOfTaskB.equals(Constant.CATEGORY_UNCATEGORISED)) {
-				comparison = 1;
-			} else if (!categoryOfTaskA.equals(Constant.CATEGORY_UNCATEGORISED) 
-					&& categoryOfTaskB.equals(Constant.CATEGORY_UNCATEGORISED)) {
+				&& !categoryOfTaskB.equals(Constant.CATEGORY_UNCATEGORISED)) {
+				comparison = categoryOfTaskA.compareTo(categoryOfTaskB);		
+				
+			} else if (categoryOfTaskA.equals(Constant.CATEGORY_UNCATEGORISED) && 
+					   !categoryOfTaskB.equals(Constant.CATEGORY_UNCATEGORISED)) {				
+				comparison = 1;				
+				
+			} else if (!categoryOfTaskA.equals(Constant.CATEGORY_UNCATEGORISED) && 
+					   categoryOfTaskB.equals(Constant.CATEGORY_UNCATEGORISED)) {
 				comparison = -1;
 			} else {
 				comparison = 0;
 			}
+			
 			return comparison;
 		}
 		
 		private int dateComparison(Task taskA, Task taskB) {
-			int comparison;
-			Date dateOfTaskA, dateOfTaskB;
+			int comparison = 0;			
+			Date dateOfTaskA = null; 
+			Date dateOfTaskB = null;
+			
 			TaskType taskTypeOfTaskA = taskA.getTaskType();
 			TaskType taskTypeOfTaskB = taskB.getTaskType();
-			if (!taskTypeOfTaskA.equals(TaskType.FLOATING) 
-					&& !taskTypeOfTaskB.equals(TaskType.FLOATING)) {
+			
+			if (!taskTypeOfTaskA.equals(TaskType.FLOATING) && 
+				!taskTypeOfTaskB.equals(TaskType.FLOATING)) {
+				
 				dateOfTaskA = taskA.getStartDate();
 				dateOfTaskB = taskB.getStartDate();
+				
 				comparison = dateOfTaskA.compareTo(dateOfTaskB);
-			} else if (taskTypeOfTaskA.equals(TaskType.FLOATING) 
-					&& !taskTypeOfTaskB.equals(TaskType.FLOATING)) {
+				
+			} else if (taskTypeOfTaskA.equals(TaskType.FLOATING) && 
+					   !taskTypeOfTaskB.equals(TaskType.FLOATING)) {
 				comparison = 1;
-			} else if (!taskTypeOfTaskA.equals(TaskType.FLOATING) 
-					&& taskTypeOfTaskB.equals(TaskType.FLOATING)) {
+				
+			} else if (!taskTypeOfTaskA.equals(TaskType.FLOATING) &&
+					   taskTypeOfTaskB.equals(TaskType.FLOATING)) {
 				comparison = -1;
 			} else {
 				comparison = 0;
 			}
+			
 			return comparison;
 		}
 
 		private int priorityComparison(Priority taskAPriority, Priority taskBPriority) {
-			int comparison;
+			int comparison = 0;
 			int priorityLengthOfTaskA, priorityLengthOfTaskB;
-			if (!taskAPriority.equals(Priority.NEUTRAL) 
-					&& !taskBPriority.equals(Priority.NEUTRAL)) {
+			
+			if (!taskAPriority.equals(Priority.NEUTRAL) && 
+				!taskBPriority.equals(Priority.NEUTRAL)) {
+				
 				priorityLengthOfTaskA = taskAPriority.getCommand().
-						getAdvancedCommand().length();
+										getAdvancedCommand().length();
 				priorityLengthOfTaskB = taskBPriority.getCommand().
-						getAdvancedCommand().length();
+										getAdvancedCommand().length();
+				
 				comparison = priorityLengthOfTaskB - priorityLengthOfTaskA;
-			} else if (taskAPriority.equals(Priority.NEUTRAL) 
-					&& !taskBPriority.equals(Priority.NEUTRAL)) {
+				
+			} else if (taskAPriority.equals(Priority.NEUTRAL) && 
+					   !taskBPriority.equals(Priority.NEUTRAL)) {
 				comparison = 1;
-			} else if (!taskAPriority.equals(Priority.NEUTRAL) 
-					&& taskBPriority.equals(Priority.NEUTRAL)) {
+			} else if (!taskAPriority.equals(Priority.NEUTRAL) && 
+				       taskBPriority.equals(Priority.NEUTRAL)) {
 				comparison = -1;
 			} else {
 				comparison = 0;
 			}
+			
 			return comparison;
 		}
 	}
-	
-	// End of segment: C:\Users\Ruyi\Desktop\collate\source\application\TaskSorter.java
-
-
-
-
-
-	/**
-	 * origin: C:\Users\Ruyi\Desktop\collate\source\application\TaskSorter.java
-	 */
-
-	private static ArrayList<Task> sortByDate(ArrayList<Task> list) {
-		Comparator<Task> comparator = getComparator(parametersForViewAll);
-		Collections.sort(list, comparator);
-		return list;
-	}
-	
-	// End of segment: C:\Users\Ruyi\Desktop\collate\source\application\TaskSorter.java
-
-
-
-
-
-	/**
-	 * origin: C:\Users\Ruyi\Desktop\collate\source\application\TaskSorter.java
-	 */
-
-	public static ArrayList<Task> getTasksSortedByCategories(ArrayList<Task> list) {
-		Comparator<Task> CategoryComparator = getComparator(parametersForViewCategory);
-		Collections.sort(list, CategoryComparator);
-		return list;
-	}
-	
-	public static ArrayList<Task> getTasksSortedByPriorities(ArrayList<Task> list) {
-		Comparator<Task> priorityComparator = getComparator(parametersForViewPriority);
-		Collections.sort(list, priorityComparator);
-		return list;
-	}	
 }
 
 	// End of segment: C:\Users\Ruyi\Desktop\collate\source\application\TaskSorter.java
@@ -261,18 +500,99 @@ public class TaskSorter {
 	 * origin: C:\Users\Ruyi\Desktop\collate\source\application\ToDoList.java
 	 */
 
-	public ArrayList<Task> deleteMultipleTasksFromList(String userInput) {
-		ArrayList<Task> removedTasks = new ArrayList<Task>();
-		String[] targetIds = InputParser.getTargetIdsFromString(userInput);
-		
-		for (String targetId : targetIds) {
-			Task removedTask = deleteTaskById(targetId);
-			removedTasks.add(removedTask);
+	public Pair<Task, String> completeTaskOnList(String userInput) {		
+		String taskId = InputParser.getTargetIdFromString(userInput);
+		if (taskId == null) {
+			return null;
 		}
 		
-		return removedTasks;
+		String parentId = null;
+		String targetId = null;		
+		if (taskId.contains(Constant.PREFIX_RECURRING_ID)) {
+			parentId = InputParser.getTaskIdFromRecurringId(taskId);
+			targetId = parentId;
+		} else {
+			targetId = taskId;
+		}
+		//-------------------------------------------------------------------------------		
+		Task completedTask = null;
+		Pair<Task, String> deleteDetailsPair = deleteTaskById(targetId);
+		Task originalTask = deleteDetailsPair.getKey();
+		String completedTaskId = null;
+		
+		if (originalTask != null) {
+			completedTask = originalTask.deepCloneTask();
+			
+			if (parentId != null) {
+				boolean hasSet = completeRecurringChildTask(taskId, completedTask);
+				
+				if (hasSet) {
+					completedTaskId = parentId;
+				}				
+			} else {
+				updateParentAndChildTaskStatus(completedTask, TaskStatus.COMPLETED);
+				completedTaskId = targetId;
+			}
+			
+			addTaskBackToList(completedTask, false);		
+			
+		} else {
+			return null;
+		}		
+		
+		return new Pair<Task, String>(originalTask, completedTaskId);
 	}
 	
+	public Pair<Task, String> uncompleteTaskOnList(String userInput) {
+		String taskId = InputParser.getTargetIdFromString(userInput);		
+		if (taskId == null) {
+			return null;
+		}
+				
+		String parentId = null;
+		String targetId = null;		
+		if (taskId.contains(Constant.PREFIX_RECURRING_ID)) {
+			parentId = InputParser.getTaskIdFromRecurringId(taskId);
+			targetId = parentId;
+		} else {
+			targetId = taskId;
+		}
+				
+		//-------------------------------------------------------------------------------		
+		Task uncompletedTask = null;
+		Pair<Task, String> deleteDetailsPair = deleteTaskById(targetId);
+		Task originalTask = deleteDetailsPair.getKey();
+		String completedTaskId = null;
+		
+		if (originalTask != null) {
+			uncompletedTask = originalTask.deepCloneTask();
+			
+			if (parentId != null) {
+				boolean hasSet = uncompleteRecurringChildTask(taskId, uncompletedTask);
+				
+				if (hasSet) {
+					completedTaskId = parentId;
+				}				
+			} else {
+				uncompleteParentAndChildTask(uncompletedTask);
+				completedTaskId = targetId;
+			}
+			
+			addTaskBackToList(uncompletedTask, false);		
+			
+		} else {
+			return null;
+		}		
+		
+		return new Pair<Task, String>(originalTask, completedTaskId);
+	}
+			
+	// -----------------------------------------------------------------------------------------------
+	// Private Methods
+	// -----------------------------------------------------------------------------------------------	
+	// ---------------------------------------------------------
+	// Add-related methods
+	// ---------------------------------------------------------
 	// End of segment: C:\Users\Ruyi\Desktop\collate\source\application\ToDoList.java
 
 
@@ -283,109 +603,214 @@ public class TaskSorter {
 	 * origin: C:\Users\Ruyi\Desktop\collate\source\application\ToDoList.java
 	 */
 
-	public Pair<Task, String> completeTaskOnList(String userInput) {
-		String targetId = InputParser.getTargetIdFromString(userInput);
-		Task completedTask = null;
-		
-		if (!targetId.contains(Constant.PREFIX_RECURRING_ID)) {
-			completedTask = getTaskById(targetId);
-			completedTask.setStatus(Status.COMPLETED);
-		} else {
-			String parentId = InputParser.getTaskIdFromRecurringId(targetId);
-			completedTask = completeRecurringTaskOnList(targetId, parentId);
-			targetId = parentId;
+	/*
+	 * Cannot be used for uncomplete function because parent
+	 * and child tasks may have different status
+	 */
+	private void updateParentAndChildTaskStatus(Task task, TaskStatus status) {
+		if (task.getIsRecurring()) {
+			ArrayList<RecurringTask> recurringTasks = 
+					task.getRecurringTasks();
+			
+			for (RecurringTask recurTask : recurringTasks) {
+				if (recurTask.getStatus().
+					equals(TaskStatus.DELETED)) {
+					continue;
+				}
+				
+				recurTask.setStatus(status);
+			}
 		}
 		
-		Task originalTask = null;
-		String completedTaskId = null;
-		if (completedTask != null) {
-			originalTask = deleteTaskById(targetId);
-			
-			if (originalTask != null) {
-				AddTaskBackToList(completedTask, false);
-				String taskId = InputParser.getTargetIdFromString(userInput);
-				if (taskId.contains(Constant.PREFIX_RECURRING_ID)) {
-					completedTaskId = taskId;
-				} else {
-					completedTaskId = completedTask.getId();
-				}
-			}
-		}	
-		
-		return new Pair<Task, String>(originalTask, completedTaskId);
+		task.setStatus(status);
 	}
 	
-	public Pair<Task, String> uncompleteTaskOnList(String userInput) {
-		String targetId = InputParser.getTargetIdFromString(userInput);
-		Task uncompletedTask = null;
+	// ---------------------------------------------------------
+	// Complete/Uncomplete -related methods
+	// ---------------------------------------------------------		
+	private boolean completeRecurringChildTask(String targetId, Task parentTask) {
+		boolean hasSet = false;		
+		String recurringTaskId = InputParser.getChildIdFromRecurringId(targetId);		
+			
+		int count = 0;
+		String recurTaskId = "-1";
+		TaskStatus status = null;
+		ArrayList<RecurringTask> recurTasks = parentTask.getRecurringTasks();
 		
-		if (!targetId.contains(Constant.PREFIX_RECURRING_ID)) {
-			uncompletedTask = getTaskById(targetId);
-			Date endDate = uncompletedTask.getEndDate();
-			Status status = Status.getTaskStatus(endDate);
-			if (status.equals(Status.OVERDUE)) {
-				uncompletedTask.setStatus(Status.OVERDUE);
-			} else {
-				uncompletedTask.setStatus(Status.ONGOING);
-			}
-		} else {
-			String parentId = InputParser.getTaskIdFromRecurringId(targetId);
-			uncompletedTask = completeRecurringTaskOnList(targetId, parentId);
-			targetId = parentId;
+		if (recurTasks == null) {
+			return hasSet;
 		}
 		
-		Task originalTask = null;
-		String uncompletedTaskId = null;
-		if (uncompletedTask != null) {
-			originalTask = deleteTaskById(targetId);
+		for (RecurringTask recurTask : recurTasks) {	
+			recurTaskId = recurTask.getRecurringTaskId();
+			status = recurTask.getStatus();
 			
-			if (originalTask != null) {
-				AddTaskBackToList(uncompletedTask, false);
-				String taskId = InputParser.getTargetIdFromString(userInput);
-				if (taskId.contains(Constant.PREFIX_RECURRING_ID)) {
-					uncompletedTaskId = taskId;
-				} else {
-					uncompletedTaskId = uncompletedTask.getId();
-				}
+			if (status.equals(TaskStatus.DELETED) ||
+				status.equals(TaskStatus.COMPLETED)) {
+				count++;
+			} else if (recurTaskId.equals(recurringTaskId)){
+				recurTask.setStatus(TaskStatus.COMPLETED);	
+				hasSet = true;	
+				
+				count++;
 			}
-		}	
+		} 
 		
-		return new Pair<Task, String>(originalTask, uncompletedTaskId);
+		if (count == recurTasks.size()) {
+			parentTask.setStatus(TaskStatus.COMPLETED);
+		}
+		
+		return hasSet;
+	}
+	
+	private boolean uncompleteRecurringChildTask(String targetId, Task parentTask) {
+		boolean hasSet = false;		
+		String recurringTaskId = InputParser.getChildIdFromRecurringId(targetId);		
+			
+		int count = 0;
+		String recurTaskId = "-1";
+		TaskStatus status = null;
+		Date recurDate = null;
+		TaskStatus newStatus = null;
+		ArrayList<RecurringTask> recurTasks = parentTask.getRecurringTasks();
+		
+		if (recurTasks == null) {
+			return hasSet;
+		}
+		
+		for (RecurringTask recurTask : recurTasks) {	
+			recurTaskId = recurTask.getRecurringTaskId();
+			status = recurTask.getStatus();
+			recurDate = recurTask.getRecurDate();
+			
+			if (recurTaskId.equals(recurringTaskId)){
+				newStatus = TaskStatus.getTaskStatus(recurDate);
+				
+				recurTask.setStatus(newStatus);	
+				status = newStatus;
+				hasSet = true;	
+			}
+			
+			/*
+			 * This condition is placed after the set
+			 * which differs from the complete counterpart
+			 * so that the task that is to be unmarked is
+			 * not counted.
+			 */
+			if (status.equals(TaskStatus.DELETED) ||
+				status.equals(TaskStatus.COMPLETED)) {
+				count++;
+			} 
+		} 
+		
+		if (count < recurTasks.size()) {
+			Date endDate = parentTask.getEndDate();
+			
+			newStatus = TaskStatus.getTaskStatus(endDate);
+			parentTask.setStatus(newStatus);
+		}
+		
+		return hasSet;
+	}
+	
+	private void uncompleteParentAndChildTask(Task task) {
+		Date endDate = null;
+		
+		if (task.getIsRecurring()) {
+			ArrayList<RecurringTask> recurringTasks = 
+					task.getRecurringTasks();			
+			
+			for (RecurringTask recurTask : recurringTasks) {
+				if (recurTask.getStatus().
+					equals(TaskStatus.DELETED)) {
+					continue;
+				}
+				
+				endDate = recurTask.getRecurDate();
+				recurTask.setStatus(TaskStatus.getTaskStatus(endDate));
+			}
+		}
+		
+		endDate = task.getEndDate();
+		task.setStatus(TaskStatus.getTaskStatus(endDate));
+	}
+		
+	// ---------------------------------------------------------
+	// Misc
+	// ---------------------------------------------------------	
+	// End of segment: C:\Users\Ruyi\Desktop\collate\source\application\ToDoList.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Ruyi\Desktop\collate\source\test\InputParserTest.java
+	 */
+
+package test;
+
+import static org.junit.Assert.*;
+
+import java.util.Date;
+import java.util.List;
+
+import org.junit.Test;
+
+import application.Command;
+import application.InputParser;
+import application.Priority;
+import application.TaskType;
+
+import com.joestelmach.natty.Parser;
+
+public class InputParserTest {
+	private static final String CATEGORY = "revision";
+	private static final String TASK_ID = "1";
+	private static final String DESCRIPTION = "finish exam revision /by 20 April /high #revision";
+	private static final String USER_INPUT_DATED_TASK = "add finish exam revision /by 20 April /high #revision";
+	
+	@Test
+	public void test() {
+		testGetActionFromString();
+		testGetTaskTypeFromString();
+		testGetCategoryFromString();
+		testGetPriorityFromString();
+		testRemoveActionFromString();
+	}
+	
+	public void testGetActionFromString() {
+		Command expectedResult = Command.ADD;
+		Command actualResult = InputParser.getActionFromString(USER_INPUT_DATED_TASK);
+		assertEquals(actualResult, expectedResult);
 	}
 
-	public Task completeRecurringTaskOnList(String targetId, String parentId) {
-		Task task = null;
-		boolean isFound = false;
-		Iterator<Task> taskIterator = _tasks.iterator();
-		ArrayList<RecurringTask> recurTasks = new ArrayList<RecurringTask>();
-		
-		String recurringTaskId = InputParser.getChildIdFromRecurringId(targetId);		
-		
-		while (taskIterator.hasNext()) {
-			task = taskIterator.next();
-			isFound = task.getId().equals(parentId);
-			
-			if (isFound) {
-				recurTasks = task.getRecurringTasks();
-				for (RecurringTask recurTask : recurTasks) {					
-					if (recurTask.getRecurringTaskId().equals(recurringTaskId)) {
-						recurTask.setStatus(Status.COMPLETED);
-						
-						break;
-					}
-				}	
-				
-				break;
-			}
-		}
-		
-		return task;
+	public void testGetTaskTypeFromString() {
+		TaskType expectedResult = TaskType.DATED;
+		TaskType actualResult = InputParser.getTaskTypeFromString(USER_INPUT_DATED_TASK);
+		assertEquals(actualResult, expectedResult);
 	}
-	
-	// -----------------------------------------------------------------------------------------------
-	// Private Methods
-	// -----------------------------------------------------------------------------------------------
-	// End of segment: C:\Users\Ruyi\Desktop\collate\source\application\ToDoList.java
+
+	public void testGetCategoryFromString() {
+		String expectedResult = CATEGORY;
+		String actualResult = InputParser.getCategoryFromString(USER_INPUT_DATED_TASK);
+		assertEquals(actualResult, expectedResult);
+	}
+
+	public void testGetPriorityFromString() {
+		Priority expectedResult = Priority.HIGH;
+		Priority actualResult = InputParser.getPriorityFromString(USER_INPUT_DATED_TASK);
+		assertEquals(actualResult, expectedResult);
+	}
+
+	public void testRemoveActionFromString() {
+		String expectedResult = DESCRIPTION;
+		String actualResult = InputParser.removeActionFromString(USER_INPUT_DATED_TASK, TASK_ID);
+		assertEquals(actualResult, expectedResult);
+	}
+}
+
+	// End of segment: C:\Users\Ruyi\Desktop\collate\source\test\InputParserTest.java
 
 
 

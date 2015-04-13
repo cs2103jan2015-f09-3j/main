@@ -6,11 +6,42 @@
 	 * origin: C:\Users\Ruyi\Desktop\collate\source\application\DateParser.java
 	 */
 
+	/*
+	 * Gets today's date portion only
+	 */
+	public static Calendar getTodayDate() {
+		Calendar calendar = DateParser.getTodayCalendar();
+		
+		calendar.set(Calendar.HOUR_OF_DAY, 0); 
+		calendar.set(Calendar.MINUTE, 0);
+		calendar.set(Calendar.SECOND, 0);
+	    
+	    return calendar;
+	}
+	
+	public static Calendar getDateWithoutTime(Date targetDate) {
+	    Calendar newDate = Calendar.getInstance();
+	    newDate.setLenient(false);
+	    newDate.setTime(targetDate);
+	    newDate.set(Calendar.HOUR_OF_DAY, 0);
+	    newDate.set(Calendar.MINUTE,0);
+	    newDate.set(Calendar.SECOND,0);
+	    newDate.set(Calendar.MILLISECOND,0);
+
+	    return newDate;
+
+	}
+	
+	/*
+	 * Compares date portion only
+	 */
 	public static boolean compareDate(Date dateA, Date dateB) {
 		Calendar calendarA = Calendar.getInstance();
 		Calendar calendarB = Calendar.getInstance();
+		
 		calendarA.setTime(dateA);
 		calendarB.setTime(dateB);
+		
 		boolean sameDay = calendarA.get(Calendar.YEAR) == calendarB.get(Calendar.YEAR) &&
 				calendarA.get(Calendar.DAY_OF_YEAR) == calendarB.get(Calendar.DAY_OF_YEAR);
 		
@@ -20,14 +51,24 @@
 	public static boolean isAfterDateWithoutTime(Date dateA, Date dateB) {
 		Calendar calendarA = Calendar.getInstance();
 		Calendar calendarB = Calendar.getInstance();
+		
 		calendarA.setTime(dateA);
 		calendarB.setTime(dateB);
+		
 		boolean isAfterDay = calendarA.get(Calendar.YEAR) >= calendarB.get(Calendar.YEAR) &&
 				calendarA.get(Calendar.DAY_OF_YEAR) > calendarB.get(Calendar.DAY_OF_YEAR);
 		
 		return isAfterDay;
 	}
 	
+	public static boolean isAfterDateOnly(Calendar thisCalendar, Calendar thatCalendar) {
+		thisCalendar = getDateWithoutTime(thisCalendar.getTime());
+		thatCalendar = getDateWithoutTime(thatCalendar.getTime());
+		
+		return isAfterDate(thisCalendar, thatCalendar);
+	}
+}
+
 	// End of segment: C:\Users\Ruyi\Desktop\collate\source\application\DateParser.java
 
 
@@ -35,22 +76,75 @@
 
 
 	/**
-	 * origin: C:\Users\Ruyi\Desktop\collate\source\application\DateParser.java
+	 * origin: C:\Users\Ruyi\Desktop\collate\source\application\Execution.java
 	 */
 
-	public static Calendar getTodayDate() {
-		Calendar calendar = Calendar.getInstance();
-		calendar.setTimeZone(TimeZone.getDefault());
-		
-		calendar.set(Calendar.HOUR_OF_DAY, 0); 
-		calendar.set(Calendar.MINUTE, 0);
-		calendar.set(Calendar.SECOND, 0);
-	    
-	    return calendar;
+	public static String getCleanFrequencySetting() {
+		return Main.storage.readSaveCleanRecurrence().toString();
 	}
-}
-
-	// End of segment: C:\Users\Ruyi\Desktop\collate\source\application\DateParser.java
+	
+	public static void executeCleanCompletedTasks() {
+		ArrayList<Task> taskList = Main.list.getTasks();
+		Task task;
+		TaskStatus taskStatus;
+		String taskId;
+		int restartIndex = -1;
+		boolean isRecurring;
+	
+		for(int i = 0; i < taskList.size(); i++) {
+			task = taskList.get(i);
+			taskId = task.getId();
+			taskStatus = task.getStatus();
+			isRecurring = task.getIsRecurring();
+			
+			if(isRecurring == false) {
+				if(taskStatus.equals(TaskStatus.COMPLETED)) {
+					Main.list.deleteTaskById(taskId);
+					i = restartIndex;
+				}
+			} else {
+				cleanCompletedRecurringTask(task, taskId);
+			}
+		}
+	}
+	
+	public static void executeCleanCategories() {
+		Main.storage.removeEmptyCategory();
+	}
+	
+	/*
+	 * TimerTask to clear system message for
+	 * change save path function in setting
+	 */
+	public static void executeSysMsgTimerForSavePath() {
+		ExecutionTimer.SystemMsgTimerSavePath sysMsgTimerSavePath = 
+				new ExecutionTimer.SystemMsgTimerSavePath();
+		
+		Timer timer = sysMsgTimerSavePath.getTimer();
+		timer.schedule(sysMsgTimerSavePath, Constant.TIMER_SYSTEM_MSG_DURATION);
+	}
+	
+	/*
+	 * TimerTask to clear system message for
+	 * change clean completed task duration in setting
+	 */
+	public static void executeSysMsgTimerForClean() {
+		ExecutionTimer.SystemMsgTimerCleanSetting systemMsgTimerCleanSetting =
+				new ExecutionTimer.SystemMsgTimerCleanSetting();
+		
+		Timer timer = systemMsgTimerCleanSetting.getTimer();
+		timer.schedule(systemMsgTimerCleanSetting, Constant.TIMER_SYSTEM_MSG_DURATION);
+	}
+	
+	public static void executeClearSavePathMsg() {
+		settingController.lblSysMsgSettingA.setText(Constant.EMPTY_STRING);	
+	}
+	
+	public static void executeClearCleanSettingMsg() {
+		settingController.lblSysMsgSettingB.setText(Constant.EMPTY_STRING);	
+	}
+	
+	// End of segment: C:\Users\Ruyi\Desktop\collate\source\application\Execution.java
 
 
 
@@ -88,9 +182,163 @@
 			mainController.executeSearchResult();
 		}
 	}
+	
+	private static void cleanCompletedRecurringTask(Task task, String taskId) {
+		RecurringTask recurringTask = null;
+		String recurringId = null;
+		ArrayList<RecurringTask> recurringList = task.getRecurringTasks();
+		
+		for(int j = 0; j < recurringList.size(); j++) {
+			recurringTask = recurringList.get(j);
+			
+			if(recurringTask.getStatus().equals(TaskStatus.COMPLETED)) {
+				recurringId = taskId + Constant.PREFIX_RECURRING_ID + 
+							  recurringTask.getRecurringTaskId();
+				
+				Main.list.deleteTaskById(recurringId);
+			}
+		}
+	}
 }
 
 	// End of segment: C:\Users\Ruyi\Desktop\collate\source\application\Execution.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Ruyi\Desktop\collate\source\application\ExecutionTimer.java
+	 */
+
+	public static class SystemMsgTimerSavePath extends TimerTask {
+		private Timer _timer;
+		
+		public SystemMsgTimerSavePath() {
+			_timer = new Timer();
+		}
+		
+		public Timer getTimer() {
+			return _timer;
+		}
+		
+        public void run() {
+    		Platform.runLater(new Runnable() {
+    		    @Override
+    		    public void run() {
+    		    	Execution.executeClearSavePathMsg();
+    		    }
+    		});
+    		
+            _timer.cancel();
+        }
+    }
+	
+	public static class SystemMsgTimerCleanSetting extends TimerTask {
+		private Timer _timer;
+		
+		public SystemMsgTimerCleanSetting() {
+			_timer = new Timer();
+		}
+		
+		public Timer getTimer() {
+			return _timer;
+		}
+		
+        public void run() {
+    		Platform.runLater(new Runnable() {
+    		    @Override
+    		    public void run() {
+    		    	Execution.executeClearCleanSettingMsg();	
+    		    }
+    		});
+    		
+    		_timer.cancel();
+        }
+	}
+}
+
+	// End of segment: C:\Users\Ruyi\Desktop\collate\source\application\ExecutionTimer.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Ruyi\Desktop\collate\source\application\Storage.java
+	 */
+
+	/*
+	 * Update setting.xml with the period of 
+	 * removing completed task from listFile.xml
+	 */
+	public String updateCleanRecurrenceInSetting(String recurrence) { 
+		Document doc = getSettingDocument();
+
+		Node clean = doc.getElementsByTagName(Constant.TAG_SETTING_CLEAN).item(0);
+		clean.setTextContent(recurrence);
+		
+		return writeFile(doc, Constant.PATH_SETTING);
+	}
+		
+	/*
+	 * Read the setting of the clean recurrence function
+	 */
+	public String readSaveCleanRecurrence() {
+		String cleanRecurrence = null;
+		Document settingDoc = getSettingDocument();		
+		
+		try {
+			XPathExpression expression = 
+					_xPath.compile(Constant.XML_XPATH_SETTING_CLEAN);
+			
+			cleanRecurrence = (String) expression.
+					   		  evaluate(settingDoc, XPathConstants.STRING);
+			
+		} catch (XPathExpressionException exception) {
+			Main.LOGGER.logp(Level.SEVERE, 
+							 Storage.class.getName(), 
+							 "readSaveCleanRecurrence", 
+							 exception.getMessage());
+		}
+		
+		return cleanRecurrence;
+	}
+	
+	public void removeEmptyCategory() {
+		Document document = getFileDocument();
+		
+		Element root = document.getDocumentElement();
+		NodeList categoryNodes = root.getElementsByTagName(Constant.TAG_CATEGORY);
+		
+		Node categoryNode = null;
+		String categoryString = null;
+		boolean isEmpty;
+		int restartIndex = -1;
+		
+		boolean isNotEqual = false;
+		for (int i = 0; i < categoryNodes.getLength(); i++) {
+			categoryNode = categoryNodes.item(i);
+			categoryString = categoryNode.getTextContent();
+			isEmpty = isEmptyCategory(categoryString);
+			
+			isNotEqual = !categoryString.
+						 equalsIgnoreCase(Constant.CATEGORY_UNCATEGORISED);
+			
+			if(isNotEqual && isEmpty) {
+				categoryNode.getParentNode().removeChild(categoryNode);
+				Main.list.getCategories().remove(categoryString);
+				i = restartIndex;
+			}	
+		}
+		
+		cleanAndWriteFile(document);
+	}
+		
+	// -----------------------------------------------------------------------------------------------
+	// Private methods
+	// -----------------------------------------------------------------------------------------------
+	// End of segment: C:\Users\Ruyi\Desktop\collate\source\application\Storage.java
 
 
 
@@ -102,7 +350,7 @@
 
 	// Creating a repeated task with a different date for recurring task
 	public static Task createRecurringChildItem(Task originalTask, String recurringId, 
-												Status recurringStatus, Date onDate, 
+												TaskStatus recurringStatus, Date onDate, 
 												Date byDate, Date startDate) {
 		Task task = new Task();
 		
@@ -139,68 +387,8 @@
 	 * origin: C:\Users\Ruyi\Desktop\collate\source\application\TaskSorter.java
 	 */
 
-	private static ArrayList<Task> reallocateFloatingTasks(ArrayList<Task> list) {
-		ArrayList<Task> floatingList = extractFloatingTasks(list);
-		addFloatingTasksBackIntoList(list, floatingList);
-		
-		return list;
-	}
-	
-	private static ArrayList<Task> extractFloatingTasks(ArrayList<Task> list) {
-		Task task;
-		String taskType;
-		ArrayList<Task> floatingList = new ArrayList<Task>();
-		
-		for(int i = 0; i < list.size(); i++) {
-			task = list.get(i);
-			taskType = task.getTaskType().toString();
-			if(taskType.equalsIgnoreCase(TaskType.FLOATING.toString())) {
-				floatingList.add(list.get(i));
-			} else {
-				break;
-			}
-		}
-		
-		list.removeAll(floatingList);
-		
-		return floatingList;
-	}
-
-	private static void addFloatingTasksBackIntoList(ArrayList<Task> list, ArrayList<Task> floatingList) {
-		Task task;
-		String taskType;
-		Date date, today;
-		
-		if(list.isEmpty()) {
-			for(int k = 0; k < floatingList.size(); k++) {
-				list.add(floatingList.get(k));
-			}
-		} else {
-			for(int j = 0; j < list.size(); j++) {
-				task = list.get(j);
-				taskType = task.getTaskType().toString();
-				date = task.getStartDate();
-				today = DateParser.getTodayDate().getTime();
-				int counter = j;
-				
-				if(!taskType.equalsIgnoreCase(TaskType.FLOATING.toString()) && 
-						DateParser.isAfterDateWithoutTime(date, today)) {
-					for(int k = 0; k < floatingList.size(); k++) {
-						list.add(counter, floatingList.get(k));
-						counter++;
-					}
-					
-					break;
-				} else if(taskType.equalsIgnoreCase(TaskType.FLOATING.toString()) || 
-						j == list.size()-1) {
-					for(int k = 0; k < floatingList.size(); k++) {
-						list.add(floatingList.get(k));
-					}
-					
-					break;
-				}
-			} 
-		}
+	public static ArrayList<Task> getTasksSortedByDate(ArrayList<Task> list) {
+		return reallocateFloatingTasks(sortByDate(list));
 	}
 	
 	// End of segment: C:\Users\Ruyi\Desktop\collate\source\application\TaskSorter.java
@@ -213,10 +401,86 @@
 	 * origin: C:\Users\Ruyi\Desktop\collate\source\application\TaskSorter.java
 	 */
 
-	public static ArrayList<Task> getTasksSortedByDate(ArrayList<Task> list) {
-		return reallocateFloatingTasks(sortByDate(list));
-	}
-	
+		private static ArrayList<Task> reallocateFloatingTasks(ArrayList<Task> list) {
+			ArrayList<Task> floatingList = extractFloatingTasks(list);
+			addFloatingTasksBackIntoList(list, floatingList);
+			
+			return list;
+		}
+		
+		private static ArrayList<Task> extractFloatingTasks(ArrayList<Task> list) {
+			Task task = null;
+			String taskType = null;
+			ArrayList<Task> floatingList = new ArrayList<Task>();
+			
+			for(int i = 0; i < list.size(); i++) {
+				task = list.get(i);
+				taskType = task.getTaskType().toString();
+				if(taskType.equalsIgnoreCase(TaskType.FLOATING.toString())) {
+					floatingList.add(list.get(i));
+				} else {
+					break;
+				}
+			}
+			
+			list.removeAll(floatingList);
+			
+			return floatingList;
+		}
+
+		private static void addFloatingTasksBackIntoList(ArrayList<Task> list, ArrayList<Task> floatingList) {		
+			if(list.isEmpty()) {
+				// insert the floating task to the top of the list 
+				addFloatingTaskToTaskList(list, floatingList);
+			} else {
+				// insert floating tasks after today's task in order
+				insertFloatingTasksInOrder(list, floatingList); 
+			}
+		}
+
+		private static void insertFloatingTasksInOrder(ArrayList<Task> list,
+											   		   ArrayList<Task> floatingList) {
+			Task task = null;
+			TaskType taskType = null;
+			Date date = null;
+			Date today = null;
+			
+			for(int j = 0; j < list.size(); j++) {
+				task = list.get(j);
+				taskType = task.getTaskType();
+				date = task.getStartDate();
+				today = DateParser.getTodayDate().getTime();
+				int counter = j;
+				
+				if(!taskType.equals(TaskType.FLOATING) && 
+				   DateParser.isAfterDateWithoutTime(date, today)) {
+					insertFloatingTaskToTaskList(list, floatingList, counter);
+					
+					break;
+				} else if(taskType.equals(TaskType.FLOATING) || 
+						  j == list.size()-1) {
+					addFloatingTaskToTaskList(list, floatingList);
+					
+					break;
+				}
+			}
+		}
+
+		private static void insertFloatingTaskToTaskList(ArrayList<Task> list,
+														 ArrayList<Task> floatingList, int counter) {
+			for(int k = 0; k < floatingList.size(); k++) {
+				list.add(counter, floatingList.get(k));
+				counter++;
+			}
+		}
+
+		private static void addFloatingTaskToTaskList(ArrayList<Task> list,
+														 ArrayList<Task> floatingList) {
+			for(int k = 0; k < floatingList.size(); k++) {
+				list.add(floatingList.get(k));
+			}
+		}
+		
 	// End of segment: C:\Users\Ruyi\Desktop\collate\source\application\TaskSorter.java
 
 
@@ -227,14 +491,28 @@
 	 * origin: C:\Users\Ruyi\Desktop\collate\source\application\ToDoList.java
 	 */
 
+	public Task selectTaskFromList(String userInput) {
+		Task selectedTask = null;
+		String targetId = InputParser.getTargetIdFromString(userInput);
+		
+		selectedTask = selectTaskById(targetId);
+		_selectedTask = selectedTask;
+		
+		return selectedTask;
+	}
+	
+	// ---------------------------------------------------------
+	// Methods used for rendering view
+	// ---------------------------------------------------------				
+	/*
+	 * Generates a list that consist of Task objects and child task items 
+	 * represented as Task objects.
+	 */
 	public static ArrayList<Task> generateTaskItems(ArrayList<Task> tasks, String displayType) {
 		ArrayList<Task> tempTasks = new ArrayList<>();
-		Task task;
-		Date recurringDate;
-		boolean isRecurring;
-		String taskType;
-		String recurringId;
-		Status recurringStatus;
+		Task task = null;
+		boolean isRecurring = false;
+		String taskType = null;
 		
 		for(int i = 0; i < tasks.size(); i++) {
 			task = tasks.get(i);
@@ -243,38 +521,16 @@
 			
 			if(!taskType.equalsIgnoreCase(TaskType.TIMED.toString())) {
 				if(isRecurring) {
-					for(int j = 0; j < task.getRecurringTasks().size(); j++) {
-						Task taskA = null;
-						recurringDate = task.getRecurringTasks().get(j).getRecurDate();
-						recurringId = task.getId() + Constant.PREFIX_RECURRING_ID + 
-								task.getRecurringTasks().get(j).getRecurringTaskId();
-						recurringStatus = task.getRecurringTasks().get(j).getStatus();
-						taskA = getRecurChildItemForEventOrDated(task, recurringDate, taskType, recurringId,
-								recurringStatus, taskA);
-						tempTasks.add(taskA);
-					}
+					generateRecurChildTasks(tempTasks, task, taskType);
 				} else {
-					Task t2 = new Task();
-					t2 = task;
-					tempTasks.add(t2);
+					tempTasks.add(task);
 				}
 			} else {
 				if(displayType.equalsIgnoreCase(Constant.TAB_NAME_CATEGORY) || 
-						displayType.equalsIgnoreCase(Constant.TAB_NAME_PRIORITY)) {
-					Task t2 = new Task();
-					t2 = task;
-					tempTasks.add(t2);
+					displayType.equalsIgnoreCase(Constant.TAB_NAME_PRIORITY)) {
+					tempTasks.add(task);
 				} else {
-					Calendar start = Calendar.getInstance();
-					start.setTime(task.getFrom());
-					Calendar end = Calendar.getInstance();
-					end.setTime(task.getTo());
-					
-					for (Date date = start.getTime(); !start.after(end); start.add(Calendar.DATE, 1), date = start.getTime()) {
-						Task t3 = Task.createRecurringChildItem(task, task.getId(), task.getStatus(), 
-								task.getOn(), task.getBy(), date);
-						tempTasks.add(t3);
-					}
+					generateRepeatedTimedTask(tempTasks, task);
 				}
 			}
 		}
@@ -282,7 +538,158 @@
 		return tempTasks;
 	}
 	
+	// ---------------------------------------------------------
+	// Complete/Uncomplete -related methods
+	// ---------------------------------------------------------
 	// End of segment: C:\Users\Ruyi\Desktop\collate\source\application\ToDoList.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Ruyi\Desktop\collate\source\application\ToDoList.java
+	 */
+
+	private static Task getRecurChildItemForEventOrDated(Task task,
+														 Date recurringDate, 
+														 String taskType, 
+														 String recurringId,
+														 TaskStatus recurringStatus, Task taskA) {
+		
+		if(taskType.equalsIgnoreCase(TaskType.EVENT.toString())) {
+			taskA = Task.createRecurringChildItem(task, recurringId, recurringStatus, 
+					recurringDate, task.getBy(), recurringDate);
+			
+		} else if(taskType.equalsIgnoreCase(TaskType.DATED.toString())) {
+			taskA = Task.createRecurringChildItem(task, recurringId, recurringStatus, 
+					task.getOn(), recurringDate, recurringDate);
+		}
+		
+		return taskA;
+	}
+	
+	private static void generateRepeatedTimedTask(ArrayList<Task> tempTasks,
+			  									  Task task) {
+		Task newTask = null;
+		Calendar originalStart = Calendar.getInstance();
+		originalStart.setTime(task.getFrom());
+		Calendar start = Calendar.getInstance();
+		start.setTime(task.getFrom());
+		Calendar end = Calendar.getInstance();
+		end.setTime(task.getTo());
+
+		for (Date date = start.getTime(); !DateParser.isAfterDateOnly(start, end); 
+			 start.add(Calendar.DATE, 1), date = start.getTime()) {
+
+			if(DateParser.hasMatchedDateOnly(start, end)) {
+				if(DateParser.hasMatchedDateOnly(originalStart, end)) {
+					newTask = Task.createRecurringChildItem(task, task.getId(), task.getStatus(), 
+							task.getOn(), task.getBy(), originalStart.getTime());
+				} else {
+					newTask = Task.createRecurringChildItem(task, task.getId(), task.getStatus(), 
+							task.getOn(), task.getBy(), end.getTime());
+				}
+			} else {
+				newTask = Task.createRecurringChildItem(task, task.getId(), task.getStatus(), 
+						task.getOn(), task.getBy(), date);
+			}
+
+			tempTasks.add(newTask);
+		}
+	}
+
+	private static void generateRecurChildTasks(ArrayList<Task> tempTasks,
+												Task task, String taskType) {
+		Date recurringDate;
+		String recurringId;
+		TaskStatus recurringStatus;
+		for(int j = 0; j < task.getRecurringTasks().size(); j++) {
+			Task taskA = null;
+			
+			recurringDate = task.getRecurringTasks().get(j).getRecurDate();
+			
+			recurringId = task.getId() + Constant.PREFIX_RECURRING_ID + 
+					task.getRecurringTasks().get(j).getRecurringTaskId();
+			
+			recurringStatus = task.getRecurringTasks().get(j).getStatus();		
+			
+			taskA = getRecurChildItemForEventOrDated(task, recurringDate, 
+													 taskType, recurringId,
+													 recurringStatus, taskA);
+			
+			tempTasks.add(taskA);
+		}
+	}
+
+	/*
+	 * Note: different from getTaskById
+	 * Selects the task from the newly generated task items
+	 * by matching the id
+	 */
+	private Task selectTaskById(String targetId) {
+		String taskId = targetId;
+		Task task = null;
+		Task selectedTask = null;
+		ArrayList<Task> taskList = generateTaskItems(_tasks, Constant.EMPTY_STRING);
+		Iterator<Task> taskIterator = taskList.iterator();
+		
+		while (taskIterator.hasNext()) {
+			task = taskIterator.next();
+			
+			if(task.getId().equals(taskId)) {
+				selectedTask = task;
+				break;
+			}
+		}
+		
+		return selectedTask;
+	}
+			
+	// ---------------------------------------------------------
+	// Update-related methods
+	// ---------------------------------------------------------	
+	// End of segment: C:\Users\Ruyi\Desktop\collate\source\application\ToDoList.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Ruyi\Desktop\collate\source\controller\BodyController.java
+	 */
+
+package controller;
+
+import javafx.fxml.FXML;
+import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.VBox;
+import javafx.scene.control.ScrollPane;
+import javafx.scene.control.Tab;
+import javafx.scene.control.TabPane;
+
+public class BodyController{
+
+	private MainController mainCon;
+	
+	@FXML AnchorPane anPaneMain;
+	@FXML VBox vBoxAll;
+	@FXML VBox vBoxCategory;
+	@FXML VBox vBoxPriority;
+	@FXML Tab tabAll;
+	@FXML Tab tabCategory;
+	@FXML Tab tabPriority;
+	@FXML TabPane tPaneMain;
+	@FXML ScrollPane sPaneAll;
+	@FXML ScrollPane sPaneCategory;
+	@FXML ScrollPane sPanePriority;
+	
+	public void initMainController(MainController mainController) {
+		mainCon = mainController;
+	}
+}
+
+	// End of segment: C:\Users\Ruyi\Desktop\collate\source\controller\BodyController.java
 
 
 
@@ -301,12 +708,7 @@ import application.TaskType;
 import controller.MainController;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
-import javafx.scene.control.ListView;
 import javafx.scene.control.TextArea;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
-import javafx.scene.layout.Region;
-import javafx.scene.text.TextFlow;
 
 public class DetailController {
 	
@@ -319,9 +721,8 @@ public class DetailController {
 	@FXML Label detailLblStatus;
 	@FXML Label detailLblRecurring;
 	@FXML TextArea detailTxtAreaDesc;
-	//@FXML TextArea detailTxtAreaAddition;
 	
-	public void init(MainController mainController) {
+	public void initMainController(MainController mainController) {
 		mainCon = mainController;
 	}
 	
@@ -338,21 +739,24 @@ public class DetailController {
 		detailLblCategory.setText(task.getCategory().toUpperCase());
 		detailLblPriority.setText(task.getPriority().toString());
 		detailLblStatus.setText(task.getStatus().toString());
-		detailLblDateTime.setText(getDateFormat(task, taskType));
-		detailLblRecurring.setText(getIsRecurring(task));
-		//detailTxtAreaAddition.setText(task.getAddtionalNote());
-		//saveAdditionalNote(detailTxtAreaAddition.getText());
+		detailLblDateTime.setText(formatDateByTaskType(task, taskType));
+		detailLblRecurring.setText(String.valueOf(task.getIsRecurring()));
 	}
 	
-	private String getDateFormat(Task task, String taskType) {
+	private String formatDateByTaskType(Task task, String taskType) {
 		String result = Constant.EMPTY_DATE;
 		
 		if(!taskType.equalsIgnoreCase(TaskType.FLOATING.toString())) {
 			if(taskType.equalsIgnoreCase(TaskType.DATED.toString())) {
-				result = Constant.STR_BEFORE_DATE_BY + " " + Constant.FORMAT_DATE_TIME_OUTPUT.format(task.getBy());
+				result = Constant.STR_BEFORE_DATE_BY + " " + 
+						 Constant.FORMAT_DATE_TIME_OUTPUT.format(task.getBy());
+				
 			} else if(taskType.equalsIgnoreCase(TaskType.TIMED.toString())) {
-				result = Constant.STR_BEFORE_DATE_FROM + " " + Constant.FORMAT_DATE_TIME_OUTPUT.format(task.getFrom()) +
-							Constant.STR_BEFORE_DATE_TO + " " + Constant.FORMAT_DATE_TIME_OUTPUT.format(task.getTo());
+				result = Constant.STR_BEFORE_DATE_FROM + " " + 
+						 Constant.FORMAT_DATE_TIME_OUTPUT.format(task.getFrom()) +
+						 Constant.STR_BEFORE_DATE_TO + " " + 
+						 Constant.FORMAT_DATE_TIME_OUTPUT.format(task.getTo());
+				
 			} else {
 				result = Constant.FORMAT_DATE_TIME_OUTPUT.format(task.getOn());
 			}
@@ -360,18 +764,6 @@ public class DetailController {
 		
 		return result;
 	}
-	
-	private String getIsRecurring(Task task) {
-		if(task.getIsRecurring() == true) {
-			return Constant.BOOLEAN_STRING_TRUE;
-		} else {
-			return Constant.BOOLEAN_STRING_FALSE;
-		}
-	}
-	
-	/*private void saveAdditionalNote(String note) {
-		Main.list.getSelectedTask().setAddtionalNote(note);
-	}*/	
 }
 
 	// End of segment: C:\Users\Ruyi\Desktop\collate\source\controller\DetailController.java
@@ -385,20 +777,23 @@ public class DetailController {
 	 */
 
 	@FXML
-	public void loadSettingMouse(MouseEvent e) throws IOException {
+	public void loadSettingMouse(MouseEvent mouseEvent) throws IOException {
 		mainCon.executeSetting();
 	}
 	
 	@FXML
-	public void goBackToMainMouse(MouseEvent e) throws IOException {
+	public void goBackToMainMouse(MouseEvent mouseEvent) throws IOException {
 		mainCon.executeGoBack();
 	}
 	
 	@FXML
-	public void loadSearchResult(KeyEvent e) throws IOException {
+	public void loadSearchResult(KeyEvent mouseEvent) throws IOException {
 		mainCon.executeSearchResult();
 	}
 	
+	// -----------------------------------------------------------------------------------------------
+	// Private methods
+	// -----------------------------------------------------------------------------------------------
 	// End of segment: C:\Users\Ruyi\Desktop\collate\source\controller\HeaderController.java
 
 
@@ -424,71 +819,30 @@ public class DetailController {
 		}
 		
 		headerController.lblSysMsg.setText(systemMsg);	
-		headerController.lblSysMsg.getStyleClass().add(Constant.CSS_CLASS_LABEL_SYSTEM_MSG);
-		executeSystemMsgTimerTask();
+		headerController.lblSysMsg.getStyleClass().
+		add(Constant.CSS_CLASS_LABEL_SYSTEM_MSG);
+		Execution.executeSystemMsgTimerTask();
 	}
-	
-	// End of segment: C:\Users\Ruyi\Desktop\collate\source\controller\MainController.java
-
-
-
-
-
-	/**
-	 * origin: C:\Users\Ruyi\Desktop\collate\source\controller\MainController.java
-	 */
 
 	public void loadListByDate(String displayType) {
 		int indexForNextLoop = 0;
-		Task task;
-	    Date startDate;
-	    String taskType;
-	    String dateA = Constant.EMPTY_STRING;
-		String dateB = Constant.EMPTY_STRING;
 		VBox vBox = getContainer(displayType);
 		vBox.getChildren().clear();
-		ArrayList<Task> taskList = getList(displayType);
-		ArrayList<Task> temp = getAppropriateList(displayType, taskList);
+		ArrayList<Task> taskList = getListForDisplay(displayType);
+		ArrayList<Task> temp = getListForDisplay(displayType, taskList);
 		
 		today.clear();
 		overdue.clear();
 		floating.clear();
 		todayDate = DateParser.getTodayDate().getTime();
 		
-	    for(int i = 0; i < temp.size(); i++) {
-			task = temp.get(i);
-			taskType = task.getTaskType().toString();
-			startDate = task.getStartDate();
-	    	
-			if(taskType.equalsIgnoreCase(TaskType.FLOATING.toString())||
-				DateParser.compareDate(todayDate, startDate) || startDate.before(todayDate)) {
-				findFloatingOrOverdueOrTodayTask(task, startDate, taskType);
-				indexForNextLoop = i+1;
-			} else {
-				indexForNextLoop = i;
-				break;
-			}
-		} 
+	    indexForNextLoop = organiseTasks(indexForNextLoop, temp); 
 		
 	    renderOverdueTask(displayType, vBox);
 	    renderTodayTask(displayType, vBox);
 	    renderFloatingTask(displayType);
 		
-		for(int j = indexForNextLoop; j < temp.size(); j++) {
-			task = temp.get(j);
-			
-			dateA = Constant.FORMAT_DATE_OUTPUT.format(task.getStartDate());
-			
-			if(j != indexForNextLoop) {
-				dateB = Constant.FORMAT_DATE_OUTPUT.format(temp.get(j-1).getStartDate());
-			}
-			
-			if(j == indexForNextLoop || !dateA.equals(dateB)) {
-				renderTaskItem(dateA, task, displayType);
-			} else {
-				renderTaskItem(Constant.EMPTY_STRING, task, displayType);
-			}
-		}
+		renderTasksWithDate(displayType, indexForNextLoop, temp);
 	}
 	
 	public void loadListByCategory(String displayType) {
@@ -497,13 +851,13 @@ public class DetailController {
 		Task task;
 		String category;
 		ArrayList<Task> taskList = Main.list.getTasks();
-		ArrayList<Task> temp = getAppropriateList(displayType, taskList);
+		ArrayList<Task> temp = getListForDisplay(displayType, taskList);
 		
 		for(int i = 0; i < temp.size(); i++) {
 			task = temp.get(i);
 			category = task.getCategory();
 			
-			if(i == 0 || !category.equalsIgnoreCase(temp.get(i-1).getCategory())) {
+			if(i == 0 || !category.equalsIgnoreCase(temp.get(i - 1).getCategory())) {
 				renderTaskItem(category.toUpperCase(), task, displayType);
 			} else {
 				renderTaskItem(Constant.EMPTY_STRING, task, displayType);
@@ -517,7 +871,7 @@ public class DetailController {
 		Task task;
 		String priority;
 		ArrayList<Task> taskList = Main.list.getTasks();
-		ArrayList<Task> temp = getAppropriateList(displayType, taskList);
+		ArrayList<Task> temp = getListForDisplay(displayType, taskList);
 		
 		for(int i = 0; i < temp.size(); i++) {
 			task = temp.get(i);
@@ -525,390 +879,13 @@ public class DetailController {
 			
 			renderTaskItem(Constant.EMPTY_STRING, task, displayType);
 			
-			if(i != temp.size()-1 && !priority.equalsIgnoreCase(temp.get(i+1).getPriority().toString())) {
+			if(i != temp.size()-1 && 
+			   !priority.equalsIgnoreCase(temp.get(i + 1).getPriority().toString())) {
 				addHorizontalBar(getContainer(displayType));
 			} 
 		}
 	}
 	
-	private ArrayList<Task> getAppropriateList(String displayType,
-			ArrayList<Task> taskList) {
-		ArrayList<Task> temp;
-		
-		if(displayType.equalsIgnoreCase(Constant.VIEW_NAME_SEARCH_RESULT)) {
-			temp = TaskSorter.getTasksSortedByDate(taskList);
-		} else if(displayType.equalsIgnoreCase(Constant.TAB_NAME_ALL)) {
-			ArrayList<Task> unsortedTemp = ToDoList.generateTaskItems(taskList, Constant.TAB_NAME_ALL);
-			temp = TaskSorter.getTasksSortedByDate(unsortedTemp);
-		} else if(displayType.equalsIgnoreCase(Constant.TAB_NAME_CATEGORY)) {
-			ArrayList<Task> unsortedTemp = ToDoList.generateTaskItems(taskList, Constant.TAB_NAME_CATEGORY);
-			temp = TaskSorter.getTasksSortedByCategories(unsortedTemp);
-		} else {
-			ArrayList<Task> unsortedTemp = ToDoList.generateTaskItems(taskList, Constant.TAB_NAME_PRIORITY);
-			temp = TaskSorter.getTasksSortedByPriorities(unsortedTemp);
-		}
-		
-		return temp;
-	}
-
-	private void findFloatingOrOverdueOrTodayTask(Task task, Date startDate,
-			String taskType) {
-		if(taskType.equalsIgnoreCase(TaskType.FLOATING.toString())) {
-			floating.add(task);
-		} else {
-			if(startDate.before(todayDate)) {
-				if(!taskType.equalsIgnoreCase(TaskType.TIMED.toString())) {
-					overdue.add(task);
-				} else {
-					if(DateParser.compareDate(task.getTo(), task.getStartDate())) {
-						overdue.add(task);
-					}
-				}
-			} else if(DateParser.compareDate(todayDate, startDate)) {
-				today.add(task);
-			}
-		}
-	}
-
-	private void renderFloatingTask(String displayType) {
-		if(!floating.isEmpty()) {
-			renderLists(floating, Constant.EMPTY_STRING, displayType);
-		}
-	}
-
-	private void renderTodayTask(String displayType, VBox vBox) {
-		if(!today.isEmpty()) {
-			renderLists(today, Constant.TITLE_TODAY, displayType);
-			
-			if(!floating.isEmpty()) {
-				addHorizontalBar(vBox);
-			}
-		}
-	}
-
-	private void renderOverdueTask(String displayType, VBox vBox) {
-		if(!overdue.isEmpty()) {
-	    	renderLists(overdue, Constant.TITLE_OVERDUE, displayType);
-			
-			if(!floating.isEmpty() && today.isEmpty()) {
-				addHorizontalBar(vBox);
-			}
-		}
-	}
-	
-	private VBox getContainer(String displayType) {
-		if(displayType.equalsIgnoreCase(Constant.TAB_NAME_ALL)) {
-			return bodyController.vBoxAll;
-		} else if(displayType.equalsIgnoreCase(Constant.TAB_NAME_CATEGORY)) {
-			return bodyController.vBoxCategory;
-		} else if(displayType.equalsIgnoreCase(Constant.TAB_NAME_PRIORITY)) {
-			return bodyController.vBoxPriority;
-		} else {
-			return searchResultController.vBoxSearchResult;
-		}
-	}
-	
-	private ArrayList<Task> getList(String type) {
-		if(type.equalsIgnoreCase(Constant.VIEW_NAME_SEARCH_RESULT)) {
-			return Main.searchResults;
-		} else {
-			return Main.list.getTasks();
-		}
-	}
-	
-	private void renderTaskItem(String header, Task task, String displayType) {
-		String taskType = task.getTaskType().toString();
-		String status = task.getStatus().toString();
-		Date onDate = task.getOn();
-		Date byDate = task.getBy();
-		Date fromDate = task.getFrom();
-		Date toDate = task.getTo();
-		Date startDate = task.getStartDate();
-		VBox vBox = getContainer(displayType);
-		String paneColor = getStyle(task, displayType);
-		
-		if(!header.equals(Constant.EMPTY_STRING)) {
-			addTitle(header, vBox);
-		}
-		
-		BorderPane bPane = addBorderPane(paneColor);
-		HBox hBoxLeft = addLeftHBox(bPane);
-		HBox hBoxRight = addRightHBox(bPane);
-		addIcon(task, hBoxLeft);
-		addId(task, hBoxLeft);
-		addPriorityBar(task, hBoxLeft);
-		addDesc(task, hBoxLeft, displayType);
-		
-		if(!displayType.equalsIgnoreCase(Constant.TAB_NAME_CATEGORY) || status.equalsIgnoreCase(Status.COMPLETED)) {
-			addCategory(task, hBoxLeft);
-		}
-		
-		if(displayType.equalsIgnoreCase(Constant.TAB_NAME_ALL) || 
-				displayType.equalsIgnoreCase(Constant.VIEW_NAME_SEARCH_RESULT)) {
-			addDateTimeInAllOrSearchResult(taskType, status, displayType, onDate, byDate, fromDate, toDate, startDate,
-					hBoxRight, hBoxLeft);
-		} else {
-			addDateTimeInCategoryOrPriority(taskType, status, displayType, onDate, byDate, fromDate, toDate, startDate,
-					hBoxRight, hBoxLeft);
-		}
-		
-		vBox.getChildren().add(bPane);
-	}
-
-	private HBox addRightHBox(BorderPane bPane) {
-		HBox hBox = new HBox();
-		bPane.setRight(hBox);
-		return hBox;
-	}
-
-	private HBox addLeftHBox(BorderPane bPane) {
-		HBox hBox = new HBox();
-		bPane.setLeft(hBox);
-		return hBox;
-	}
-
-	private BorderPane addBorderPane(String paneColor) {
-		BorderPane bPane = new BorderPane();
-		bPane.getStyleClass().add(paneColor);
-		return bPane;
-	}
-	
-	private void renderLists(ArrayList<Task> taskList, String title, String displayType) {
-		for(int i = 0; i < taskList.size(); i++) {
-			if(i == 0) {
-				renderTaskItem(title, taskList.get(i), displayType);
-			} else {
-				renderTaskItem(Constant.EMPTY_STRING, taskList.get(i), displayType);
-			}
-		}
-	}
-	
-	private String getStyle(Task task, String displayType) {
-		boolean isOverdue = false;
-		Date today = DateParser.getTodayDate().getTime();
-		String status = task.getStatus().toString();
-		String taskType = task.getTaskType().toString();
-		
-		if(!taskType.equalsIgnoreCase(TaskType.FLOATING.toString())) {
-			isOverdue = DateParser.isAfterDate(today, task.getStartDate());
-		}
-		
-		if(status.equalsIgnoreCase(Status.COMPLETED)) {
-			return Constant.CSS_CLASS_BORDERPANE_COMPLETED;
-		} else if(isOverdue) {
-			return Constant.CSS_CLASS_BORDERPANE_OVERDUE;
-		} else {
-			return Constant.CSS_CLASS_BORDERPANE_ALL;
-		}
-	}
-	
-	private void addHorizontalBar(VBox vBox) {
-		Line hBar = new Line();	
-		
-		hBar.setStartX(Constant.POSITION_START_X_HORIZONTAL_BAR);
-		hBar.setStartY(Constant.POSITION_START_Y_HORIZONTAL_BAR);
-		hBar.setEndX(Constant.POSITION_END_X_HORIZONTAL_BAR);
-		hBar.setEndY(Constant.POSITION_END_Y_HORIZONTAL_BAR);
-		hBar.getStyleClass().add(Constant.CSS_CLASS_LINE_HORIZONTAL_BAR);
-		
-		Pane paneHBar = new Pane(hBar);
-		paneHBar.getStyleClass().add(Constant.CSS_CLASS_PANE_HORIZONTAL_BAR);
-		
-		vBox.getChildren().add(paneHBar);
-	}
-	
-	private void addTitle(String header, VBox container) {
-		Label lblTitle = new Label();
-		if(header.equals(Constant.TITLE_TODAY)) {
-			lblTitle.getStyleClass().add(Constant.CSS_CLASS_LABEL_TITLE_TODAY);
-		} else if(header.equals(Constant.TITLE_OVERDUE)) {
-			lblTitle.getStyleClass().add(Constant.CSS_CLASS_LABEL_TITLE_OVERDUE);
-		} else {
-			lblTitle.getStyleClass().add(Constant.CSS_CLASS_LABEL_TITLE_DATE);
-		}
-		lblTitle.setText(header);
-		container.getChildren().add(lblTitle);
-	}
-	
-	private void addIcon(Task task, HBox hBox) {
-		String imgName = Constant.EMPTY_STRING;
-		switch (task.getTaskType()) {
-			case EVENT : 
-				imgName = Constant.ICON_EVENT;
-			break;
-			case FLOATING : 
-				imgName = Constant.ICON_FLOATING;
-			break;
-			case TIMED : 
-				imgName = Constant.ICON_TIMED;
-			break;
-			case DATED : 
-				imgName = Constant.ICON_DATED;
-			break;
-		}
-		
-		Image img = new Image(imgName);
-		ImageView icon = new ImageView();
-		icon.setImage(img);
-		icon.getStyleClass().add(Constant.CSS_CLASS_IMAGEVIEW_ICON_IMAGE);
-		icon.setFitHeight(Constant.FIT_HEIGHT_ICON);
-        icon.setPreserveRatio(true);
-        hBox.getChildren().add(icon);
-	}
-	
-	private void addId(Task task, HBox hBox) {
-		Label lblId = new Label(task.getId());
-		lblId.getStyleClass().add(Constant.CSS_CLASS_LABEL_ID);
-		hBox.getChildren().add(lblId);
-	}
-	
-	private void addPriorityBar(Task task, HBox hBox) {
-		Line priorityBar = new Line();
-		
-		priorityBar.setStartY(Constant.POSITION_START_Y_PRIORITY_BAR);
-		priorityBar.getStyleClass().add(Constant.CSS_CLASS_LINE_PRIORITY_BAR);
-		
-		switch (task.getPriority()) {
-			case HIGH : 
-				priorityBar.setStroke(Constant.COLOR_PRIORITY_HIGH);
-			break;
-			case MEDIUM : 
-				priorityBar.setStroke(Constant.COLOR_PRIORITY_MEDIUM);
-			break;
-			case LOW : 
-				priorityBar.setStroke(Constant.COLOR_PRIORITY_LOW);
-			break;
-			case NEUTRAL : 
-				priorityBar.setStroke(Constant.COLOR_PRIORITY_NEUTRAL);
-			break;
-		}
-		
-		hBox.getChildren().add(priorityBar);
-	}
-	
-	private void addDesc(Task task, HBox hBox, String displayType) {
-		Label lblDesc = new Label(task.getToDo());
-		
-		setLengthForDesc(lblDesc, task, displayType);
-		
-		lblDesc.getStyleClass().add(Constant.CSS_CLASS_LABEL_DESCRIPTION);
-		hBox.getChildren().add(lblDesc);
-	}
-	
-	private void addCategory(Task task, HBox hBox) {
-		String category = task.getCategory();
-		Label lblCategory;
-		
-		if(!category.equalsIgnoreCase(Constant.CATEGORY_UNCATEGORISED)) {
-			lblCategory = new Label(task.getCategory());
-			lblCategory.getStyleClass().add(Constant.CSS_CLASS_LABEL_CATEGORY);
-			hBox.getChildren().add(lblCategory);
-		}
-	}
-	
-	private void addDateTimeInAllOrSearchResult(String taskType, String status, String displayType, Date onDate, 
-			Date byDate, Date fromDate, Date toDate, Date startDate, HBox hBoxRight, HBox hBoxLeft) {
-		SimpleDateFormat dateFormat;
-		
-		if(DateParser.isAfterDateWithoutTime(todayDate, startDate)) {
-			dateFormat = Constant.FORMAT_DATE_TIME_OUTPUT;
-		} else {
-			dateFormat = Constant.FORMAT_TIME_OUTPUT;
-		}
-		
-		if(taskType.equalsIgnoreCase(TaskType.EVENT.toString())) {
-			addSingleDateTime(onDate, hBoxRight, Constant.EMPTY_STRING, dateFormat);
-		} else if(taskType.equalsIgnoreCase(TaskType.DATED.toString())) {
-			addSingleDateTime(byDate, hBoxRight, Constant.STR_BEFORE_DATE_BY, dateFormat);
-		} else if(taskType.equalsIgnoreCase(TaskType.TIMED.toString())) {
-			if(DateParser.compareDate(fromDate, toDate)) {
-				addDoubleDateTime(fromDate, toDate, hBoxRight, Constant.STR_BEFORE_DATE_FROM, Constant.STR_BEFORE_DATE_TO, 
-						Constant.FORMAT_TIME_OUTPUT, displayType);
-			} else if(DateParser.compareDate(startDate, fromDate)) {
-				addSingleDateTime(fromDate, hBoxRight, Constant.STR_BEFORE_DATE_FROM, Constant.FORMAT_TIME_OUTPUT);
-			} else if(DateParser.compareDate(startDate, toDate) && !DateParser.isAfterDateWithoutTime(todayDate, startDate)) {
-				addSingleDateTime(toDate, hBoxRight, Constant.STR_BEFORE_DATE_TO, Constant.FORMAT_TIME_OUTPUT);
-			} else {
-				addDoubleDateTime(fromDate, toDate, hBoxRight, Constant.STR_BEFORE_DATE_FROM, Constant.STR_BEFORE_DATE_TO, 
-						Constant.FORMAT_DATE_OUTPUT_FOR_TIMED_TASK, displayType);
-			}
-		}
-	}
-	
-	private void addDateTimeInCategoryOrPriority(String taskType, String status, String displayType, Date onDate, 
-			Date byDate, Date fromDate, Date toDate, Date startDate, HBox hBoxRight, HBox hBoxLeft) {
-		
-		if(taskType.equalsIgnoreCase(TaskType.EVENT.toString())) {
-			addSingleDateTime(onDate, hBoxRight, Constant.EMPTY_STRING, Constant.FORMAT_DATE_TIME_OUTPUT);
-		} else if(taskType.equalsIgnoreCase(TaskType.DATED.toString())) {
-			addSingleDateTime(byDate, hBoxRight, Constant.STR_BEFORE_DATE_BY, Constant.FORMAT_DATE_TIME_OUTPUT);
-		} else if(taskType.equalsIgnoreCase(TaskType.TIMED.toString())) {
-			addDoubleDateTime(fromDate, toDate, hBoxRight, Constant.STR_BEFORE_DATE_FROM, Constant.STR_BEFORE_DATE_TO, 
-					Constant.FORMAT_DATE_TIME_OUTPUT, displayType);
-		}
-	}
-	
-	private void addSingleDateTime(Date date, HBox hBox, String strBeforeTime, SimpleDateFormat dateFormat) {
-		Label lbl = new Label(strBeforeTime);
-		lbl.getStyleClass().add(Constant.CSS_CLASS_LABEL_BEFORE_TIME);
-		
-		Label lblDateTime = new Label(dateFormat.format(date));
-		lblDateTime.getStyleClass().add(Constant.CSS_CLASS_LABEL_DATETIME);
-		
-		hBox.getChildren().add(lbl);
-		hBox.getChildren().add(lblDateTime);
-	}
-	
-	private void addDoubleDateTime(Date dateA, Date dateB, HBox hBox, String strA, String strB, 
-			SimpleDateFormat dateFormat, String displayType) {
-		
-		Label lblA = new Label(strA);
-		lblA.getStyleClass().add(Constant.CSS_CLASS_LABEL_BEFORE_TIME);
-		Label lblB = new Label(strB);
-		lblB.getStyleClass().add(Constant.CSS_CLASS_LABEL_BEFORE_TIME);
-		
-		Label lblDateTime1 = new Label(dateFormat.format(dateA));
-		lblDateTime1.getStyleClass().add(Constant.CSS_CLASS_LABEL_DATETIME);
-		Label lblDateTime2 = new Label(dateFormat.format(dateB));
-		lblDateTime2.getStyleClass().add(Constant.CSS_CLASS_LABEL_DATETIME);
-		
-		hBox.getChildren().add(lblA);
-		hBox.getChildren().add(lblDateTime1);
-		hBox.getChildren().add(lblB);
-		hBox.getChildren().add(lblDateTime2);
-	}
-	
-	private void setLengthForDesc(Label desc, Task task, String displayType) {
-		if(displayType.equalsIgnoreCase(Constant.TAB_NAME_ALL) || 
-				displayType.equalsIgnoreCase(Constant.VIEW_NAME_SEARCH_RESULT)) {
-			switch(task.getTaskType()) {
-				case EVENT :
-				case DATED :
-					desc.setMaxWidth(Constant.WIDTH_MAX_LABEL_EVENT_ALL);
-					break;
-				case TIMED :
-					desc.setMaxWidth(Constant.WIDTH_MAX_LABEL_TIMED_ALL);
-					break;
-				default :
-					desc.setMaxWidth(Constant.WIDTH_MAX_LABEL_FLOATING);
-					break;
-			}
-		} else {
-			switch(task.getTaskType()) {
-				case EVENT :
-				case DATED :
-					desc.setMaxWidth(Constant.WIDTH_MAX_LABEL_EVENT_CAT);
-					break;
-				case TIMED :
-					desc.setMaxWidth(Constant.WIDTH_MAX_LABEL_TIMED_CAT);
-					break;
-				default :
-					desc.setMaxWidth(Constant.WIDTH_MAX_LABEL_FLOATING);
-					break;
-			}
-		}
-	}
-
 	public void executeSetting() {
 		headerController.settingIcon.setVisible(false);
 		headerController.backIcon.setVisible(true);
@@ -940,22 +917,6 @@ public class DetailController {
 		searchResultController.loadSearchList();
 	}
 	
-	private int checkSystemMsg(String sysMsg) {
-		for(int i = 0; i < Constant.SYS_MSG_KEYWORD_SUCCESS.length; i++) {
-			if(sysMsg.contains(Constant.SYS_MSG_KEYWORD_SUCCESS[i])) {
-				return Constant.SYS_MSG_TYPE_SUCCESS;
-			}
-		}
-		
-		for(int j = 0; j < Constant.SYS_MSG_KEYWORD_ERROR.length; j++) {
-			if(sysMsg.contains(Constant.SYS_MSG_KEYWORD_ERROR[j])) {
-				return Constant.SYS_MSG_TYPE_ERROR;
-			}
-		}
-		
-		return Constant.SYS_MSG_TYPE_FEEDBACK;
-	}
-	
 	public void viewDetails(Task task) throws IOException {
 		FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource(Constant.PATH_DETAIL));
         Parent root1 = (Parent) fxmlLoader.load();
@@ -975,8 +936,37 @@ public class DetailController {
 		detailPopup.setScene(scene); 
         detailPopup.show();
 	}
-}
-
+	
+	public void cleanCompletedTasks() {
+		int dayOfWeek;
+		int dayOfMonth;
+		String cleanRecurrence = Main.storage.readSaveCleanRecurrence();
+		Calendar today = DateParser.getTodayDate();
+		
+		if(cleanRecurrence.equalsIgnoreCase(Frequency.WEEKLY.toString())) {
+			dayOfWeek = DateParser.calculateDayOfWeek(today);
+			
+			if(dayOfWeek == 1) {
+				Execution.executeCleanCompletedTasks();
+			}
+		} else if(cleanRecurrence.equalsIgnoreCase(Frequency.MONTHLY.toString())) {
+			dayOfMonth = DateParser.calculateDayOfMonth(today);
+			
+			if(dayOfMonth == 1) {
+				Execution.executeCleanCompletedTasks();
+			}
+		}
+	}
+		
+	public void loadListsInTabs() {		
+		loadListByDate(Constant.TAB_NAME_ALL);
+		loadListByCategory(Constant.TAB_NAME_CATEGORY);
+		loadListByPriority(Constant.TAB_NAME_PRIORITY);
+	}
+	
+	// -----------------------------------------------------------------------------------------------
+	// Private methods
+	// -----------------------------------------------------------------------------------------------
 	// End of segment: C:\Users\Ruyi\Desktop\collate\source\controller\MainController.java
 
 
@@ -989,11 +979,7 @@ public class DetailController {
 
 package controller;
 
-import java.util.ArrayList;
-
 import application.Constant;
-import application.Main;
-import application.Task;
 import javafx.fxml.FXML;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
@@ -1001,23 +987,17 @@ import javafx.scene.layout.VBox;
 public class SearchResultController {
 	
 	private MainController mainCon;
-	private BodyController bodyCon;
-	private ArrayList<Task> resultList;
 	@FXML AnchorPane anPaneSearchResult;
 	@FXML VBox vBoxSearchResult;
 	
-	/*@FXML
-	public void initialize() {
-		bodyCon = new BodyController();
-	}*/
 	
-	public void init(MainController mainController) {
+	public void initMainController(MainController mainController) {
 		mainCon = mainController;
 	}
 	
 	public void loadSearchList() {
 		vBoxSearchResult.getChildren().clear();
-		mainCon.loadListByDate("searchResult");
+		mainCon.loadListByDate(Constant.VIEW_NAME_SEARCH_RESULT);
 	}
 }
 
@@ -1032,61 +1012,209 @@ public class SearchResultController {
 	 */
 
 	@FXML 
-	public void openFileDialogKey(KeyEvent e) {
-		if(Constant.SHORTCUT_OPEN_FILE_DIALOG.match(e)) {
+	public void openFileDialogKey(KeyEvent keyEvent) {
+		if(Constant.SHORTCUT_OPEN_FILE_DIALOG.match(keyEvent)) {
 			openFileDialog();
 		}
 	}
 	
 	@FXML 
-	public void openFileDialogMouse(MouseEvent e) {
+	public void openFileDialogMouse(MouseEvent mouseEvent) {
 		openFileDialog();
 	}
 	
+	@FXML 
+	public void setCleanRecurrenceWeekly(MouseEvent mouseEvent) {
+		String sysMsg = Main.storage.
+						updateCleanRecurrenceInSetting(Frequency.WEEKLY.toString());
+		
+		displaySysMsgForClean(sysMsg);
+	}
+	
+	@FXML 
+	public void setCleanRecurrenceMonthly(MouseEvent mouseEvent) {
+		String sysMsg = Main.storage.
+						updateCleanRecurrenceInSetting(Frequency.MONTHLY.toString());
+		
+		displaySysMsgForClean(sysMsg);
+	}
+	
 	@FXML
-	public void initialize() {
-		txtPath.setText(Main.storage.readSavePath());
-		
+	public void initialize() {		
+		initCleanSetting();		
+		initSavePathSetting();
 	}
 	
-	// End of segment: C:\Users\Ruyi\Desktop\collate\source\controller\SettingController.java
-
-
-
-
-
-	/**
-	 * origin: C:\Users\Ruyi\Desktop\collate\source\controller\SettingController.java
-	 */
-
-	public void executeSystemMsgTimerTask() {
-		timer = new Timer();
-		timer.schedule(new SystemMsgTimerTask(), Constant.TIMER_SYSTEM_MSG_DURATION);
+	public void initMainController(MainController mainController) {
+		mainCon = mainController;
 	}
 	
-	// End of segment: C:\Users\Ruyi\Desktop\collate\source\controller\SettingController.java
-
-
-
-
-
-	/**
-	 * origin: C:\Users\Ruyi\Desktop\collate\source\controller\SettingController.java
-	 */
-
-	private void displaySystemMessage(String systemMsg) {
-		lblSysMsgSetting.setText(systemMsg);
+	public void openFileDialog() {
+		String systemMsg = "";
 		
-		if(systemMsg.contains(Constant.SYS_MSG_KEYWORD_FILE_SAVED)) {
-			lblSysMsgSetting.setTextFill(Constant.COLOR_SUCCESS);
-		} else {
-			lblSysMsgSetting.setTextFill(Constant.COLOR_ERROR);
+		DirectoryChooser dirChooser = new DirectoryChooser();
+		dirChooser.setTitle(Constant.TITLE_SETTING_DIR);
+		
+		File selectedDir = dirChooser.showDialog(anPaneSetting.getScene().getWindow());				
+		if (selectedDir == null) {
+			return;
 		}
 		
-		executeSystemMsgTimerTask();
+		txtPath.setText(selectedDir.getAbsolutePath());
+		String newPath = txtPath.getText();
+
+		systemMsg = Execution.executeChangeSavePath(newPath);
+		displaySysMsgForSavePath(systemMsg);
 	}
 	
+	// -----------------------------------------------------------------------------------------------
+	// Private methods
+	// -----------------------------------------------------------------------------------------------
+	private void initSavePathSetting() {
+		String savePath = Main.storage.
+				readSavePath().replace("/","\\");
+		
+		txtPath.setText(savePath);
+	}
+
+	private void initCleanSetting() {
+		String cleanRecurrence = Execution.getCleanFrequencySetting();
+		
+		if(cleanRecurrence.equalsIgnoreCase(Frequency.WEEKLY.toString())) {
+			radioWeekly.setSelected(true);
+		} else if(cleanRecurrence.equalsIgnoreCase(Frequency.MONTHLY.toString())) {
+			radioMonthly.setSelected(true);
+		}
+	}
+	
+	private void displaySysMsgForSavePath(String systemMsg) {
+		lblSysMsgSettingA.setText(systemMsg);
+		
+		if(systemMsg.contains(Constant.SYS_MSG_KEYWORD_FILE_SAVED)) {
+			lblSysMsgSettingA.setTextFill(Constant.COLOR_SUCCESS);
+		} else {
+			lblSysMsgSettingA.setTextFill(Constant.COLOR_ERROR);
+		}
+		
+		Execution.executeSysMsgTimerForSavePath();
+	}
+	
+	private void displaySysMsgForClean(String systemMsg) {
+		lblSysMsgSettingB.setText(systemMsg);
+		
+		if(systemMsg.contains(Constant.SYS_MSG_KEYWORD_FILE_SAVED)) {
+			lblSysMsgSettingB.setTextFill(Constant.COLOR_SUCCESS);
+		} else {
+			lblSysMsgSettingB.setTextFill(Constant.COLOR_ERROR);
+		}
+		
+		Execution.executeSysMsgTimerForClean();
+	}
+}
+
 	// End of segment: C:\Users\Ruyi\Desktop\collate\source\controller\SettingController.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Ruyi\Desktop\collate\source\test\DateParserTest.java
+	 */
+
+package test;
+
+import static org.junit.Assert.*;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
+import org.junit.Test;
+
+import application.DateParser;
+
+public class DateParserTest {
+	private String dateStrA, dateStrB;
+	private SimpleDateFormat format;
+	private Date dateA, dateB;
+	
+	@Test
+	public void test() throws ParseException {
+		initialiseDateValue();
+		testCalculateDayOfWeek();
+		testCalculateDayOfMonth();
+		testCompareDate();
+		testIsBeforeDate();
+		testIsAfterDate();
+	}
+	
+	public void initialiseDateValue() throws ParseException {
+		format = new SimpleDateFormat("MMMM d, yyyy");
+		dateStrA = "March 27, 2015";
+		dateStrB = "April 04, 2015";
+		dateA = format.parse(dateStrA);
+		dateB = format.parse(dateStrB);
+	}
+	
+	/*
+	 * Equivalence Partition: [1-7]
+	 * Possible boundary values: 0, 1, 2, 6, 7, 8
+	 * This is a boundary case for an equivalent partition. 
+	 */
+	public void testCalculateDayOfWeek() {
+		int result;
+		int expected = 6;
+		result = DateParser.calculateDayOfWeek(dateA);
+		assertEquals(result, expected);
+	}
+	
+	/*
+	 * Equivalence Partition: [1-31]
+	 * Possible boundary values: 0, 1, 2, 30, 31, 32
+	 * This is not a boundary case for an equivalent partition. 
+	 */
+	public void testCalculateDayOfMonth() {
+		int result;
+		int expected = 27;
+		result = DateParser.calculateDayOfMonth(dateA);
+		assertEquals(result, expected);
+	}
+	
+	/*
+	 * Equivalence Partition: [The dates are the same], [The dates are different]
+	 */
+	public void testCompareDate() {
+		boolean result;
+		boolean expected = false;
+		result = DateParser.compareDate(dateA, dateB);
+		assertEquals(result, expected);
+	}
+	
+	/*
+	 * Equivalence Partition: [dateA is before dateB], [dateA is not before dateB]
+	 */
+	public void testIsBeforeDate() {
+		boolean result;
+		boolean expected = true;
+		result = DateParser.isBeforeDate(dateA, dateB);
+		assertEquals(result, expected);
+	}
+	
+	/*
+	 * Equivalence Partition: [dateB is after dateA], [dateB is not after dateA]
+	 */
+	public void testIsAfterDate() {
+		boolean result;
+		boolean expected = true;
+		result = DateParser.isAfterDate(dateB, dateA);
+		assertEquals(result, expected);
+	}
+	
+	
+}
+
+	// End of segment: C:\Users\Ruyi\Desktop\collate\source\test\DateParserTest.java
 
 
 

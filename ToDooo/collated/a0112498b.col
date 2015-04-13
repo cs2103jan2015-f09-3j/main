@@ -26,6 +26,7 @@ public enum Command {
 	PRIORITY_HIGH("/high", "/***"),
 	PRIORITY_MEDIUM("/medium", "/**"),
 	PRIORITY_LOW("/low", "/*"),
+	RECURRING_DAILY("/daily", "-day"),
 	RECURRING_WEEKLY("/weekly", "-w"),
 	RECURRING_MONTHLY("/monthly", "-m"),
 	RECURRING_YEARLY("/yearly", "-y"),
@@ -96,6 +97,11 @@ public enum Command {
 		return hasFound;
 	}
 			
+	/*
+	 * Returns true if:
+	 * 1) has category command #
+	 * 2) category name behind # is not empty
+	 */
 	public static boolean hasCategoryCommand(String commandLine) {
 		String lowerCase = commandLine.toLowerCase() + " ";
 		String basicCmd = Command.CATEGORY.getBasicCommand();
@@ -128,16 +134,19 @@ public enum Command {
 		
 		for (Command command : Constant.COMMAND_DATES) {
 			if (command.hasCommand(commandLine)) {
-				isValidTimed = !(((command.name().equals(Command.FROM) ||
-						 		command.name().equals(Command.TO)) && count >= 2) ||
-						 		(!(command.name().equals(Command.FROM) ||
-								command.name().equals(Command.TO)) && count >= 1));
+				isValidTimed = !(((command.name().equals(Command.FROM) || 
+								   command.name().equals(Command.TO)) && 
+								   count >= Constant.MAX_NUM_OF_FROM_TO_DATES) ||
+						 		(!(command.name().equals(Command.FROM) || 
+						 		   command.name().equals(Command.TO)) && 
+						 		   count >= Constant.MAX_NUM_OF_DATE_IN_COMMAND));
 				
 				count++;
 			}
 		}
 		
-		if (count == 1 || (count == 2 && isValidTimed)) {
+		if (count == Constant.MAX_NUM_OF_DATE_IN_COMMAND || 
+		   (count == Constant.MAX_NUM_OF_FROM_TO_DATES && isValidTimed)) {
 			isCorrectNum = true;
 		}
 		
@@ -155,6 +164,21 @@ public enum Command {
 		}
 		
 		return shouldRetrieve;
+	}
+	
+	public int getIndexOfCommand(String commandLine) {
+		String lowerCase = commandLine.toLowerCase() + " ";
+		String basicCmd = _COMMAND_BASIC + " ";
+		String advancedCmd = _COMMAND_ADVANCED + " ";
+		int endIndex = -1;
+				
+		if (lowerCase.contains(basicCmd)) {
+			endIndex = lowerCase.indexOf(basicCmd);				
+		} else if (lowerCase.contains(advancedCmd)) {
+			endIndex = lowerCase.indexOf(advancedCmd);
+		} 
+		
+		return endIndex;
 	}
 		
 	// -----------------------------------------------------------------------------------------------
@@ -221,18 +245,17 @@ public enum Command {
 	 * origin: C:\Users\Ruyi\Desktop\collate\source\application\DateParser.java
 	 */
 
-package application;
-
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.TimeZone;
-
-public class DateParser {
 	public static Calendar createCalendar(Date date) {
 		Calendar calendar = Calendar.getInstance();
 		calendar.setTimeZone(TimeZone.getDefault());
 		calendar.setTime(date);
+		
+		return calendar;
+	}
+	
+	public static Calendar getTodayCalendar() {
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTimeZone(TimeZone.getDefault());
 		
 		return calendar;
 	}
@@ -276,16 +299,30 @@ public class DateParser {
 		return month;
 	}
 	
-	// End of segment: C:\Users\Ruyi\Desktop\collate\source\application\DateParser.java
-
-
-
-
-
-	/**
-	 * origin: C:\Users\Ruyi\Desktop\collate\source\application\DateParser.java
-	 */
-
+	public static boolean isBeforeNow(Date date) {
+		Calendar calendar = DateParser.createCalendar(date);
+		
+		return isBeforeNow(calendar);
+	}
+	
+	public static boolean isBeforeNow(Calendar calendar) {
+		Calendar nowCalendar = DateParser.getTodayCalendar();
+		
+		return calendar.before(nowCalendar);
+	}
+	
+	public static boolean isAfterNow(Date date) {
+		Calendar calendar = DateParser.createCalendar(date);
+		
+		return isAfterNow(calendar);
+	}
+	
+	public static boolean isAfterNow(Calendar calendar) {
+		Calendar nowCalendar = DateParser.getTodayCalendar();
+		
+		return calendar.after(nowCalendar);
+	}
+	
 	public static boolean isBeforeDate(Date thisDate, Date thatDate) {
 		Calendar calendarA = DateParser.createCalendar(thisDate);
 		Calendar calendarB = DateParser.createCalendar(thatDate);
@@ -318,6 +355,20 @@ public class DateParser {
 				thisCalendar.get(Calendar.DAY_OF_YEAR) == thatCalendar.get(Calendar.DAY_OF_YEAR));
 	}
 	
+	public static boolean hasMatchedDateTime(Date thisDate, Date thatDate) {
+		Calendar calendarA = DateParser.createCalendar(thisDate);
+		Calendar calendarB = DateParser.createCalendar(thatDate);
+		
+		return DateParser.hasMatchedDateTime(calendarA, calendarB);
+	}
+	
+	public static boolean hasMatchedDateTime(Calendar thisCalendar, Calendar thatCalendar) {
+		thisCalendar.clear(Calendar.MILLISECOND);
+		thatCalendar.clear(Calendar.MILLISECOND);
+		
+		return thisCalendar.equals(thatCalendar);
+	}
+	
 	// End of segment: C:\Users\Ruyi\Desktop\collate\source\application\DateParser.java
 
 
@@ -338,159 +389,134 @@ public class DateParser {
 		
 		return systemMsg;
 	}
-
-	// -----------------------------------------------------------------------------------------------
-	// Private methods
-	// -----------------------------------------------------------------------------------------------
-	private static String executeCommand(String userInput, Command commandType) {
-		String systemMsg = null;
-
-		userInput = InputParser.removeLineBreaks(userInput);
-
-		switch (commandType) {
-		case ADD :
-			systemMsg = Execution.executeAdd(userInput);
-			headerController.textArea.clear();
-			break;
-		case UPDATE :
-			systemMsg = Execution.executeUpdate(userInput);
-			Main.shouldResetCaret = true;
-			break;
-		case DELETE :
-			systemMsg = Execution.executeDelete(userInput);
-			headerController.textArea.clear();
-			break;
-		case SEARCH :
-			systemMsg = Execution.executeSearch(userInput);
-			displaySearchResult(systemMsg);
-			headerController.textArea.clear();
-			break;
-		case COMPLETE :
-			systemMsg = Execution.executeComplete(userInput);
-			headerController.textArea.clear();
-			break;
-		case UNCOMPLETE :
-			systemMsg = Execution.executeUncomplete(userInput);
-			headerController.textArea.clear();
-			break;
-		case VIEW :
-			systemMsg = Execution.executeView(userInput);
-			displayDetail(systemMsg);
-			headerController.textArea.clear();
-			break ;
-		default:
-			// invalid command
-			break;
-		}
-
-		return systemMsg;
-	}
 	
-	private static String executeAdd(String userInput) {
-		Task task = new Task(userInput);	
-		
+	public static String executeUndo() {
 		String systemMsg = null;
-		if (task.getIsValid()) {
-			systemMsg = Main.list.addTaskToList(task);
-			
-			if (systemMsg.equals(Constant.MSG_ADD_SUCCESS)) {
-				Undo.prepareUndoAdd(task);
-			}
-			
-		} else {
-			systemMsg = Main.systemFeedback;
-		}
-				
-		return systemMsg;
-	}
-	
-	private static String executeDelete(String userInput) {
-		String systemMsg= null;
-		Task removedTask = Main.list.deleteTaskFromList(userInput);
 		
-		if (removedTask != null) {
-			Undo.prepareUndoDelete(removedTask);
-			
-			systemMsg = Constant.MSG_DELETE_SUCCESS.
-						replace(Constant.DELIMITER_REPLACE, 
-								removedTask.getId());
+		boolean canUndo = !(Main.undos.isEmpty());
+		if (canUndo) {
+			Undo undo = Main.undos.pop();
+			systemMsg = undo.undoAction();
 		} else {
-			systemMsg = Constant.MSG_ITEM_NOT_FOUND;
+			systemMsg = Constant.MSG_NO_UNDO;
 		}
 		
 		return systemMsg;
 	}
 	
-	private static String executeRetrieveOriginalText(String userInput) {
-		
+	public static String executeRedo() {
 		String systemMsg = null;
-		String targetId = InputParser.getTargetIdFromString(userInput);
-		Task originalTask = Main.list.getTaskById(targetId);
-				
-		if (originalTask != null) {		
-			headerController.textArea.
-			appendText(Constant.DELIMITER_UPDATE + " " + 
-					   originalTask.getOriginalText());						
-			
-			Main.toUpdate = true;
-			systemMsg = Constant.MSG_ORIGINAL_RETRIEVED.
-						replace(Constant.DELIMITER_REPLACE, targetId);
+		
+		boolean canRedo = !(Main.redos.isEmpty());
+		if (canRedo) {
+			Undo redo = Main.redos.pop();
+			systemMsg = redo.redoAction();
 		} else {
-			systemMsg = Constant.MSG_ORIGINAL_NOT_RETRIEVED;
+			systemMsg = Constant.MSG_NO_REDO;
 		}
 		
 		return systemMsg;
 	}
 	
-	private static String executeUpdate(String userInput) {
-		String systemMsg = null;
+	/*
+	 * Timer task to clear system message in header
+	 */
+	public static void executeSystemMsgTimerTask() {
+		ExecutionTimer.SystemMsgTimerTask systemMsgTimerTask = 
+				new ExecutionTimer.SystemMsgTimerTask();
 		
-		if (Command.shouldRetrieveOriginalInput(userInput)) {
-			systemMsg = executeRetrieveOriginalText(userInput);
-		} else {
-			Pair<Task, String> updatedTasksDetails = Main.list.updateTaskOnList(userInput);
-			if (updatedTasksDetails == null) {
-				return systemMsg = Main.systemFeedback;
-			}
-			
-			Task originalTask = updatedTasksDetails.getKey();
-			String targetId = updatedTasksDetails.getValue();
-			
-			if (originalTask != null) {
-				Undo.prepareUndoUpdate(originalTask, targetId);
-				
-				systemMsg = Constant.MSG_UPDATE_SUCCESS;
-				headerController.textArea.clear();
-			} else {
-				systemMsg = Constant.MSG_UPDATE_FAIL;
-			}
-		}
-		
-		return systemMsg;
+		Timer timer = systemMsgTimerTask.getTimer();
+		timer.schedule(systemMsgTimerTask, Constant.TIMER_SYSTEM_MSG_DURATION);
 	}
-
-	private static String executeSearch(String userInput) {
-		String systemMsg = null;
+	
+	/*
+	 * Timer task to check for overdue items and updates
+	 * the status of those items
+	 */
+	public static void executeStatusCheckTimerTask() {
+		ExecutionTimer.StatusCheckTimerTask statusCheckTimerTask = 
+				new ExecutionTimer.StatusCheckTimerTask();
 		
-		Pair<ArrayList<Task>, String> searchResultsPair = 
-				Main.list.searchTheList(userInput);
-		Main.searchResults = searchResultsPair.getKey();
-		systemMsg = searchResultsPair.getValue();		
-		
-		if (Main.searchResults.isEmpty() && systemMsg == null) {
-			systemMsg = Constant.MSG_NO_RESULTS;
-		} else if (systemMsg != null) {
-			systemMsg = Constant.MSG_SEARCH_INVALID;
-		} else {
-			systemMsg = Constant.MSG_SEARCH_SUCCESS.
-						replace(Constant.DELIMITER_REPLACE, 
-								String.valueOf(Main.searchResults.size()));
-		}
-		
-		return systemMsg;
+		Timer timer = statusCheckTimerTask.getTimer();
+		timer.scheduleAtFixedRate(statusCheckTimerTask, 0, 
+								  Constant.TIMER_UPDATE_STATUS_DURATION);
 	}
 	
 	// End of segment: C:\Users\Ruyi\Desktop\collate\source\application\Execution.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Ruyi\Desktop\collate\source\application\Execution.java
+	 */
+
+	public static void executeUpdateStatus() {
+		Main.list.checkAndUpdateStatus();
+		mainController.loadListsInTabs();
+	}
+	
+	public static void executeClearSystemMsg() {
+		headerController.lblSysMsg.setText(Constant.EMPTY_STRING);	
+    	headerController.imgSysMsg.setImage(null);
+	}
+	
+	// End of segment: C:\Users\Ruyi\Desktop\collate\source\application\Execution.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Ruyi\Desktop\collate\source\application\ExecutionTimer.java
+	 */
+
+	public static class StatusCheckTimerTask extends TimerTask {
+		private Timer _timer;
+		
+		public StatusCheckTimerTask() {
+			_timer = new Timer();
+		}
+		
+		public Timer getTimer() {
+			return _timer;
+		}
+		 	
+	    public void run() {
+			Platform.runLater(new Runnable() {
+			    @Override
+			    public void run() {
+	    			Execution.executeUpdateStatus();    	
+			    }
+			});
+	    }
+	}
+	
+	public static class SystemMsgTimerTask extends TimerTask {	
+		private Timer _timer;
+		
+		public SystemMsgTimerTask() {
+			_timer = new Timer();
+		}
+		
+		public Timer getTimer() {
+			return _timer;
+		}
+		 	
+	    public void run() {
+			Platform.runLater(new Runnable() {
+			    @Override
+			    public void run() {
+			    	Execution.executeClearSystemMsg();
+			    }
+			});
+			
+			_timer.cancel();
+	    }
+	}
+	
+	// End of segment: C:\Users\Ruyi\Desktop\collate\source\application\ExecutionTimer.java
 
 
 
@@ -503,6 +529,7 @@ public class DateParser {
 package application;
 public enum Frequency {
 	NIL(null),
+	DAILY(Command.RECURRING_DAILY),
 	WEEKLY(Command.RECURRING_WEEKLY),
 	MONTHLY(Command.RECURRING_MONTHLY),
 	YEARLY(Command.RECURRING_YEARLY);
@@ -572,6 +599,16 @@ public enum Frequency {
 		return (lowerCase.contains(basicCmd) ||
 				lowerCase.contains(advancedCmd));
 	}
+	
+	public static boolean isDaily(String commandLine) {
+		String lowerCase = commandLine.toLowerCase() + " ";
+		String basicCmd = Command.RECURRING_DAILY.getBasicCommand() + " ";
+		String advancedCmd = Command.RECURRING_DAILY.getAdvancedCommand() + " ";
+		
+		return (lowerCase.contains(basicCmd) ||
+				lowerCase.contains(advancedCmd));
+	}
+	
 }
 
 	// End of segment: C:\Users\Ruyi\Desktop\collate\source\application\Frequency.java
@@ -589,6 +626,7 @@ package application;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Date;
+import java.util.logging.Level;
 
 import javafx.util.Pair;
 
@@ -716,11 +754,7 @@ public class InputParser {
 		int endIndex = userInput.length();
 		String targetId = getTargetId(userInput, endIndex);
 
-		if (targetId != null) {
-			return targetId.toUpperCase();
-		} else {
-			return targetId;
-		}
+		return targetId;
 	}
 	
 	public static String[] getTargetIdsFromString(String userInput) {
@@ -728,25 +762,28 @@ public class InputParser {
 		String targetIdsString = getTargetId(userInput, endIndex);
 		String[] targetIds = targetIdsString.split(Constant.REGEX_SPACE);
 		
-		if (targetIds != null) {
-			for (String id : targetIds) {
-				id.toUpperCase();
-			}
-			return targetIds;
-		} else {
-			return targetIds;
-		}
+		return targetIds;
 	}
 	
 	public static String getTargetIdFromUpdateString(String userInput) {
-		int endIndex = userInput.indexOf(Constant.DELIMITER_UPDATE);
-		String targetId = getTargetId(userInput, endIndex);
+		String targetId = null;
 		
-		if (targetId != null) {
-			return targetId.toUpperCase();
+		int endIndex = userInput.indexOf(Constant.DELIMITER_UPDATE + " ");
+		
+		if (endIndex == -1) {
+			int minLength = 2;
+			int idIndex = 1;
+			
+			String[] words = userInput.split(" ");
+			
+			if (words.length == minLength) {
+				targetId = words[idIndex];
+			}
 		} else {
-			return targetId;
+			targetId = getTargetId(userInput, endIndex);
 		}
+						
+		return targetId;
 	}
 	
 	public static Priority getPriorityFromString(String userInput) {
@@ -774,16 +811,9 @@ public class InputParser {
 	public static Date getUntilDateFromString(String userInput) {
 		Date untilDate = null;
 		String lowerCase = userInput.toLowerCase() + " ";
-		String basicCmd = Command.RECURRING_UNTIL.getBasicCommand() + " ";
-		String advancedCmd = Command.RECURRING_UNTIL.getAdvancedCommand() + " "; 
-		int beginIndex = -1;
-		int endIndex = userInput.length();
 		
-		if (lowerCase.contains(basicCmd)) {
-			beginIndex = lowerCase.indexOf(basicCmd);
-		} else if (lowerCase.contains(advancedCmd)) {
-			beginIndex = lowerCase.indexOf(advancedCmd);
-		}
+		int beginIndex = Command.RECURRING_UNTIL.getIndexOfCommand(userInput);
+		int endIndex = userInput.length();
 		
 		boolean hasUntil = (beginIndex != -1);
 		if (hasUntil) {
@@ -803,38 +833,19 @@ public class InputParser {
 		return toDoString;
 	}
 	
-	public static String extractDescriptionFromString(String userInput, TaskType taskType, String id) {
+	public static String extractDescriptionFromString(String userInput, 
+													  TaskType taskType, 
+													  String id) {
 		String extractedString = InputParser.removeActionFromString(userInput, id);
 		
 		int beginIndex = 0;
 		int endIndex = extractedString.length();
 		
-		String lowerCase = extractedString.toLowerCase();
 		String toBeRemoved = null;
-		Command typeCommand = null;
-		switch(taskType) {
-			case EVENT :	
-				typeCommand = Command.ON;
-				break;
-			case TIMED :				
-				typeCommand = Command.FROM;
-				break;
-			case DATED :
-				typeCommand = Command.BY;
-				break;
-			default :
-				// floating task
-				// no need to do anything since there is no date
-				break;
-		}
+		Command typeCommand = taskType.getDateCommand();		
 		
 		if (typeCommand != null) {
-			beginIndex = lowerCase.indexOf(typeCommand.getBasicCommand());
-			
-			boolean notBasicCommand = (beginIndex == -1);
-			if (notBasicCommand) {
-				beginIndex = lowerCase.indexOf(typeCommand.getAdvancedCommand());
-			}
+			beginIndex = typeCommand.getIndexOfCommand(extractedString);
 			
 			boolean toExtract = (beginIndex != -1);
 			if (toExtract) {
@@ -846,21 +857,11 @@ public class InputParser {
 		return extractedString;
 	}
 	
-	public static String removeRecurringFromString(String toDoString, 
-			 boolean isRecurring, Frequency repeat) {
+	public static String removeRecurrenceFromString(String toDoString, 
+			 									   boolean isRecurring, Frequency repeat) {
 		if (isRecurring) {
 			Command recurringCommand = repeat.getCommand();
-			String lowerCase = toDoString.toLowerCase() + " ";
-			int endIndex = -1;
-
-			String basicCommand = recurringCommand.getBasicCommand();
-			String advancedCommand = recurringCommand.getAdvancedCommand();
-
-			if (lowerCase.contains(basicCommand)) {
-				endIndex = lowerCase.indexOf(basicCommand);
-			} else if (lowerCase.contains(advancedCommand)) {
-				endIndex = lowerCase.indexOf(advancedCommand);
-			}
+			int endIndex = recurringCommand.getIndexOfCommand(toDoString);
 
 			toDoString = extractFromString(toDoString, endIndex);
 		}
@@ -872,17 +873,7 @@ public class InputParser {
 		
 		if (isPrioritised) {
 			Command priorityCommand = priority.getCommand();
-			String lowerCase = toDoString.toLowerCase() + " ";
-			int endIndex = -1;
-			
-			String basicCommand = priorityCommand.getBasicCommand();
-			String advancedCommand = priorityCommand.getAdvancedCommand();
-			
-			if (lowerCase.contains(basicCommand)) {
-				endIndex = lowerCase.indexOf(basicCommand);				
-			} else if (lowerCase.contains(advancedCommand)) {
-				endIndex = lowerCase.indexOf(advancedCommand);
-			} 
+			int endIndex = priorityCommand.getIndexOfCommand(toDoString);
 			
 			toDoString = extractFromString(toDoString, endIndex);
 		}
@@ -903,22 +894,27 @@ public class InputParser {
 		return toDoString;
 	}
 	
+	/*
+	 * returns a list of search attribute pairs consisting
+	 * of the attribute to search by and the key to match with
+	 */
 	public static ArrayList<Pair<SearchAttribute, String>> 
 		getSearchAttributePairFromString(String userInput) {
 		
-		ArrayList<Pair<SearchAttribute, String>> attributePairs = new ArrayList<Pair<SearchAttribute, String>>();
+		ArrayList<Pair<SearchAttribute, String>> attributePairs = 
+				new ArrayList<Pair<SearchAttribute, String>>();
 		String searchKey = null;
 
 		ArrayList<SearchAttribute> attributes = SearchAttribute
 				.getSearchAttributes(userInput);
 
 		for (SearchAttribute attribute : attributes) {
-			searchKey = InputParser
-					.getSearchKeyFromString(userInput, attribute);
+			searchKey = InputParser.
+						getSearchKeyFromString(userInput, attribute);
 
 			if (searchKey != null) {
-				attributePairs.add(new Pair<SearchAttribute, String>(attribute,
-						searchKey));
+				attributePairs.
+				add(new Pair<SearchAttribute, String>(attribute, searchKey));
 			}
 		}
 
@@ -946,6 +942,10 @@ public class InputParser {
 		return userInput;
 	}
 	
+	/*
+	 * Get the task id of the task which carries the
+	 * recurring child task item
+	 */
 	public static String getTaskIdFromRecurringId(String targetId) {
 		int prefixIndex = targetId.
 		   		  indexOf(Constant.PREFIX_RECURRING_ID);
@@ -983,22 +983,27 @@ public class InputParser {
 		
 		try {
 			Command command = getActionFromString(userInput);
-			String basicCommand = command.getBasicCommand();
-			String advancedCommand = command.getAdvancedCommand();
+			String basicCommand = command.getBasicCommand() + " ";
+			String advancedCommand = command.getAdvancedCommand() + " ";
 			int beginIndex = -1;
 			
 			if (userInput.contains(basicCommand)) {
-				beginIndex = basicCommand.length() + 1;
+				beginIndex = basicCommand.length();
 				targetId = userInput.substring(beginIndex, endIndex);
+				
 			} else if (userInput.contains(advancedCommand)) {
-				beginIndex = advancedCommand.length() + 1;
+				beginIndex = advancedCommand.length();
 				targetId = userInput.substring(beginIndex, endIndex);
 			}
 		} catch (StringIndexOutOfBoundsException exception) {
+			Main.LOGGER.logp(Level.WARNING, 
+							 InputParser.class.getName(), 
+							 "getTargetId", 
+							 exception.getMessage());
 			return targetId;
 		}
 				
-		return targetId.toUpperCase();
+		return targetId;
 	}
 	
 	private static String removeUpdateFromString(String userInput, String id) {
@@ -1023,9 +1028,15 @@ public class InputParser {
 			(lowerCase.contains(updateAdvancedString) &&
 			 lowerCase.indexOf(updateAdvancedString) == 0)) {
 			
-			int startIndex = userInput.indexOf(Constant.DELIMITER_UPDATE) + 2;
-			int endIndex = userInput.length();			
-			toDoString = userInput.substring(startIndex, endIndex);
+			int delimeterIndex = userInput.indexOf(Constant.DELIMITER_UPDATE + " ");			
+			int startIndex = delimeterIndex + 1;
+			int endIndex = userInput.length();
+					
+			if (startIndex < endIndex) {
+				toDoString = userInput.substring(startIndex, endIndex);
+			} else {
+				toDoString = Constant.EMPTY_DESCRIPTION;
+			}			
 		}
 		
 		return toDoString;
@@ -1035,20 +1046,35 @@ public class InputParser {
 		String lowerCase = userInput.toLowerCase() + " ";
 		String addBasicCmd = Command.ADD.getBasicCommand() + " ";
 		String addAdvancedCmd = Command.ADD.getAdvancedCommand() + " ";
+		
 		int lengthOfBasicAddCommand = addBasicCmd.length();
 		int lengthOfAdvancedAddCommand = addAdvancedCmd.length();
 		
 		String toDoString = userInput;
-		
+							
 		if (lowerCase.contains(addBasicCmd) &&
 			lowerCase.indexOf(addBasicCmd) == 0){
+			
+			if ((lengthOfBasicAddCommand >= userInput.length() ||
+				 lengthOfAdvancedAddCommand >= userInput.length())) { // empty description
+					return "";
+			} 
+			
 			toDoString = userInput.substring(lengthOfBasicAddCommand, 
-						 userInput.length()).trim();
+						 					 userInput.length()).trim();
+			
 		} else if (lowerCase.contains(addAdvancedCmd) &&
-				   lowerCase.indexOf(addAdvancedCmd) == 0) {	
+				   lowerCase.indexOf(addAdvancedCmd) == 0) {
+			
+			if ((lengthOfBasicAddCommand >= userInput.length() ||
+					 lengthOfAdvancedAddCommand >= userInput.length())) { // empty description
+						return "";
+			}
+			
 			toDoString = userInput.substring(lengthOfAdvancedAddCommand, 
-						 userInput.length()).trim();
+						 					  userInput.length()).trim();
 		}
+		
 		return toDoString;
 	}
 			
@@ -1153,19 +1179,21 @@ import java.util.Date;
 
 public class RecurringTask implements Cloneable {
 	private String _recurringTaskId;
-	private Status _status;
+	private TaskStatus _status;
 	private Date _recurDate;
 	
 	// -----------------------------------------------------------------------------------------------
 	// Constructors
 	// -----------------------------------------------------------------------------------------------	
 	public RecurringTask() {
-		
+		/*
+		 * attributes to be filled up by XmlManager
+		 */
 	}
 	
 	public RecurringTask(String recurringTaskId, Date recurDate) {
 		_recurringTaskId = recurringTaskId;
-		_status = Status.getTaskStatus(recurDate);
+		_status = TaskStatus.getTaskStatus(recurDate);
 		_recurDate = recurDate;
 	}
 	
@@ -1173,7 +1201,7 @@ public class RecurringTask implements Cloneable {
 		_recurringTaskId = recurringTaskId;
 		
 		Date recurDate = recurDateCalendar.getTime();
-		_status = Status.getTaskStatus(recurDate);
+		_status = TaskStatus.getTaskStatus(recurDate);
 		
 		_recurDate = recurDate;
 	}
@@ -1185,7 +1213,7 @@ public class RecurringTask implements Cloneable {
 		return _recurringTaskId;
 	}
 
-	public Status getStatus() {
+	public TaskStatus getStatus() {
 		return _status;
 	}
 
@@ -1200,7 +1228,7 @@ public class RecurringTask implements Cloneable {
 		_recurringTaskId = recurringTaskId;
 	}
 
-	public void setStatus(Status status) {
+	public void setStatus(TaskStatus status) {
 		_status = status;
 	}
 
@@ -1215,7 +1243,7 @@ public class RecurringTask implements Cloneable {
 		return (taskType.equals(TaskType.DATED) ||
 				taskType.equals(TaskType.EVENT));
 	}
-	
+		
 	@Override
 	public RecurringTask clone() {
 		RecurringTask clone = null;
@@ -1291,91 +1319,9 @@ public enum SearchAttribute {
 
 
 	/**
-	 * origin: C:\Users\Ruyi\Desktop\collate\source\application\Status.java
-	 */
-
-package application;
-
-import java.util.Date;
-
-public enum Status {
-	ERROR,
-	COMPLETED,
-	ONGOING,
-	OVERDUE,
-	SUCCESS,
-	FEEDBACK;
-	
-	public static Status getTaskStatus(Date endDate) {
-		Status status = Status.OVERDUE;
-		
-		
-		if (endDate == null) { // floating task
-			return Status.ONGOING;
-		} else {
-			Date todayDate = new Date();
-			boolean isOngoing = DateParser.isBeforeDate(todayDate, endDate);
-			
-			if (isOngoing) {
-				status = Status.ONGOING;
-			}
-		}
-		
-		return status;
-	}
-}
-
-	// End of segment: C:\Users\Ruyi\Desktop\collate\source\application\Status.java
-
-
-
-
-
-	/**
 	 * origin: C:\Users\Ruyi\Desktop\collate\source\application\Storage.java
 	 */
 
-package application;
-
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
-import java.util.ArrayList;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.OutputKeys;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerConfigurationException;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathConstants;
-import javax.xml.xpath.XPathExpression;
-import javax.xml.xpath.XPathExpressionException;
-import javax.xml.xpath.XPathFactory;
-
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import org.xml.sax.SAXException;
-
-public class Storage {
-	private static Storage _storage;
-	private static Transformer _transformer;
-	private static XPath _xPath;
-	private static DocumentBuilder _documentBuilder;
-	
 	// -----------------------------------------------------------------------------------------------
 	// Constructor
 	// -----------------------------------------------------------------------------------------------		
@@ -1415,7 +1361,10 @@ public class Storage {
 			
 			nextId = value.intValue();
 		} catch (XPathExpressionException exception) {
-			exception.printStackTrace();
+			Main.LOGGER.logp(Level.SEVERE, 
+							 Storage.class.getName(), 
+							 "readNextId", 
+							 exception.getMessage());
 		}
 		
 		return nextId;
@@ -1437,7 +1386,10 @@ public class Storage {
 
 			}
 		} catch (XPathExpressionException exception) {
-			exception.printStackTrace();
+			Main.LOGGER.logp(Level.SEVERE, 
+							 Storage.class.getName(), 
+							 "readSavePath", 
+							 exception.getMessage());
 		}
 		
 		return savePath;
@@ -1474,13 +1426,17 @@ public class Storage {
 			streamResult = new StreamResult(new File(savePath));
 			_transformer.transform(domSource, streamResult);
 		} catch (TransformerException exception) {
-			exception.printStackTrace();
+			Main.LOGGER.logp(Level.SEVERE, 
+							 Storage.class.getName(), 
+							 "writeFile", 
+							 exception.getMessage());
 		}
 		
 		return Constant.MSG_SAVE_SUCCESS;
 	}
 
-	public ArrayList<Task> loadXmlToArrayList() {
+
+	public ArrayList<Task> loadTasksXmlToArrayList() {
 		Document document = getFileDocument();
 		ArrayList<Task> tasks = new ArrayList<Task>();
 		
@@ -1499,7 +1455,7 @@ public class Storage {
 		return tasks;
 	}
 
-	public ArrayList<String> loadCategoriesToArrayList() {
+	public ArrayList<String> loadCategoriesXmlToArrayList() {
 		Document document = getFileDocument();
 		ArrayList<String> categories = new ArrayList<String>();
 		
@@ -1552,7 +1508,6 @@ public class Storage {
 				   Constant.TAG_CATEGORY, category);	
 
 		writeFile(document);
-
 		hasWritten = true;
 		
 		return hasWritten;
@@ -1576,16 +1531,23 @@ public class Storage {
 		try {
 			return _documentBuilder.parse(Main.storage.readSavePath()); 			
 		} catch (SAXException | IOException exception) {
-			exception.printStackTrace();
+			Main.LOGGER.logp(Level.SEVERE, 
+							 Storage.class.getName(), 
+							 "getFileDocument", 
+							 exception.getMessage());
 		}			
 		return null;
 	}
 	
 	public Document getSettingDocument() {
 		try {						
-			return _documentBuilder.parse(Main.getFolderPath() + Constant.PATH_SETTING); 			
+			return _documentBuilder.parse(Main.getFolderPath() + 
+										  Constant.PATH_SETTING); 			
 		} catch (SAXException | IOException exception) {
-			exception.printStackTrace();
+			Main.LOGGER.logp(Level.SEVERE, 
+							 Storage.class.getName(), 
+							 "getSettingDocument", 
+							 exception.getMessage());
 		}			
 		return null;
 	}
@@ -1597,12 +1559,12 @@ public class Storage {
 		Path oldPath = Paths.get(pathInSetting);		
 		Path newPath = Paths.get(path); 
 		
-//		try {
-//			Files.move(oldPath, newPath.resolve(oldPath.getFileName()), 
-//					StandardCopyOption.REPLACE_EXISTING);
-//		} catch (IOException exception) {
-//			exception.printStackTrace();
-//		}
+		try {
+			Files.move(oldPath, newPath.resolve(oldPath.getFileName()), 
+					   StandardCopyOption.REPLACE_EXISTING);
+		} catch (IOException exception) {
+			exception.printStackTrace();
+		}
 		
 		systemMsg = updateDirPathInSetting(path); 
 		
@@ -1610,19 +1572,17 @@ public class Storage {
 		
 		return systemMsg;
 	}
-		
-	// -----------------------------------------------------------------------------------------------
-	// Private methods
-	// -----------------------------------------------------------------------------------------------
-	private String updateDirPathInSetting(String dirPath) { 
-		Document doc = getSettingDocument();
+	
+	// End of segment: C:\Users\Ruyi\Desktop\collate\source\application\Storage.java
 
-		Node save = doc.getElementsByTagName(Constant.TAG_SETTING_SAVE).item(0);
-		save.setTextContent(dirPath + "\\" + Constant.PATH_FILE_NAME);
-		
-		return writeFile(doc, Constant.PATH_SETTING);
-	}
-		
+
+
+
+
+	/**
+	 * origin: C:\Users\Ruyi\Desktop\collate\source\application\Storage.java
+	 */
+
 	private void cleanAndWriteFile(Document document) {
 		try {
 			NodeList nodes = (NodeList) _xPath.
@@ -1636,7 +1596,10 @@ public class Storage {
 			
 			writeFile(document);
 		} catch (XPathExpressionException exception) {
-			exception.printStackTrace();
+			Main.LOGGER.logp(Level.SEVERE, 
+							 Storage.class.getName(), 
+							 "cleanAndWriteFile", 
+							 exception.getMessage());
 		}
 	}
 	
@@ -1657,7 +1620,10 @@ public class Storage {
 			
 			cleanAndWriteFile(document);
 		} catch (Exception exception) {
-			exception.printStackTrace();
+			Main.LOGGER.logp(Level.SEVERE, 
+							 Storage.class.getName(), 
+							 "removeAllTaskNodesFromFile", 
+							 exception.getMessage());
 		}
 	}
 		
@@ -1672,8 +1638,26 @@ public class Storage {
 			_transformer.setOutputProperty(Constant.XML_OUTPUT_INDENT_PROPERTY, 
 										   Constant.XML_OUTPUT_INDENT_AMOUNT);
 		} catch (TransformerConfigurationException exception) {
-			exception.printStackTrace();
+			Main.LOGGER.logp(Level.SEVERE, 
+							 Storage.class.getName(), 
+							 "initTransformer", 
+							 exception.getMessage());
 		}
+	}
+	
+	private boolean isEmptyCategory(String category) {
+		boolean isEmpty = true;
+		
+		ArrayList<Task> taskList = Main.list.getTasks();
+		
+		for(int i = 0; i < taskList.size(); i++) {
+			if(taskList.get(i).getCategory().equalsIgnoreCase(category)) {
+				isEmpty = false;
+				break;
+			}
+		}
+		
+		return isEmpty;
 	}
 }
 	// End of segment: C:\Users\Ruyi\Desktop\collate\source\application\Storage.java
@@ -1686,41 +1670,11 @@ public class Storage {
 	 * origin: C:\Users\Ruyi\Desktop\collate\source\application\Task.java
 	 */
 
-package application;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
-
-import javafx.util.Pair;
-
-public class Task implements Cloneable {
-	private String _id;
-	private TaskType _taskType;
-	private String _toDo;
-	private String _originalText;
-	private Date _on;
-	private Date _from;
-	private Date _to;
-	private Date _by;
-	private String _category;
-	private boolean _isRecurring;
-	private Frequency _repeat;
-	private int _repeatDay;
-	private Date _repeatUntil;
-	private Priority _priority;
-	private boolean _isValid;
-	private Status _status;
-	private Date _startDate;
-	private Date _endDate;
-	private ArrayList<RecurringTask> _recurringTasks;
-	
 	// -----------------------------------------------------------------------------------------------
 	// Constructors
-	// -----------------------------------------------------------------------------------------------			
-	public Task() {
-		// convert from node
+	// -----------------------------------------------------------------------------------------------		
+	public Task() {		
+		// Attributes are to be occupied by calling set
 	}
 	
 	public Task(String userInput) {
@@ -1728,6 +1682,11 @@ public class Task implements Cloneable {
 	}
 	
 	public Task(String userInput, String id) {	
+		this(userInput, id, null);
+	}
+	
+	public Task (String userInput, String id, Task originalTask) {
+		_isValid = false;
 		_taskType = InputParser.getTaskTypeFromString(userInput);	
 		
 		if (id == null) {
@@ -1738,31 +1697,25 @@ public class Task implements Cloneable {
 		
 		_originalText = InputParser.removeActionFromString(userInput, _id);
 		
-		_isValid = Command.hasValidNumOfDateCommands(userInput);
-		if (_isValid) {
+		boolean hasValidDateCount = Command.hasValidNumOfDateCommands(userInput);
+		if (hasValidDateCount) {
 			List<Date> dates = getDates(userInput);
 			
-			int maxNum = 2;
-			if ((_taskType.equals(TaskType.TIMED) && dates.size() < maxNum) ||
-				(!_taskType.equals(TaskType.FLOATING) && dates == null)) {
+			boolean isInvalidFormat = (_taskType.equals(TaskType.TIMED) && 
+									   dates.size() < Constant.MAX_NUM_OF_DATES) ||
+									  (!_taskType.equals(TaskType.FLOATING) && 
+									   dates == null);
+			
+			if (isInvalidFormat) {
 				Main.systemFeedback = Constant.MSG_INVALID_FORMAT;
-				_isValid = false;
 			} else {
-				setDatesForTaskType(dates);			
-				_category = InputParser.getCategoryFromString(userInput);
-				
-				_isValid = setRecurringDetails(dates, userInput);
-				
-				if (_isValid) {
-					_priority = InputParser.getPriorityFromString(userInput);		
-					_toDo = generateToDoString(userInput);
-					_status = Status.getTaskStatus(_endDate);
-					
-					_isValid = true;
-				}
+				setTaskContentAttributes(userInput, originalTask, dates);
 			}
 		} else {
-			if (Command.verifyRecurringCommands(userInput) != null) {
+			boolean isInvalidRecurring = 
+					Command.verifyRecurringCommands(userInput) != null;
+			
+			if (isInvalidRecurring) {
 				Main.systemFeedback = Constant.MSG_INVALID_RECURRING;
 			} else {
 				Main.systemFeedback = Constant.MSG_INVALID_FORMAT;
@@ -1837,7 +1790,7 @@ public class Task implements Cloneable {
 		return _endDate;
 	}
 
-	public Status getStatus() {
+	public TaskStatus getStatus() {
 		return _status;
 	}
 
@@ -1916,7 +1869,7 @@ public class Task implements Cloneable {
 		_endDate = endDate;
 	}
 
-	public void setStatus(Status status) {
+	public void setStatus(TaskStatus status) {
 		_status = status;
 	}
 
@@ -1937,8 +1890,12 @@ public class Task implements Cloneable {
 		
 		try {
 			clone = (Task) super.clone();
-		} catch(CloneNotSupportedException e){
-            throw new RuntimeException(e); 
+		} catch(CloneNotSupportedException exception) {
+			Main.LOGGER.logp(Level.WARNING, 
+							 Task.class.getName(), 
+							 "clone", 
+							 exception.getMessage());
+            throw new RuntimeException(exception); 
         }
 		
 		 return clone;
@@ -1958,7 +1915,7 @@ public class Task implements Cloneable {
 		ArrayList<RecurringTask> copies = new ArrayList<RecurringTask>();
 		Iterator<RecurringTask> iterator = _recurringTasks.iterator();
 		
-		while(iterator.hasNext()){
+		while(iterator.hasNext()) {
 			copies.add(iterator.next().clone());
 		}
 		
@@ -1988,7 +1945,12 @@ public class Task implements Cloneable {
 					   equals(recurringTaskId));
 			
 			if (isFound) {
-				_recurringTasks.remove(index);				
+				/*
+				 * Setting the status to Status.DELETED instead of deleting
+				 * the task from the xml in order for the update function
+				 * to work correctly when updating recurring tasks
+				 */
+				recurringTask.setStatus(TaskStatus.DELETED);
 				break;
 			}
 			
@@ -1996,6 +1958,10 @@ public class Task implements Cloneable {
 		}
 	}
 	
+	/*
+	 * return true when the start date of the calling task matches
+	 * with the search key
+	 */
 	public boolean hasDateMatch(SearchAttribute attribute, String searchKey) {
 		boolean hasMatched = false;
 		Date dateKey = Main.inputParser.getSearchDateFromString(searchKey);
@@ -2078,7 +2044,7 @@ public class Task implements Cloneable {
 		
 		toDoString = InputParser.removeCategoryFromString(toDoString, _category);		
 		toDoString = InputParser.removePriorityFromString(toDoString, _priority);		
-		toDoString = InputParser.removeRecurringFromString(toDoString, _isRecurring, _repeat);
+		toDoString = InputParser.removeRecurrenceFromString(toDoString, _isRecurring, _repeat);
 		toDoString = InputParser.extractDescriptionFromString(toDoString, _taskType, _id);	
 		
 		return toDoString.trim(); 
@@ -2125,11 +2091,27 @@ public class Task implements Cloneable {
 				break;
 		}
 	}
+	
+	private void setTaskContentAttributes(String userInput, Task originalTask,
+			  							  List<Date> dates) {
+		setDatesForTaskType(dates);
+		_category = InputParser.getCategoryFromString(userInput);
+
+		boolean isValidOperation = processRecurrence(dates, userInput,
+								   originalTask);
+		if (isValidOperation) {
+			_priority = InputParser.getPriorityFromString(userInput);
+			_toDo = generateToDoString(userInput);
+			_status = TaskStatus.getTaskStatus(_endDate);
+
+			_isValid = true;
+		}
+	}
 		
 	// ---------------------------------------------------------
 	// Recurring Tasks-related details tags
 	// ---------------------------------------------------------
-	private boolean setRecurringDetails(List<Date> dates, String userInput) {
+	private boolean processRecurrence(List<Date> dates, String userInput, Task originalTask) {
 		_recurringTasks = new ArrayList<RecurringTask>();
 		_isRecurring = false;
 		_repeatUntil = null;
@@ -2141,25 +2123,20 @@ public class Task implements Cloneable {
 		if (RecurringTask.isValidRecurringTaskType(_taskType)) {
 			Date untilDate = InputParser.getUntilDateFromString(userInput);
 			
-			if (recurringCommand == null) {
-				boolean hasRecurringCommands = Command.hasRecurringCommands(userInput);
-				if (hasRecurringCommands && untilDate == null) {
-					isValid = false;
-					Main.systemFeedback = Constant.MSG_NO_UNTIL_DATE;						
-				} else if (!hasRecurringCommands && untilDate == null) {
-					isValid = true;
-				}
+			if (recurringCommand != null &&
+				untilDate != null && 
+				DateParser.isBeforeDate(untilDate, _endDate)) { 
+				// user attempted to create a recurring task with invalid until date
+				isValid = false;
+				Main.systemFeedback = Constant.MSG_INVALID_UNTIL_DATE;				
+				
+			} else if (recurringCommand == null) { 				
+				isValid = verifyUserInputForRecurrence(userInput, isValid,
+						  untilDate);
 			} else {
 				if (dates != null) {
-					_isRecurring = true;
-					_repeatUntil = untilDate;
-					_repeat = Frequency.getFrequency(recurringCommand);	
-					
-					Date startDate = dates.get(0);
-					_repeatDay = DateParser.calculateDayOfWeek(startDate);
-					
-					generateRecurringTasks(startDate);	
-					isValid = true;				
+					isValid = true;	
+					setRecurrenceDetails(dates, originalTask, recurringCommand, untilDate);									
 				} else {
 					isValid = false;
 					Main.systemFeedback = Constant.MSG_INVALID_RECURRING;
@@ -2171,30 +2148,72 @@ public class Task implements Cloneable {
 		}
 				
 		return isValid;
+	}
+
+	/*
+	 * returns true if the user input is a valid operation
+	 * returns false if it is a recurrence type command but has no until date
+	 */
+	private boolean verifyUserInputForRecurrence(String userInput,
+												 boolean isValid, Date untilDate) {
+		boolean hasRecurringCommands = Command.hasRecurringCommands(userInput);
+		
+		if (hasRecurringCommands && untilDate == null) {
+			isValid = false;
+			Main.systemFeedback = Constant.MSG_NO_UNTIL_DATE;			
+		} else if (!hasRecurringCommands && untilDate == null) { 
+			isValid = true; 
+		}
+		return isValid;
+	}
+
+	private void setRecurrenceDetails(List<Date> dates, Task originalTask,
+									 Command recurringCommand, Date untilDate) {
+		_isRecurring = true;
+		_repeatUntil = untilDate;
+		_repeat = Frequency.getFrequency(recurringCommand);	
+		
+		Date startDate = dates.get(0);
+		_repeatDay = DateParser.calculateDayOfWeek(startDate);
+		
+		generateRecurringTasks(startDate, originalTask);
 	}		
 
-	private void generateRecurringTasks(Date startDate) {
+	/*
+	 * Generate recurring child tasks based on the frequency chosen
+	 */
+	private void generateRecurringTasks(Date startDate, Task originalTask) {
 		Calendar calendarStart = DateParser.createCalendar(startDate);
 		Calendar calendarEnd = DateParser.createCalendar(_repeatUntil);
 		int startDateDayOfMonth = DateParser.calculateDayOfMonth(calendarStart);
 		int startDateMonth = DateParser.calculateMonth(calendarStart);
 		
-		
+		ArrayList<RecurringTask> recurringTasks = null;
+		if (originalTask != null) {
+			recurringTasks = originalTask.getRecurringTasks();
+		}
+				
 		while (calendarStart.before(calendarEnd) || calendarStart.equals(calendarEnd)) {
 			switch (_repeat) {
+				case DAILY :
+					if (hasAddedDailyRecurringTask(calendarStart, recurringTasks)) {
+						continue;
+					}
+					break;
 				case WEEKLY :
-					if (hasAddedWeeklyRecurringTask(calendarStart)) {
+					if (hasAddedWeeklyRecurringTask(calendarStart, recurringTasks)) {
 						continue;
 					}
 					break;
 				case MONTHLY :
-					if (hasAddedMonthlyRecurringTask(calendarStart, startDateDayOfMonth)) {
+					if (hasAddedMonthlyRecurringTask(calendarStart, startDateDayOfMonth, 
+													 recurringTasks)) {
 						continue;
 					}
 					break;
 				case YEARLY :
-					if (hasAddedYearlyRecurringTask(calendarStart, 
-							startDateDayOfMonth, startDateMonth)) {
+					if (hasAddedYearlyRecurringTask(calendarStart, startDateDayOfMonth, 
+													startDateMonth, recurringTasks)) {
 						continue;
 					}
 					break;					
@@ -2209,7 +2228,8 @@ public class Task implements Cloneable {
 
 	private boolean hasAddedYearlyRecurringTask(Calendar calendarStart, 
 												int startDateDayOfMonth, 
-												int startDateMonth) {
+												int startDateMonth,
+												ArrayList<RecurringTask> recurringTasks) {
 		boolean hasAdded = false;
 		int dayOfMonth;
 		int month;
@@ -2218,7 +2238,7 @@ public class Task implements Cloneable {
 		
 		if (dayOfMonth == startDateDayOfMonth &&
 			month == startDateMonth) {
-			addToRecurringTasks(calendarStart);
+			addToRecurringTasks(calendarStart, recurringTasks);
 			
 			calendarStart.add(Calendar.YEAR, 1);
 			hasAdded = true;
@@ -2227,12 +2247,13 @@ public class Task implements Cloneable {
 		return hasAdded;
 	}
 
-	private boolean hasAddedMonthlyRecurringTask(Calendar calendarStart, int startDateDayOfMonth) {
+	private boolean hasAddedMonthlyRecurringTask(Calendar calendarStart, int startDateDayOfMonth,
+												 ArrayList<RecurringTask> recurringTasks) {
 		boolean hasAdded = false;
 		int dayOfMonth = DateParser.calculateDayOfMonth(calendarStart);	
 		
 		if (dayOfMonth == startDateDayOfMonth) {
-			addToRecurringTasks(calendarStart);
+			addToRecurringTasks(calendarStart, recurringTasks);
 			
 			calendarStart.add(Calendar.MONTH, 1);
 			hasAdded = true;
@@ -2241,12 +2262,13 @@ public class Task implements Cloneable {
 		return hasAdded;
 	}
 
-	private boolean hasAddedWeeklyRecurringTask(Calendar calendarStart) {
+	private boolean hasAddedWeeklyRecurringTask(Calendar calendarStart, 
+												ArrayList<RecurringTask> recurringTasks) {
 		boolean hasAdded = false;
 		int dayOfWeek = DateParser.calculateDayOfWeek(calendarStart);
 		
 		if (dayOfWeek == _repeatDay) {
-			addToRecurringTasks(calendarStart);
+			addToRecurringTasks(calendarStart, recurringTasks);
 			
 			calendarStart.add(Calendar.WEEK_OF_YEAR, 1);
 			hasAdded = true;
@@ -2255,12 +2277,50 @@ public class Task implements Cloneable {
 		return hasAdded;
 	}
 	
-	private void addToRecurringTasks(Calendar calendarStart) {
+	private boolean hasAddedDailyRecurringTask(Calendar calendarStart, 
+												ArrayList<RecurringTask> recurringTasks) {
+		boolean hasAdded = true;
+		addToRecurringTasks(calendarStart, recurringTasks);
+
+		calendarStart.add(Calendar.DATE, 1);
+
+		return hasAdded;
+	}
+	
+	private void addToRecurringTasks(Calendar calendarStart, 
+									 ArrayList<RecurringTask> recurringTasks) {
 		String recurringTaskId = generateRecurringTaskId();
 		RecurringTask recurringTask = 
 				new RecurringTask(recurringTaskId, calendarStart);
 		
+		if (recurringTasks != null) {
+			useOriginalRecurTaskStatus(recurringTasks, recurringTask);
+		}
+		
 		_recurringTasks.add(recurringTask);
+	}
+
+	/*
+	 * If the date and time of the new recurring task is a match
+	 * to the original entry, take the original status.
+	 */
+	private void useOriginalRecurTaskStatus(ArrayList<RecurringTask> recurringTasks, 
+											RecurringTask recurringTask) {
+		boolean hasMatched = false;
+		
+		Date thisRecurDate = recurringTask.getRecurDate();
+		Date thatRecurDate = null;
+		
+		for (RecurringTask recTask : recurringTasks) {
+			thatRecurDate = recTask.getRecurDate();
+			hasMatched = DateParser.hasMatchedDateTime(thisRecurDate, thatRecurDate);
+			
+			if (hasMatched) {
+				recurringTask.setStatus(recTask.getStatus());
+				
+				break;
+			}
+		}
 	}
 	
 	private String generateRecurringTaskId() {
@@ -2269,6 +2329,45 @@ public class Task implements Cloneable {
 }
 
 	// End of segment: C:\Users\Ruyi\Desktop\collate\source\application\Task.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Ruyi\Desktop\collate\source\application\TaskStatus.java
+	 */
+
+package application;
+
+import java.util.Date;
+
+public enum TaskStatus {
+	ERROR,
+	COMPLETED,
+	ONGOING,
+	OVERDUE,
+	DELETED;
+	
+	public static TaskStatus getTaskStatus(Date endDate) {
+		TaskStatus status = TaskStatus.OVERDUE;		
+		
+		if (endDate == null) { // floating task
+			return TaskStatus.ONGOING;
+		} else {
+			Date todayDate = new Date();
+			boolean isOngoing = DateParser.isBeforeDate(todayDate, endDate);
+			
+			if (isOngoing) {
+				status = TaskStatus.ONGOING;
+			}
+		}
+		
+		return status;
+	}
+}
+
+	// End of segment: C:\Users\Ruyi\Desktop\collate\source\application\TaskStatus.java
 
 
 
@@ -2335,6 +2434,28 @@ public enum TaskType {
 		return (!(isEvent(commandLine) && isTimedTask(commandLine) &&
 				 isDatedTask(commandLine)));
 	}
+	
+	public Command getDateCommand() {
+		Command dateCommand = null;
+		
+		switch(this) {
+			case EVENT :	
+				dateCommand = Command.ON;
+				break;
+			case TIMED :				
+				dateCommand = Command.FROM;
+				break;
+			case DATED :
+				dateCommand = Command.BY;
+				break;
+			default :
+				// floating task
+				// no need to do anything since there is no date
+				break;
+		}
+		
+		return dateCommand;
+	}
 }
 
 	// End of segment: C:\Users\Ruyi\Desktop\collate\source\application\TaskType.java
@@ -2349,38 +2470,12 @@ public enum TaskType {
 
 package application;
 import java.io.File;
-import java.io.IOException;
-import java.net.URL;
-import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Iterator;
-import java.util.List;
-
 import javafx.util.Pair;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathConstants;
-import javax.xml.xpath.XPathExpression;
-import javax.xml.xpath.XPathExpressionException;
-import javax.xml.xpath.XPathFactory;
-
 import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import org.w3c.dom.Text;
-import org.xml.sax.SAXException;
-
 import test.ToDoListTest;
 
 public class ToDoList {
@@ -2399,8 +2494,8 @@ public class ToDoList {
 		createListFileIfNotExist();	
 		
 		_nextId = Main.storage.readNextId();
-		_tasks = Main.storage.loadXmlToArrayList();
-		_categories = Main.storage.loadCategoriesToArrayList();
+		_tasks = Main.storage.loadTasksXmlToArrayList();
+		_categories = Main.storage.loadCategoriesXmlToArrayList();
 	}
 	
 	/*
@@ -2415,8 +2510,8 @@ public class ToDoList {
 			createListFileIfNotExist();	
 			
 			_nextId = Main.storage.readNextId();
-			_tasks = Main.storage.loadXmlToArrayList();
-			_categories = Main.storage.loadCategoriesToArrayList();
+			_tasks = Main.storage.loadTasksXmlToArrayList();
+			_categories = Main.storage.loadCategoriesXmlToArrayList();
 		}
 	}
 	
@@ -2471,17 +2566,21 @@ public class ToDoList {
 	// -----------------------------------------------------------------------------------------------
 	// Public Methods
 	// -----------------------------------------------------------------------------------------------
+	// ---------------------------------------------------------
+	// Add-related methods
+	// ---------------------------------------------------------
 	public String addTaskToList(Task task) {	
 		ArrayList<Task> backupList = addToArrayListAndBackup(task);		
-		String result = writeToFile(task, backupList);
+		String result = writeListToFile(task, backupList);
 		
 		return result;
 	}
 		
-	public Pair<String, Task> AddTaskBackToList(Task task, boolean isUndo) {
+	public Pair<String, Task> addTaskBackToList(Task task, boolean isUndo) {
 		Task removedTask = null;
 		if (task.getIsRecurring() && isUndo) {
-			removedTask = deleteTaskById(task.getId());	
+			Pair<Task, String> deleteDetailsPair = deleteTaskById(task.getId());
+			removedTask = deleteDetailsPair.getKey();
 		}
 			
 		String result = addTaskToList(task);
@@ -2489,129 +2588,35 @@ public class ToDoList {
 		return new Pair<String, Task>(result, removedTask);
 	}
 	
-	public Task deleteTaskFromList(String userInput) {
-		Task removedTask = null;
+	// ---------------------------------------------------------
+	// Delete-related methods
+	// ---------------------------------------------------------
+	public Pair<Task, String> deleteTaskFromList(String userInput) {
 		String targetId = InputParser.getTargetIdFromString(userInput);
 				
-		removedTask = deleteTaskById(targetId);
+		Pair<Task, String> deleteDetailsPair = deleteTaskById(targetId);
 		
-		return removedTask;
+		return deleteDetailsPair;
 	}
 	
-	// End of segment: C:\Users\Ruyi\Desktop\collate\source\application\ToDoList.java
-
-
-
-
-
-	/**
-	 * origin: C:\Users\Ruyi\Desktop\collate\source\application\ToDoList.java
-	 */
-
-	public Task selectTaskFromList(String userInput) {
-		Task selectedTask = null;
-		String targetId = InputParser.getTargetIdFromString(userInput);
-		
-		selectedTask = selectTaskById(targetId);
-		_selectedTask = selectedTask;
-		
-		return selectedTask;
-	}
-	
-	public Pair<ArrayList<Task>, String> searchTheList(String userInput) {
-		ArrayList<Task> tasks = ToDoList.generateTaskItems(_tasks, Constant.EMPTY_STRING);
-		
-		userInput = InputParser.verifyAndCorrectSearchString(userInput);
-		
-		ArrayList<Task> searchResults = new ArrayList<Task>();
-		String systemMsg = null;	
-		ArrayList<Pair<SearchAttribute, String>> attributePairs =
-				InputParser.getSearchAttributePairFromString(userInput);
-				
-		if (attributePairs.isEmpty()) {
-			systemMsg = Constant.MSG_SEARCH_INVALID;
-		} else {
-			boolean hasMatched = false;
-			for (Task task : tasks) {
-				hasMatched = task.hasMatchedAllAttributes(attributePairs);
-				
-				if (hasMatched) {
-					searchResults.add(task);
-				}
-			}
-		}	
-		
-		Pair<ArrayList<Task>, String> searchResultsPair = new
-				Pair<ArrayList<Task>, String>(searchResults, systemMsg);
-		
-		return searchResultsPair;
-	}
-	
-	public Pair<Task, String> updateTaskOnList(String userInput) {
-		String targetId = InputParser.getTargetIdFromUpdateString(userInput);
-		Task updatedTask = new Task(userInput, targetId);
-		
-		if (targetId == null || 
-			targetId.toLowerCase().
-			contains(Constant.PREFIX_RECURRING_ID)) {
-			Main.systemFeedback = Constant.MSG_ITEM_NOT_FOUND;
+	public Pair<Task, String> deleteTaskById(String targetId) {
+		if (targetId == null) {
 			return null;
 		}
 		
-		Task originalTask = deleteTaskById(targetId);
-		
-		if (originalTask != null) {
-			AddTaskBackToList(updatedTask, false);
-		}		
-		
-		String updatedId = updatedTask.getId();
-		return new Pair<Task, String>(originalTask, updatedId);
-	}
-	
-	public Task replaceTaskOnList(Task taskToUpdateWith, String targetId) {		
-		Task originalTask = deleteTaskById(targetId);
-		
-		if (originalTask != null) {
-			AddTaskBackToList(taskToUpdateWith, false);
-		}
-		
-		return originalTask;
-	}
-	
-	public Task getTaskById(String targetId) {		
-		Task targetTask = null;
-		boolean isFound = false;
-		
-		for (Task task : _tasks) {
-			isFound = (task.getId().equals(targetId));
-			
-			if(isFound) {
-				targetTask = task;				
-				break;
-			}
-		}
-		
-		return targetTask;
-	}
-	
-	public Task deleteTaskById(String targetId) {
 		String taskId = targetId;
 		String recurringTaskId = null;
-		
-		boolean isRecurringTaskId = 
-				targetId.contains(Constant.PREFIX_RECURRING_ID);			
-		
-		if (isRecurringTaskId) {
-			
-			recurringTaskId = InputParser.getChildIdFromRecurringId(targetId);			
-			taskId = InputParser.getTaskIdFromRecurringId(targetId);
-		}
-		
 		Task task = null;
 		Task removedTask = null;
 		int index = 0;		
 		boolean isFound = false;
 		Iterator<Task> taskIterator = _tasks.iterator();
+		
+		boolean isRecurringTaskId = targetId.contains(Constant.PREFIX_RECURRING_ID);					
+		if (isRecurringTaskId) {			
+			recurringTaskId = InputParser.getChildIdFromRecurringId(targetId);			
+			taskId = InputParser.getTaskIdFromRecurringId(targetId);
+		}
 		
 		while (taskIterator.hasNext()) {
 			task = taskIterator.next();
@@ -2629,7 +2634,7 @@ public class ToDoList {
 				}
 				
 				_tasks = TaskSorter.getTasksSortedByDate(_tasks);
-				writeToFile(task, backupList);
+				writeListToFile(task, backupList);
 				
 				break;
 			}
@@ -2637,151 +2642,9 @@ public class ToDoList {
 			index++;
 		}
 		
-		return removedTask;
+		return new Pair<Task, String>(removedTask, recurringTaskId);
 	}
 	
-	public Task selectTaskById(String targetId) {
-		String taskId = targetId;
-		Task task = null;
-		Task selectedTask = null;
-		ArrayList<Task> taskList = generateTaskItems(_tasks, Constant.EMPTY_STRING);
-		Iterator<Task> taskIterator = taskList.iterator();
-		
-		while (taskIterator.hasNext()) {
-			task = taskIterator.next();
-			
-			if(task.getId().equals(taskId)) {
-				selectedTask = task;
-				break;
-			}
-		}
-		
-		return selectedTask;
-	}
-			
-	public static String getSavePathDirectory() {
-		String savePath = Main.storage.readSavePath();
-		
-		if (savePath.equals(Constant.PATH_FILE_NAME)) {
-			String workingDirectory = 
-					System.getProperty(Constant.PATH_GET_PROPERTY);
-			
-			savePath = (workingDirectory + "\\" + savePath);
-		}
-		
-		return savePath;
-	}
-	
-	// End of segment: C:\Users\Ruyi\Desktop\collate\source\application\ToDoList.java
-
-
-
-
-
-	/**
-	 * origin: C:\Users\Ruyi\Desktop\collate\source\application\ToDoList.java
-	 */
-
-	private void createListFileIfNotExist() {		
-		File file = new File(_listFilePath);
-		
-		boolean shouldCreate = !(file.exists());
-		if (shouldCreate) {
-			prepareNewList();
-		}
-	}
-		
-	private void prepareNewList() {
-		Document document = XmlManager.initDocument();
-		
-		Main.storage.writeFile(document, _listFilePath);
-	}
-	
-	private void addCategoryToList(String category) {
-		boolean shouldAdd = true;
-		
-		for (String taskCategory : _categories) {
-			if (taskCategory.equalsIgnoreCase(category)) {
-				shouldAdd = false;
-				
-				break;
-			}
-		}
-		
-		if (shouldAdd) {
-			boolean hasWritten = 
-					Main.storage.hasWrittenCategoryToFile(category);
-			
-			if (hasWritten) {
-				_categories.add(category);
-			}
-		}
-	}
-	
-	private String writeToFile(Task task, ArrayList<Task> backupList) {
-		processTasksID();
-		
-		String result = Main.storage.writeListToFile(_tasks); 
-		
-		if (result.equals(Constant.MSG_ADD_SUCCESS)) {
-			_nextId = _tasks.size() + 1;
-			Main.storage.writeNextIdInFile(_nextId);
-			
-			addCategoryToList(task.getCategory());
-		} else {
-			_tasks = backupList;
-		}
-		return result;
-	}
-	
-	private static Task getRecurChildItemForEventOrDated(Task task,
-			Date recurringDate, String taskType, String recurringId,
-			Status recurringStatus, Task taskA) {
-		if(taskType.equalsIgnoreCase(TaskType.EVENT.toString())) {
-			taskA = Task.createRecurringChildItem(task, recurringId, recurringStatus, 
-					recurringDate, task.getBy(), recurringDate);
-		} else if(taskType.equalsIgnoreCase(TaskType.DATED.toString())) {
-			taskA = Task.createRecurringChildItem(task, recurringId, recurringStatus, 
-					task.getOn(), recurringDate, recurringDate);
-		}
-		return taskA;
-	}	
-
-	private ArrayList<Task> addToArrayListAndBackup(Task task) {
-		ArrayList<Task> backupList = deepCloneArrayList(_tasks);
-		
-		_tasks.add(task);
-		_tasks = TaskSorter.getTasksSortedByDate(_tasks);
-		
-		return backupList;
-	}
-	
-	private ArrayList<Task> deepCloneArrayList(ArrayList<Task> tasks) {
-		ArrayList<Task> backupList = new ArrayList<Task>();
-		Iterator<Task> iterator = tasks.iterator();
-		
-		while(iterator.hasNext()){
-			Task copy = iterator.next().clone();
-			if (copy.getIsRecurring()) {
-				copy.setRecurringTasks(copy.deepCloneArrayList());
-			}
-						
-			backupList.add(copy);
-		}
-		
-		return backupList;
-	}
-	
-	private void processTasksID() {
-		Task task = null;
-		
-		for (int i = 0; i < _tasks.size(); i++) {
-			task = _tasks.get(i);
-			task.setId(String.valueOf(i + 1));
-		}
-	}
-}
-
 	// End of segment: C:\Users\Ruyi\Desktop\collate\source\application\ToDoList.java
 
 
@@ -2814,7 +2677,7 @@ public class Undo {
 		this(toUndo, null, targetId);
 	}
 	
-	// to undo update / complete
+	// to undo update / complete / deletion of recurring task
 	public Undo(Command toUndo, Task originalTask, String targetId) {
 		_undoCommand = getUndoCommand(toUndo);
 		_originalTask = originalTask;
@@ -2837,6 +2700,9 @@ public class Undo {
 			case UPDATE :
 				command = Command.UPDATE;
 				break;
+			case COMPLETE :
+				command = Command.COMPLETE;
+				break;
 			default:
 				// no undo command
 				// return null
@@ -2855,8 +2721,14 @@ public class Undo {
 		Main.redos.clear();
 	}	
 	
-	public static void prepareUndoDelete(Task removedTask) {
-		Undo undo = new Undo(Command.DELETE, removedTask);
+	public static void prepareUndoDelete(Task removedTask, String targetId) {
+		Undo undo = null;
+		if (targetId == null) {
+			undo = new Undo(Command.DELETE, removedTask);
+		} else {
+			undo = new Undo(Command.DELETE, removedTask, targetId);
+		}
+		
 		Main.undos.push(undo);			
 		Main.redos.clear();
 	}
@@ -2919,7 +2791,9 @@ public class Undo {
 
 	private String undoAdd() {
 		String systemMsg;
-		Task removedTask = Main.list.deleteTaskById(_targetId);
+		Pair<Task, String> deleteDetailsPair = 
+				Main.list.deleteTaskById(_targetId);
+		Task removedTask = deleteDetailsPair.getKey();
 		
 		if (removedTask != null) {
 			Undo redo = new Undo(Command.DELETE, removedTask);
@@ -2934,8 +2808,16 @@ public class Undo {
 
 	private String undoDelete() {
 		String systemMsg;
-		Pair<String, Task> systemMsgWithRemovedTaskPair = 
-						   Main.list.AddTaskBackToList(_originalTask, true);		
+		
+		Pair<String, Task> systemMsgWithRemovedTaskPair = null;
+		if (_targetId == null) {
+			systemMsgWithRemovedTaskPair = Main.list.	
+										   addTaskBackToList(_originalTask, false);	
+		} else {
+			systemMsgWithRemovedTaskPair = Main.list.	
+					      				   addTaskBackToList(_originalTask, true);	
+		}
+			
 		
 		systemMsg = systemMsgWithRemovedTaskPair.getKey();
 		if (systemMsg.equals(Constant.MSG_ADD_SUCCESS)) {
@@ -3005,7 +2887,9 @@ public class Undo {
 
 	private String redoDelete() {
 		String systemMsg;
-		Task removedTask = Main.list.deleteTaskById(_targetId);
+		Pair<Task, String> deleteDetailsPair = 
+				Main.list.deleteTaskById(_targetId);
+		Task removedTask = deleteDetailsPair.getKey();
 		
 		if (removedTask != null) {
 			Undo undo = new Undo(Command.DELETE, removedTask);
@@ -3021,7 +2905,7 @@ public class Undo {
 	private String redoAdd() {
 		String systemMsg;
 		Pair<String, Task> systemMsgWithRemovedTaskPair = 
-		   				   Main.list.AddTaskBackToList(_originalTask, true);		
+		   				   Main.list.addTaskBackToList(_originalTask, false);		
 
 		systemMsg = systemMsgWithRemovedTaskPair.getKey();			
 		if (systemMsg.equals(Constant.MSG_ADD_SUCCESS)) {
@@ -3050,7 +2934,7 @@ public class Undo {
 package application;
 
 import java.util.ArrayList;
-import java.util.Date;
+import java.util.logging.Level;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -3075,7 +2959,10 @@ public class XmlManager {
 			
 			return documentFactory.newDocumentBuilder();
 		} catch (ParserConfigurationException exception) {
-			exception.printStackTrace();
+			Main.LOGGER.logp(Level.SEVERE, 
+							 XmlManager.class.getName(), 
+							 "getNewDocBuilder", 
+							 exception.getMessage());
 		}
 		
 		return null;
@@ -3114,7 +3001,8 @@ public class XmlManager {
 	}
 	
 	public static void createAndAppendChildElement(Document document,
-												Element parentElement, String tag, String content) {
+												   Element parentElement, 
+												   String tag, String content) {
 		Element element = document.createElement(tag);
 		Text text = document.createTextNode(content);
 		element.appendChild(text);
@@ -3122,7 +3010,8 @@ public class XmlManager {
 	}
 
 	public static Element createAndAppendWrapper(Document document,
-										   Element parentElement, String tag) {
+										   		 Element parentElement, 
+										   		 String tag) {
 		Element element = document.createElement(tag);
 		parentElement.appendChild(element);
 
@@ -3151,10 +3040,10 @@ public class XmlManager {
 				
 		text = getTextByTagName(element, Constant.TAG_FROM);
 		task.setFrom(Main.inputParser.getDateFromString(text));
-		Task.setStartEndDate(task, task.getFrom(), text);
 		
 		text = getTextByTagName(element, Constant.TAG_TO);
 		task.setTo(Main.inputParser.getDateFromString(text));
+		Task.setStartEndDate(task, task.getFrom(), text);
 		
 		text = getTextByTagName(element, Constant.TAG_BY);
 		task.setBy(Main.inputParser.getDateFromString(text));
@@ -3179,7 +3068,7 @@ public class XmlManager {
 		task.setPriority(Priority.valueOf(text));
 		
 		text = getTextByTagName(element, Constant.TAG_STATUS);
-		task.setStatus(Status.valueOf(text));
+		task.setStatus(TaskStatus.valueOf(text));
 				
 		if (task.getIsRecurring()) {
 			ArrayList<RecurringTask> recurringTasks = 
@@ -3254,7 +3143,10 @@ public class XmlManager {
 			return documentBuilder.newDocument(); 
 			
 		} catch (ParserConfigurationException exception) {
-			exception.printStackTrace();
+			Main.LOGGER.logp(Level.SEVERE, 
+							 XmlManager.class.getName(), 
+							 "createXmlDocument", 
+							 exception.getMessage());
 		}		
 		
 		return null;
@@ -3301,7 +3193,7 @@ public class XmlManager {
 		recurringTask.setRecurringTaskId(text);
 		
 		text = getTextByTagName(recurringTaskNode, Constant.TAG_RECURRING_STATUS);
-		recurringTask.setStatus(Status.valueOf(text));		
+		recurringTask.setStatus(TaskStatus.valueOf(text));		
 		
 		text = getTextByTagName(recurringTaskNode, Constant.TAG_RECURRING_DATE);
 		recurringTask.setRecurDate(Main.inputParser.getDateFromString(text));
@@ -3359,11 +3251,17 @@ public class XmlManager {
 	 * origin: C:\Users\Ruyi\Desktop\collate\source\controller\HeaderController.java
 	 */
 
+	public void initMainController(MainController mainController) {
+		mainCon = mainController;		
+		addTextAreaListener();		
+	}
+	
 	@FXML
-	public void processCmd(KeyEvent e) throws IOException {			
-		if (e.getCode() == KeyCode.ENTER) {
-			String userInput = textArea.getText();
-							   
+	public void processCmd(KeyEvent keyEvent) throws IOException {			
+		if (keyEvent.getCode() == KeyCode.ENTER) {		
+			mainCon.showCorrectView();
+			
+			String userInput = textArea.getText();							   
 			if (userInput.equals("")) {
 				return;
 			}
@@ -3372,10 +3270,28 @@ public class XmlManager {
 			if (systemMsg.equals(Constant.MSG_ORIGINAL_NOT_RETRIEVED)) {
 				resetTextArea();
 			}	
-			
+									
 			mainCon.loadListsInTabs();
 			mainCon.setSystemMessage(systemMsg);
 		} 			
+	}
+	
+	@FXML
+	public void processCmdMouse(MouseEvent mouseEvent) throws IOException {			
+		mainCon.showCorrectView();
+		
+		String userInput = textArea.getText();							   
+		if (userInput.equals("")) {
+			return;
+		}
+		
+		String systemMsg = Execution.executeUserInput(userInput);
+		if (systemMsg.equals(Constant.MSG_ORIGINAL_NOT_RETRIEVED)) {
+			resetTextArea();
+		}	
+								
+		mainCon.loadListsInTabs();
+		mainCon.setSystemMessage(systemMsg);			
 	}
 	
 	public void onTextChanged() {	
@@ -3394,8 +3310,25 @@ public class XmlManager {
 		
 		highlightKeyWords();
 	}
-	
-	
+		
+	public void resetTextArea() {
+		Main.toUpdate = false;	
+
+		textArea.clearStyle(0);
+		textArea.clear();
+		textArea.positionCaret(0);		
+	}
+		
+	// End of segment: C:\Users\Ruyi\Desktop\collate\source\controller\HeaderController.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Ruyi\Desktop\collate\source\controller\HeaderController.java
+	 */
+
 	private void highlightKeyWords() {		
 		String inputString = textArea.getText();
 		String lowerCase = inputString.toLowerCase();
@@ -3423,6 +3356,7 @@ public class XmlManager {
 			if (lowerCase.contains(basicCommand)) {
 				startIndex = lowerCase.indexOf(basicCommand);
 				endIndex = startIndex + basicCommand.length();
+				
 			} else if (lowerCase.contains(advancedCommand)) {
 				startIndex = lowerCase.indexOf(advancedCommand);
 				endIndex = startIndex + advancedCommand.length();
@@ -3449,11 +3383,10 @@ public class XmlManager {
 			basicCommand = command.getBasicCommand();
 			advancedCommand = command.getAdvancedCommand();
 			
+			startIndex = command.getIndexOfCommand(lowerCase);
 			if (lowerCase.contains(basicCommand)) {
-				startIndex = lowerCase.indexOf(basicCommand);
-				endIndex = startIndex + basicCommand.length();
+				endIndex = startIndex + basicCommand.length();				
 			} else if (lowerCase.contains(advancedCommand)) {
-				startIndex = lowerCase.indexOf(advancedCommand);
 				endIndex = startIndex + advancedCommand.length();
 			}
 			
@@ -3494,11 +3427,11 @@ public class XmlManager {
 			basicCommand = command.getBasicCommand() + " ";
 			advancedCommand = command.getAdvancedCommand() + " ";
 			
+			startIndex = command.getIndexOfCommand(lowerCase);
 			if (lowerCase.contains(basicCommand)) {
-				startIndex = lowerCase.indexOf(basicCommand);
 				endIndex = startIndex + basicCommand.length();
+				
 			} else if (lowerCase.contains(advancedCommand)) {
-				startIndex = lowerCase.indexOf(advancedCommand);
 				endIndex = startIndex + advancedCommand.length();
 			}
 			
@@ -3522,13 +3455,13 @@ public class XmlManager {
 			basicCommand = command.getBasicCommand() + " ";
 			advancedCommand = command.getAdvancedCommand() + " ";
 			
+			startIndex = command.getIndexOfCommand(lowerCase);
 			if (lowerCase.contains(basicCommand) && 
-				lowerCase.indexOf(basicCommand) == 0) {
-				startIndex = lowerCase.indexOf(basicCommand);
+				startIndex == 0) {
 				endIndex = startIndex + basicCommand.length();
+				
 			} else if (lowerCase.contains(advancedCommand) &&
-					   lowerCase.indexOf(advancedCommand) == 0) {
-				startIndex = lowerCase.indexOf(advancedCommand);
+					   startIndex == 0) {
 				endIndex = startIndex + advancedCommand.length();
 			}
 			
@@ -3566,33 +3499,14 @@ public class XmlManager {
 		}
 	}
 	
-	// End of segment: C:\Users\Ruyi\Desktop\collate\source\controller\HeaderController.java
-
-
-
-
-
-	/**
-	 * origin: C:\Users\Ruyi\Desktop\collate\source\controller\HeaderController.java
-	 */
-
-	public void init(MainController mainController) {
-		mainCon = mainController;
-		
+	private void addTextAreaListener() {
 		textArea.textProperty().addListener(new ChangeListener<String>() {
 			@Override
-		    public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+		    public void changed(ObservableValue<? extends String> observable, 
+		    					String oldValue, String newValue) {
 				onTextChanged();
 		    }
-		});		
-	}
-	
-	public void resetTextArea() {
-		Main.toUpdate = false;	
-
-		textArea.clearStyle(0);
-		textArea.clear();
-		textArea.positionCaret(0);		
+		});
 	}
 }
 
@@ -3609,13 +3523,44 @@ public class XmlManager {
 	@FXML
 	public void initialize() {
 		initControllers();
+		cleanCompletedTasks();
+		Execution.executeCleanCategories();
 		loadListsInTabs();
 		initTutorialPopup();
 		
 		selectionModel = bodyController.tPaneMain.
 						 getSelectionModel();
+		
+		Execution.executeStatusCheckTimerTask();
 	}
 	
+	@FXML
+	public void onShortcutKey(KeyEvent keyEvent) {	
+		scrollList(keyEvent);		
+		revertAction(keyEvent); 		
+		switchTab(keyEvent);		
+		navigateView(keyEvent);		
+		showTutorial(keyEvent);
+		showOpenFileDialog(keyEvent);
+	}
+	
+	public void showCorrectView() {
+		if (settingController.anPaneSetting.isVisible() ||
+			searchResultController.anPaneSearchResult.isVisible()) {
+			executeGoBack();
+		}
+	}
+	
+	// End of segment: C:\Users\Ruyi\Desktop\collate\source\controller\MainController.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Ruyi\Desktop\collate\source\controller\MainController.java
+	 */
+
 	private void initTutorialPopup() {
 		InputStream inputStream = getClass().getResourceAsStream(Constant.IMAGE_TUTORIAL);
 		Image image = new Image(inputStream);
@@ -3626,30 +3571,21 @@ public class XmlManager {
 	}
 	
 	private void initControllers() {
-		headerController.init(this);
-		bodyController.init(this);
-		searchResultController.init(this);
-		settingController.init(this);
+		headerController.initMainController(this);
+		bodyController.initMainController(this);
+		searchResultController.initMainController(this);
+		settingController.initMainController(this);
 		
 		Execution.mainController = this;
 		Execution.headerController = headerController;
+		Execution.settingController = settingController;
 	}
 
-	@FXML
-	public void onShortcutKey(KeyEvent e) {	
-		scrollList(e);		
-		revertAction(e); 		
-		switchTab(e);		
-		navigateView(e);		
-		showTutorial(e);
-		
-	}
-
-	private void scrollList(KeyEvent e) {
-		boolean shouldReturn = !(Constant.SHORTCUT_PAGE_DOWN.match(e) ||
-								 Constant.SHORTCUT_TA_UNFOCUSED_PAGE_DOWN.match(e) ||
-								 Constant.SHORTCUT_PAGE_UP.match(e) ||
-								 Constant.SHORTCUT_TA_UNFOCUSED_PAGE_UP.match(e));
+	private void scrollList(KeyEvent keyEvent) {
+		boolean shouldReturn = !(Constant.SHORTCUT_PAGE_DOWN.match(keyEvent) ||
+								 Constant.SHORTCUT_TA_UNFOCUSED_PAGE_DOWN.match(keyEvent) ||
+								 Constant.SHORTCUT_PAGE_UP.match(keyEvent) ||
+								 Constant.SHORTCUT_TA_UNFOCUSED_PAGE_UP.match(keyEvent));
 		if (shouldReturn) {
 			return;
 		}
@@ -3674,15 +3610,23 @@ public class XmlManager {
 			return;
 		}
 				
+		setScrollPaneVvalue(keyEvent, targetScrollPane);
+	}
+
+	/*
+	 * Set the position of the scroll pane based on
+	 * the key pressed
+	 */
+	private void setScrollPaneVvalue(KeyEvent keyEvent, ScrollPane targetScrollPane) {
 		double currentPosition = targetScrollPane.getVvalue();
 		double newPosition = currentPosition;
 		
-		if (Constant.SHORTCUT_PAGE_DOWN.match(e) || 
-			Constant.SHORTCUT_TA_UNFOCUSED_PAGE_DOWN.match(e)) {
+		if (Constant.SHORTCUT_PAGE_DOWN.match(keyEvent) || 
+			Constant.SHORTCUT_TA_UNFOCUSED_PAGE_DOWN.match(keyEvent)) {
 			
 			newPosition = currentPosition + Constant.POSITION_OFFSET_VERTICAL;
-		} else if (Constant.SHORTCUT_PAGE_UP.match(e) || 
-				   Constant.SHORTCUT_TA_UNFOCUSED_PAGE_UP.match(e)) {
+		} else if (Constant.SHORTCUT_PAGE_UP.match(keyEvent) || 
+				   Constant.SHORTCUT_TA_UNFOCUSED_PAGE_UP.match(keyEvent)) {
 			
 			newPosition = currentPosition - Constant.POSITION_OFFSET_VERTICAL;
 		}
@@ -3690,53 +3634,68 @@ public class XmlManager {
 		targetScrollPane.setVvalue(newPosition);
 	}
 
-	private void showTutorial(KeyEvent e) {
-		if (Constant.SHORTCUT_TUTORIAL.match(e)) {
+	private void showOpenFileDialog(KeyEvent keyEvent) {
+		if (Constant.SHORTCUT_OPEN_FILE_DIALOG.match(keyEvent)) {
+			if (settingController.anPaneSetting.isVisible()) {
+				settingController.openFileDialog();
+			}
+			
+		}
+	}
+	
+	private void showTutorial(KeyEvent keyEvent) {
+		if (Constant.SHORTCUT_TUTORIAL.match(keyEvent)) {
 			if (tutorialPopup.isFocused()) {
 				tutorialPopup.hide();
 			} else {
 				double positionX = Main.priStage.getX() + 
 								   Constant.POSITION_OFFSET_X_POPUP;							
-				double positionY = (Main.priStage.getY() - headerController.textArea.getLayoutY()) * 
-								   Constant.POSITION_OFFSET_Y_POPUP;
+				double positionY = (Main.priStage.getY() - 
+									headerController.textArea.getLayoutY()) * 
+								    Constant.POSITION_OFFSET_Y_POPUP;
 				
 				tutorialPopup.show(Main.priStage, positionX, positionY);
 			}
 		}
 	}
 
-	private void navigateView(KeyEvent e) {
-		if (Constant.SHORTCUT_GO_BACK.match(e)) {
+	private void navigateView(KeyEvent keyEvent) {
+		if (Constant.SHORTCUT_GO_BACK.match(keyEvent)) {
 			executeGoBack();
-		} else if (Constant.SHORTCUT_SETTING.match(e)) {
+		} else if (Constant.SHORTCUT_SETTING.match(keyEvent)) {
 			executeSetting();				
 		}
 	}
+	
 
-	private void revertAction(KeyEvent e) {
-		if (Constant.SHORTCUT_UNDO.match(e)) {
-			String systemMsg = executeUndo();
+	private void revertAction(KeyEvent keyEvent) {
+		if (Constant.SHORTCUT_UNDO.match(keyEvent)) {
+			String systemMsg = Execution.executeUndo();
 			
 			loadListsInTabs();
 			setSystemMessage(systemMsg);
-		} else if (Constant.SHORTCUT_REDO.match(e)) {
-			String systemMsg = executeRedo();
+		} else if (Constant.SHORTCUT_REDO.match(keyEvent)) {
+			String systemMsg = Execution.executeRedo();
 			
 			loadListsInTabs();
 			setSystemMessage(systemMsg);
 		}
 	}
+		
 
-	private void switchTab(KeyEvent e) {
-		if (Constant.SHORTCUT_TAB_ALL.match(e)) {
-			selectionModel.select(Constant.TAB_INDEX_ALL);			
-		} else if (Constant.SHORTCUT_TAB_CATEGORY.match(e)) {
-			selectionModel.select(Constant.TAB_INDEX_CATEGORY);			
-		} else if (Constant.SHORTCUT_TAB_PRIORITY.match(e)) {
+	private void switchTab(KeyEvent keyEvent) {
+		if (Constant.SHORTCUT_TAB_ALL.match(keyEvent)) {
+			selectionModel.select(Constant.TAB_INDEX_ALL);	
+			
+		} else if (Constant.SHORTCUT_TAB_CATEGORY.match(keyEvent)) {
+			selectionModel.select(Constant.TAB_INDEX_CATEGORY);		
+			
+		} else if (Constant.SHORTCUT_TAB_PRIORITY.match(keyEvent)) {
 			selectionModel.select(Constant.TAB_INDEX_PRIORITY);			
 		}
 	}
 	
+	
 	// End of segment: C:\Users\Ruyi\Desktop\collate\source\controller\MainController.java
 
 
@@ -3744,127 +3703,334 @@ public class XmlManager {
 
 
 	/**
-	 * origin: C:\Users\Ruyi\Desktop\collate\source\controller\MainController.java
+	 * origin: C:\Users\Ruyi\Desktop\collate\source\test\ExecutionTest.java
 	 */
 
-	public void loadListsInTabs() {
-		loadListByDate(Constant.TAB_NAME_ALL);
-		loadListByCategory(Constant.TAB_NAME_CATEGORY);
-		loadListByPriority(Constant.TAB_NAME_PRIORITY);
+package test;
+
+import static org.junit.Assert.*;
+
+import java.io.File;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+
+import org.junit.Test;
+
+import application.Constant;
+import application.Execution;
+import application.Main;
+import application.ToDoList;
+
+public class ExecutionTest {
+	private static final String TEST_ADD_COMMAND = "Have dinner with Amy /on Monday //friend /*";
+	private static final String TEST_DELETE_COMMAND = "delete 1";
+	public static final String PATH_TEST_FILE = "testFile.xml";
+	
+	private String originalSavePath;
+	
+	@Test
+	public void test() {
+		initTest();
+		testAdd();
+		testUndo();
+		testRedo();
+		testDelete();
+		
+		cleanTestFromSystem();
 	}
 	
-	private String executeUndo() {
-		String systemMsg = null;
+	public void testAdd() {
+		String methodName = "executeAdd";
+		Class[] paramTypes = new Class[] {
+				String.class
+		};			
+		Object[] params = new Object[] { 
+				TEST_ADD_COMMAND 		
+		};
 		
-		boolean canUndo = !(Main.undos.isEmpty());
-		if (canUndo) {
-			Undo undo = Main.undos.pop();
-			systemMsg = undo.undoAction();
-		} else {
-			systemMsg = Constant.MSG_NO_UNDO;
-		}
+		String expectedResult = Constant.MSG_ADD_SUCCESS;
+		String actualResult = invokeMethod(methodName, paramTypes, params);
 		
-		return systemMsg;
+		assertEquals(actualResult, expectedResult);
 	}
 	
-	private String executeRedo() {
-		String systemMsg = null;
+	public void testDelete() {
+		// delete existing item
+		String methodName = "executeDelete";
+		Class[] paramTypes = new Class[] {
+				String.class
+		};			
+		Object[] params = new Object[] { 
+				TEST_DELETE_COMMAND 		
+		};
 		
-		boolean canRedo = !(Main.redos.isEmpty());
-		if (canRedo) {
-			Undo redo = Main.redos.pop();
-			systemMsg = redo.redoAction();
-		} else {
-			systemMsg = Constant.MSG_NO_REDO;
-		}
+		String expectedResult = Constant.MSG_DELETE_SUCCESS;
+		String actualResult = invokeMethod(methodName, paramTypes, params);
 		
-		return systemMsg;
+		assertEquals(actualResult, expectedResult);
+		
+		// delete non-existing item
+		expectedResult = Constant.MSG_ITEM_NOT_FOUND;
+		actualResult = invokeMethod(methodName, paramTypes, params);
+		
+		assertEquals(actualResult, expectedResult);		
 	}
 	
-	public void executeSystemMsgTimerTask() {
-		timer = new Timer();
-		timer.schedule(new SystemMsgTimerTask(), Constant.TIMER_SYSTEM_MSG_DURATION);
+	public void testUndo() {
+		// undo add
+		String actualResult = Execution.executeUndo();
+		String expectedResult = Constant.MSG_UNDO_ADD_SUCCESS;
+		
+		int expectedSize = 0;
+		int actualSize = Main.list.getTasks().size();
+		
+		assertEquals(actualSize, expectedSize);
+		assertEquals(actualResult, expectedResult);
+		
+		// attempt to undo with an empty undo stack
+		actualResult = Execution.executeUndo();
+		expectedResult = Constant.MSG_NO_UNDO;
+		
+		assertEquals(actualResult, expectedResult);		
 	}
 	
-	private class SystemMsgTimerTask extends TimerTask {
-        public void run() {
-    		Platform.runLater(new Runnable() {
-    		    @Override
-    		    public void run() {
-    		    	headerController.lblSysMsg.setText(Constant.EMPTY_STRING);	
-    		    	headerController.imgSysMsg.setImage(null);
-    		    }
-    		});
-            timer.cancel();
-        }
-    }
-	// End of segment: C:\Users\Ruyi\Desktop\collate\source\controller\MainController.java
-
-
-
-
-
-	/**
-	 * origin: C:\Users\Ruyi\Desktop\collate\source\controller\SettingController.java
-	 */
-
-	public void init(MainController mainController) {
-		mainCon = mainController;
+	public void testRedo() {
+		// redo add
+		String actualResult = Execution.executeRedo();
+		String expectedResult = Constant.MSG_REDO_ADD_SUCCESS;
+				
+		int expectedSize = 1;
+		int actualSize = Main.list.getTasks().size();
+				
+		assertEquals(actualSize, expectedSize);
+		assertEquals(actualResult, expectedResult);
+			
+		// attempt to redo with an empty redo stack
+		actualResult = Execution.executeRedo();
+		expectedResult = Constant.MSG_NO_REDO;
+				
+		assertEquals(actualResult, expectedResult);		
 	}
 	
-	// End of segment: C:\Users\Ruyi\Desktop\collate\source\controller\SettingController.java
-
-
-
-
-
-	/**
-	 * origin: C:\Users\Ruyi\Desktop\collate\source\controller\SettingController.java
-	 */
-
-	private void openFileDialog() {
-		String systemMsg = "";
+	private String invokeMethod(String methodName, Class[] paramTypes, Object[] params) {
+		Execution execution = new Execution();
+		Class exeClass = execution.getClass();
+		Method method = null;
 		
-		DirectoryChooser dirChooser = new DirectoryChooser();
-		dirChooser.setTitle(Constant.TITLE_SETTING_DIR);
+		Object object = null;
+		try {
+			method = exeClass.getDeclaredMethod(methodName, paramTypes);
+			method.setAccessible(true);
+			
+			object = method.invoke(new Execution(), params);
+		} catch (NoSuchMethodException | SecurityException |
+				IllegalAccessException | IllegalArgumentException | 
+				InvocationTargetException e) {
+			e.printStackTrace();
+		} 
 		
-		File selectedDir = dirChooser.showDialog(anPaneSetting.getScene().getWindow());		
-		txtPath.setText(selectedDir.getAbsolutePath());
-		
-		String newPath = txtPath.getText();
-		String pathInSetting = Main.storage.readSavePath();
-		
-		if (!pathInSetting.equals(newPath)) {
-			systemMsg = Main.storage.moveFile(newPath);
-		}
-		
-		displaySystemMessage(systemMsg);
+		return String.valueOf(object);
 	}
 	
-	// End of segment: C:\Users\Ruyi\Desktop\collate\source\controller\SettingController.java
-
-
-
-
-
-	/**
-	 * origin: C:\Users\Ruyi\Desktop\collate\source\controller\SettingController.java
-	 */
-
-	private class SystemMsgTimerTask extends TimerTask {
-        public void run() {
-    		Platform.runLater(new Runnable() {
-    		    @Override
-    		    public void run() {
-    		    	lblSysMsgSetting.setText(Constant.EMPTY_STRING);	
-    		    }
-    		});
-            timer.cancel();
-        }
-    }
+	private void invokeMainPrivateMethod(String methodName) {
+		Main main = new Main();
+		Class mainClass = main.getClass();
+		Method method = null;
+		
+		try {
+			method = mainClass.getDeclaredMethod(methodName);
+			method.setAccessible(true);
+			
+			method.invoke(ToDoList.class);
+		} catch (NoSuchMethodException | SecurityException |
+				IllegalAccessException | IllegalArgumentException | 
+				InvocationTargetException e) {
+			e.printStackTrace();
+		} 
+	}
+	
+	private void initTest() {
+		String methodName = "initialise";		
+		invokeMainPrivateMethod(methodName);		
+		
+		boolean isTest = true;
+		originalSavePath = Main.list.getListFilePath();				
+		
+		// change save path in setting to 
+		// point to the testfile		
+		Main.storage.updateFilePathInSetting(ToDoListTest.PATH_TEST_FILE);		
+		Main.list = new ToDoList(isTest);
+	}
+	
+	private void cleanTestFromSystem() {
+		deleteTestFile();
+		Main.storage.updateFilePathInSetting(Constant.PATH_DEFAULT);
+	}
+	
+	private void deleteTestFile() {
+		File file = new File(ToDoListTest.PATH_TEST_FILE);
+		file.delete();		
+	}
 }
 
-	// End of segment: C:\Users\Ruyi\Desktop\collate\source\controller\SettingController.java
+	// End of segment: C:\Users\Ruyi\Desktop\collate\source\test\ExecutionTest.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Ruyi\Desktop\collate\source\test\ToDoListTest.java
+	 */
+
+package test;
+
+import static org.junit.Assert.*;
+
+import java.io.File;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+
+import javafx.util.Pair;
+
+import org.junit.Test;
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+
+import application.Main;
+import application.Task;
+import application.ToDoList;
+
+public class ToDoListTest {
+	private static final String METHOD_NAME_INIT = "initialise";
+	private static final String TEST_ADD_COMMAND = "Have dinner with Amy /on Monday //friend /*";
+	private static final String TEST_DELETE_COMMAND = "delete 1";
+	private static final String TEST_UPDATE_COMMAND = "update 1: Have dinner with Amy /by Monday //friend /*";
+	private static final String TEST_UPDATE_COMMAND_NOT_FOUND = "update 1: Have dinner with Amy /by Monday //friend /*";
+	public static final String PATH_TEST_FILE = "testFile.xml";
+	
+	private String originalSavePath;
+	
+	@Test 
+	public void test() {
+		initTest();		
+		testAddTaskToList();
+		testUpdateTaskOnList();
+		testDeleteTaskFromList();
+		
+		cleanTestFromSystem();
+	}
+	
+	public void testAddTaskToList() {		
+		Task testTask = new Task(ToDoListTest.TEST_ADD_COMMAND);		
+		int expectedSize = Main.list.getTasks().size() + 1;
+		
+		Main.list.addTaskToList(testTask);
+		
+		// Check size
+		// The new task is only added into the arraylist 
+		// when it has received a success message from storage
+		// thus it is sufficient to check the size of tasks arraylist 
+		int afterSize = Main.list.getTasks().size();
+		assertEquals(afterSize, expectedSize);
+	}
+
+	/*
+	 * Equivalence Partition: EXISTING_TASK, NON_EXISTING_TASK
+	 * userInput: "delete d1", "delete d1" (after delete)
+	 * Delete Result: DELETED: (size == size + 1) && removedTask != null, 
+	 * 				  NOT_FOUND: (size == size) && removedTask == null
+	 */
+	public void testDeleteTaskFromList() {
+		int expectedSize = Main.list.getTasks().size() - 1;		
+		Pair<Task, String> deleteDetailsPair = 
+				Main.list.deleteTaskFromList(ToDoListTest.TEST_DELETE_COMMAND);
+		Task removedTask = deleteDetailsPair.getKey();
+		
+		// Check that task is removed
+		assertNotNull(removedTask);
+		
+		// Check size
+		int afterSize = Main.list.getTasks().size();
+		assertEquals(afterSize, expectedSize);
+		
+		// Delete the same item again
+		expectedSize = afterSize;
+		deleteDetailsPair = Main.list.deleteTaskFromList(ToDoListTest.TEST_DELETE_COMMAND);
+		removedTask = deleteDetailsPair.getKey();
+		
+		// Check that task is not found
+		assertNull(removedTask);	
+		// Check size
+		afterSize = Main.list.getTasks().size();		
+		assertEquals(afterSize, expectedSize);
+	}
+
+	/*
+	 * Equivalence Partition: EXISTING_TASK, NON_EXISTING_TASK
+	 * userInput: "update e1: <description>", "update d1: <description>"
+	 * Delete Result: UPDATED: (id = e1) && resultPair != null, 
+	 * 				  NOT_FOUND: resultPair == null
+	 */
+	public void testUpdateTaskOnList() {				
+		Pair<Task, String> resultPair = 
+				Main.list.updateTaskOnList(ToDoListTest.TEST_UPDATE_COMMAND);
+		
+		// Check that update has been done
+		assertNotNull(resultPair);	
+				
+		//---------------------------------------------------------------------------------
+		resultPair = Main.list.updateTaskOnList(ToDoListTest.
+					TEST_UPDATE_COMMAND_NOT_FOUND);
+		
+		// Check that task not found
+		assertNotNull(resultPair);	
+	}
+	
+	private void initTest() {
+		String methodName = ToDoListTest.METHOD_NAME_INIT;		
+		invokeMainPrivateMethod(methodName);		
+		
+		boolean isTest = true;
+		originalSavePath = Main.list.getListFilePath();				
+		
+		// change save path in setting to 
+		// point to the testfile		
+		Main.storage.updateFilePathInSetting(ToDoListTest.PATH_TEST_FILE);		
+		Main.list = new ToDoList(isTest);
+	}
+	
+	private void cleanTestFromSystem() {
+		deleteTestFile();
+		Main.storage.updateFilePathInSetting(originalSavePath);
+	}
+	
+	private void deleteTestFile() {
+		File file = new File(ToDoListTest.PATH_TEST_FILE);
+		file.delete();		
+	}
+	
+	private void invokeMainPrivateMethod(String methodName) {
+		Main main = new Main();
+		Class mainClass = main.getClass();
+		Method method = null;
+		
+		try {
+			method = mainClass.getDeclaredMethod(methodName);
+			method.setAccessible(true);
+			
+			method.invoke(ToDoList.class);
+		} catch (NoSuchMethodException | SecurityException |
+				IllegalAccessException | IllegalArgumentException | 
+				InvocationTargetException e) {
+			e.printStackTrace();
+		} 
+	}
+
+}
+
+	// End of segment: C:\Users\Ruyi\Desktop\collate\source\test\ToDoListTest.java
 
 
 
