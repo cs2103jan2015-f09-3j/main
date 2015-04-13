@@ -429,20 +429,25 @@ public class InputParser {
 		int lengthOfAdvancedAddCommand = addAdvancedCmd.length();
 		
 		String toDoString = userInput;
-		
-		if (lengthOfBasicAddCommand >= userInput.length() ||
-			lengthOfAdvancedAddCommand >= userInput.length()) {
-			return "";
-		}
-				
+							
 		if (lowerCase.contains(addBasicCmd) &&
 			lowerCase.indexOf(addBasicCmd) == 0){
+			
+			if ((lengthOfBasicAddCommand >= userInput.length() ||
+				 lengthOfAdvancedAddCommand >= userInput.length())) { // empty description
+					return "";
+			} 
 			
 			toDoString = userInput.substring(lengthOfBasicAddCommand, 
 						 					 userInput.length()).trim();
 			
 		} else if (lowerCase.contains(addAdvancedCmd) &&
 				   lowerCase.indexOf(addAdvancedCmd) == 0) {
+			
+			if ((lengthOfBasicAddCommand >= userInput.length() ||
+					 lengthOfAdvancedAddCommand >= userInput.length())) { // empty description
+						return "";
+			}
 			
 			toDoString = userInput.substring(lengthOfAdvancedAddCommand, 
 						 					  userInput.length()).trim();
