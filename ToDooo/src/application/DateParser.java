@@ -130,6 +130,13 @@ public class DateParser {
 		return thisCalendar.equals(thatCalendar);
 	}
 	
+	public static boolean isAfterDateOnly(Calendar thisCalendar, Calendar thatCalendar) {
+		thisCalendar = getDateWithoutTime(thisCalendar.getTime());
+		thatCalendar = getDateWithoutTime(thatCalendar.getTime());
+		
+		return isAfterDate(thisCalendar, thatCalendar);
+	}
+	
 	//@author A0112537M
 	/*
 	 * Gets today's date portion only
@@ -142,6 +149,19 @@ public class DateParser {
 		calendar.set(Calendar.SECOND, 0);
 	    
 	    return calendar;
+	}
+	
+	public static Calendar getDateWithoutTime(Date targetDate) {
+	    Calendar newDate = Calendar.getInstance();
+	    newDate.setLenient(false);
+	    newDate.setTime(targetDate);
+	    newDate.set(Calendar.HOUR_OF_DAY, 0);
+	    newDate.set(Calendar.MINUTE,0);
+	    newDate.set(Calendar.SECOND,0);
+	    newDate.set(Calendar.MILLISECOND,0);
+
+	    return newDate;
+
 	}
 	
 	/*

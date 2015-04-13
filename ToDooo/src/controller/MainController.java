@@ -477,26 +477,39 @@ public class MainController{
 		if(taskType.equalsIgnoreCase(TaskType.FLOATING.toString())) {
 			floating.add(task);
 		} else {
-			if(taskStatus.equals(TaskStatus.COMPLETED) &&
-					DateParser.isBeforeNow(startDate)) {
-				overdue.add(task);
-			} else if(!taskStatus.equals(TaskStatus.OVERDUE) && 
-			   DateParser.hasMatchedDateOnly(startDate, todayDate)) {
-			
-				if(isRecurring && !taskStatus.equals(TaskStatus.DELETED) || !isRecurring) {
-					today.add(task);
-				}
-			} else if(taskStatus.equals(TaskStatus.OVERDUE) || DateParser.isBeforeNow(startDate)) {
-				
-				if(!taskType.equalsIgnoreCase(TaskType.TIMED.toString())) {
-					
-					if(isRecurring && !taskStatus.equals(TaskStatus.DELETED) || !isRecurring) {
+			if(taskStatus.equals(TaskStatus.OVERDUE)) {
+				if(taskType.equalsIgnoreCase(TaskType.TIMED.toString())) {
+					if(DateParser.hasMatchedDateOnly(task.getFrom(), task.getTo()) || 
+							(!DateParser.hasMatchedDateOnly(task.getFrom(), task.getTo()) && 
+							DateParser.hasMatchedDateTime(startDate, task.getTo()))) {
 						overdue.add(task);
 					}
 				} else {
 					overdue.add(task);
 				}
-			} 
+			} else if(taskStatus.equals(TaskStatus.COMPLETED) &&
+					DateParser.isBeforeNow(startDate)) {
+				if((taskType.equalsIgnoreCase(TaskType.EVENT.toString()) ||
+						taskType.equalsIgnoreCase(TaskType.DATED.toString())) &&
+						DateParser.isBeforeNow(startDate)) {
+					overdue.add(task);
+				} else if(taskType.equalsIgnoreCase(TaskType.TIMED.toString()) &&
+						DateParser.isBeforeNow(task.getTo())) {
+					if(DateParser.hasMatchedDateOnly(task.getFrom(), task.getTo()) || 
+							(!DateParser.hasMatchedDateOnly(task.getFrom(), task.getTo()) && 
+							DateParser.hasMatchedDateTime(startDate, task.getTo()))) {
+						overdue.add(task);
+					}
+				}
+			} else if(DateParser.hasMatchedDateOnly(todayDate, startDate)) {
+				if(taskType.equalsIgnoreCase(TaskType.TIMED.toString()) && 
+						!DateParser.hasMatchedDateOnly(task.getFrom(), task.getTo()) && 
+						DateParser.isBeforeNow(startDate)) {
+					return;
+				} else {
+					today.add(task);
+				}
+			}
 		}
 	}
 
@@ -645,23 +658,10 @@ public class MainController{
 	
 	private String getStyle(Task task, String displayType) {
 		TaskStatus status = task.getStatus();
-		TaskType taskType = task.getTaskType();
-		boolean isOverdue = false;
-		
-		if(!taskType.equals(TaskType.FLOATING) 
-				&& DateParser.isBeforeNow(task.getStartDate())) {
-			isOverdue = true;	
-		}
-		
-		if(taskType.equals(TaskType.TIMED) && 
-				DateParser.hasMatchedDateOnly(task.getFrom(), task.getTo()) && 
-				DateParser.isAfterNow(task.getTo())) {
-			isOverdue = false;	
-		}
 		
 		if(status.equals(TaskStatus.COMPLETED)) {
 			return Constant.CSS_CLASS_BORDERPANE_COMPLETED;
-		} else if(isOverdue) {
+		} else if(status.equals(TaskStatus.OVERDUE)) {
 			return Constant.CSS_CLASS_BORDERPANE_OVERDUE;
 		} else {
 			return Constant.CSS_CLASS_BORDERPANE_ALL;
@@ -833,30 +833,37 @@ public class MainController{
 			addSingleDateTime(byDate, hBoxRight, Constant.STR_BEFORE_DATE_BY, dateFormat);
 
 		} else if(taskType.equalsIgnoreCase(TaskType.TIMED.toString())) {
-			dateFormat = getDateFormat(taskType, startDate, fromDate, toDate);
-			
-			if(DateParser.compareDate(fromDate, toDate)) {
+			if(status.equalsIgnoreCase(TaskStatus.OVERDUE.toString())) {
 				addDoubleDateTime(fromDate, toDate, hBoxRight, 
-								  Constant.STR_BEFORE_DATE_FROM, 
-								  Constant.STR_BEFORE_DATE_TO, 
-								  dateFormat, displayType);
-
-			} else if(DateParser.compareDate(startDate, fromDate)) {
-				addSingleDateTime(fromDate, hBoxRight, 
-								  Constant.STR_BEFORE_DATE_FROM, 
-								  dateFormat);
-
-			} else if(DateParser.compareDate(startDate, toDate)) {
-				addSingleDateTime(toDate, hBoxRight, 
-								  Constant.STR_BEFORE_DATE_TO, 
-								  dateFormat);
-
+						  Constant.STR_BEFORE_DATE_FROM, 
+						  Constant.STR_BEFORE_DATE_TO, 
+						  Constant.FORMAT_DATE_TIME_OUTPUT, displayType);
 			} else {
-				addDoubleDateTime(fromDate, toDate, hBoxRight, 
-								  Constant.STR_BEFORE_DATE_FROM, 
-								  Constant.STR_BEFORE_DATE_TO, 
-								  Constant.FORMAT_DATE_OUTPUT_FOR_TIMED_TASK, 
-								  displayType);
+				dateFormat = getDateFormat(taskType, startDate, fromDate, toDate);
+				
+				if(DateParser.hasMatchedDateOnly(fromDate, toDate)) {
+					addDoubleDateTime(fromDate, toDate, hBoxRight, 
+									  Constant.STR_BEFORE_DATE_FROM, 
+									  Constant.STR_BEFORE_DATE_TO, 
+									  dateFormat, displayType);
+
+				} else if(DateParser.hasMatchedDateOnly(startDate, fromDate)) {
+					addSingleDateTime(fromDate, hBoxRight, 
+									  Constant.STR_BEFORE_DATE_FROM, 
+									  dateFormat);
+
+				} else if(DateParser.hasMatchedDateOnly(startDate, toDate)) {
+					addSingleDateTime(toDate, hBoxRight, 
+									  Constant.STR_BEFORE_DATE_TO, 
+									  dateFormat);
+
+				} else {
+					addDoubleDateTime(fromDate, toDate, hBoxRight, 
+									  Constant.STR_BEFORE_DATE_FROM, 
+									  Constant.STR_BEFORE_DATE_TO, 
+									  Constant.FORMAT_DATE_OUTPUT_FOR_TIMED_TASK, 
+									  displayType);
+				}
 			}
 		}
 	}
