@@ -22,7 +22,7 @@ public class DetailController {
 	@FXML Label detailLblRecurring;
 	@FXML TextArea detailTxtAreaDesc;
 	
-	public void init(MainController mainController) {
+	public void initMainController(MainController mainController) {
 		mainCon = mainController;
 	}
 	

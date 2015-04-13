@@ -34,7 +34,7 @@ public class HeaderController{
 	// Public methods
 	// -----------------------------------------------------------------------------------------------
 	//@author A0112498B
-	public void init(MainController mainController) {
+	public void initMainController(MainController mainController) {
 		mainCon = mainController;		
 		addTextAreaListener();		
 	}

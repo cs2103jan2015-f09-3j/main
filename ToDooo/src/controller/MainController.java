@@ -267,10 +267,10 @@ public class MainController{
 	}
 	
 	private void initControllers() {
-		headerController.init(this);
-		bodyController.init(this);
-		searchResultController.init(this);
-		settingController.init(this);
+		headerController.initMainController(this);
+		bodyController.initMainController(this);
+		searchResultController.initMainController(this);
+		settingController.initMainController(this);
 		
 		Execution.mainController = this;
 		Execution.headerController = headerController;

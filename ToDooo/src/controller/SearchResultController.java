@@ -13,7 +13,7 @@ public class SearchResultController {
 	@FXML VBox vBoxSearchResult;
 	
 	
-	public void init(MainController mainController) {
+	public void initMainController(MainController mainController) {
 		mainCon = mainController;
 	}
 	

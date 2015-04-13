@@ -24,7 +24,7 @@ public class BodyController{
 	@FXML ScrollPane sPaneCategory;
 	@FXML ScrollPane sPanePriority;
 	
-	public void init(MainController mainController) {
+	public void initMainController(MainController mainController) {
 		mainCon = mainController;
 	}
 }
