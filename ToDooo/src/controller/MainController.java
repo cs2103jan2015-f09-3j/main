@@ -477,9 +477,12 @@ public class MainController{
 		if(taskType.equalsIgnoreCase(TaskType.FLOATING.toString())) {
 			floating.add(task);
 		} else {
-			if(!taskStatus.equals(TaskStatus.OVERDUE) && 
+			if(taskStatus.equals(TaskStatus.COMPLETED) &&
+					DateParser.isBeforeNow(startDate)) {
+				overdue.add(task);
+			} else if(!taskStatus.equals(TaskStatus.OVERDUE) && 
 			   DateParser.hasMatchedDateOnly(startDate, todayDate)) {
-				
+			
 				if(isRecurring && !taskStatus.equals(TaskStatus.DELETED) || !isRecurring) {
 					today.add(task);
 				}

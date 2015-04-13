@@ -533,7 +533,7 @@ public class ToDoList {
 		Calendar end = Calendar.getInstance();
 		end.setTime(task.getTo());
 
-		for (Date date = start.getTime(); !start.after(end); 
+		for (Date date = start.getTime(); !DateParser.isAfterDate(start, end); 
 			 start.add(Calendar.DATE, 1), date = start.getTime()) {
 
 			if(DateParser.hasMatchedDateOnly(start, end)) {

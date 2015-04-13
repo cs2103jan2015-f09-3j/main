@@ -1,6 +1,7 @@
 //@author A0112537M
 package controller;
 
+import application.Constant;
 import javafx.fxml.FXML;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
@@ -18,6 +19,6 @@ public class SearchResultController {
 	
 	public void loadSearchList() {
 		vBoxSearchResult.getChildren().clear();
-		mainCon.loadListByDate("searchResult");
+		mainCon.loadListByDate(Constant.VIEW_NAME_SEARCH_RESULT);
 	}
 }
