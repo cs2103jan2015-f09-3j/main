@@ -2,6 +2,7 @@
 package application;
 public enum Frequency {
 	NIL(null),
+	DAILY(Command.RECURRING_DAILY),
 	WEEKLY(Command.RECURRING_WEEKLY),
 	MONTHLY(Command.RECURRING_MONTHLY),
 	YEARLY(Command.RECURRING_YEARLY);
@@ -71,4 +72,14 @@ public enum Frequency {
 		return (lowerCase.contains(basicCmd) ||
 				lowerCase.contains(advancedCmd));
 	}
+	
+	public static boolean isDaily(String commandLine) {
+		String lowerCase = commandLine.toLowerCase() + " ";
+		String basicCmd = Command.RECURRING_DAILY.getBasicCommand() + " ";
+		String advancedCmd = Command.RECURRING_DAILY.getAdvancedCommand() + " ";
+		
+		return (lowerCase.contains(basicCmd) ||
+				lowerCase.contains(advancedCmd));
+	}
+	
 }

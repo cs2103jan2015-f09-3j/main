@@ -19,6 +19,7 @@ public enum Command {
 	PRIORITY_HIGH("/high", "/***"),
 	PRIORITY_MEDIUM("/medium", "/**"),
 	PRIORITY_LOW("/low", "/*"),
+	RECURRING_DAILY("/daily", "-day"),
 	RECURRING_WEEKLY("/weekly", "-w"),
 	RECURRING_MONTHLY("/monthly", "-m"),
 	RECURRING_YEARLY("/yearly", "-y"),

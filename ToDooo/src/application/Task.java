@@ -576,6 +576,11 @@ public class Task implements Cloneable {
 				
 		while (calendarStart.before(calendarEnd) || calendarStart.equals(calendarEnd)) {
 			switch (_repeat) {
+				case DAILY :
+					if (hasAddedDailyRecurringTask(calendarStart, recurringTasks)) {
+						continue;
+					}
+					break;
 				case WEEKLY :
 					if (hasAddedWeeklyRecurringTask(calendarStart, recurringTasks)) {
 						continue;
@@ -650,6 +655,16 @@ public class Task implements Cloneable {
 			hasAdded = true;
 		}
 		
+		return hasAdded;
+	}
+	
+	private boolean hasAddedDailyRecurringTask(Calendar calendarStart, 
+												ArrayList<RecurringTask> recurringTasks) {
+		boolean hasAdded = true;
+		addToRecurringTasks(calendarStart, recurringTasks);
+
+		calendarStart.add(Calendar.DATE, 1);
+
 		return hasAdded;
 	}
 	

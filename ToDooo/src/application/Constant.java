@@ -95,7 +95,7 @@ public final class Constant {
 														 Command.PRIORITY_LOW };
 	
 	public static final Command[] COMMAND_RECURRING = { Command.RECURRING_MONTHLY, Command.RECURRING_WEEKLY,
-														Command.RECURRING_YEARLY };
+														Command.RECURRING_YEARLY, Command.RECURRING_DAILY };
 	
 	// -----------------------------------------------------------------------------------------------
 	// File paths
