@@ -248,7 +248,7 @@ public class HeaderController{
 			basicCommand = command.getBasicCommand() + " ";
 			advancedCommand = command.getAdvancedCommand() + " ";
 			
-			startIndex = lowerCase.indexOf(basicCommand);
+			startIndex = command.getIndexOfCommand(lowerCase);
 			if (lowerCase.contains(basicCommand) && 
 				startIndex == 0) {
 				endIndex = startIndex + basicCommand.length();
