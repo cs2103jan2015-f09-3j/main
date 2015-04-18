@@ -92,6 +92,7 @@ public class Main extends Application {
 		return parentPath;
 	}
 	
+	//@author A0112498B-reused 
 	private static void initLogger() {
 		try {
 			FileHandler fileHandler = 
