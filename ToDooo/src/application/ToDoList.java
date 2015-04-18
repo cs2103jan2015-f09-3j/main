@@ -523,6 +523,7 @@ public class ToDoList {
 		return taskA;
 	}
 	
+	//@author A0112537M-reused
 	private static void generateRepeatedTimedTask(ArrayList<Task> tempTasks,
 			  									  Task task) {
 		Task newTask = null;
