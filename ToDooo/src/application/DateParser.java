@@ -134,6 +134,7 @@ public class DateParser {
 	/*
 	 * Gets today's date portion only
 	 */
+	//@author A0112537M-reused
 	public static Calendar getTodayDate() {
 		Calendar calendar = DateParser.getTodayCalendar();
 		
@@ -144,6 +145,7 @@ public class DateParser {
 	    return calendar;
 	}
 	
+	//@author A0112537M-reused
 	public static Calendar getDateWithoutTime(Date targetDate) {
 	    Calendar newDate = Calendar.getInstance();
 	    newDate.setLenient(false);
@@ -160,6 +162,7 @@ public class DateParser {
 	/*
 	 * Compares date portion only
 	 */
+	//@author A0112537M-reused
 	public static boolean compareDate(Date dateA, Date dateB) {
 		Calendar calendarA = Calendar.getInstance();
 		Calendar calendarB = Calendar.getInstance();
@@ -173,6 +176,7 @@ public class DateParser {
 		return sameDay;
 	}
 	
+	//@author A0112537M-reused
 	public static boolean isAfterDateWithoutTime(Date dateA, Date dateB) {
 		Calendar calendarA = Calendar.getInstance();
 		Calendar calendarB = Calendar.getInstance();
