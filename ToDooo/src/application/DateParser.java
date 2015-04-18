@@ -5,7 +5,7 @@ import java.util.Date;
 import java.util.TimeZone;
 
 public class DateParser {
-	//@author A0112498B
+	//@author A0112498B-reused 
 	public static Calendar createCalendar(Date date) {
 		Calendar calendar = Calendar.getInstance();
 		calendar.setTimeZone(TimeZone.getDefault());
