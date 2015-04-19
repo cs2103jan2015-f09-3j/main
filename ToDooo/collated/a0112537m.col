@@ -9,66 +9,6 @@
 	/*
 	 * Gets today's date portion only
 	 */
-	public static Calendar getTodayDate() {
-		Calendar calendar = DateParser.getTodayCalendar();
-		
-		calendar.set(Calendar.HOUR_OF_DAY, 0); 
-		calendar.set(Calendar.MINUTE, 0);
-		calendar.set(Calendar.SECOND, 0);
-	    
-	    return calendar;
-	}
-	
-	public static Calendar getDateWithoutTime(Date targetDate) {
-	    Calendar newDate = Calendar.getInstance();
-	    newDate.setLenient(false);
-	    newDate.setTime(targetDate);
-	    newDate.set(Calendar.HOUR_OF_DAY, 0);
-	    newDate.set(Calendar.MINUTE,0);
-	    newDate.set(Calendar.SECOND,0);
-	    newDate.set(Calendar.MILLISECOND,0);
-
-	    return newDate;
-
-	}
-	
-	/*
-	 * Compares date portion only
-	 */
-	public static boolean compareDate(Date dateA, Date dateB) {
-		Calendar calendarA = Calendar.getInstance();
-		Calendar calendarB = Calendar.getInstance();
-		
-		calendarA.setTime(dateA);
-		calendarB.setTime(dateB);
-		
-		boolean sameDay = calendarA.get(Calendar.YEAR) == calendarB.get(Calendar.YEAR) &&
-				calendarA.get(Calendar.DAY_OF_YEAR) == calendarB.get(Calendar.DAY_OF_YEAR);
-		
-		return sameDay;
-	}
-	
-	public static boolean isAfterDateWithoutTime(Date dateA, Date dateB) {
-		Calendar calendarA = Calendar.getInstance();
-		Calendar calendarB = Calendar.getInstance();
-		
-		calendarA.setTime(dateA);
-		calendarB.setTime(dateB);
-		
-		boolean isAfterDay = calendarA.get(Calendar.YEAR) >= calendarB.get(Calendar.YEAR) &&
-				calendarA.get(Calendar.DAY_OF_YEAR) > calendarB.get(Calendar.DAY_OF_YEAR);
-		
-		return isAfterDay;
-	}
-	
-	public static boolean isAfterDateOnly(Calendar thisCalendar, Calendar thatCalendar) {
-		thisCalendar = getDateWithoutTime(thisCalendar.getTime());
-		thatCalendar = getDateWithoutTime(thatCalendar.getTime());
-		
-		return isAfterDate(thisCalendar, thatCalendar);
-	}
-}
-
 	// End of segment: C:\Users\Ruyi\Desktop\collate\source\application\DateParser.java
 
 
@@ -569,87 +509,109 @@
 		return taskA;
 	}
 	
-	private static void generateRepeatedTimedTask(ArrayList<Task> tempTasks,
-			  									  Task task) {
-		Task newTask = null;
-		Calendar originalStart = Calendar.getInstance();
-		originalStart.setTime(task.getFrom());
-		Calendar start = Calendar.getInstance();
-		start.setTime(task.getFrom());
-		Calendar end = Calendar.getInstance();
-		end.setTime(task.getTo());
-
-		for (Date date = start.getTime(); !DateParser.isAfterDateOnly(start, end); 
-			 start.add(Calendar.DATE, 1), date = start.getTime()) {
-
-			if(DateParser.hasMatchedDateOnly(start, end)) {
-				if(DateParser.hasMatchedDateOnly(originalStart, end)) {
-					newTask = Task.createRecurringChildItem(task, task.getId(), task.getStatus(), 
-							task.getOn(), task.getBy(), originalStart.getTime());
-				} else {
-					newTask = Task.createRecurringChildItem(task, task.getId(), task.getStatus(), 
-							task.getOn(), task.getBy(), end.getTime());
-				}
-			} else {
-				newTask = Task.createRecurringChildItem(task, task.getId(), task.getStatus(), 
-						task.getOn(), task.getBy(), date);
-			}
-
-			tempTasks.add(newTask);
-		}
-	}
-
-	private static void generateRecurChildTasks(ArrayList<Task> tempTasks,
-												Task task, String taskType) {
-		Date recurringDate;
-		String recurringId;
-		TaskStatus recurringStatus;
-		for(int j = 0; j < task.getRecurringTasks().size(); j++) {
-			Task taskA = null;
-			
-			recurringDate = task.getRecurringTasks().get(j).getRecurDate();
-			
-			recurringId = task.getId() + Constant.PREFIX_RECURRING_ID + 
-					task.getRecurringTasks().get(j).getRecurringTaskId();
-			
-			recurringStatus = task.getRecurringTasks().get(j).getStatus();		
-			
-			taskA = getRecurChildItemForEventOrDated(task, recurringDate, 
-													 taskType, recurringId,
-													 recurringStatus, taskA);
-			
-			tempTasks.add(taskA);
-		}
-	}
-
-	/*
-	 * Note: different from getTaskById
-	 * Selects the task from the newly generated task items
-	 * by matching the id
-	 */
-	private Task selectTaskById(String targetId) {
-		String taskId = targetId;
-		Task task = null;
-		Task selectedTask = null;
-		ArrayList<Task> taskList = generateTaskItems(_tasks, Constant.EMPTY_STRING);
-		Iterator<Task> taskIterator = taskList.iterator();
-		
-		while (taskIterator.hasNext()) {
-			task = taskIterator.next();
-			
-			if(task.getId().equals(taskId)) {
-				selectedTask = task;
-				break;
-			}
-		}
-		
-		return selectedTask;
-	}
-			
-	// ---------------------------------------------------------
-	// Update-related methods
-	// ---------------------------------------------------------	
 	// End of segment: C:\Users\Ruyi\Desktop\collate\source\application\ToDoList.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Ruyi\Desktop\collate\source\test\DateParserTest.java
+	 */
+
+package test;
+
+import static org.junit.Assert.*;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
+import org.junit.Test;
+
+import application.DateParser;
+
+public class DateParserTest {
+	private String dateStrA, dateStrB;
+	private SimpleDateFormat format;
+	private Date dateA, dateB;
+	
+	@Test
+	public void test() throws ParseException {
+		initialiseDateValue();
+		testCalculateDayOfWeek();
+		testCalculateDayOfMonth();
+		testCompareDate();
+		testIsBeforeDate();
+		testIsAfterDate();
+	}
+	
+	public void initialiseDateValue() throws ParseException {
+		format = new SimpleDateFormat("MMMM d, yyyy");
+		dateStrA = "March 27, 2015";
+		dateStrB = "April 04, 2015";
+		dateA = format.parse(dateStrA);
+		dateB = format.parse(dateStrB);
+	}
+	
+	/*
+	 * Equivalence Partition: [1-7]
+	 * Possible boundary values: 0, 1, 2, 6, 7, 8
+	 * This is a boundary case for an equivalent partition. 
+	 */
+	public void testCalculateDayOfWeek() {
+		int result;
+		int expected = 6;
+		result = DateParser.calculateDayOfWeek(dateA);
+		assertEquals(result, expected);
+	}
+	
+	/*
+	 * Equivalence Partition: [1-31]
+	 * Possible boundary values: 0, 1, 2, 30, 31, 32
+	 * This is not a boundary case for an equivalent partition. 
+	 */
+	public void testCalculateDayOfMonth() {
+		int result;
+		int expected = 27;
+		result = DateParser.calculateDayOfMonth(dateA);
+		assertEquals(result, expected);
+	}
+	
+	/*
+	 * Equivalence Partition: [The dates are the same], [The dates are different]
+	 */
+	public void testCompareDate() {
+		boolean result;
+		boolean expected = false;
+		result = DateParser.compareDate(dateA, dateB);
+		assertEquals(result, expected);
+	}
+	
+	/*
+	 * Equivalence Partition: [dateA is before dateB], [dateA is not before dateB]
+	 */
+	public void testIsBeforeDate() {
+		boolean result;
+		boolean expected = true;
+		result = DateParser.isBeforeDate(dateA, dateB);
+		assertEquals(result, expected);
+	}
+	
+	/*
+	 * Equivalence Partition: [dateB is after dateA], [dateB is not after dateA]
+	 */
+	public void testIsAfterDate() {
+		boolean result;
+		boolean expected = true;
+		result = DateParser.isAfterDate(dateB, dateA);
+		assertEquals(result, expected);
+	}
+	
+	
+}
+
+	// End of segment: C:\Users\Ruyi\Desktop\collate\source\test\DateParserTest.java
 
 
 
@@ -1113,108 +1075,6 @@ public class SearchResultController {
 }
 
 	// End of segment: C:\Users\Ruyi\Desktop\collate\source\controller\SettingController.java
-
-
-
-
-
-	/**
-	 * origin: C:\Users\Ruyi\Desktop\collate\source\test\DateParserTest.java
-	 */
-
-package test;
-
-import static org.junit.Assert.*;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
-import org.junit.Test;
-
-import application.DateParser;
-
-public class DateParserTest {
-	private String dateStrA, dateStrB;
-	private SimpleDateFormat format;
-	private Date dateA, dateB;
-	
-	@Test
-	public void test() throws ParseException {
-		initialiseDateValue();
-		testCalculateDayOfWeek();
-		testCalculateDayOfMonth();
-		testCompareDate();
-		testIsBeforeDate();
-		testIsAfterDate();
-	}
-	
-	public void initialiseDateValue() throws ParseException {
-		format = new SimpleDateFormat("MMMM d, yyyy");
-		dateStrA = "March 27, 2015";
-		dateStrB = "April 04, 2015";
-		dateA = format.parse(dateStrA);
-		dateB = format.parse(dateStrB);
-	}
-	
-	/*
-	 * Equivalence Partition: [1-7]
-	 * Possible boundary values: 0, 1, 2, 6, 7, 8
-	 * This is a boundary case for an equivalent partition. 
-	 */
-	public void testCalculateDayOfWeek() {
-		int result;
-		int expected = 6;
-		result = DateParser.calculateDayOfWeek(dateA);
-		assertEquals(result, expected);
-	}
-	
-	/*
-	 * Equivalence Partition: [1-31]
-	 * Possible boundary values: 0, 1, 2, 30, 31, 32
-	 * This is not a boundary case for an equivalent partition. 
-	 */
-	public void testCalculateDayOfMonth() {
-		int result;
-		int expected = 27;
-		result = DateParser.calculateDayOfMonth(dateA);
-		assertEquals(result, expected);
-	}
-	
-	/*
-	 * Equivalence Partition: [The dates are the same], [The dates are different]
-	 */
-	public void testCompareDate() {
-		boolean result;
-		boolean expected = false;
-		result = DateParser.compareDate(dateA, dateB);
-		assertEquals(result, expected);
-	}
-	
-	/*
-	 * Equivalence Partition: [dateA is before dateB], [dateA is not before dateB]
-	 */
-	public void testIsBeforeDate() {
-		boolean result;
-		boolean expected = true;
-		result = DateParser.isBeforeDate(dateA, dateB);
-		assertEquals(result, expected);
-	}
-	
-	/*
-	 * Equivalence Partition: [dateB is after dateA], [dateB is not after dateA]
-	 */
-	public void testIsAfterDate() {
-		boolean result;
-		boolean expected = true;
-		result = DateParser.isAfterDate(dateB, dateA);
-		assertEquals(result, expected);
-	}
-	
-	
-}
-
-	// End of segment: C:\Users\Ruyi\Desktop\collate\source\test\DateParserTest.java
 
 
 

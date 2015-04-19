@@ -1,0 +1,194 @@
+//@author: a0112537m-reused
+
+
+
+	/**
+	 * origin: C:\Users\Ruyi\Desktop\collate\source\application\DateParser.java
+	 */
+
+	public static Calendar getTodayDate() {
+		Calendar calendar = DateParser.getTodayCalendar();
+		
+		calendar.set(Calendar.HOUR_OF_DAY, 0); 
+		calendar.set(Calendar.MINUTE, 0);
+		calendar.set(Calendar.SECOND, 0);
+	    
+	    return calendar;
+	}
+	
+	// End of segment: C:\Users\Ruyi\Desktop\collate\source\application\DateParser.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Ruyi\Desktop\collate\source\application\DateParser.java
+	 */
+
+	public static Calendar getDateWithoutTime(Date targetDate) {
+	    Calendar newDate = Calendar.getInstance();
+	    newDate.setLenient(false);
+	    newDate.setTime(targetDate);
+	    newDate.set(Calendar.HOUR_OF_DAY, 0);
+	    newDate.set(Calendar.MINUTE,0);
+	    newDate.set(Calendar.SECOND,0);
+	    newDate.set(Calendar.MILLISECOND,0);
+
+	    return newDate;
+
+	}
+	
+	/*
+	 * Compares date portion only
+	 */
+	// End of segment: C:\Users\Ruyi\Desktop\collate\source\application\DateParser.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Ruyi\Desktop\collate\source\application\DateParser.java
+	 */
+
+	public static boolean compareDate(Date dateA, Date dateB) {
+		Calendar calendarA = Calendar.getInstance();
+		Calendar calendarB = Calendar.getInstance();
+		
+		calendarA.setTime(dateA);
+		calendarB.setTime(dateB);
+		
+		boolean sameDay = calendarA.get(Calendar.YEAR) == calendarB.get(Calendar.YEAR) &&
+				calendarA.get(Calendar.DAY_OF_YEAR) == calendarB.get(Calendar.DAY_OF_YEAR);
+		
+		return sameDay;
+	}
+	
+	// End of segment: C:\Users\Ruyi\Desktop\collate\source\application\DateParser.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Ruyi\Desktop\collate\source\application\DateParser.java
+	 */
+
+	public static boolean isAfterDateWithoutTime(Date dateA, Date dateB) {
+		Calendar calendarA = Calendar.getInstance();
+		Calendar calendarB = Calendar.getInstance();
+		
+		calendarA.setTime(dateA);
+		calendarB.setTime(dateB);
+		
+		boolean isAfterDay = calendarA.get(Calendar.YEAR) >= calendarB.get(Calendar.YEAR) &&
+				calendarA.get(Calendar.DAY_OF_YEAR) > calendarB.get(Calendar.DAY_OF_YEAR);
+		
+		return isAfterDay;
+	}
+	
+	public static boolean isAfterDateOnly(Calendar thisCalendar, Calendar thatCalendar) {
+		thisCalendar = getDateWithoutTime(thisCalendar.getTime());
+		thatCalendar = getDateWithoutTime(thatCalendar.getTime());
+		
+		return isAfterDate(thisCalendar, thatCalendar);
+	}
+}
+
+	// End of segment: C:\Users\Ruyi\Desktop\collate\source\application\DateParser.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Ruyi\Desktop\collate\source\application\ToDoList.java
+	 */
+
+	private static void generateRepeatedTimedTask(ArrayList<Task> tempTasks,
+			  									  Task task) {
+		Task newTask = null;
+		Calendar originalStart = Calendar.getInstance();
+		originalStart.setTime(task.getFrom());
+		Calendar start = Calendar.getInstance();
+		start.setTime(task.getFrom());
+		Calendar end = Calendar.getInstance();
+		end.setTime(task.getTo());
+
+		for (Date date = start.getTime(); !DateParser.isAfterDateOnly(start, end); 
+			 start.add(Calendar.DATE, 1), date = start.getTime()) {
+
+			if(DateParser.hasMatchedDateOnly(start, end)) {
+				if(DateParser.hasMatchedDateOnly(originalStart, end)) {
+					newTask = Task.createRecurringChildItem(task, task.getId(), task.getStatus(), 
+							task.getOn(), task.getBy(), originalStart.getTime());
+				} else {
+					newTask = Task.createRecurringChildItem(task, task.getId(), task.getStatus(), 
+							task.getOn(), task.getBy(), end.getTime());
+				}
+			} else {
+				newTask = Task.createRecurringChildItem(task, task.getId(), task.getStatus(), 
+						task.getOn(), task.getBy(), date);
+			}
+
+			tempTasks.add(newTask);
+		}
+	}
+
+	private static void generateRecurChildTasks(ArrayList<Task> tempTasks,
+												Task task, String taskType) {
+		Date recurringDate;
+		String recurringId;
+		TaskStatus recurringStatus;
+		for(int j = 0; j < task.getRecurringTasks().size(); j++) {
+			Task taskA = null;
+			
+			recurringDate = task.getRecurringTasks().get(j).getRecurDate();
+			
+			recurringId = task.getId() + Constant.PREFIX_RECURRING_ID + 
+					task.getRecurringTasks().get(j).getRecurringTaskId();
+			
+			recurringStatus = task.getRecurringTasks().get(j).getStatus();		
+			
+			taskA = getRecurChildItemForEventOrDated(task, recurringDate, 
+													 taskType, recurringId,
+													 recurringStatus, taskA);
+			
+			tempTasks.add(taskA);
+		}
+	}
+
+	/*
+	 * Note: different from getTaskById
+	 * Selects the task from the newly generated task items
+	 * by matching the id
+	 */
+	private Task selectTaskById(String targetId) {
+		String taskId = targetId;
+		Task task = null;
+		Task selectedTask = null;
+		ArrayList<Task> taskList = generateTaskItems(_tasks, Constant.EMPTY_STRING);
+		Iterator<Task> taskIterator = taskList.iterator();
+		
+		while (taskIterator.hasNext()) {
+			task = taskIterator.next();
+			
+			if(task.getId().equals(taskId)) {
+				selectedTask = task;
+				break;
+			}
+		}
+		
+		return selectedTask;
+	}
+			
+	// ---------------------------------------------------------
+	// Update-related methods
+	// ---------------------------------------------------------	
+	// End of segment: C:\Users\Ruyi\Desktop\collate\source\application\ToDoList.java
+
+
+
+
+

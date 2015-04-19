@@ -242,140 +242,6 @@ public enum Command {
 
 
 	/**
-	 * origin: C:\Users\Ruyi\Desktop\collate\source\application\DateParser.java
-	 */
-
-	public static Calendar createCalendar(Date date) {
-		Calendar calendar = Calendar.getInstance();
-		calendar.setTimeZone(TimeZone.getDefault());
-		calendar.setTime(date);
-		
-		return calendar;
-	}
-	
-	public static Calendar getTodayCalendar() {
-		Calendar calendar = Calendar.getInstance();
-		calendar.setTimeZone(TimeZone.getDefault());
-		
-		return calendar;
-	}
-	
-	public static int calculateDayOfWeek(Date date) {
-		Calendar calendar = DateParser.createCalendar(date);
-		int dayOfWeek = calculateDayOfWeek(calendar);
-		
-		return dayOfWeek;
-	}
-	
-	public static int calculateDayOfWeek(Calendar calendar) {
-		int dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK);
-		
-		return dayOfWeek;
-	}	
-	
-	public static int calculateDayOfMonth(Date date) {
-		Calendar calendar = DateParser.createCalendar(date);
-		int dayOfMonth = calculateDayOfMonth(calendar);
-		
-		return dayOfMonth;
-	}
-	
-	public static int calculateDayOfMonth(Calendar calendar) {
-		int dayOfMonth = calendar.get(Calendar.DAY_OF_MONTH);
-		
-		return dayOfMonth;
-	}
-	
-	public static int calculateMonth(Date date) {
-		Calendar calendar = DateParser.createCalendar(date);
-		int month = calculateMonth(calendar);
-		
-		return month;
-	}
-	
-	public static int calculateMonth(Calendar calendar) {
-		int month = calendar.get(Calendar.MONTH);
-		
-		return month;
-	}
-	
-	public static boolean isBeforeNow(Date date) {
-		Calendar calendar = DateParser.createCalendar(date);
-		
-		return isBeforeNow(calendar);
-	}
-	
-	public static boolean isBeforeNow(Calendar calendar) {
-		Calendar nowCalendar = DateParser.getTodayCalendar();
-		
-		return calendar.before(nowCalendar);
-	}
-	
-	public static boolean isAfterNow(Date date) {
-		Calendar calendar = DateParser.createCalendar(date);
-		
-		return isAfterNow(calendar);
-	}
-	
-	public static boolean isAfterNow(Calendar calendar) {
-		Calendar nowCalendar = DateParser.getTodayCalendar();
-		
-		return calendar.after(nowCalendar);
-	}
-	
-	public static boolean isBeforeDate(Date thisDate, Date thatDate) {
-		Calendar calendarA = DateParser.createCalendar(thisDate);
-		Calendar calendarB = DateParser.createCalendar(thatDate);
-				
-		return isBeforeDate(calendarA, calendarB);
-	}
-	
-	public static boolean isBeforeDate(Calendar thisCalendar, Calendar thatCalendar) {				
-		return thisCalendar.before(thatCalendar);
-	}
-	
-	public static boolean isAfterDate(Date thisDate, Date thatDate) {
-		return DateParser.isBeforeDate(thatDate, thisDate);
-	}
-	
-	public static boolean isAfterDate(Calendar thisCalendar, Calendar thatCalendar) {
-		return DateParser.isBeforeDate(thatCalendar, thisCalendar);
-	}
-	
-	public static boolean hasMatchedDateOnly(Date thisDate, Date thatDate) {
-		Calendar calendarA = DateParser.createCalendar(thisDate);
-		Calendar calendarB = DateParser.createCalendar(thatDate);
-		
-		return DateParser.hasMatchedDateOnly(calendarA, calendarB);
-	}
-	
-	public static boolean hasMatchedDateOnly(Calendar thisCalendar, Calendar thatCalendar) {
-		return (thisCalendar.get(Calendar.ERA) == thatCalendar.get(Calendar.ERA) &&
-				thisCalendar.get(Calendar.YEAR) == thatCalendar.get(Calendar.YEAR) &&
-				thisCalendar.get(Calendar.DAY_OF_YEAR) == thatCalendar.get(Calendar.DAY_OF_YEAR));
-	}
-	
-	public static boolean hasMatchedDateTime(Date thisDate, Date thatDate) {
-		Calendar calendarA = DateParser.createCalendar(thisDate);
-		Calendar calendarB = DateParser.createCalendar(thatDate);
-		
-		return DateParser.hasMatchedDateTime(calendarA, calendarB);
-	}
-	
-	public static boolean hasMatchedDateTime(Calendar thisCalendar, Calendar thatCalendar) {
-		thisCalendar.clear(Calendar.MILLISECOND);
-		thatCalendar.clear(Calendar.MILLISECOND);
-		
-		return thisCalendar.equals(thatCalendar);
-	}
-	
-	// End of segment: C:\Users\Ruyi\Desktop\collate\source\application\DateParser.java
-
-
-
-
-
-	/**
 	 * origin: C:\Users\Ruyi\Desktop\collate\source\application\Execution.java
 	 */
 
@@ -3248,6 +3114,340 @@ public class XmlManager {
 
 
 	/**
+	 * origin: C:\Users\Ruyi\Desktop\collate\source\test\ExecutionTest.java
+	 */
+
+package test;
+
+import static org.junit.Assert.*;
+
+import java.io.File;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+
+import org.junit.Test;
+
+import application.Constant;
+import application.Execution;
+import application.Main;
+import application.ToDoList;
+
+public class ExecutionTest {
+	private static final String TEST_ADD_COMMAND = "Have dinner with Amy /on Monday //friend /*";
+	private static final String TEST_DELETE_COMMAND = "delete 1";
+	public static final String PATH_TEST_FILE = "testFile.xml";
+	
+	private String originalSavePath;
+	
+	@Test
+	public void test() {
+		initTest();
+		testAdd();
+		testUndo();
+		testRedo();
+		testDelete();
+		
+		cleanTestFromSystem();
+	}
+	
+	public void testAdd() {
+		String methodName = "executeAdd";
+		Class[] paramTypes = new Class[] {
+				String.class
+		};			
+		Object[] params = new Object[] { 
+				TEST_ADD_COMMAND 		
+		};
+		
+		String expectedResult = Constant.MSG_ADD_SUCCESS;
+		String actualResult = invokeMethod(methodName, paramTypes, params);
+		
+		assertEquals(actualResult, expectedResult);
+	}
+	
+	public void testDelete() {
+		// delete existing item
+		String methodName = "executeDelete";
+		Class[] paramTypes = new Class[] {
+				String.class
+		};			
+		Object[] params = new Object[] { 
+				TEST_DELETE_COMMAND 		
+		};
+		
+		String expectedResult = Constant.MSG_DELETE_SUCCESS;
+		String actualResult = invokeMethod(methodName, paramTypes, params);
+		
+		assertEquals(actualResult, expectedResult);
+		
+		// delete non-existing item
+		expectedResult = Constant.MSG_ITEM_NOT_FOUND;
+		actualResult = invokeMethod(methodName, paramTypes, params);
+		
+		assertEquals(actualResult, expectedResult);		
+	}
+	
+	public void testUndo() {
+		// undo add
+		String actualResult = Execution.executeUndo();
+		String expectedResult = Constant.MSG_UNDO_ADD_SUCCESS;
+		
+		int expectedSize = 0;
+		int actualSize = Main.list.getTasks().size();
+		
+		assertEquals(actualSize, expectedSize);
+		assertEquals(actualResult, expectedResult);
+		
+		// attempt to undo with an empty undo stack
+		actualResult = Execution.executeUndo();
+		expectedResult = Constant.MSG_NO_UNDO;
+		
+		assertEquals(actualResult, expectedResult);		
+	}
+	
+	public void testRedo() {
+		// redo add
+		String actualResult = Execution.executeRedo();
+		String expectedResult = Constant.MSG_REDO_ADD_SUCCESS;
+				
+		int expectedSize = 1;
+		int actualSize = Main.list.getTasks().size();
+				
+		assertEquals(actualSize, expectedSize);
+		assertEquals(actualResult, expectedResult);
+			
+		// attempt to redo with an empty redo stack
+		actualResult = Execution.executeRedo();
+		expectedResult = Constant.MSG_NO_REDO;
+				
+		assertEquals(actualResult, expectedResult);		
+	}
+	
+	private String invokeMethod(String methodName, Class[] paramTypes, Object[] params) {
+		Execution execution = new Execution();
+		Class exeClass = execution.getClass();
+		Method method = null;
+		
+		Object object = null;
+		try {
+			method = exeClass.getDeclaredMethod(methodName, paramTypes);
+			method.setAccessible(true);
+			
+			object = method.invoke(new Execution(), params);
+		} catch (NoSuchMethodException | SecurityException |
+				IllegalAccessException | IllegalArgumentException | 
+				InvocationTargetException e) {
+			e.printStackTrace();
+		} 
+		
+		return String.valueOf(object);
+	}
+	
+	private void invokeMainPrivateMethod(String methodName) {
+		Main main = new Main();
+		Class mainClass = main.getClass();
+		Method method = null;
+		
+		try {
+			method = mainClass.getDeclaredMethod(methodName);
+			method.setAccessible(true);
+			
+			method.invoke(ToDoList.class);
+		} catch (NoSuchMethodException | SecurityException |
+				IllegalAccessException | IllegalArgumentException | 
+				InvocationTargetException e) {
+			e.printStackTrace();
+		} 
+	}
+	
+	private void initTest() {
+		String methodName = "initialise";		
+		invokeMainPrivateMethod(methodName);		
+		
+		boolean isTest = true;
+		originalSavePath = Main.list.getListFilePath();				
+		
+		// change save path in setting to 
+		// point to the testfile		
+		Main.storage.updateFilePathInSetting(ToDoListTest.PATH_TEST_FILE);		
+		Main.list = new ToDoList(isTest);
+	}
+	
+	private void cleanTestFromSystem() {
+		deleteTestFile();
+		Main.storage.updateFilePathInSetting(Constant.PATH_DEFAULT);
+	}
+	
+	private void deleteTestFile() {
+		File file = new File(ToDoListTest.PATH_TEST_FILE);
+		file.delete();		
+	}
+}
+
+	// End of segment: C:\Users\Ruyi\Desktop\collate\source\test\ExecutionTest.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Ruyi\Desktop\collate\source\test\ToDoListTest.java
+	 */
+
+package test;
+
+import static org.junit.Assert.*;
+
+import java.io.File;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+
+import javafx.util.Pair;
+
+import org.junit.Test;
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+
+import application.Main;
+import application.Task;
+import application.ToDoList;
+
+public class ToDoListTest {
+	private static final String METHOD_NAME_INIT = "initialise";
+	private static final String TEST_ADD_COMMAND = "Have dinner with Amy /on Monday //friend /*";
+	private static final String TEST_DELETE_COMMAND = "delete 1";
+	private static final String TEST_UPDATE_COMMAND = "update 1: Have dinner with Amy /by Monday //friend /*";
+	private static final String TEST_UPDATE_COMMAND_NOT_FOUND = "update 1: Have dinner with Amy /by Monday //friend /*";
+	public static final String PATH_TEST_FILE = "testFile.xml";
+	
+	private String originalSavePath;
+	
+	@Test 
+	public void test() {
+		initTest();		
+		testAddTaskToList();
+		testUpdateTaskOnList();
+		testDeleteTaskFromList();
+		
+		cleanTestFromSystem();
+	}
+	
+	public void testAddTaskToList() {		
+		Task testTask = new Task(ToDoListTest.TEST_ADD_COMMAND);		
+		int expectedSize = Main.list.getTasks().size() + 1;
+		
+		Main.list.addTaskToList(testTask);
+		
+		// Check size
+		// The new task is only added into the arraylist 
+		// when it has received a success message from storage
+		// thus it is sufficient to check the size of tasks arraylist 
+		int afterSize = Main.list.getTasks().size();
+		assertEquals(afterSize, expectedSize);
+	}
+
+	/*
+	 * Equivalence Partition: EXISTING_TASK, NON_EXISTING_TASK
+	 * userInput: "delete d1", "delete d1" (after delete)
+	 * Delete Result: DELETED: (size == size + 1) && removedTask != null, 
+	 * 				  NOT_FOUND: (size == size) && removedTask == null
+	 */
+	public void testDeleteTaskFromList() {
+		int expectedSize = Main.list.getTasks().size() - 1;		
+		Pair<Task, String> deleteDetailsPair = 
+				Main.list.deleteTaskFromList(ToDoListTest.TEST_DELETE_COMMAND);
+		Task removedTask = deleteDetailsPair.getKey();
+		
+		// Check that task is removed
+		assertNotNull(removedTask);
+		
+		// Check size
+		int afterSize = Main.list.getTasks().size();
+		assertEquals(afterSize, expectedSize);
+		
+		// Delete the same item again
+		expectedSize = afterSize;
+		deleteDetailsPair = Main.list.deleteTaskFromList(ToDoListTest.TEST_DELETE_COMMAND);
+		removedTask = deleteDetailsPair.getKey();
+		
+		// Check that task is not found
+		assertNull(removedTask);	
+		// Check size
+		afterSize = Main.list.getTasks().size();		
+		assertEquals(afterSize, expectedSize);
+	}
+
+	/*
+	 * Equivalence Partition: EXISTING_TASK, NON_EXISTING_TASK
+	 * userInput: "update e1: <description>", "update d1: <description>"
+	 * Delete Result: UPDATED: (id = e1) && resultPair != null, 
+	 * 				  NOT_FOUND: resultPair == null
+	 */
+	public void testUpdateTaskOnList() {				
+		Pair<Task, String> resultPair = 
+				Main.list.updateTaskOnList(ToDoListTest.TEST_UPDATE_COMMAND);
+		
+		// Check that update has been done
+		assertNotNull(resultPair);	
+				
+		//---------------------------------------------------------------------------------
+		resultPair = Main.list.updateTaskOnList(ToDoListTest.
+					TEST_UPDATE_COMMAND_NOT_FOUND);
+		
+		// Check that task not found
+		assertNotNull(resultPair);	
+	}
+	
+	private void initTest() {
+		String methodName = ToDoListTest.METHOD_NAME_INIT;		
+		invokeMainPrivateMethod(methodName);		
+		
+		boolean isTest = true;
+		originalSavePath = Main.list.getListFilePath();				
+		
+		// change save path in setting to 
+		// point to the testfile		
+		Main.storage.updateFilePathInSetting(ToDoListTest.PATH_TEST_FILE);		
+		Main.list = new ToDoList(isTest);
+	}
+	
+	private void cleanTestFromSystem() {
+		deleteTestFile();
+		Main.storage.updateFilePathInSetting(originalSavePath);
+	}
+	
+	private void deleteTestFile() {
+		File file = new File(ToDoListTest.PATH_TEST_FILE);
+		file.delete();		
+	}
+	
+	private void invokeMainPrivateMethod(String methodName) {
+		Main main = new Main();
+		Class mainClass = main.getClass();
+		Method method = null;
+		
+		try {
+			method = mainClass.getDeclaredMethod(methodName);
+			method.setAccessible(true);
+			
+			method.invoke(ToDoList.class);
+		} catch (NoSuchMethodException | SecurityException |
+				IllegalAccessException | IllegalArgumentException | 
+				InvocationTargetException e) {
+			e.printStackTrace();
+		} 
+	}
+
+}
+
+	// End of segment: C:\Users\Ruyi\Desktop\collate\source\test\ToDoListTest.java
+
+
+
+
+
+	/**
 	 * origin: C:\Users\Ruyi\Desktop\collate\source\controller\HeaderController.java
 	 */
 
@@ -3697,340 +3897,6 @@ public class XmlManager {
 	
 	
 	// End of segment: C:\Users\Ruyi\Desktop\collate\source\controller\MainController.java
-
-
-
-
-
-	/**
-	 * origin: C:\Users\Ruyi\Desktop\collate\source\test\ExecutionTest.java
-	 */
-
-package test;
-
-import static org.junit.Assert.*;
-
-import java.io.File;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-
-import org.junit.Test;
-
-import application.Constant;
-import application.Execution;
-import application.Main;
-import application.ToDoList;
-
-public class ExecutionTest {
-	private static final String TEST_ADD_COMMAND = "Have dinner with Amy /on Monday //friend /*";
-	private static final String TEST_DELETE_COMMAND = "delete 1";
-	public static final String PATH_TEST_FILE = "testFile.xml";
-	
-	private String originalSavePath;
-	
-	@Test
-	public void test() {
-		initTest();
-		testAdd();
-		testUndo();
-		testRedo();
-		testDelete();
-		
-		cleanTestFromSystem();
-	}
-	
-	public void testAdd() {
-		String methodName = "executeAdd";
-		Class[] paramTypes = new Class[] {
-				String.class
-		};			
-		Object[] params = new Object[] { 
-				TEST_ADD_COMMAND 		
-		};
-		
-		String expectedResult = Constant.MSG_ADD_SUCCESS;
-		String actualResult = invokeMethod(methodName, paramTypes, params);
-		
-		assertEquals(actualResult, expectedResult);
-	}
-	
-	public void testDelete() {
-		// delete existing item
-		String methodName = "executeDelete";
-		Class[] paramTypes = new Class[] {
-				String.class
-		};			
-		Object[] params = new Object[] { 
-				TEST_DELETE_COMMAND 		
-		};
-		
-		String expectedResult = Constant.MSG_DELETE_SUCCESS;
-		String actualResult = invokeMethod(methodName, paramTypes, params);
-		
-		assertEquals(actualResult, expectedResult);
-		
-		// delete non-existing item
-		expectedResult = Constant.MSG_ITEM_NOT_FOUND;
-		actualResult = invokeMethod(methodName, paramTypes, params);
-		
-		assertEquals(actualResult, expectedResult);		
-	}
-	
-	public void testUndo() {
-		// undo add
-		String actualResult = Execution.executeUndo();
-		String expectedResult = Constant.MSG_UNDO_ADD_SUCCESS;
-		
-		int expectedSize = 0;
-		int actualSize = Main.list.getTasks().size();
-		
-		assertEquals(actualSize, expectedSize);
-		assertEquals(actualResult, expectedResult);
-		
-		// attempt to undo with an empty undo stack
-		actualResult = Execution.executeUndo();
-		expectedResult = Constant.MSG_NO_UNDO;
-		
-		assertEquals(actualResult, expectedResult);		
-	}
-	
-	public void testRedo() {
-		// redo add
-		String actualResult = Execution.executeRedo();
-		String expectedResult = Constant.MSG_REDO_ADD_SUCCESS;
-				
-		int expectedSize = 1;
-		int actualSize = Main.list.getTasks().size();
-				
-		assertEquals(actualSize, expectedSize);
-		assertEquals(actualResult, expectedResult);
-			
-		// attempt to redo with an empty redo stack
-		actualResult = Execution.executeRedo();
-		expectedResult = Constant.MSG_NO_REDO;
-				
-		assertEquals(actualResult, expectedResult);		
-	}
-	
-	private String invokeMethod(String methodName, Class[] paramTypes, Object[] params) {
-		Execution execution = new Execution();
-		Class exeClass = execution.getClass();
-		Method method = null;
-		
-		Object object = null;
-		try {
-			method = exeClass.getDeclaredMethod(methodName, paramTypes);
-			method.setAccessible(true);
-			
-			object = method.invoke(new Execution(), params);
-		} catch (NoSuchMethodException | SecurityException |
-				IllegalAccessException | IllegalArgumentException | 
-				InvocationTargetException e) {
-			e.printStackTrace();
-		} 
-		
-		return String.valueOf(object);
-	}
-	
-	private void invokeMainPrivateMethod(String methodName) {
-		Main main = new Main();
-		Class mainClass = main.getClass();
-		Method method = null;
-		
-		try {
-			method = mainClass.getDeclaredMethod(methodName);
-			method.setAccessible(true);
-			
-			method.invoke(ToDoList.class);
-		} catch (NoSuchMethodException | SecurityException |
-				IllegalAccessException | IllegalArgumentException | 
-				InvocationTargetException e) {
-			e.printStackTrace();
-		} 
-	}
-	
-	private void initTest() {
-		String methodName = "initialise";		
-		invokeMainPrivateMethod(methodName);		
-		
-		boolean isTest = true;
-		originalSavePath = Main.list.getListFilePath();				
-		
-		// change save path in setting to 
-		// point to the testfile		
-		Main.storage.updateFilePathInSetting(ToDoListTest.PATH_TEST_FILE);		
-		Main.list = new ToDoList(isTest);
-	}
-	
-	private void cleanTestFromSystem() {
-		deleteTestFile();
-		Main.storage.updateFilePathInSetting(Constant.PATH_DEFAULT);
-	}
-	
-	private void deleteTestFile() {
-		File file = new File(ToDoListTest.PATH_TEST_FILE);
-		file.delete();		
-	}
-}
-
-	// End of segment: C:\Users\Ruyi\Desktop\collate\source\test\ExecutionTest.java
-
-
-
-
-
-	/**
-	 * origin: C:\Users\Ruyi\Desktop\collate\source\test\ToDoListTest.java
-	 */
-
-package test;
-
-import static org.junit.Assert.*;
-
-import java.io.File;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-
-import javafx.util.Pair;
-
-import org.junit.Test;
-import org.w3c.dom.Document;
-import org.w3c.dom.Node;
-
-import application.Main;
-import application.Task;
-import application.ToDoList;
-
-public class ToDoListTest {
-	private static final String METHOD_NAME_INIT = "initialise";
-	private static final String TEST_ADD_COMMAND = "Have dinner with Amy /on Monday //friend /*";
-	private static final String TEST_DELETE_COMMAND = "delete 1";
-	private static final String TEST_UPDATE_COMMAND = "update 1: Have dinner with Amy /by Monday //friend /*";
-	private static final String TEST_UPDATE_COMMAND_NOT_FOUND = "update 1: Have dinner with Amy /by Monday //friend /*";
-	public static final String PATH_TEST_FILE = "testFile.xml";
-	
-	private String originalSavePath;
-	
-	@Test 
-	public void test() {
-		initTest();		
-		testAddTaskToList();
-		testUpdateTaskOnList();
-		testDeleteTaskFromList();
-		
-		cleanTestFromSystem();
-	}
-	
-	public void testAddTaskToList() {		
-		Task testTask = new Task(ToDoListTest.TEST_ADD_COMMAND);		
-		int expectedSize = Main.list.getTasks().size() + 1;
-		
-		Main.list.addTaskToList(testTask);
-		
-		// Check size
-		// The new task is only added into the arraylist 
-		// when it has received a success message from storage
-		// thus it is sufficient to check the size of tasks arraylist 
-		int afterSize = Main.list.getTasks().size();
-		assertEquals(afterSize, expectedSize);
-	}
-
-	/*
-	 * Equivalence Partition: EXISTING_TASK, NON_EXISTING_TASK
-	 * userInput: "delete d1", "delete d1" (after delete)
-	 * Delete Result: DELETED: (size == size + 1) && removedTask != null, 
-	 * 				  NOT_FOUND: (size == size) && removedTask == null
-	 */
-	public void testDeleteTaskFromList() {
-		int expectedSize = Main.list.getTasks().size() - 1;		
-		Pair<Task, String> deleteDetailsPair = 
-				Main.list.deleteTaskFromList(ToDoListTest.TEST_DELETE_COMMAND);
-		Task removedTask = deleteDetailsPair.getKey();
-		
-		// Check that task is removed
-		assertNotNull(removedTask);
-		
-		// Check size
-		int afterSize = Main.list.getTasks().size();
-		assertEquals(afterSize, expectedSize);
-		
-		// Delete the same item again
-		expectedSize = afterSize;
-		deleteDetailsPair = Main.list.deleteTaskFromList(ToDoListTest.TEST_DELETE_COMMAND);
-		removedTask = deleteDetailsPair.getKey();
-		
-		// Check that task is not found
-		assertNull(removedTask);	
-		// Check size
-		afterSize = Main.list.getTasks().size();		
-		assertEquals(afterSize, expectedSize);
-	}
-
-	/*
-	 * Equivalence Partition: EXISTING_TASK, NON_EXISTING_TASK
-	 * userInput: "update e1: <description>", "update d1: <description>"
-	 * Delete Result: UPDATED: (id = e1) && resultPair != null, 
-	 * 				  NOT_FOUND: resultPair == null
-	 */
-	public void testUpdateTaskOnList() {				
-		Pair<Task, String> resultPair = 
-				Main.list.updateTaskOnList(ToDoListTest.TEST_UPDATE_COMMAND);
-		
-		// Check that update has been done
-		assertNotNull(resultPair);	
-				
-		//---------------------------------------------------------------------------------
-		resultPair = Main.list.updateTaskOnList(ToDoListTest.
-					TEST_UPDATE_COMMAND_NOT_FOUND);
-		
-		// Check that task not found
-		assertNotNull(resultPair);	
-	}
-	
-	private void initTest() {
-		String methodName = ToDoListTest.METHOD_NAME_INIT;		
-		invokeMainPrivateMethod(methodName);		
-		
-		boolean isTest = true;
-		originalSavePath = Main.list.getListFilePath();				
-		
-		// change save path in setting to 
-		// point to the testfile		
-		Main.storage.updateFilePathInSetting(ToDoListTest.PATH_TEST_FILE);		
-		Main.list = new ToDoList(isTest);
-	}
-	
-	private void cleanTestFromSystem() {
-		deleteTestFile();
-		Main.storage.updateFilePathInSetting(originalSavePath);
-	}
-	
-	private void deleteTestFile() {
-		File file = new File(ToDoListTest.PATH_TEST_FILE);
-		file.delete();		
-	}
-	
-	private void invokeMainPrivateMethod(String methodName) {
-		Main main = new Main();
-		Class mainClass = main.getClass();
-		Method method = null;
-		
-		try {
-			method = mainClass.getDeclaredMethod(methodName);
-			method.setAccessible(true);
-			
-			method.invoke(ToDoList.class);
-		} catch (NoSuchMethodException | SecurityException |
-				IllegalAccessException | IllegalArgumentException | 
-				InvocationTargetException e) {
-			e.printStackTrace();
-		} 
-	}
-
-}
-
-	// End of segment: C:\Users\Ruyi\Desktop\collate\source\test\ToDoListTest.java
 
 
 
